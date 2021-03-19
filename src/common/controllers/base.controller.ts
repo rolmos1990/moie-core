@@ -38,7 +38,10 @@ export abstract class BaseController<Parse> {
 
             const queryCondition = ConditionalQuery.ConvertIntoConditionalParams(conditional);
             const operationQuery = new OperationQuery(operation, group);
-            const page = new PageQuery(limit,pageNumber,queryCondition, operationQuery);
+            let page = new PageQuery(limit,pageNumber,queryCondition, operationQuery);
+            if(this.getDefaultRelations()){
+                page.setRelations(this.getDefaultRelations());
+            }
             const countRegisters = await this.service.count(page);
             let items: Array<Object> = await this.service.all(page);
 
@@ -60,7 +63,11 @@ export abstract class BaseController<Parse> {
         try {
             const query = req.params;
             const id = query.id;
-            const item = await this.service.find(id);
+            let relations = [];
+            if(this.getDefaultRelations()){
+                relations = this.getDefaultRelations();
+            }
+            const item = await this.service.find(id, relations);
             res.json(item);
         }catch(e){
             this.handleException(e, res);
@@ -125,7 +132,7 @@ export abstract class BaseController<Parse> {
     async parseObject(parse: any, _body: any){
         const entityTarget = this.getEntityTarget();
         const columns = await getConnection().getMetadata(entityTarget).ownColumns.map(column => column.propertyName);
-        columns.forEach(i => parse[i] = _body[i] ? _body[i] : parse[i]);
+        columns.forEach(i => parse[i] = _body[i] !== undefined ? _body[i] : parse[i]);
         return parse
     }
 
@@ -133,6 +140,8 @@ export abstract class BaseController<Parse> {
         //TODO -- para validar por grupos
         return await validate(obj, { groups });
     }
+    /* define your relations for the entity */
+    protected abstract getDefaultRelations() : Array<string>;
 
     /* Before create object in repository */
     protected abstract beforeCreate(item: Object): void;

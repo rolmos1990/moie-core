@@ -3,6 +3,7 @@ import {EntityTarget} from "typeorm";
 import {Municipality} from "../models/Municipality";
 import {MunicipalityService} from "../services/municipality.service";
 import {route} from "awilix-express";
+import {PageQuery} from "../common/controllers/page.query";
 
 @route('/municipality')
 export class MunicipalityController extends BaseController<Municipality> {
@@ -41,5 +42,9 @@ export class MunicipalityController extends BaseController<Municipality> {
 
     getParsePUT(entity: Municipality): Object {
         return entity;
+    }
+
+    protected getDefaultRelations(): Array<string> {
+        return ['state'];
     }
 }

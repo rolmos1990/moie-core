@@ -50,4 +50,8 @@ export class UserController extends BaseController<User> {
     protected afterCreate(item: Object): void {}
     protected afterUpdate(item: Object): void {}
     protected beforeUpdate(item: Object): void {}
+
+    protected getDefaultRelations(): Array<string> {
+        return [];
+    }
 }

@@ -22,8 +22,8 @@ export abstract class BaseService<Entity> implements IService {
         return this.baseRepository.all(pageQuery);
     }
 
-    public find(id: number): Promise<Entity> {
-        return this.baseRepository.find(id);
+    public find(id: number, relations = []): Promise<Entity> {
+        return this.baseRepository.find(id, relations);
     }
 
     public async createOrUpdate(item: Object){

@@ -27,6 +27,8 @@ export class PageQuery {
 
     private operators: OperationQuery | null = null;
 
+    private relations:Array<string> = [];
+
     private group: Array<string> = [];
 
     /**
@@ -138,6 +140,22 @@ export class PageQuery {
         }
     }
 
+    /**
+     * Add Relations for Specific Paginator
+     * @get
+     */
+    setRelations(relations: Array<string>){
+        this.relations = relations;
+    }
+
+    /**
+     * Get Relations for Specific Paginator
+     * @get
+     */
+    getRelations(): Array<string>{
+        return this.relations;
+    }
+
 
     /**
      * Return the build PageQuery for use in your repository
@@ -151,6 +169,9 @@ export class PageQuery {
         Reflect.set(this.condition,'take', this.limit);
         Reflect.set(this.condition,'skip', this.offset);
         Reflect.set(this.condition, 'group', this.getGroups());
+        if(this.relations.length > 0) {
+            Reflect.set(this.condition, 'relations', this.getRelations());
+        }
 
         return this.condition;
     }

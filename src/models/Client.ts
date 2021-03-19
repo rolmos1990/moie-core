@@ -6,10 +6,10 @@ import {
     UpdateDateColumn
 } from "typeorm";
 import BaseModel from "../common/repositories/base.model";
-import {IsDate, IsEmail, Length, IsBoolean, IsDateString} from "class-validator";
+import {IsDate, IsEmail, Length, IsBoolean} from "class-validator";
 import { Type } from 'class-transformer';
-import {DeliveryLocality} from "./DeliveryLocality";
 import {Municipality} from "./Municipality";
+import {State} from "./State";
 
 @Entity({name: 'Client', orderBy: {id: 'DESC'}})
 export class Client extends BaseModel{
@@ -40,6 +40,10 @@ export class Client extends BaseModel{
     @Column({type: 'boolean'})
     @IsBoolean( {groups: ['create']})
     hasNotification: boolean;
+
+    @ManyToOne(() => State)
+    @JoinColumn({name:'state_id'})
+    state: State;
 
     @ManyToOne(() => Municipality, { nullable: true })
     @JoinColumn({ name:'municipality_id' })

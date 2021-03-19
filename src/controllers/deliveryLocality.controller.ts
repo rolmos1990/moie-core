@@ -3,6 +3,7 @@ import {BaseController} from "../common/controllers/base.controller";
 import {DeliveryLocality} from "../models/DeliveryLocality";
 import {EntityTarget} from "typeorm";
 import {DeliveryLocalityService} from "../services/deliveryLocality.service";
+import {PageQuery} from "../common/controllers/page.query";
 
 @route('/deliveryLocality')
 export class DeliveryLocalityController extends BaseController<DeliveryLocality> {
@@ -37,6 +38,10 @@ export class DeliveryLocalityController extends BaseController<DeliveryLocality>
 
     getParsePUT(entity: DeliveryLocality): Object {
         return entity;
+    }
+
+    protected getDefaultRelations(): Array<string> {
+        return [];
     }
 
 }

@@ -3,6 +3,7 @@ import {State} from "../models/State";
 import {EntityTarget} from "typeorm";
 import {StateService} from "../services/state.service";
 import {route} from "awilix-express";
+import {PageQuery} from "../common/controllers/page.query";
 
 @route('/state')
 export class StateController extends BaseController<State> {
@@ -41,6 +42,10 @@ export class StateController extends BaseController<State> {
 
     getParsePUT(entity: State): Object {
         return entity;
+    }
+
+    protected getDefaultRelations(): Array<string> {
+        return [];
     }
 
 }

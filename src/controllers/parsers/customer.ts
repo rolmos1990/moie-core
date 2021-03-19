@@ -9,6 +9,35 @@ export const CustomerCreateDTO = (client: Client) => ({
     hasNotification: client.hasNotification ? true : false,
     status: true,
     createdAt: new Date(),
-    municipality: client.municipality,
+    municipality: client.municipality || null,
+    state: client.state || null,
     updatedAt: null
+});
+
+export const CustomerListDTO = (client: Client) => ({
+    id: client.id,
+    name: client.name,
+    email: client.email,
+    phone: client.phone,
+    celphone: client.celphone,
+    isMayorist: client.isMayorist ? true : false,
+    hasNotification: client.hasNotification ? true : false,
+    status: client.status ? true : false,
+    createdAt: client.createdAt,
+    state: client.state || null,
+    municipality: client.municipality || null,
+    updatedAt: client.updatedAt
+});
+
+export const CustomerUpdateDTO = (client: Client) => ({
+    id: client.id,
+    name: client.name,
+    email: client.email,
+    phone: client.phone,
+    celphone: client.celphone,
+    hasNotification: client.hasNotification,
+    status: client.status,
+    municipality: client.municipality || null,
+    state: client.state || null,
+    updatedAt: new Date(),
 });

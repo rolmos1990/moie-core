@@ -3,7 +3,8 @@ import {Client} from "../models/Client";
 import {EntityTarget} from "typeorm";
 import {ClientService} from "../services/client.service";
 import {route} from "awilix-express";
-import {CustomerCreateDTO} from "./parsers/customer";
+import {CustomerCreateDTO, CustomerListDTO, CustomerUpdateDTO} from "./parsers/customer";
+import { PageQuery } from "../common/controllers/page.query";
 
 @route('/customer')
 export class ClientController extends BaseController<Client> {
@@ -33,7 +34,7 @@ export class ClientController extends BaseController<Client> {
     }
 
     getParseGET(entity: Client): Object {
-        return entity;
+        return CustomerListDTO(entity);
     }
 
     getParsePOST(entity: Client): Object {
@@ -41,7 +42,10 @@ export class ClientController extends BaseController<Client> {
     }
 
     getParsePUT(entity: Client): Object {
-        return entity;
+        return CustomerUpdateDTO(entity);
     }
 
+    protected getDefaultRelations(): Array<string> {
+        return ['municipality', 'state'];
+    }
 }
