@@ -24,7 +24,6 @@ export default abstract class BaseRepository<T> {
                 .select(select)
                 .where(page.getWhere())
                 .groupBy(operators.getGroups().join(","));
-            console.log(sum.getQuery());
             return sum.getRawMany();
         }
         else if(operators.isGroup()){
@@ -51,6 +50,10 @@ export default abstract class BaseRepository<T> {
 
     async save(entity: T){
         await this.repositoryManager.save(entity);
+    }
+
+    async delete(id: T){
+        await this.repositoryManager.delete(id);
     }
 
 };

@@ -1,5 +1,5 @@
 import {Request, Response} from 'express';
-import {GET,POST, PUT, route} from "awilix-express";
+import {GET,POST, PUT, DELETE, route} from "awilix-express";
 import {ConditionalQuery} from "./conditional.query";
 import {PageQuery} from "./page.query";
 import {IService} from "../interfaces/IService";
@@ -31,7 +31,8 @@ export abstract class BaseController<Parse> {
         try {
             const query = req.query;
             const conditional = query.conditional ? query.conditional + "" : null;
-            const pageNumber = query.page ? parseInt(query.offset + "") :  0;
+            const offset = query.offset ? query.offset + "" : "0";
+            const pageNumber = parseInt(offset);
             const limit = query.limit ? parseInt(query.limit + "") : 100;
             const operation = query.operation ? query.operation + "" : null;
             const group = query.group ? query.group + "" : null;
@@ -129,6 +130,20 @@ export abstract class BaseController<Parse> {
             console.log("error", e);
         }
     }
+
+    @route('/:id')
+    @DELETE()
+    public async delete(req: Request, res: Response) {
+        try {
+            const id = req.params.id;
+            await this.service.delete(id);
+            return res.json({status: 200});
+        }catch(e){
+            this.handleException(e, res);
+            console.log("error", e);
+        }
+    }
+
     async parseObject(parse: any, _body: any){
         const entityTarget = this.getEntityTarget();
         const columns = await getConnection().getMetadata(entityTarget).ownColumns.map(column => column.propertyName);

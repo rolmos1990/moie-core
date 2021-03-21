@@ -4,5 +4,6 @@ export interface IService{
     count: Function,
     all: Function,
     find: Function,
+    delete: Function,
     createOrUpdate: Function
 };

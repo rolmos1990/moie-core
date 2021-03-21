@@ -33,12 +33,7 @@ export class ConditionalQuery {
 
             paramsQuery.forEach(query => {
                 let field;
-                if(query.includes("::")){
-                    //compare is equal
-                    field = query.split("::");
-                    conditions.add(field[0], Operator.EQUAL, field[1]);
-                }
-                else if (query.includes("$eq")) {
+                if (query.includes("$eq")) {
                     //compare is equal
                     field = query.split("$eq");
                     conditions.add(field[0], Operator.EQUAL, field[1]);
@@ -125,6 +120,10 @@ export class ConditionalQuery {
                     //compare not equal
                     field = query.split("$ne");
                     conditions.add(field[0], Operator.NOT_EQUAL, field[1]);
+                }  else if(query.includes("::")){
+                    //compare is equal
+                    field = query.split("::");
+                    conditions.add(field[0], Operator.EQUAL, field[1]);
                 }
                 else{
                     throw new ConditionalException;
@@ -141,7 +140,7 @@ export class ConditionalQuery {
      * @add
      */
 
-    add(field: string, operator: Operator, value: any, value2: any = null){
+    add(field: string, operator: Operator, value: any, moreValues: any = null){
 
         const _value = Reflect.get(this.condition, field);
         if(Reflect.get(this.condition, field)){
@@ -189,10 +188,10 @@ export class ConditionalQuery {
                 value = Not(In(value));
             break;
             case Operator.BETWEEN:
-                value = Between(value, value2);
+                value = Between(value, moreValues);
             break;
             case Operator.NOT_BETWEEN:
-                value = Not(Between(value, value2));
+                value = Not(Between(value, moreValues));
             break;
         }
 
