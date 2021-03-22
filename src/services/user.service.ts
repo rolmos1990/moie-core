@@ -21,7 +21,7 @@ export class UserService extends BaseService<User> {
 
             const user = await this.userRepository.findByUsername(usernameOrEmail);
             if (user.isEmpty() || !this.validatePassword(password, user.password)) {
-                throw new InvalidArgumentException();
+                throw new InvalidArgumentException("Usuario y/o contraseña invalidos");
             }
             const token = this.generateToken(user);
             return {

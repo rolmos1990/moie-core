@@ -19,6 +19,6 @@ export class UserRepository<T> extends BaseRepository<User>{
 
     public async findByUsername(usernameOrEmail: string) : Promise<User> {
         let user = await this.repositoryManager.findOne({username: usernameOrEmail});
-        return user;
+        return user || new User();
     }
 }

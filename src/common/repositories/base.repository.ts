@@ -44,6 +44,15 @@ export default abstract class BaseRepository<T> {
         }
     }
 
+    async findBy(field: string, value: any, relations = []){
+        return await this.repositoryManager.find({
+            where: {
+                [field]: value
+            },
+            relations
+        });
+    }
+
     async find(id: number, relations = []){
         return await this.repositoryManager.findOneOrFail(id, {relations});
     }

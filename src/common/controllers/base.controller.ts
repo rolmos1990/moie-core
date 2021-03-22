@@ -16,7 +16,7 @@ const GROUPS = {
 
 export abstract class BaseController<Parse> {
     constructor(
-        private readonly service: IService
+        private readonly service: IService,
     ){
     };
 
@@ -172,8 +172,8 @@ export abstract class BaseController<Parse> {
 
     handleException(err: any, res: Response) {
         if (err.name === ApplicationException.name) {
-            res.status(400);
-            res.send({code: 400, error: err.message});
+            res.status(500);
+            res.send({code: 500, error: err.message});
         }
         else if(err.name === ConditionalException.name){
             res.status(400);

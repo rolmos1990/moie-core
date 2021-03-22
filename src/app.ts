@@ -53,7 +53,7 @@ app.use(express.json());
 // Controllers
 createConnection(MySQLPersistence).then(async connection => {
     loadContainer(app);
-    app.use(Authorization);
+    app.use(Authorization); //disable validation
     app.use(loadControllers(
         'controllers/*.ts',
         { cwd: __dirname }
