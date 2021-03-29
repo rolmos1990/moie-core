@@ -8,6 +8,9 @@ import {createConnection} from "typeorm";
 import MySQLPersistence from "./common/persistence/mysql.persistence";
 import {Authorization} from './middlewares/authorization';
 import * as cors from 'cors';
+import {loadModules} from "awilix/lib/load-modules";
+import {load} from "dotenv";
+import {RunSeed} from "./seeds/run.seed";
 
 //options for cors midddleware
 const options: cors.CorsOptions = {
@@ -58,6 +61,9 @@ createConnection(MySQLPersistence).then(async connection => {
         'controllers/*.ts',
         { cwd: __dirname }
     ));
+    if(process.env.SEED_DB) {
+        new RunSeed();
+    }
 });
 
 export { app };

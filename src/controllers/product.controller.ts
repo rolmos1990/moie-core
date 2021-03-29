@@ -27,7 +27,7 @@ export class ProductController extends BaseController<Product> {
     }
 
     protected getDefaultRelations(): Array<string> {
-        return ['size','category'];
+        return ['size','category','productImage'];
     }
 
     getEntityTarget(): EntityTarget<Product> {

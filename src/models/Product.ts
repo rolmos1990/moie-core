@@ -13,6 +13,7 @@ import {Type} from "class-transformer";
 import {ProductSize} from "./ProductSize";
 import {Size} from "./Size";
 import {Category} from "./Category";
+import {ProductImage} from "./ProductImage";
 
 @Entity({name: 'Product', orderBy: {id: 'ASC'}})
 export class Product extends BaseModel{
@@ -48,6 +49,10 @@ export class Product extends BaseModel{
     @IsDecimal({ decimal_digits: '2'}, {groups: ['create','update']})
     cost: number;
 
+    @Column({name:'discount', type: 'decimal', nullable: true, default: 0})
+    @IsDecimal({ decimal_digits: '2'}, {groups: ['create','update']})
+    discount: number;
+
     @Column({name:'weight', type: 'decimal'})
     @IsDecimal({ decimal_digits: '2'}, {groups: ['create','update']})
     weight: number;
@@ -78,6 +83,9 @@ export class Product extends BaseModel{
 
     @OneToMany(() => ProductSize, productSize => productSize.product)
     productSize: ProductSize[];
+
+    @OneToMany(() => ProductImage, productImage => productImage.product)
+    productImage: ProductImage[];
 
     @Column({type: 'boolean'})
     @IsBoolean({groups: ['create','update']})

@@ -16,6 +16,9 @@
    "subscribers": [
       "src/subscriber/**/*.ts"
    ],
+   "seeds": [
+      "src/seeds/*.ts"
+   ],
    "cli": {
       "entitiesDir": "src/models",
       "migrationsDir": "src/migration",

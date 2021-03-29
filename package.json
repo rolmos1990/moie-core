@@ -9,7 +9,9 @@
       "typeorm": "NODE_ENV=env ts-node ./node_modules/typeorm/cli.js",
       "typeorm:migrate": "npm run typeorm migration:generate -- -n newMigration --config src/common/persistence/mysql.persistence.ts --dir src/migration",
       "typeorm:run": "NODE_ENV=env npm run typeorm migration:run",
-      "typeorm:revert": "NODE_ENV=env npm run typeorm migration:revert"
+      "typeorm:revert": "NODE_ENV=env npm run typeorm migration:revert",
+      "seed:generate": "ts-node typeorm migration:generate -c seed -n ",
+      "seed:run": "ts-node typeorm migration:run -c seed"
    },
    "keywords": [],
    "author": "Ramon Olmos - (ramon.olmos90@gmail.com)",

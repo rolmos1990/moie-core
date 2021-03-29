@@ -19,6 +19,10 @@ import {CategoryRepository} from "./repositories/category.repository";
 import {CategoryService} from "./services/category.service";
 import {ProductSizeService} from "./services/productSize.service";
 import {ProductSizeRepository} from "./repositories/productSize.repository";
+import {ProductImageRepository} from "./repositories/productImage.repository";
+import {ProductImageService} from "./services/productImage.service";
+import {RunSeed} from "./seeds/run.seed";
+import {app} from "./app";
 
 export default (app: express.Application): void => {
     const container = createContainer({
@@ -48,6 +52,7 @@ export default (app: express.Application): void => {
         productRepository: asClass(ProductRepository).scoped(),
         categoryRepository: asClass(CategoryRepository).scoped(),
         productSizeRepository: asClass(ProductSizeRepository).scoped(),
+        productImageRepository: asClass(ProductImageRepository).scoped(),
         // services
         userService: asClass(UserService).scoped(),
         clientService: asClass(ClientService).scoped(),
@@ -58,6 +63,7 @@ export default (app: express.Application): void => {
         productService: asClass(ProductService).scoped(),
         categoryService: asClass(CategoryService).scoped(),
         productSizeService: asClass(ProductSizeService).scoped(),
+        productImageService: asClass(ProductImageService).scoped(),
     });
 
     app.use(scopePerRequest(container));
