@@ -1,11 +1,15 @@
 import {BaseController} from "../common/controllers/base.controller";
 import {ProductImage} from "../models/ProductImage";
 import {EntityTarget} from "typeorm";
-import {route} from "awilix-express";
+import {PUT, route} from "awilix-express";
 import {ProductImageService} from "../services/productImage.service";
 import {ProductImageCreateDTO, ProductImageListDTO, ProductImageUpdateDTO} from "./parsers/productImage";
+import {Request, Response} from "express";
+import {isArray} from "util";
+import {InvalidArgumentException} from "../common/exceptions";
+import {ProductImageCreate} from "../common/interfaces/Product";
 
-@route('/productImage')
+@route('/changeProductImage')
 export class ProductImageController extends BaseController<ProductImage> {
     constructor(
         private readonly productImageService: ProductImageService
@@ -22,6 +26,25 @@ export class ProductImageController extends BaseController<ProductImage> {
     }
 
     protected beforeUpdate(item: Object): void {
+    }
+
+    @route('/:id')
+    @PUT()
+    public async update(req: Request, res: Response) {
+        try {
+            const body = req.body;
+            if(!isArray(body)){
+                throw new InvalidArgumentException("No se ha podido procesar las imagenes");
+            }
+            const productImages : Array<ProductImageCreate> = [];
+            body.forEach(item => {
+                productImages.push(item);
+            });
+            const response = await this.productImageService.addProductImages('filename', productImages);
+            return res.json({status: 200});
+        }catch(e){
+            this.handleException(e, res);
+        }
     }
 
     getEntityTarget(): EntityTarget<ProductImage> {

@@ -1,4 +1,4 @@
-import {route} from "awilix-express";
+import {POST, PUT, route} from "awilix-express";
 import {BaseController} from "../common/controllers/base.controller";
 import {Product} from "../models/Product";
 import {EntityTarget} from "typeorm";
