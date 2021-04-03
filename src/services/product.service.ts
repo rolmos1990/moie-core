@@ -1,14 +1,23 @@
 import {BaseService} from "../common/controllers/base.service";
 import {Product} from "../models/Product";
+import {Category as CategoryNew} from "../models/Category";
 import {Product as ProductWeb} from "../models_web/Product";
 import {Product as ProductOriginal} from "../models_moie/Product";
 import {getRepository} from "typeorm";
+import {Category} from "../models/Category";
+
+interface CategoryI {
+    id: number,
+    name: string,
+    categoryNew: CategoryNew
+};
 
 interface ProductWebI {
     codigo: string,
     descripcion: string,
     imagenes: number,
     discount: number,
+    category: CategoryI
     createdAt: Date
 };
 
@@ -23,7 +32,8 @@ interface ProductMixedI {
     weight: number,
     tags: string,
     createdAt: Date,
-    productWeb: ProductWebI
+    productWeb: ProductWebI,
+    category: CategoryI
 }
 
 export class ProductService extends BaseService<Product> {
@@ -43,13 +53,13 @@ export class ProductService extends BaseService<Product> {
      */
     async up(limit, skip = 0){
 
-        //TODO -- agregar aqui las categorias..
-
         await this.newRepository.query("SET FOREIGN_KEY_CHECKS=0;");
 
         const query = this.originalRepository.createQueryBuilder("p")
             .leftJoinAndSelect("p.productWeb", "productWeb")
-            .orderBy("p.id", "ASC")
+            .leftJoinAndSelect("productWeb.category", "cat")
+            .leftJoinAndSelect("cat.categoryNew", "catnew")
+            .orderBy("p.id", "DESC")
             .skip(skip)
             .take(limit);
 
@@ -71,11 +81,17 @@ export class ProductService extends BaseService<Product> {
             product.tags = item.tags;
 
             if(item.productWeb) {
+                const productWeb = item.productWeb;
                 /**
                  * Si contiene producto web (Descarga la información del producto web)
                  */
-                product.discount = item.productWeb.discount;
-                product.description = item.productWeb.descripcion;
+                product.discount = productWeb.discount;
+                product.description = productWeb.descripcion;
+
+                if(productWeb.category){
+                    product.category = productWeb.category.categoryNew;
+                }
+
             }
 
             product.status = true;

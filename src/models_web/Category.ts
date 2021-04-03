@@ -1,9 +1,20 @@
-import {Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn} from "typeorm";
+import {
+    Column,
+    CreateDateColumn,
+    Entity,
+    JoinColumn,
+    OneToMany,
+    OneToOne,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn
+} from "typeorm";
 import BaseModel from "../common/repositories/base.model";
 import {IsDate, Length} from "class-validator";
 import {Type} from "class-transformer";
 import {Product} from "./Product";
+import {Category as CategoryNew} from "../models/Category";
 import {OriginalDatabaseName, StoreDatabaseName} from "../common/persistence";
+import {Product as ProductOriginal} from "../models_moie/Product";
 
 @Entity({database: StoreDatabaseName, name: 'categoria', orderBy: {id: 'ASC'}})
 export class Category extends BaseModel{
@@ -17,15 +28,14 @@ export class Category extends BaseModel{
     @OneToMany(() => Product, product => product.category)
     products: Product[];
 
+    @OneToOne(() => CategoryNew)
+    @JoinColumn({name: "id"})
+    categoryNew: CategoryNew;
+
     @CreateDateColumn({name:'actualizacion'})
     @Type(() => Date)
     @IsDate()
     createdAt: Date;
-
-    @UpdateDateColumn({name:'actualizacion', nullable: true})
-    @Type(() => Date)
-    @IsDate()
-    updatedAt: Date;
 
     isEmpty(): boolean {
         return false;

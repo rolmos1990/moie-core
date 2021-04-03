@@ -32,7 +32,7 @@ export class CategoryService extends BaseService<Category> {
             category.id = item.id;
             category.name = item.name;
             category.createdAt = item.createdAt;
-            category.updatedAt = item.updatedAt;
+            category.updatedAt = new Date();
             category.status = true;
             categories.push(category);
         });
