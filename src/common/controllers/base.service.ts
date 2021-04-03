@@ -1,36 +1,21 @@
 import {PageQuery} from "./page.query";
 import {IService} from "../interfaces/IService";
+import {classToClass} from "class-transformer";
 
 export abstract class BaseService<Entity> implements IService {
-    constructor(
-        private readonly baseRepository: any
-    ){}
+    abstract async up(limit, skip);
+    abstract async down();
+    abstract async counts();
+    abstract async countsNew();
+    abstract async processName();
 
-    public count(pageQuery: PageQuery): Promise<Entity[]> {
-        return this.baseRepository.count(pageQuery);
+    printResult(saved, items){
+        console.log("-- cantidad de registros guardados -- ", saved.length);
+        console.log("-- se ha guardado con exito : ",  (saved.length === items.length) ? "Si" : "No" );
+        console.log("-------------------------------------------");
     }
-
-    public sum(pageQuery: PageQuery): Promise<Entity[]> {
-        return this.baseRepository.sum(pageQuery);
-    }
-
-    public avg(pageQuery: PageQuery): Promise<Entity[]> {
-        return this.baseRepository.avg(pageQuery);
-    }
-
-    public all(pageQuery: PageQuery): Promise<Entity[]> {
-        return this.baseRepository.all(pageQuery);
-    }
-
-    public find(id: number, relations = []): Promise<Entity> {
-        return this.baseRepository.find(id, relations);
-    }
-
-    public delete(id: number): Promise<Entity> {
-        return this.baseRepository.delete(id);
-    }
-
-    public async createOrUpdate(item: Object){
-        return this.baseRepository.save(item);
+    printError(){
+        console.log("-- Se ha producido un error en : ",  this.processName());
+        console.log("-------------------------------------------");
     }
 }

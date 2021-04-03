@@ -2,16 +2,20 @@ import {Column, Entity, JoinColumn, ManyToOne, MoreThan, PrimaryGeneratedColumn}
 import BaseModel from "../common/repositories/base.model";
 import {Product} from "./Product";
 import {Length, Min} from "class-validator";
-import {NewDatabaseName} from "../common/persistence";
+import {OriginalDatabaseName} from "../common/persistence";
 
 //remplazaria a 'existencia'
-@Entity({database: NewDatabaseName, name: 'ProductSize', orderBy: {id: 'ASC'}})
+@Entity({database: OriginalDatabaseName, name: 'ProductSize', orderBy: {id: 'ASC'}})
 export class ProductSize extends BaseModel{
 
     @PrimaryGeneratedColumn('increment')
     id: number;
 
-    @Column({name:'name', type: 'varchar', length: 60})
+    @ManyToOne(() => Product, product => product.productSize)
+    @JoinColumn({name:'id_producto'})
+    product: Product;
+
+    @Column({name:'size', type: 'varchar', length: 255})
     @Length(1, 100, {groups: ['create','update']})
     name: string;
 
@@ -19,13 +23,9 @@ export class ProductSize extends BaseModel{
     @Length(1, 100, {groups: ['create','update']})
     color: string;
 
-    @Column({name:'quantity', type: 'integer'})
+    @Column({name:'cantidad', type: 'integer'})
     @Min(0, {groups: ['create','update']})
     quantity: number;
-
-    @ManyToOne(() => Product, product => product.productSize)
-    @JoinColumn({name:'product_id'})
-    product: Product;
 
     isEmpty(): boolean {
         return (this.id == null);

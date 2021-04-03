@@ -5,8 +5,9 @@ import {
 } from "typeorm";
 import BaseModel from "../common/repositories/base.model";
 import {IsBoolean, IsDecimal, IsInt, Length} from "class-validator";
+import {NewDatabaseName} from "../common/persistence";
 
-@Entity({name: 'DeliveryLocality', orderBy: {id: 'ASC'}})
+@Entity({database: NewDatabaseName, name: 'DeliveryLocality', orderBy: {id: 'ASC'}})
 export class DeliveryLocality extends BaseModel{
     @PrimaryGeneratedColumn('increment')
     id: number;

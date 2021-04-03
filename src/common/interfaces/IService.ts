@@ -1,9 +1,9 @@
 import {EntityTarget} from "typeorm";
 
 export interface IService{
-    count: Function,
-    all: Function,
-    find: Function,
-    delete: Function,
-    createOrUpdate: Function
+    up(limit: number, skip: number): Function,
+    down: Function,
+    counts: Function,
+    countsNew: Function,
+    processName: Function
 };

@@ -12,7 +12,9 @@ export default <ConnectionOptions> {
     synchronize: false,
     logging: false,
     entities: [
-        `${__dirname}/../../models/**/*`
+        `${__dirname}/../../models/**/*`,
+        `${__dirname}/../../models_moie/**/*`,
+        `${__dirname}/../../models_web/**/*`,
     ],
     migrations: [
         "src/migration/**/*.ts"

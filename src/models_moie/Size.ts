@@ -1,22 +1,22 @@
 import {Column, Entity, PrimaryGeneratedColumn} from "typeorm";
 import BaseModel from "../common/repositories/base.model";
 import {Length} from "class-validator";
-import {NewDatabaseName} from "../common/persistence";
+import {OriginalDatabaseName} from "../common/persistence";
 
-//Equivalente a (talla)
-@Entity({database: NewDatabaseName, name: 'Size', orderBy: {id: 'ASC'}})
+@Entity({database: OriginalDatabaseName, name: 'Size', orderBy: {id: 'ASC'}})
 export class Size extends BaseModel{
 
     @PrimaryGeneratedColumn('increment')
     id: number;
 
     /* remplaza descripción */
-    @Column({name:'name', type: 'varchar', length: 60})
+    @Column({name:'descripcion', type: 'varchar', length: 255})
     @Length(3, 100, {groups: ['create','update']})
     name: string;
 
-    @Column("simple-array")
-    sizes: string[];
+    @Column({name:'tallas', type: 'varchar', length: 255})
+    @Length(3, 100, {groups: ['create','update']})
+    sizes: string;
 
     isEmpty(): boolean {
         return (this.id == null);

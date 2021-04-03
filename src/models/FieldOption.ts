@@ -1,10 +1,11 @@
 import {Column, Entity, PrimaryGeneratedColumn} from "typeorm";
 import BaseModel from "../common/repositories/base.model";
 import {Length} from "class-validator";
+import {NewDatabaseName} from "../common/persistence";
 
 /* replaza opcion */
 /* Tags para diferentes objetos, puede ser usado como un atributo adicional */
-@Entity({name: 'FieldOption', orderBy: {id: 'ASC'}})
+@Entity({database: NewDatabaseName, name: 'FieldOption', orderBy: {id: 'ASC'}})
 export class FieldOption extends BaseModel{
     @PrimaryGeneratedColumn('increment')
     id: number;

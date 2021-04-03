@@ -8,8 +8,9 @@ import {
 import BaseModel from "../common/repositories/base.model";
 import {IsDate, IsEmail, Length, IsBoolean, IsDateString} from "class-validator";
 import { Type } from 'class-transformer';
+import {NewDatabaseName} from "../common/persistence";
 
-@Entity({name: 'User', orderBy: {id: 'ASC'}})
+@Entity({database: NewDatabaseName, name: 'User', orderBy: {id: 'ASC'}})
 export class User extends BaseModel{
     @PrimaryGeneratedColumn('increment')
     id: number;

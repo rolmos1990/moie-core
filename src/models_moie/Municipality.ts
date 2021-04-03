@@ -4,30 +4,26 @@ import {
     PrimaryGeneratedColumn,
 } from "typeorm";
 import BaseModel from "../common/repositories/base.model";
-import {IsBoolean, IsDecimal, IsInt, Length} from "class-validator";
+import {Length} from "class-validator";
 import {State} from "./State";
-import {NewDatabaseName} from "../common/persistence";
+import {OriginalDatabaseName} from "../common/persistence";
 
-@Entity({database: NewDatabaseName, name: 'Municipality', orderBy: {id: 'ASC'}})
+@Entity({database: OriginalDatabaseName, name: 'municipio', orderBy: {id: 'ASC'}})
 export class Municipality extends BaseModel{
     @PrimaryGeneratedColumn('increment')
     id: number;
 
-    @Column({type: 'varchar', length: 200})
+    @Column({name:'nombre', type: 'varchar', length: 200})
     @Length(3, 200, {groups: ['create','update']})
     name: string;
 
-    @Column({name:'dian_code', type: 'varchar', length: 10})
+    @Column({name:'codigo_dian', type: 'varchar', length: 10})
     @Length(3, 10, {groups: ['create','update']})
     dianCode: string;
 
     @ManyToOne(() => State, state => state.municipalities)
-    @JoinColumn({name:'state_id'})
+    @JoinColumn({name:'id_estado'})
     state: State;
-
-    @Column({type: 'boolean'})
-    @IsBoolean({groups: ['create','update']})
-    status: boolean;
 
     equals(obj: any) {
         if(obj instanceof Municipality === false){

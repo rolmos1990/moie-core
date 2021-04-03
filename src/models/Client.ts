@@ -10,8 +10,9 @@ import {IsDate, IsEmail, Length, IsBoolean} from "class-validator";
 import { Type } from 'class-transformer';
 import {Municipality} from "./Municipality";
 import {State} from "./State";
+import {NewDatabaseName} from "../common/persistence";
 
-@Entity({name: 'Client', orderBy: {id: 'DESC'}})
+@Entity({database: NewDatabaseName, name: 'Client', orderBy: {id: 'DESC'}})
 export class Client extends BaseModel{
     @PrimaryGeneratedColumn('increment')
     id: number;

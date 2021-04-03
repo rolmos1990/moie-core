@@ -1,36 +1,31 @@
 import {Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn} from "typeorm";
 import BaseModel from "../common/repositories/base.model";
-import {IsBoolean, IsDate, Length} from "class-validator";
+import {IsDate, Length} from "class-validator";
 import {Type} from "class-transformer";
-import {Municipality} from "./Municipality";
 import {Product} from "./Product";
-import {NewDatabaseName} from "../common/persistence";
+import {OriginalDatabaseName, StoreDatabaseName} from "../common/persistence";
 
-@Entity({database: NewDatabaseName, name: 'Category', orderBy: {id: 'ASC'}})
+@Entity({database: StoreDatabaseName, name: 'categoria', orderBy: {id: 'ASC'}})
 export class Category extends BaseModel{
     @PrimaryGeneratedColumn('increment')
     id: number;
 
-    @Column({name:'name', type: 'varchar', length: 100, unique: true})
+    @Column({name:'nombre', type: 'varchar', length: 100, unique: true})
     @Length(3, 255, {groups: ['create','update']})
     name: string;
 
     @OneToMany(() => Product, product => product.category)
     products: Product[];
 
-    @CreateDateColumn({name:'created_at'})
+    @CreateDateColumn({name:'actualizacion'})
     @Type(() => Date)
     @IsDate()
     createdAt: Date;
 
-    @UpdateDateColumn({name:'updated_at', nullable: true})
+    @UpdateDateColumn({name:'actualizacion', nullable: true})
     @Type(() => Date)
     @IsDate()
     updatedAt: Date;
-
-    @Column({type: 'boolean'})
-    @IsBoolean({groups: ['create','update']})
-    status: boolean;
 
     isEmpty(): boolean {
         return false;

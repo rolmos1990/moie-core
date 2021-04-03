@@ -8,11 +8,12 @@ import {
 import BaseModel from "../common/repositories/base.model";
 import { Length } from "class-validator";
 import {Product} from "./Product";
+import {NewDatabaseName} from "../common/persistence";
 
 /* THUMBS - */
 /* [{path: 'folder/file.asd', size: 400}, {path: 'folder/file.asd', size: 200}] */
 
-@Entity({name: 'ProductImage', orderBy: {id: 'ASC'}})
+@Entity({database: NewDatabaseName, name: 'ProductImage', orderBy: {id: 'ASC'}})
 export class ProductImage extends BaseModel{
 
     @PrimaryGeneratedColumn('increment')

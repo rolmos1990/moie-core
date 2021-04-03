@@ -14,8 +14,9 @@ import {ProductSize} from "./ProductSize";
 import {Size} from "./Size";
 import {Category} from "./Category";
 import {ProductImage} from "./ProductImage";
+import {NewDatabaseName} from "../common/persistence";
 
-@Entity({name: 'Product', orderBy: {id: 'ASC'}})
+@Entity({database: NewDatabaseName, name: 'Product', orderBy: {id: 'ASC'}})
 export class Product extends BaseModel{
 
     @PrimaryGeneratedColumn('increment')
@@ -25,7 +26,7 @@ export class Product extends BaseModel{
     @Length(3, 255, {groups: ['create','update']})
     reference: string;
 
-    @Column({name:'name', type: 'varchar', length: 100})
+    @Column({name:'name', type: 'varchar', length: 255})
     @Length(3, 255, {groups: ['create','update']})
     name: string;
 
