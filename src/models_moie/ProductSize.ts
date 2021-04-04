@@ -3,19 +3,22 @@ import BaseModel from "../common/repositories/base.model";
 import {Product} from "./Product";
 import {Length, Min} from "class-validator";
 import {OriginalDatabaseName} from "../common/persistence";
+import {ProductWithNew} from "./ProductWithNew";
 
-//remplazaria a 'existencia'
-@Entity({database: OriginalDatabaseName, name: 'ProductSize', orderBy: {id: 'ASC'}})
+/**
+ * Existencia de Productos.
+ */
+@Entity({database: OriginalDatabaseName, name: 'existencia', orderBy: {id: 'ASC'}})
 export class ProductSize extends BaseModel{
 
     @PrimaryGeneratedColumn('increment')
     id: number;
 
-    @ManyToOne(() => Product, product => product.productSize)
+    @ManyToOne(() => ProductWithNew, product => product.productSize)
     @JoinColumn({name:'id_producto'})
-    product: Product;
+    product: ProductWithNew;
 
-    @Column({name:'size', type: 'varchar', length: 255})
+    @Column({name:'talla', type: 'varchar', length: 255})
     @Length(1, 100, {groups: ['create','update']})
     name: string;
 

@@ -15,41 +15,58 @@ export class MigrationManager {
         try {
 
             const size = await this.service.counts();
+
             console.log("--- Preparando servicio de migración");
             await this.service.down();
-
-            console.log("--- Cantidad de Registros encontrados: (" +  size + ") - name" + name);
+            console.log("--- Cantidad de Registros encontrados: (" +  size + ") - " + name);
             console.log("--- Iniciando migración para proceso ## - " + name);
+
+            let totalMigrados;
             if (size < this.limitPerBatch) {
                 console.log("--- Iniciando migración desde 1 hasta " + size + " - " + name);
                 await this.service.up(this.limitPerBatch, 0);
-                console.log("--- Se ha migrado satisfactoriamente ## - " + name);
+                totalMigrados = await this.service.countsNew();
+                this.printMessage(name,size,totalMigrados);
+
             } else {
                 for (let i = 0; i < size; i = i + this.limitPerBatch) {
                     pointer = i;
                     console.log("--- Iniciando migración desde " + (i + 1) + " hasta " + (i + this.limitPerBatch) + " - " + name);
                     await this.service.up(this.limitPerBatch, i);
                 }
-                const totalMigrados = await this.service.countsNew();
-                console.log("**** -- Result " + name + " --- ****");
-                if(totalMigrados === size){
-                    console.log("**** Se ha migrado satisfactoriamente los registros - total: ", totalMigrados + " ****");
-                } else {
-                    console.log("**** Registros migrados :" + totalMigrados + ", Registros totales: " + size + " ****");
-                    console.log("**** No se han migrado todos los registros" + " ****");
-                }
-                console.log("#############");
+                totalMigrados = await this.service.countsNew();
+                this.printMessage(name,size,totalMigrados);
             }
         } catch (e) {
-            console.log("--- Se ha producido un error en el registro " + pointer);
-            console.log("--- Detalle de error", e.message);
-            console.log("--- Eliminando progreso...");
+            this.printErrorMessage(e, pointer);
             await this.service.down();
+            process.exit();
         } finally {
-            console.log("#############################################");
-            console.log("##########  Finalizado - Proceso : " + name);
-            console.log("#############################################");
+            this.printFinish(name);
         }
+    }
+
+    private printMessage(name, size, totalMigrados){
+        console.log("**** -- Result " + name + " --- ****");
+        if(totalMigrados === size){
+            console.log("**** Se ha migrado satisfactoriamente los registros - total: ", totalMigrados + " ****");
+        } else {
+            console.log("**** Registros migrados :" + totalMigrados + ", Registros totales: " + size + " ****");
+            console.log("**** No se han migrado todos los registros" + " ****");
+        }
+        console.log("#############");
+    }
+
+    private printErrorMessage(e, pointer){
+        console.log("--- Se ha producido un error en el registro " + pointer);
+        console.log("--- Detalle de error", e.message);
+        console.log("--- Eliminando progreso...");
+    }
+
+    private printFinish(name){
+        console.log("#############################################");
+        console.log("##########  Finalizado - Proceso : " + name);
+        console.log("#############################################");
     }
 
 }

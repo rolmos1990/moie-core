@@ -10,59 +10,38 @@ import {IsDate, IsEmail, Length, IsBoolean} from "class-validator";
 import { Type } from 'class-transformer';
 import {Municipality} from "./Municipality";
 import {State} from "./State";
-import {NewDatabaseName} from "../common/persistence";
+import {OriginalDatabaseName} from "../common/persistence";
 
-@Entity({database: NewDatabaseName, name: 'Client', orderBy: {id: 'DESC'}})
+@Entity({database: OriginalDatabaseName, name: 'cliente', orderBy: {id: 'DESC'}})
 export class Client extends BaseModel{
     @PrimaryGeneratedColumn('increment')
     id: number;
 
-    @Column({type: 'varchar', length: 100})
-    @Length(3, 100, {groups: ['create','update']})
+    @Column({name: 'nombre', type: 'varchar', length: 40})
+    @Length(3, 40, {groups: ['create','update']})
     name: string;
 
-    @Column({type: 'varchar', length: 300, nullable: true})
+    @Column({name:'email', type: 'varchar', length: 300, nullable: true})
     @Length(0, 300, {groups: ['create','update']})
     @IsEmail()
     email: string | null;
 
-    @Column({type: 'varchar', length: 30})
+    @Column({name:'telefono_habitacion', type: 'varchar', length: 30})
     @Length(3, 30, {groups: ['create','update']})
     phone: string;
 
-    @Column({type: 'varchar', length: 45})
+    @Column({name:'telefono_movil', type: 'varchar', length: 45})
     @Length(3, 45, {groups: ['create','update']})
     cellphone: string;
 
-    @Column({type: 'boolean'})
-    @IsBoolean({groups: ['create','update']})
-    isMayorist: boolean;
-
-    @Column({type: 'boolean'})
-    @IsBoolean( {groups: ['create']})
-    hasNotification: boolean;
-
-    @ManyToOne(() => State)
-    @JoinColumn({name:'state_id'})
-    state: State;
-
     @ManyToOne(() => Municipality, { nullable: true })
-    @JoinColumn({ name:'municipality_id' })
+    @JoinColumn({ name:'id_municipio' })
     municipality: Municipality | null;
 
-    @Column({type: 'boolean'})
-    @IsBoolean({groups: ['create','update']})
-    status: boolean;
-
-    @CreateDateColumn({name:'created_at'})
+    @CreateDateColumn({name:'fecha_registro'})
     @Type(() => Date)
     @IsDate()
     createdAt: Date;
-
-    @UpdateDateColumn({name:'updated_at', nullable: true})
-    @Type(() => Date)
-    @IsDate()
-    updatedAt: Date;
 
     equals(obj: any) {
         if(obj instanceof Client === false){

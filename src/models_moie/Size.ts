@@ -3,7 +3,7 @@ import BaseModel from "../common/repositories/base.model";
 import {Length} from "class-validator";
 import {OriginalDatabaseName} from "../common/persistence";
 
-@Entity({database: OriginalDatabaseName, name: 'Size', orderBy: {id: 'ASC'}})
+@Entity({database: OriginalDatabaseName, name: 'talla', orderBy: {id: 'ASC'}})
 export class Size extends BaseModel{
 
     @PrimaryGeneratedColumn('increment')

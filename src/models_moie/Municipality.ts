@@ -1,12 +1,14 @@
 import {
     Column,
-    Entity, JoinColumn, ManyToOne,
+    Entity, JoinColumn, ManyToOne, OneToOne,
     PrimaryGeneratedColumn,
 } from "typeorm";
 import BaseModel from "../common/repositories/base.model";
 import {Length} from "class-validator";
 import {State} from "./State";
 import {OriginalDatabaseName} from "../common/persistence";
+import {Product as ProductWeb} from "../models_web/Product";
+import {Municipality as MunicipalityNew} from "../models/Municipality";
 
 @Entity({database: OriginalDatabaseName, name: 'municipio', orderBy: {id: 'ASC'}})
 export class Municipality extends BaseModel{
@@ -24,6 +26,10 @@ export class Municipality extends BaseModel{
     @ManyToOne(() => State, state => state.municipalities)
     @JoinColumn({name:'id_estado'})
     state: State;
+
+    @OneToOne(() => MunicipalityNew)
+    @JoinColumn({name: "id"})
+    municipalityNew: MunicipalityNew;
 
     equals(obj: any) {
         if(obj instanceof Municipality === false){

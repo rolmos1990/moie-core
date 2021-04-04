@@ -1,11 +1,12 @@
 import {
     Column,
-    Entity, JoinColumn, ManyToOne,
+    Entity, JoinColumn, ManyToOne, OneToOne,
     PrimaryGeneratedColumn,
 } from "typeorm";
 import BaseModel from "../common/repositories/base.model";
 import {IsBoolean, IsDecimal, IsInt, Length} from "class-validator";
 import {State} from "./State";
+import {Municipality as MunicipalityOriginal} from "../models_moie/Municipality";
 import {NewDatabaseName} from "../common/persistence";
 
 @Entity({database: NewDatabaseName, name: 'Municipality', orderBy: {id: 'ASC'}})

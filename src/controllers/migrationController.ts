@@ -3,12 +3,24 @@ import {MigrationManager} from "../common/migrationUtility/migrationManager";
 import {GET, POST, route} from "awilix-express";
 import {Request, Response} from "express";
 import {ProductService} from "../services/product.service";
+import {SizeService} from "../services/size.service";
+import {ProductSizeService} from "../services/productSize.service";
+import {DeliveryLocalityService} from "../services/deliveryLocality.service";
+import {StateService} from "../services/state.service";
+import {MunicipalityService} from "../services/municipality.service";
+import {ClientService} from "../services/client.service";
 
 @route('/migration')
 export class MigrationController {
     constructor(
         private readonly categoryService: CategoryService,
-        private readonly productService: ProductService
+        private readonly productService: ProductService,
+        private readonly sizeService: SizeService,
+        private readonly productSizeService: ProductSizeService,
+        private readonly deliveryLocalityService: DeliveryLocalityService,
+        private readonly stateService: StateService,
+        private readonly municipalityService: MunicipalityService,
+        private readonly clientService: ClientService
     ){
     };
     @GET()
@@ -30,9 +42,39 @@ export class MigrationController {
         await migrationManagerCategory.run();
 
         console.log("########################");
-        console.log("2. Migrando Productos");
+        console.log("2. Migrando Tallas");
+        const migrationManagerSize = new MigrationManager(this.sizeService);
+        await migrationManagerSize.run();
+
+        console.log("########################");
+        console.log("3. Migrando Productos");
         const migrationManagerProduct = new MigrationManager(this.productService);
         await migrationManagerProduct.run();
+
+        console.log("########################");
+        console.log("4. Migrando Existencia (ProductSize)");
+        const migrationManagerProductSize = new MigrationManager(this.productSizeService);
+        await migrationManagerProductSize.run();
+
+        console.log("########################");
+        console.log("5. Migrando Localidades (Envios)");
+        const migrationManagerDeliveryLocality = new MigrationManager(this.deliveryLocalityService);
+        await migrationManagerDeliveryLocality.run();
+
+        console.log("########################");
+        console.log("6. Migrando States (Estados)");
+        const migrationManagerState = new MigrationManager(this.stateService);
+        await migrationManagerState.run();
+
+        console.log("########################");
+        console.log("7. Migrando Municipios (Municipios)");
+        const migrationMunicipality = new MigrationManager(this.municipalityService);
+        await migrationMunicipality.run();
+
+        console.log("########################");
+        console.log("8. Migrando Clientes");
+        const migrationClient = new MigrationManager(this.clientService);
+        await migrationClient.run();
 
         return;
     }

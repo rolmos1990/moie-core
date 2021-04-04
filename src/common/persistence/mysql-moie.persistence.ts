@@ -2,16 +2,18 @@ import { ConnectionOptions } from "typeorm";
 
 export default <ConnectionOptions> {
     type: "mysql",
-    host: "localhost",
-    port: 8889,
-    username: "root",
-    password: "root",
+    host: process.env.DB_HOST || "localhost",
+    port: parseInt(process.env.DB_PORT!) || 3306,
+    username: process.env.DB_USERNAME || "root",
+    password: process.env.DB_PASSWORD || "Panama2018.",
     database: "moie-lucy-backup",
     supportBigNumbers: true,
     bigNumberStrings: false,
     synchronize: false,
     logging: false,
     entities: [
-        `${__dirname}/../../models_moie/**/*`
+        `${__dirname}/../../models/**/*`,
+        `${__dirname}/../../models_moie/**/*`,
+        `${__dirname}/../../models_web/**/*`,
     ]
 }

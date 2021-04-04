@@ -4,7 +4,6 @@ import {Category as CategoryNew} from "../models/Category";
 import {Product as ProductWeb} from "../models_web/Product";
 import {Product as ProductOriginal} from "../models_moie/Product";
 import {getRepository} from "typeorm";
-import {Category} from "../models/Category";
 
 interface CategoryI {
     id: number,

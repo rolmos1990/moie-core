@@ -3,7 +3,7 @@ import {
     CreateDateColumn,
     Entity, JoinColumn,
     ManyToOne,
-    OneToMany,
+    OneToMany, OneToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn
 } from "typeorm";
@@ -15,6 +15,7 @@ import {Size} from "./Size";
 import {Category} from "./Category";
 import {ProductImage} from "./ProductImage";
 import {NewDatabaseName} from "../common/persistence";
+import {ProductWithNew} from "../models_moie/ProductWithNew";
 
 @Entity({database: NewDatabaseName, name: 'Product', orderBy: {id: 'ASC'}})
 export class Product extends BaseModel{
@@ -22,8 +23,7 @@ export class Product extends BaseModel{
     @PrimaryGeneratedColumn('increment')
     id: number;
 
-    @Column({name:'reference', type: 'varchar', length: 100, unique: true})
-    @Length(3, 255, {groups: ['create','update']})
+    @Column({name:'reference', type: 'varchar', length: 20, unique: true})
     reference: string;
 
     @Column({name:'name', type: 'varchar', length: 255})
@@ -91,6 +91,10 @@ export class Product extends BaseModel{
     @Column({type: 'boolean'})
     @IsBoolean({groups: ['create','update']})
     status: boolean;
+
+    @OneToOne(() => ProductWithNew, productOriginal => productOriginal.productNew)
+    @JoinColumn({name: "reference", referencedColumnName: "id"})
+    product: ProductWithNew;
 
     isEmpty(): boolean {
         return (this.id == null);

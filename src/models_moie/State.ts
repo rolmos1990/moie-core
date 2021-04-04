@@ -1,20 +1,21 @@
 import {
     Column,
-    Entity, OneToMany, PrimaryColumn,
+    Entity, JoinColumn, OneToMany, OneToOne, PrimaryColumn,
     PrimaryGeneratedColumn,
 } from "typeorm";
 import BaseModel from "../common/repositories/base.model";
-import {IsBoolean, IsDecimal, IsInt, Length} from "class-validator";
+import {Length} from "class-validator";
 import {Municipality} from "./Municipality";
 import {OriginalDatabaseName} from "../common/persistence";
+import {State as StateNew} from "../models/State";
 
-@Entity({database: OriginalDatabaseName, name: 'State', orderBy: {id: 'ASC'}})
+@Entity({database: OriginalDatabaseName, name: 'estado', orderBy: {id: 'ASC'}})
 export class State extends BaseModel{
     @PrimaryColumn({name:'id', type: 'varchar', length: 255})
     @Length(3, 255, {groups: ['create','update']})
     id: string;
 
-    @Column({name:'dian_code', type: 'varchar', length: 10})
+    @Column({name:'codigo_dian', type: 'varchar', length: 10})
     @Length(3, 10, {groups: ['create','update']})
     dianCode: string;
 
@@ -24,6 +25,10 @@ export class State extends BaseModel{
 
     @OneToMany(() => Municipality, municipality => municipality.state)
     municipalities: Municipality[];
+
+    @OneToOne(() => StateNew)
+    @JoinColumn({name: "id", referencedColumnName: "name"})
+    stateNew: StateNew;
 
     equals(obj: any) {
         if(obj instanceof State === false){

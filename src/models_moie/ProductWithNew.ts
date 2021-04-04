@@ -11,14 +11,13 @@ import {Type} from "class-transformer";
 import {Size} from "./Size";
 import {ProductSize} from "../models/ProductSize";
 import {OriginalDatabaseName} from "../common/persistence";
-import {Product as ProductWeb} from '../models_web/Product';
 import {Product as ProductNew} from '../models/Product';
 
 /**
- * Producto Moie - Relacionado con el Producto Web (Categorias e Imagenes).
+ * Product Versión Moie - Relacionado con los productos nuevos.
  */
 @Entity({database: OriginalDatabaseName, name: 'producto', orderBy: {id: 'ASC'}})
-export class Product extends BaseModel{
+export class ProductWithNew extends BaseModel{
 
     @PrimaryColumn({name:'id', type: 'varchar', length: 20})
     id: string;
@@ -68,9 +67,9 @@ export class Product extends BaseModel{
     @OneToMany(() => ProductSize, productSize => productSize.product)
     productSize: ProductSize[];
 
-    @OneToOne(() => ProductWeb)
-    @JoinColumn({name: "id"})
-    productWeb: ProductWeb;
+    @OneToOne(() => ProductNew)
+    @JoinColumn({name: "id", referencedColumnName: "reference"})
+    productNew: ProductNew;
 
     isEmpty(): boolean {
         return (this.id == null);
