@@ -16,8 +16,13 @@ export class Client extends BaseModel{
     @PrimaryGeneratedColumn('increment')
     id: number;
 
-    @Column({type: 'varchar', length: 30})
-    @Length(3, 30, {groups: ['create','update']})
+    /** TODO -- se agrega documento en cliente */
+    @Column({type: 'varchar', length: 100})
+    @Length(3, 100, {groups: ['create','update']})
+    document: string;
+
+    @Column({type: 'varchar', length: 100})
+    @Length(3, 100, {groups: ['create','update']})
     name: string;
 
     @Column({type: 'varchar', length: 300, nullable: true})
@@ -31,7 +36,7 @@ export class Client extends BaseModel{
 
     @Column({type: 'varchar', length: 45})
     @Length(3, 45, {groups: ['create','update']})
-    celphone: string;
+    cellphone: string;
 
     @Column({type: 'boolean'})
     @IsBoolean({groups: ['create','update']})
