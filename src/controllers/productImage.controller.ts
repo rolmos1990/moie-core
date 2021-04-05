@@ -8,11 +8,13 @@ import {Request, Response} from "express";
 import {isArray} from "util";
 import {InvalidArgumentException} from "../common/exceptions";
 import {ProductImageCreate} from "../common/interfaces/Product";
+import {ProductService} from "../services/product.service";
 
 @route('/changeProductImage')
 export class ProductImageController extends BaseController<ProductImage> {
     constructor(
-        private readonly productImageService: ProductImageService
+        private readonly productImageService: ProductImageService,
+        private readonly productService: ProductService
     ){
         super(productImageService);
     };
@@ -32,15 +34,15 @@ export class ProductImageController extends BaseController<ProductImage> {
     @PUT()
     public async update(req: Request, res: Response) {
         try {
+            const id = req.params.id;
             const body = req.body;
-            if(!isArray(body)){
-                throw new InvalidArgumentException("No se ha podido procesar las imagenes");
+            const product = await this.productService.find(parseInt(id));
+
+            if(!product){
+                throw new InvalidArgumentException();
             }
-            const productImages : Array<ProductImageCreate> = [];
-            body.forEach(item => {
-                productImages.push(item);
-            });
-            const response = await this.productImageService.addProductImages('filename', productImages);
+            const filename = product.reference + "_" + body.group;
+            await this.productImageService.addProductImages(product, body.group, filename ,body.file);
             return res.json({status: 200});
         }catch(e){
             this.handleException(e, res);

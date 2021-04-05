@@ -9,4 +9,8 @@ export class ProductImageRepository<T> extends BaseRepository<ProductImage>{
         super();
         this.repositoryManager = getRepository(ProductImage);
     }
+
+    async findByGroupAndProduct(product, group){
+        return await this.findByObject({ product, group });
+    }
 }

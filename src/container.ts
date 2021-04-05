@@ -23,6 +23,7 @@ import {ProductImageRepository} from "./repositories/productImage.repository";
 import {ProductImageService} from "./services/productImage.service";
 import {RunSeed} from "./seeds/run.seed";
 import {app} from "./app";
+import {MediaManagementService} from "./services/mediaManagement.service";
 
 export default (app: express.Application): void => {
     const container = createContainer({
@@ -64,6 +65,7 @@ export default (app: express.Application): void => {
         categoryService: asClass(CategoryService).scoped(),
         productSizeService: asClass(ProductSizeService).scoped(),
         productImageService: asClass(ProductImageService).scoped(),
+        mediaManagementService: asClass(MediaManagementService).scoped(),
     });
 
     app.use(scopePerRequest(container));
