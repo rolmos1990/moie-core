@@ -80,7 +80,7 @@ export class Product extends BaseModel{
 
     @ManyToOne(() => Size)
     @JoinColumn({name: 'size_id'})
-    size: number;
+    size: Size;
 
     @OneToMany(() => ProductSize, productSize => productSize.product)
     productSize: ProductSize[];

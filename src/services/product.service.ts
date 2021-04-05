@@ -5,6 +5,7 @@ import {Product as ProductWeb} from "../models_web/Product";
 import {Product as ProductOriginal} from "../models_moie/Product";
 import {getRepository} from "typeorm";
 import {ProductImage, SIZES} from "../models/ProductImage";
+import {Size} from "../models_moie/Size";
 
 interface CategoryI {
     id: number,
@@ -31,7 +32,7 @@ interface ProductMixedI {
     cost: number,
     weight: number,
     tags: string,
-    size: number,
+    size: Size,
     createdAt: Date,
     productWeb: ProductWebI,
     category: CategoryI
@@ -59,6 +60,8 @@ export class ProductService extends BaseService<Product> {
 
         const query = this.originalRepository.createQueryBuilder("p")
             .leftJoinAndSelect("p.productWeb", "productWeb")
+            .leftJoinAndSelect("p.size", "size")
+            .leftJoinAndSelect("size.sizeNew", "sizeNew")
             .leftJoinAndSelect("productWeb.category", "cat")
             .leftJoinAndSelect("cat.categoryNew", "catnew")
             .orderBy("p.id", "DESC")
@@ -75,7 +78,9 @@ export class ProductService extends BaseService<Product> {
             product.provider = item.brand;
             product.cost = item.cost;
             product.price = item.price;
-            product.size = item.size;
+            if(item.size) {
+                product.size = item.size.sizeNew;
+            }
             product.createdAt = item.createdAt;
             product.updatedAt = item.createdAt;
             product.material = item.material;
