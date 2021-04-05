@@ -9,7 +9,7 @@ export class MigrationManager {
     constructor(service: BaseService<any>){
         this.service = service;
     }
-    async run() {
+    async run(monitor = true) {
         let pointer = 0;
         const name = this.service.processName();
         try {
@@ -26,7 +26,7 @@ export class MigrationManager {
                 console.log("--- Iniciando migración desde 1 hasta " + size + " - " + name);
                 await this.service.up(this.limitPerBatch, 0);
                 totalMigrados = await this.service.countsNew();
-                this.printMessage(name,size,totalMigrados);
+                this.printMessage(name,size,totalMigrados, monitor);
 
             } else {
                 for (let i = 0; i < size; i = i + this.limitPerBatch) {
@@ -35,24 +35,29 @@ export class MigrationManager {
                     await this.service.up(this.limitPerBatch, i);
                 }
                 totalMigrados = await this.service.countsNew();
-                this.printMessage(name,size,totalMigrados);
+                this.printMessage(name,size,totalMigrados, monitor);
             }
         } catch (e) {
             this.printErrorMessage(e, pointer);
             await this.service.down();
-            process.exit();
+            process.exit(20);
         } finally {
             this.printFinish(name);
         }
     }
 
-    private printMessage(name, size, totalMigrados){
+    private printMessage(name, size, totalMigrados, monitor){
         console.log("**** -- Result " + name + " --- ****");
         if(totalMigrados === size){
             console.log("**** Se ha migrado satisfactoriamente los registros - total: ", totalMigrados + " ****");
         } else {
             console.log("**** Registros migrados :" + totalMigrados + ", Registros totales: " + size + " ****");
-            console.log("**** No se han migrado todos los registros" + " ****");
+            if(monitor) {
+                console.log("**** No se han migrado todos los registros" + " ****");
+                process.exit();
+            } else {
+                console.log("**********");
+            }
         }
         console.log("#############");
     }
