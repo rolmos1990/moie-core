@@ -46,6 +46,6 @@ export class ClientController extends BaseController<Client> {
     }
 
     protected getDefaultRelations(): Array<string> {
-        return ['municipality', 'state'];
+        return ['municipality', 'state', 'temporalAddress'];
     }
 }

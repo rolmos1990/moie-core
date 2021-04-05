@@ -1,7 +1,7 @@
 import {
     Column,
     CreateDateColumn,
-    Entity, JoinColumn, ManyToOne,
+    Entity, JoinColumn, ManyToOne, OneToMany, OneToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn
 } from "typeorm";
@@ -10,6 +10,7 @@ import {IsDate, IsEmail, Length, IsBoolean} from "class-validator";
 import { Type } from 'class-transformer';
 import {Municipality} from "./Municipality";
 import {State} from "./State";
+import {TemporalAddress} from "./TemporalAddress";
 
 @Entity({name: 'Client', orderBy: {id: 'DESC'}})
 export class Client extends BaseModel{
@@ -54,6 +55,9 @@ export class Client extends BaseModel{
     @JoinColumn({ name:'municipality_id' })
     municipality: Municipality | null;
 
+    @OneToMany(() => TemporalAddress, municipality => municipality.state)
+    municipalities: Municipality[];
+
     @Column({type: 'boolean'})
     @IsBoolean({groups: ['create','update']})
     status: boolean;
@@ -62,6 +66,9 @@ export class Client extends BaseModel{
     @Type(() => Date)
     @IsDate()
     createdAt: Date;
+
+    @OneToMany(() => TemporalAddress, temporalAddress => temporalAddress.customer)
+    temporalAddress: TemporalAddress[];
 
     @UpdateDateColumn({name:'updated_at', nullable: true})
     @Type(() => Date)

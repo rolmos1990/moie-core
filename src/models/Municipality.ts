@@ -20,7 +20,7 @@ export class Municipality extends BaseModel{
     @Length(3, 10, {groups: ['create','update']})
     dianCode: string;
 
-    @ManyToOne(() => State, state => state.municipalities)
+    @ManyToOne(() => State, state => state.municipalities, { onDelete: 'CASCADE' })
     @JoinColumn({name:'state_id'})
     state: State;
 
