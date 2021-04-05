@@ -41,8 +41,14 @@ export class ProductImageController extends BaseController<ProductImage> {
             if(!product){
                 throw new InvalidArgumentException();
             }
-            const filename = product.reference + "_" + body.group;
-            await this.productImageService.addProductImages(product, body.group, filename ,body.file);
+
+            const result = body.map(async item => {
+                const filename = product.reference + "_" + item.group;
+                await this.productImageService.addProductImages(product, item.group, filename ,item.file);
+            });
+
+            await Promise.all(result);
+
             return res.json({status: 200});
         }catch(e){
             this.handleException(e, res);
