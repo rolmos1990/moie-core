@@ -1,20 +1,15 @@
-import {POST, route} from "awilix-express";
+import {route} from "awilix-express";
 import {BaseController} from "../common/controllers/base.controller";
 import {EntityTarget} from "typeorm";
 import {ProductSize} from "../models/ProductSize";
 import {ProductSizeService} from "../services/productSize.service";
-import {Request, Response} from "express";
 import {ProductService} from "../services/product.service";
-import {Product} from "../models/Product";
-import {ApplicationException, InvalidArgumentException} from "../common/exceptions";
-import {isEmpty} from "../common/helper/helpers";
-import {IProductSize} from "../common/interfaces/IProductSize";
+import {ProductSizeCreateDTO, ProductSizeListDTO, ProductSizeUpdateDTO} from "./parsers/productSize";
 
 @route('/productSize')
 export class ProductSizeController extends BaseController<ProductSize> {
     constructor(
-        private readonly productSizeService: ProductSizeService,
-        private readonly productService: ProductService
+        private readonly productSizeService: ProductSizeService
     ){
         super(productSizeService);
     };
@@ -32,27 +27,27 @@ export class ProductSizeController extends BaseController<ProductSize> {
     }
 
     protected getDefaultRelations(): Array<string> {
-        return undefined;
+        return ['product'];
     }
 
     getEntityTarget(): EntityTarget<ProductSize> {
-        return undefined;
+        return ProductSize;
     }
 
     getInstance(): Object {
-        return undefined;
+        return new ProductSize;
     }
 
     getParseGET(entity: ProductSize): Object {
-        return undefined;
+        return ProductSizeListDTO(entity);
     }
 
     getParsePOST(entity: ProductSize): Object {
-        return undefined;
+        return ProductSizeCreateDTO(entity);
     }
 
     getParsePUT(entity: ProductSize): Object {
-        return undefined;
+        return ProductSizeUpdateDTO(entity);;
     }
 
 }
