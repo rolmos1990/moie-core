@@ -28,7 +28,7 @@ export class RunSeed {
     constructor(
     ) {
         //States
-        console.log("STARTING MIGRATION...");
+/*        console.log("STARTING MIGRATION...");
 
         console.log("CREATING STATES...");
         const state = getRepository(State);
@@ -91,7 +91,7 @@ export class RunSeed {
         ClientSeed.map(async item => {
             const entity = convertToEntity(new Client(), item);
             await customer.save(entity);
-        });
+        });*/
 
         console.log("CREATING USERS...");
         //User
