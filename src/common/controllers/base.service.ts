@@ -30,7 +30,7 @@ export abstract class BaseService<Entity> implements IService {
         return this.baseRepository.delete(id);
     }
 
-    public async createOrUpdate(item: Object){
-        return this.baseRepository.save(item);
+    public async createOrUpdate(item: Object, options = {}){
+        return this.baseRepository.save(item, options);
     }
 }

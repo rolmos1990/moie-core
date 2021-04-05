@@ -21,3 +21,8 @@ export default <ConnectionOptions> {
         "src/subscriber/**/*.ts"
     ]
 }
+
+/**
+ * Chunk para guardar lote de archivos grandes
+ */
+export const LIMIT_SAVE_BATCH = 5000;

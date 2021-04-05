@@ -17,6 +17,7 @@ const GROUPS = {
 export abstract class BaseController<Parse> {
     constructor(
         private readonly service: IService,
+        private readonly serviceAux?: IService
     ){
     };
 
