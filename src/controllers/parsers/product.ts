@@ -12,6 +12,7 @@ export const ProductCreateDTO = (product: Product) => ({
     discount: product.discount || 0,
     weight: product.weight,
     size: product.size || null,
+    published: product.published,
     status: product.status,
     tags: product.tags || null,
 });
@@ -29,6 +30,7 @@ export const ProductUpdateDTO = (product: Product) => ({
     discount: product.discount || 0,
     weight: product.weight ? product.weight.toFixed(2) : 0,
     size: product.size || null,
+    published: product.published,
     status: product.status,
     tags: product.tags || null,
 });

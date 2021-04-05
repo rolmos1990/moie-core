@@ -1,4 +1,5 @@
 import {Client} from "../../models/Client";
+import {converterPhoneInColombianFormat} from "../../common/helper/converters";
 
 export const CustomerCreateDTO = (client: Client) => ({
     name: client.name,
@@ -20,8 +21,8 @@ export const CustomerListDTO = (client: Client) => ({
     name: client.name,
     email: client.email,
     document: client.document,
-    phone: client.phone,
-    cellphone: client.cellphone,
+    phone:converterPhoneInColombianFormat(client.phone),
+    cellphone: converterPhoneInColombianFormat(client.cellphone),
     isMayorist: client.isMayorist ? true : false,
     hasNotification: client.hasNotification ? true : false,
     status: client.status ? true : false,

@@ -70,7 +70,7 @@ export abstract class BaseController<Parse> {
                 relations = this.getDefaultRelations();
             }
             const item = await this.service.find(id, relations);
-            res.json(item);
+            res.json(this.getParseGET(item));
         }catch(e){
             this.handleException(e, res);
             console.log("error", e);
