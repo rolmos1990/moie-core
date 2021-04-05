@@ -95,6 +95,10 @@ export class Product extends BaseModel{
 
     @Column({type: 'boolean'})
     @IsBoolean({groups: ['create','update']})
+    published: boolean;
+
+    @Column({type: 'boolean'})
+    @IsBoolean({groups: ['create','update']})
     status: boolean;
 
     /** TEMPORAL - SOLO PARA CORRER MIGRACIÓN */

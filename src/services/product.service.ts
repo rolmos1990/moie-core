@@ -31,6 +31,7 @@ interface ProductMixedI {
     cost: number,
     weight: number,
     tags: string,
+    size: number,
     createdAt: Date,
     productWeb: ProductWebI,
     category: CategoryI
@@ -74,6 +75,7 @@ export class ProductService extends BaseService<Product> {
             product.provider = item.brand;
             product.cost = item.cost;
             product.price = item.price;
+            product.size = item.size;
             product.createdAt = item.createdAt;
             product.updatedAt = item.createdAt;
             product.material = item.material;
@@ -81,6 +83,7 @@ export class ProductService extends BaseService<Product> {
             product.reference = item.id;
             product.tags = item.tags;
             product.imagesQuantity = 0;
+            product.published = false;
 
             if(item.productWeb) {
                 const productWeb = item.productWeb;
@@ -90,6 +93,7 @@ export class ProductService extends BaseService<Product> {
                 product.discount = productWeb.discount;
                 product.description = productWeb.descripcion;
                 product.imagesQuantity = productWeb.imagenes;
+                product.published = true;
 
                 if(productWeb.category){
                     product.category = productWeb.category.categoryNew;
