@@ -5,3 +5,11 @@ export const converterPhoneInColombianFormat = (phone) => {
         return "+57" + phone;
     }
 }
+
+export const converterFirstArrayObject = (array) => {
+    if(Array.isArray(array)){
+        return array[0] || null;
+    } else {
+        return array;
+    }
+}

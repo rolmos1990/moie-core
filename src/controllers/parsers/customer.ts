@@ -1,5 +1,5 @@
 import {Client} from "../../models/Client";
-import {converterPhoneInColombianFormat} from "../../common/helper/converters";
+import {converterFirstArrayObject, converterPhoneInColombianFormat} from "../../common/helper/converters";
 
 export const CustomerCreateDTO = (client: Client) => ({
     name: client.name,
@@ -29,6 +29,7 @@ export const CustomerListDTO = (client: Client) => ({
     createdAt: client.createdAt,
     state: client.state || null,
     municipality: client.municipality || null,
+    temporalAddress: converterFirstArrayObject(client.temporalAddress),
     updatedAt: client.updatedAt
 });
 
