@@ -1,7 +1,7 @@
 import {
     Column,
     CreateDateColumn,
-    Entity, JoinColumn, ManyToOne,
+    Entity, JoinColumn, ManyToOne, OneToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn
 } from "typeorm";
@@ -11,11 +11,17 @@ import { Type } from 'class-transformer';
 import {Municipality} from "./Municipality";
 import {State} from "./State";
 import {OriginalDatabaseName} from "../common/persistence";
+import {Product as ProductWeb} from "../models_web/Product";
+import {Client as ClientNew} from "../models/Client";
 
-@Entity({database: OriginalDatabaseName, name: 'cliente', orderBy: {id: 'DESC'}})
+@Entity({database: OriginalDatabaseName, name: 'cliente', orderBy: {id: 'DESC'}, synchronize: false})
 export class Client extends BaseModel{
     @PrimaryGeneratedColumn('increment')
     id: number;
+
+    @Column({name: 'ci', type: 'varchar', length: 255})
+    @Length(3, 40, {groups: ['create','update']})
+    ci: string;
 
     @Column({name: 'nombre', type: 'varchar', length: 40})
     @Length(3, 40, {groups: ['create','update']})
@@ -34,6 +40,12 @@ export class Client extends BaseModel{
     @Length(3, 45, {groups: ['create','update']})
     cellphone: string;
 
+    @Column({name:'ciudad', type: 'varchar', length: 255})
+    city: string;
+
+    @Column({name:'estado', type: 'varchar', length: 255})
+    state: string;
+
     @ManyToOne(() => Municipality, { nullable: true })
     @JoinColumn({ name:'id_municipio' })
     municipality: Municipality | null;
@@ -42,6 +54,10 @@ export class Client extends BaseModel{
     @Type(() => Date)
     @IsDate()
     createdAt: Date;
+
+    @OneToOne(() => ClientNew)
+    @JoinColumn({name: "id"})
+    clientNew: ClientNew;
 
     equals(obj: any) {
         if(obj instanceof Client === false){

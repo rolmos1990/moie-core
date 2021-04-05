@@ -17,6 +17,11 @@ export class Client extends BaseModel{
     @PrimaryGeneratedColumn('increment')
     id: number;
 
+    /** TODO -- se agrega documento en cliente */
+    @Column({type: 'varchar', length: 100})
+    @Length(3, 100, {groups: ['create','update']})
+    document: string;
+
     @Column({type: 'varchar', length: 100})
     @Length(3, 100, {groups: ['create','update']})
     name: string;

@@ -17,7 +17,7 @@ import {Product as ProductNew} from '../models/Product';
 /**
  * Producto Moie - Relacionado con el Producto Web (Categorias e Imagenes).
  */
-@Entity({database: OriginalDatabaseName, name: 'producto', orderBy: {id: 'ASC'}})
+@Entity({database: OriginalDatabaseName, name: 'producto', orderBy: {id: 'ASC'}, synchronize: false})
 export class Product extends BaseModel{
 
     @PrimaryColumn({name:'id', type: 'varchar', length: 20})

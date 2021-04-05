@@ -16,7 +16,7 @@ import {Category as CategoryNew} from "../models/Category";
 import {OriginalDatabaseName, StoreDatabaseName} from "../common/persistence";
 import {Product as ProductOriginal} from "../models_moie/Product";
 
-@Entity({database: StoreDatabaseName, name: 'categoria', orderBy: {id: 'ASC'}})
+@Entity({database: StoreDatabaseName, name: 'categoria', orderBy: {id: 'ASC'}, synchronize: false})
 export class Category extends BaseModel{
     @PrimaryGeneratedColumn('increment')
     id: number;

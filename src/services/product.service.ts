@@ -4,6 +4,7 @@ import {Category as CategoryNew} from "../models/Category";
 import {Product as ProductWeb} from "../models_web/Product";
 import {Product as ProductOriginal} from "../models_moie/Product";
 import {getRepository} from "typeorm";
+import {ProductImage, SIZES} from "../models/ProductImage";
 
 interface CategoryI {
     id: number,
@@ -40,6 +41,7 @@ export class ProductService extends BaseService<Product> {
     private readonly newRepository;
     private readonly storeRepository;
     private readonly originalRepository;
+
     constructor(){
         super();
         this.newRepository = getRepository(Product);
@@ -78,6 +80,7 @@ export class ProductService extends BaseService<Product> {
             product.weight = item.weight;
             product.reference = item.id;
             product.tags = item.tags;
+            product.imagesQuantity = 0;
 
             if(item.productWeb) {
                 const productWeb = item.productWeb;
@@ -86,6 +89,7 @@ export class ProductService extends BaseService<Product> {
                  */
                 product.discount = productWeb.discount;
                 product.description = productWeb.descripcion;
+                product.imagesQuantity = productWeb.imagenes;
 
                 if(productWeb.category){
                     product.category = productWeb.category.categoryNew;
@@ -95,6 +99,7 @@ export class ProductService extends BaseService<Product> {
 
             product.status = true;
             products.push(product);
+
         });
         const saved = await this.newRepository.save(products, { chunk: limit });
         this.printResult(saved, items);

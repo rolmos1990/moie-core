@@ -13,6 +13,13 @@ import {NewDatabaseName} from "../common/persistence";
 /* THUMBS - */
 /* [{path: 'folder/file.asd', size: 400}, {path: 'folder/file.asd', size: 200}] */
 
+export const SIZES = {
+    SMALL: 67,
+    MEDIUM: 238,
+    HIGHT: 400,
+    ORIGINAL: 800
+};
+
 @Entity({database: NewDatabaseName, name: 'ProductImage', orderBy: {id: 'ASC'}})
 export class ProductImage extends BaseModel{
 

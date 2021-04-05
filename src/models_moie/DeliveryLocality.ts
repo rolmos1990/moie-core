@@ -7,7 +7,7 @@ import BaseModel from "../common/repositories/base.model";
 import {IsDecimal, IsInt, Length} from "class-validator";
 import {OriginalDatabaseName} from "../common/persistence";
 
-@Entity({database: OriginalDatabaseName, name: 'localidad', orderBy: {id: 'ASC'}})
+@Entity({database: OriginalDatabaseName, name: 'localidad', orderBy: {id: 'ASC'}, synchronize: false})
 export class DeliveryLocality extends BaseModel{
     @PrimaryGeneratedColumn('increment')
     id: number;

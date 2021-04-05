@@ -8,7 +8,7 @@ import {
     UpdateDateColumn
 } from "typeorm";
 import BaseModel from "../common/repositories/base.model";
-import {IsBoolean, IsDate, IsDecimal, IsOptional, Length, MaxLength} from "class-validator";
+import {IsBoolean, IsDate, IsDecimal, IsNumber, IsOptional, Length, MaxLength} from "class-validator";
 import {Type} from "class-transformer";
 import {ProductSize} from "./ProductSize";
 import {Size} from "./Size";
@@ -85,6 +85,11 @@ export class Product extends BaseModel{
     @OneToMany(() => ProductSize, productSize => productSize.product)
     productSize: ProductSize[];
 
+    /** TODO ADD - se agrega campo de imagenes */
+    @Column({type: 'integer'})
+    @IsNumber()
+    imagesQuantity: number;
+
     @OneToMany(() => ProductImage, productImage => productImage.product)
     productImage: ProductImage[];
 
@@ -92,6 +97,7 @@ export class Product extends BaseModel{
     @IsBoolean({groups: ['create','update']})
     status: boolean;
 
+    /** TEMPORAL - SOLO PARA CORRER MIGRACIÓN */
     @OneToOne(() => ProductWithNew, productOriginal => productOriginal.productNew)
     @JoinColumn({name: "reference", referencedColumnName: "id"})
     product: ProductWithNew;

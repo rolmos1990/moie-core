@@ -9,18 +9,22 @@ import {DeliveryLocalityService} from "../services/deliveryLocality.service";
 import {StateService} from "../services/state.service";
 import {MunicipalityService} from "../services/municipality.service";
 import {ClientService} from "../services/client.service";
+import {ProductImageService} from "../services/productImage.service";
+import {TemporalAddressService} from "../services/temporalAddress.service";
 
 @route('/migration')
 export class MigrationController {
     constructor(
         private readonly categoryService: CategoryService,
         private readonly productService: ProductService,
+        private readonly productImageService: ProductImageService,
         private readonly sizeService: SizeService,
         private readonly productSizeService: ProductSizeService,
         private readonly deliveryLocalityService: DeliveryLocalityService,
         private readonly stateService: StateService,
         private readonly municipalityService: MunicipalityService,
-        private readonly clientService: ClientService
+        private readonly clientService: ClientService,
+        private readonly temporalAddressService: TemporalAddressService
     ){
     };
     @GET()
@@ -57,6 +61,11 @@ export class MigrationController {
         await migrationManagerProductSize.run();
 
         console.log("########################");
+        console.log("3. Migrando Imagenes de Productos");
+        const migrationManagerImages = new MigrationManager(this.productImageService);
+        await migrationManagerImages.run(false);
+
+        console.log("########################");
         console.log("5. Migrando Localidades (Envios)");
         const migrationManagerDeliveryLocality = new MigrationManager(this.deliveryLocalityService);
         await migrationManagerDeliveryLocality.run();
@@ -75,6 +84,11 @@ export class MigrationController {
         console.log("8. Migrando Clientes");
         const migrationClient = new MigrationManager(this.clientService);
         await migrationClient.run();
+
+        console.log("########################");
+        console.log("8. Migrando Direcciones temporales Clientes");
+        const migrationTemporalAddress = new MigrationManager(this.temporalAddressService);
+        await migrationTemporalAddress.run();
 
         return;
     }

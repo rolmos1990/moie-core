@@ -9,6 +9,8 @@ import {DeliveryLocalityService} from "./services/deliveryLocality.service";
 import {StateService} from "./services/state.service";
 import {MunicipalityService} from "./services/municipality.service";
 import {ClientService} from "./services/client.service";
+import {ProductImageService} from "./services/productImage.service";
+import {TemporalAddressService} from "./services/temporalAddress.service";
 
 export default (app: express.Application): void => {
     const container = createContainer({
@@ -25,6 +27,8 @@ export default (app: express.Application): void => {
         stateService: asClass(StateService).scoped(),
         municipalityService: asClass(MunicipalityService).scoped(),
         clientService: asClass(ClientService).scoped(),
+        productImageService: asClass(ProductImageService).scoped(),
+        temporalAddressService: asClass(TemporalAddressService).scoped(),
 
     });
 

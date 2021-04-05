@@ -10,7 +10,7 @@ import {OriginalDatabaseName} from "../common/persistence";
 import {Product as ProductWeb} from "../models_web/Product";
 import {Municipality as MunicipalityNew} from "../models/Municipality";
 
-@Entity({database: OriginalDatabaseName, name: 'municipio', orderBy: {id: 'ASC'}})
+@Entity({database: OriginalDatabaseName, name: 'municipio', orderBy: {id: 'ASC'}, synchronize: false})
 export class Municipality extends BaseModel{
     @PrimaryGeneratedColumn('increment')
     id: number;

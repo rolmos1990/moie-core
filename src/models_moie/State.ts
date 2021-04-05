@@ -9,7 +9,7 @@ import {Municipality} from "./Municipality";
 import {OriginalDatabaseName} from "../common/persistence";
 import {State as StateNew} from "../models/State";
 
-@Entity({database: OriginalDatabaseName, name: 'estado', orderBy: {id: 'ASC'}})
+@Entity({database: OriginalDatabaseName, name: 'estado', orderBy: {id: 'ASC'}, synchronize: false})
 export class State extends BaseModel{
     @PrimaryColumn({name:'id', type: 'varchar', length: 255})
     @Length(3, 255, {groups: ['create','update']})

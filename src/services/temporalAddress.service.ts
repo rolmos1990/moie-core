@@ -5,7 +5,7 @@ import {Client as ClientOriginal} from "../models_moie/Client";
 import {Client} from "../models/Client";
 import {TemporalAddress} from "../models/TemporalAddress";
 
-export class ClientService extends BaseService<Category> {
+export class TemporalAddressService extends BaseService<Category> {
 
     private readonly newRepository;
     private readonly originalRepository;
@@ -27,36 +27,24 @@ export class ClientService extends BaseService<Category> {
 
         const query = this.originalRepository.createQueryBuilder("p")
             .leftJoinAndSelect("p.municipality", "municipality")
-            .leftJoinAndSelect("municipality.municipalityNew", "municipalityNew")
-            .leftJoinAndSelect("municipalityNew.state", "state")
+            .leftJoinAndSelect("p.clientNew", "clientNew")
+            .where("p.municipality IS NULL OR p.municipality = 0")
             .orderBy("p.id", "ASC")
             .skip(skip)
             .take(limit);
 
         const items : ClientOriginal[] = await query.getMany();
 
-        const itemSaved: Client[] = [];
-        const temporalAddressSaved: TemporalAddress[] = [];
+        const itemSaved: TemporalAddress[] = [];
 
         await items.forEach(item => {
-            const _item = new Client();
-            _item.id = item.id;
-            _item.document = item.ci;
-            _item.name = item.name;
-            _item.isMayorist = false;
-            _item.email = item.email;
-            _item.cellphone = item.cellphone;
-            _item.phone = item.phone;
-            _item.hasNotification = true;
-            if(item.municipality) {
-                _item.state = item.municipality.municipalityNew.state;
-                _item.municipality = item.municipality.municipalityNew;
-            }
-            _item.status = true;
-            itemSaved.push(_item);
+                const _item = new TemporalAddress();
+                _item.state = item.state;
+                _item.municipality = item.city;
+                _item.client = item.clientNew;
+                itemSaved.push(_item);
         });
-        const saved = await this.newRepository.save(itemSaved, { chunk: limit });
-
+        const saved = await this.newAddressRepository.save(itemSaved, { chunk: limit });
         this.printResult(saved, items);
     }
 
@@ -65,11 +53,8 @@ export class ClientService extends BaseService<Category> {
      */
     async down(){
         try {
-            await this.newRepository.query(`DELETE FROM Client`);
-            await this.newRepository.query(`ALTER TABLE Client AUTO_INCREMENT = 1`);
-
-            await this.newRepository.query(`DELETE FROM TemporalAddress`);
-            await this.newRepository.query(`ALTER TABLE TemporalAddress AUTO_INCREMENT = 1`);
+            await this.newAddressRepository.query(`DELETE FROM TemporalAddress`);
+            await this.newAddressRepository.query(`ALTER TABLE TemporalAddress AUTO_INCREMENT = 1`);
 
         }catch(e){
             this.printError();
@@ -81,6 +66,8 @@ export class ClientService extends BaseService<Category> {
      */
     async counts(){
         const {count} = await this.originalRepository.createQueryBuilder("p")
+            .leftJoinAndSelect("p.municipality", "municipality")
+            .where("p.municipality IS NULL OR p.municipality = 0")
             .select("COUNT(p.id)", "count").getRawOne();
         return count;
     }
@@ -95,6 +82,6 @@ export class ClientService extends BaseService<Category> {
     }
 
     processName() {
-        return ClientService.name
+        return TemporalAddressService.name
     }
 }

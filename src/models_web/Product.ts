@@ -12,7 +12,7 @@ import {Category} from "./Category";
 import {StoreDatabaseName} from "../common/persistence";
 import {Product as ProductOriginal} from '../models_moie/Product';
 
-@Entity({database: StoreDatabaseName, name: 'producto', orderBy: {id: 'ASC'}})
+@Entity({database: StoreDatabaseName, name: 'producto', orderBy: {id: 'ASC'}, synchronize: false})
 export class Product extends BaseModel{
 
     @PrimaryColumn({name:'codigo', type: 'varchar', length: 255})
