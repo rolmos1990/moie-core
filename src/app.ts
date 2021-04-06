@@ -35,6 +35,7 @@ const app: express.Application = express();
 //use cors middleware
 app.use(cors(options));
 app.use(express.json({limit: '50mb'}));
+app.use(express.static('public'))
 
 // JSON Support
 app.use(express.json());

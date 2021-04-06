@@ -6,6 +6,7 @@ import ResizeImg = require("resize-img");
 
 const CONFIG_MEDIA = {
     IMAGE_PATH: './uploads',
+    STORAGE_PATH: './public/uploads',
     RESOLUTIONS: [67,238,400,800]
 };
 
@@ -31,7 +32,7 @@ export class MediaManagementService extends UtilService {
         const mediaConfig = {
             67: 'SMALL',
             238: 'MEDIUM',
-            400: 'HIGHT',
+            400: 'HIGH',
             800: 'ORIGINAL'
         };
 
@@ -39,7 +40,7 @@ export class MediaManagementService extends UtilService {
             ORIGINAL: filePath,
             SMALL: null,
             MEDIUM: null,
-            HIGHT: null,
+            HIGH: null,
             FILENAME: fileName
         };
 
@@ -71,7 +72,7 @@ export class MediaManagementService extends UtilService {
         const ext = extension(file.type);
         const fileName =  `${name}.${ext}`;
         const imageBuffer = file.data;
-        const filePath = CONFIG_MEDIA.IMAGE_PATH + "/" + folder + fileName;
+        const filePath = CONFIG_MEDIA.STORAGE_PATH + "/" + folder + fileName;
         writeFileSync(filePath, imageBuffer, 'utf8');
 
         const fileSaved = readFileSync(filePath);
@@ -82,7 +83,7 @@ export class MediaManagementService extends UtilService {
                 width: item,
             });
             const fileResizedName =  `${name}_${item}.${ext}`;
-            const filename_resized = CONFIG_MEDIA.IMAGE_PATH + folder + "/" + fileResizedName;
+            const filename_resized = CONFIG_MEDIA.STORAGE_PATH + folder + "/" + fileResizedName;
             thumbs.push({ filename_resized, buffer: resized });
         });
 

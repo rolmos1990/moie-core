@@ -33,7 +33,7 @@ export class ProductImageService extends BaseService<Product> {
                 const thumbs = {
                     small: allPaths.SMALL,
                     medium: allPaths.MEDIUM,
-                    high: allPaths.HIGHT
+                    high: allPaths.HIGH
                 };
 
                 productImage.product = product;
