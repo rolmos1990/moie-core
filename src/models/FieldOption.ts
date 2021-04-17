@@ -9,7 +9,7 @@ export class FieldOption extends BaseModel{
     @PrimaryGeneratedColumn('increment')
     id: number;
 
-    @Column({name:'group', type: 'varchar', length: 100, unique: true})
+    @Column({name:'field', type: 'varchar', length: 100, unique: true})
     @Length(3, 255, {groups: ['create','update']})
     group: string;
 

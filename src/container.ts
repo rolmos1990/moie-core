@@ -24,6 +24,8 @@ import {ProductImageService} from "./services/productImage.service";
 import {RunSeed} from "./seeds/run.seed";
 import {app} from "./app";
 import {MediaManagementService} from "./services/mediaManagement.service";
+import {FieldOptionService} from "./services/fieldOption.service";
+import {FieldOptionRepository} from "./repositories/fieldOption.repository";
 
 export default (app: express.Application): void => {
     const container = createContainer({
@@ -51,6 +53,7 @@ export default (app: express.Application): void => {
         stateRepository: asClass(StateRepository).scoped(),
         sizeRepository: asClass(SizeRepository).scoped(),
         productRepository: asClass(ProductRepository).scoped(),
+        fieldOptionRepository: asClass(FieldOptionRepository).scoped(),
         categoryRepository: asClass(CategoryRepository).scoped(),
         productSizeRepository: asClass(ProductSizeRepository).scoped(),
         productImageRepository: asClass(ProductImageRepository).scoped(),
@@ -62,6 +65,7 @@ export default (app: express.Application): void => {
         stateService: asClass(StateService).scoped(),
         sizeService: asClass(SizeService).scoped(),
         productService: asClass(ProductService).scoped(),
+        fieldOptionService: asClass(FieldOptionService).scoped(),
         categoryService: asClass(CategoryService).scoped(),
         productSizeService: asClass(ProductSizeService).scoped(),
         productImageService: asClass(ProductImageService).scoped(),
