@@ -109,11 +109,8 @@ export abstract class BaseController<Parse> {
         try {
             const oldEntity = await this.service.find(req.params.id);
             if(oldEntity) {
-                console.log("REQUEST BODY", req.body);
                 let entity = await this.parseObject(oldEntity, req.body);
-                console.log("NEW SAVE", entity);
                 entity = this.getParsePUT(entity);
-                console.log("ENTITY SAVED", entity);
                 this.beforeUpdate(entity);
 
                 const errors = await this.validateEntity(entity, [GROUPS.PUT]);

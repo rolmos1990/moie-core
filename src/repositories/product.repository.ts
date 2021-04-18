@@ -30,13 +30,9 @@ export class ProductRepository<T> extends BaseRepository<Product>{
 
         if(product){
             const reference = product.reference;
-            console.log("REFERENCE", reference);
             const sequence = parseInt(reference.replace(referenceKey, "").toString());
-            console.log("SEQUENCE", sequence);
             const nextSequence = sequence + 1;
-            console.log("NEXT SEQUENCE", nextSequence);
             nextReference = referenceKey + nextSequence;
-            console.log("NEXT REFRENCE", nextReference);
         }
         return nextReference;
     }

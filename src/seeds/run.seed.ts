@@ -93,7 +93,6 @@ export class RunSeed {
             await customer.save(entity);
         });*/
 
-        console.log("CREATING USERS...");
         //User
         const user = getRepository(User);
         UserSeed.map(async item => {
