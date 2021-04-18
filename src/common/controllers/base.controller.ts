@@ -41,10 +41,11 @@ export abstract class BaseController<Parse> {
             const queryCondition = ConditionalQuery.ConvertIntoConditionalParams(conditional);
             const operationQuery = new OperationQuery(operation, group);
             let page = new PageQuery(limit,pageNumber,queryCondition, operationQuery);
+            const countRegisters = await this.service.count(page);
+
             if(this.getDefaultRelations()){
                 page.setRelations(this.getDefaultRelations());
             }
-            const countRegisters = await this.service.count(page);
             let items: Array<Object> = await this.service.all(page);
 
             if(items && items.length > 0){

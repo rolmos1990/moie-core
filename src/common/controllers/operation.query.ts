@@ -35,9 +35,9 @@ export class OperationQuery {
             result = operationSplit.map(item => {
                 try {
                     const opValue = item.split("::");
-                    if(this.validOperators.includes(opValue[0].toUpperCase())){
-                        const operator = opValue[0];
-                        const field = opValue[1];
+                    if(this.validOperators.includes(opValue[1].toUpperCase())){
+                        const operator = opValue[1];
+                        const field = opValue[0];
                         return operator.toUpperCase() + "("+field+")" + ' AS ' + field;
                     } else {
                         throw new InvalidArgumentException("Operador Invalido");
