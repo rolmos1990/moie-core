@@ -78,20 +78,20 @@ export class Product extends BaseModel{
 
     @ManyToOne(() => Size)
     @JoinColumn({name: 'size_id'})
-    size: number;
+    size: Size;
 
     @OneToMany(() => ProductSize, productSize => productSize.product)
     productSize: ProductSize[];
 
     /** TODO ADD - se agrega campo de imagenes */
-    @Column({type: 'integer'})
+    @Column({type: 'integer', default: 0})
     @IsNumber()
     imagesQuantity: number;
 
     @OneToMany(() => ProductImage, productImage => productImage.product)
     productImage: ProductImage[];
 
-    @Column({type: 'boolean'})
+    @Column({type: 'boolean', default: 0})
     @IsBoolean({groups: ['create','update']})
     published: boolean;
 

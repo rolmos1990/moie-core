@@ -9,15 +9,15 @@ export class FieldOption extends BaseModel{
     @PrimaryGeneratedColumn('increment')
     id: number;
 
-    @Column({name:'field', type: 'varchar', length: 100, unique: true})
+    @Column({name:'group', type: 'varchar', length: 100})
     @Length(3, 255, {groups: ['create','update']})
     group: string;
 
-    @Column({name:'name', type: 'varchar', length: 100, unique: true})
+    @Column({name:'name', type: 'varchar', length: 100})
     @Length(3, 255, {groups: ['create','update']})
     name: string;
 
-    @Column({name:'value', type: 'varchar', length: 100, unique: true})
+    @Column({name:'value', type: 'varchar', length: 600})
     @Length(3, 255, {groups: ['create','update']})
     value: string;
 

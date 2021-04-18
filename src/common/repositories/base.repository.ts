@@ -65,7 +65,7 @@ export default abstract class BaseRepository<T> {
     }
 
     async save(entity: T){
-        await this.repositoryManager.save(entity);
+        return await this.repositoryManager.save(entity);
     }
 
     async delete(id: T){

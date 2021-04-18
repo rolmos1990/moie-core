@@ -91,12 +91,12 @@ export abstract class BaseController<Parse> {
                     throw new InvalidArgumentException(errorMessage);
             }
 
-            this.beforeCreate(entity);
-            console.log("ENTITY TO SAVE", entity);
+            await this.beforeCreate(entity);
             const response = await this.service.createOrUpdate(entity);
-            this.afterCreate(response);
-
-            return res.json({status: 200});
+            await this.afterCreate(response);
+            const newEntity = await this.service.find(response.id, this.getDefaultRelations() || []);
+            const name = this.getEntityTarget()['name'];
+            return res.json({status: 200, [name.toString().toLowerCase()]: newEntity});
         }catch(e){
             this.handleException(e, res);
             console.log("error", e);

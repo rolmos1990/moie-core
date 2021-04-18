@@ -18,13 +18,15 @@ export class ProductController extends BaseController<Product> {
         super(productService, productSizeService);
     };
 
-    protected afterCreate(item: Object): void {
+    protected async afterCreate(item: Object): Promise<any> {
     }
 
     protected afterUpdate(item: Object): void {
     }
 
-    protected beforeCreate(item: Object): void {
+    protected async beforeCreate(item: Product): Promise<any> {
+        const newReference = await this.productService.getReference(item.size.id);
+        item.reference = newReference;
     }
 
     protected beforeUpdate(item: Object): void {
