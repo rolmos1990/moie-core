@@ -13,10 +13,9 @@ export class ProductService extends BaseService<Product> {
         super(productRepository);
     }
 
-    public async getReference(size: number){
+    public async getReference(referenceKey: string){
         try {
-            const sizeObj = await this.sizeRepository.find(size);
-            return this.productRepository.getNextReferenceCode(sizeObj);
+            return this.productRepository.getNextReferenceCode(referenceKey);
         }catch(e){
             throw new InvalidArgumentException();
         }

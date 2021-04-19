@@ -7,10 +7,10 @@ state1.id = 1;
 const municipality1 = new Municipality();
 municipality1.id = 1;
 
-export const ClientSeed = [
+export const CustomerSeed = [
     {
-        name: "Test Client",
-        email: "test1_client@gmail.com",
+        name: "Test Customer",
+        email: "test1_customer@gmail.com",
         phone: "+647899221",
         celphone: "+67829111",
         isMayorist: true,
@@ -20,8 +20,8 @@ export const ClientSeed = [
         municipality: municipality1
     },
     {
-        name: "Test Client2",
-        email: "test1_client2@gmail.com",
+        name: "Test Customer2",
+        email: "test1_customer@gmail.com",
         phone: "+647899221",
         celphone: "+67829111",
         isMayorist: true,
@@ -31,8 +31,8 @@ export const ClientSeed = [
         municipality: municipality1
     },
     {
-        name: "Test Client3",
-        email: "test1_client3@gmail.com",
+        name: "Test Customer3",
+        email: "test1_customer3@gmail.com",
         phone: "+647899221",
         celphone: "+67829111",
         isMayorist: false,
@@ -42,8 +42,8 @@ export const ClientSeed = [
         municipality: municipality1
     },
     {
-        name: "Test Client4",
-        email: "test1_client4@gmail.com",
+        name: "Test Customer4",
+        email: "test1_customer4@gmail.com",
         phone: "+647899222",
         celphone: "+67829112",
         isMayorist: false,
@@ -53,8 +53,8 @@ export const ClientSeed = [
         municipality: municipality1
     },
     {
-        name: "Test Client5",
-        email: "test1_client5@gmail.com",
+        name: "Test Customer5",
+        email: "test1_customer5@gmail.com",
         phone: "+647899222",
         celphone: "+67829112",
         isMayorist: false,
@@ -64,8 +64,8 @@ export const ClientSeed = [
         municipality: municipality1
     },
     {
-        name: "Test Client6",
-        email: "test1_client6@gmail.com",
+        name: "Test Customer6",
+        email: "test1_customer6@gmail.com",
         phone: "+647899222",
         celphone: "+67829112",
         isMayorist: false,
@@ -75,8 +75,8 @@ export const ClientSeed = [
         municipality: municipality1
     },
     {
-        name: "Test Client7",
-        email: "test1_client7@gmail.com",
+        name: "Test Customer7",
+        email: "test1_customer7@gmail.com",
         phone: "+647899222",
         celphone: "+67829112",
         isMayorist: true,
@@ -86,8 +86,8 @@ export const ClientSeed = [
         municipality: municipality1
     },
     {
-        name: "Test Client8",
-        email: "test1_client8@gmail.com",
+        name: "Test Customer8",
+        email: "test1_customer8@gmail.com",
         phone: "+647899222",
         celphone: "+67829112",
         isMayorist: false,
@@ -97,8 +97,8 @@ export const ClientSeed = [
         municipality: municipality1
     },
     {
-        name: "Test Client9",
-        email: "test1_client9@gmail.com",
+        name: "Test Customer9",
+        email: "test1_customer9@gmail.com",
         phone: "+647899222",
         celphone: "+67829112",
         isMayorist: false,
@@ -107,8 +107,8 @@ export const ClientSeed = [
         state: state1,
         municipality: municipality1
     },    {
-        name: "Test Client10",
-        email: "test1_client10@gmail.com",
+        name: "Test Customer10",
+        email: "test1_customer10@gmail.com",
         phone: "+647899222",
         celphone: "+67829112",
         isMayorist: false,
@@ -118,8 +118,8 @@ export const ClientSeed = [
         municipality: municipality1
     },
     {
-        name: "Test Client11",
-        email: "test1_client11@gmail.com",
+        name: "Test Customer11",
+        email: "test1_customer11@gmail.com",
         phone: "+647899222",
         celphone: "+67829112",
         isMayorist: false,
@@ -129,8 +129,8 @@ export const ClientSeed = [
         municipality: municipality1
     },
     {
-        name: "Test Client12",
-        email: "test1_client12@gmail.com",
+        name: "Test Customer12",
+        email: "test1_customer12@gmail.com",
         phone: "+647899222",
         celphone: "+67829112",
         isMayorist: false,
@@ -140,8 +140,8 @@ export const ClientSeed = [
         municipality: municipality1
     },
     {
-        name: "Test Client13",
-        email: "test1_client13@gmail.com",
+        name: "Test Customer13",
+        email: "test1_customer13@gmail.com",
         phone: "+647899222",
         celphone: "+67829112",
         isMayorist: false,
@@ -152,8 +152,8 @@ export const ClientSeed = [
         municipality: municipality1
     },
     {
-        name: "Test Client14",
-        email: "test1_client14@gmail.com",
+        name: "Test Customer14",
+        email: "test1_customer14@gmail.com",
         phone: "+647899222",
         celphone: "+67829112",
         isMayorist: false,
@@ -163,8 +163,8 @@ export const ClientSeed = [
         municipality: municipality1
     },
     {
-        name: "Test Client15",
-        email: "test1_client15@gmail.com",
+        name: "Test Customer15",
+        email: "test1_customer15@gmail.com",
         phone: "+647899222",
         celphone: "+67829112",
         isMayorist: false,
@@ -174,8 +174,8 @@ export const ClientSeed = [
         municipality: municipality1
     },
     {
-        name: "Test Client16",
-        email: "test1_client16@gmail.com",
+        name: "Test Customer16",
+        email: "test1_customer16@gmail.com",
         phone: "+647899222",
         celphone: "+67829112",
         isMayorist: false,
@@ -185,8 +185,8 @@ export const ClientSeed = [
         municipality: municipality1
     },
     {
-        name: "Test Client17",
-        email: "test1_client17@gmail.com",
+        name: "Test Customer17",
+        email: "test1_customer17@gmail.com",
         phone: "+647899222",
         celphone: "+67829112",
         isMayorist: false,
@@ -196,8 +196,8 @@ export const ClientSeed = [
         municipality: municipality1
     },
     {
-        name: "Test Client18",
-        email: "test1_client18@gmail.com",
+        name: "Test Customer18",
+        email: "test1_customer18@gmail.com",
         phone: "+647899222",
         celphone: "+67829112",
         isMayorist: false,
@@ -207,8 +207,8 @@ export const ClientSeed = [
         municipality: municipality1
     },
     {
-        name: "Test Client19",
-        email: "test1_client19@gmail.com",
+        name: "Test Customer19",
+        email: "test1_customer19@gmail.com",
         phone: "+647899222",
         celphone: "+67829112",
         isMayorist: false,
@@ -218,8 +218,8 @@ export const ClientSeed = [
         municipality: municipality1
     },
     {
-        name: "Test Client20",
-        email: "test1_client20@gmail.com",
+        name: "Test Customer20",
+        email: "test1_customer20@gmail.com",
         phone: "+647899222",
         celphone: "+67829112",
         isMayorist: false,

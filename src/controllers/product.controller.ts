@@ -25,8 +25,11 @@ export class ProductController extends BaseController<Product> {
     }
 
     protected async beforeCreate(item: Product): Promise<any> {
-        const newReference = await this.productService.getReference(item.size.id);
-        item.reference = newReference;
+        if(!item.referenceKey){
+            throw new InvalidArgumentException("El indicador de referencia es requerido");
+        }
+        const newReference = await this.productService.getReference(item.referenceKey);
+        item['reference'] = newReference;
     }
 
     protected beforeUpdate(item: Object): void {

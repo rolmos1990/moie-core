@@ -1,17 +1,17 @@
 import {BaseController} from "../common/controllers/base.controller";
-import {Client} from "../models/Client";
+import {Customer} from "../models/Customer";
 import {EntityTarget} from "typeorm";
-import {ClientService} from "../services/client.service";
+import {CustomerService} from "../services/customer.service";
 import {route} from "awilix-express";
 import {CustomerCreateDTO, CustomerListDTO, CustomerUpdateDTO} from "./parsers/customer";
 import { PageQuery } from "../common/controllers/page.query";
 
 @route('/customer')
-export class ClientController extends BaseController<Client> {
+export class CustomerController extends BaseController<Customer> {
     constructor(
-        private readonly clientService: ClientService
+        private readonly customerService: CustomerService
     ){
-        super(clientService);
+        super(customerService);
     };
     protected afterCreate(item: Object): void {
     }
@@ -25,23 +25,23 @@ export class ClientController extends BaseController<Client> {
     protected beforeUpdate(item: Object): void {
     }
 
-    getEntityTarget(): EntityTarget<Client> {
-        return Client;
+    getEntityTarget(): EntityTarget<Customer> {
+        return Customer;
     }
 
     getInstance(): Object {
-        return new Client();
+        return new Customer();
     }
 
-    getParseGET(entity: Client): Object {
+    getParseGET(entity: Customer): Object {
         return CustomerListDTO(entity);
     }
 
-    getParsePOST(entity: Client): Object {
+    getParsePOST(entity: Customer): Object {
         return CustomerCreateDTO(entity);
     }
 
-    getParsePUT(entity: Client): Object {
+    getParsePUT(entity: Customer): Object {
         return CustomerUpdateDTO(entity);
     }
 

@@ -3,11 +3,11 @@ import {createContainer, asClass} from "awilix";
 import { scopePerRequest } from "awilix-express";
 import { UserService } from "./services/user.service";
 import {UserRepository} from './repositories/user.repository';
-import {ClientService} from "./services/client.service";
+import {CustomerService} from "./services/customer.service";
 import {DeliveryLocalityService} from "./services/deliveryLocality.service";
 import {MunicipalityService} from "./services/municipality.service";
 import {StateService} from "./services/state.service";
-import {ClientRepository} from "./repositories/client.repository";
+import {CustomerRepository} from "./repositories/customer.repository";
 import {MunicipalityRepository} from "./repositories/municipality.repository";
 import {StateRepository} from "./repositories/state.repository";
 import {DeliveryLocalityRepository} from "./repositories/deliveryLocality.repository";
@@ -47,7 +47,7 @@ export default (app: express.Application): void => {
     container.register({
         // repositories
         userRepository: asClass(UserRepository).scoped(),
-        clientRepository: asClass(ClientRepository).scoped(),
+        customerRepository: asClass(CustomerRepository).scoped(),
         deliveryLocalityRepository: asClass(DeliveryLocalityRepository).scoped(),
         municipalityRepository: asClass(MunicipalityRepository).scoped(),
         stateRepository: asClass(StateRepository).scoped(),
@@ -59,7 +59,7 @@ export default (app: express.Application): void => {
         productImageRepository: asClass(ProductImageRepository).scoped(),
         // services
         userService: asClass(UserService).scoped(),
-        clientService: asClass(ClientService).scoped(),
+        customerService: asClass(CustomerService).scoped(),
         deliveryLocalityService: asClass(DeliveryLocalityService).scoped(),
         municipalityService: asClass(MunicipalityService).scoped(),
         stateService: asClass(StateService).scoped(),

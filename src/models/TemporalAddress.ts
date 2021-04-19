@@ -5,7 +5,7 @@ import {
 } from "typeorm";
 import BaseModel from "../common/repositories/base.model";
 import {Length} from "class-validator";
-import {Client} from "./Client";
+import {Customer} from "./Customer";
 import {State} from "./State";
 
 @Entity({name: 'TemporalAddress', orderBy: {id: 'DESC'}})
@@ -21,9 +21,9 @@ export class TemporalAddress extends BaseModel {
     @Length(0, 255, {groups: ['create', 'update']})
     municipality: string;
 
-    @ManyToOne(() => Client, client => client.temporalAddress)
-    @JoinColumn({name:'client_id'})
-    customer: Client;
+    @ManyToOne(() => Customer, customer => customer.temporalAddress)
+    @JoinColumn({name:'customer_id'})
+    customer: Customer;
 
     isEmpty() : boolean{
         return (this.id == null);

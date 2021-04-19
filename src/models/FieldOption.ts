@@ -4,6 +4,7 @@ import {Length} from "class-validator";
 
 /* replaza opcion */
 /* Tags para diferentes objetos, puede ser usado como un atributo adicional */
+
 @Entity({name: 'FieldOption', orderBy: {id: 'ASC'}})
 export class FieldOption extends BaseModel{
     @PrimaryGeneratedColumn('increment')

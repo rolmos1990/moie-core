@@ -12,12 +12,12 @@ import {Municipality} from "./Municipality";
 import {State} from "./State";
 import {TemporalAddress} from "./TemporalAddress";
 
-@Entity({name: 'Client', orderBy: {id: 'DESC'}})
-export class Client extends BaseModel{
+@Entity({name: 'Customer', orderBy: {id: 'DESC'}})
+export class Customer extends BaseModel{
     @PrimaryGeneratedColumn('increment')
     id: number;
 
-    /** TODO -- se agrega documento en cliente */
+    /** TODO -- se agrega documento en customer */
     @Column({type: 'varchar', length: 100})
     @Length(3, 100, {groups: ['create','update']})
     document: string;
@@ -76,7 +76,7 @@ export class Client extends BaseModel{
     updatedAt: Date;
 
     equals(obj: any) {
-        if(obj instanceof Client === false){
+        if(obj instanceof Customer === false){
             return false;
         }
         if(obj.id === this.id){
@@ -86,7 +86,7 @@ export class Client extends BaseModel{
     }
 
     toString(){
-        return Client.toString();
+        return Customer.toString();
     }
 
     isEmpty(){

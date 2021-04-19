@@ -1,48 +1,48 @@
-import {Client} from "../../models/Client";
+import {Customer} from "../../models/Customer";
 import {converterFirstArrayObject, converterPhoneInColombianFormat} from "../../common/helper/converters";
 
-export const CustomerCreateDTO = (client: Client) => ({
-    name: client.name,
-    email: client.email,
-    phone: client.phone,
-    document: client.document,
-    cellphone: client.cellphone,
+export const CustomerCreateDTO = (customer: Customer) => ({
+    name: customer.name,
+    email: customer.email,
+    phone: customer.phone,
+    document: customer.document,
+    cellphone: customer.cellphone,
     isMayorist: false,
-    hasNotification: client.hasNotification ? true : false,
+    hasNotification: customer.hasNotification ? true : false,
     status: true,
     createdAt: new Date(),
-    municipality: client.municipality || null,
-    state: client.state || null,
+    municipality: customer.municipality || null,
+    state: customer.state || null,
     updatedAt: null
 });
 
-export const CustomerListDTO = (client: Client) => ({
-    id: client.id,
-    name: client.name,
-    email: client.email,
-    document: client.document,
-    phone:converterPhoneInColombianFormat(client.phone),
-    cellphone: converterPhoneInColombianFormat(client.cellphone),
-    isMayorist: client.isMayorist ? true : false,
-    hasNotification: client.hasNotification ? true : false,
-    status: client.status ? true : false,
-    createdAt: client.createdAt,
-    state: client.state || null,
-    municipality: client.municipality || null,
-    temporalAddress: converterFirstArrayObject(client.temporalAddress),
-    updatedAt: client.updatedAt
+export const CustomerListDTO = (customer: Customer) => ({
+    id: customer.id,
+    name: customer.name,
+    email: customer.email,
+    document: customer.document,
+    phone:converterPhoneInColombianFormat(customer.phone),
+    cellphone: converterPhoneInColombianFormat(customer.cellphone),
+    isMayorist: customer.isMayorist ? true : false,
+    hasNotification: customer.hasNotification ? true : false,
+    status: customer.status ? true : false,
+    createdAt: customer.createdAt,
+    state: customer.state || null,
+    municipality: customer.municipality || null,
+    temporalAddress: converterFirstArrayObject(customer.temporalAddress),
+    updatedAt: customer.updatedAt
 });
 
-export const CustomerUpdateDTO = (client: Client) => ({
-    id: client.id,
-    name: client.name,
-    email: client.email,
-    document: client.document,
-    phone: client.phone,
-    cellphone: client.cellphone,
-    hasNotification: client.hasNotification,
-    status: client.status,
-    municipality: client.municipality || null,
-    state: client.state || null,
+export const CustomerUpdateDTO = (customer: Customer) => ({
+    id: customer.id,
+    name: customer.name,
+    email: customer.email,
+    document: customer.document,
+    phone: customer.phone,
+    cellphone: customer.cellphone,
+    hasNotification: customer.hasNotification,
+    status: customer.status,
+    municipality: customer.municipality || null,
+    state: customer.state || null,
     updatedAt: new Date(),
 });

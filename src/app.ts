@@ -64,7 +64,7 @@ createConnection(MySQLPersistence).then(async connection => {
         { cwd: __dirname }
     ));
     if(process.env.SEED_DB) {
-        //new RunSeed();
+        new RunSeed();
     }
 });
 

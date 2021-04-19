@@ -11,10 +11,11 @@ export const ProductCreateDTO = (product: Product) => ({
     cost: product.cost,
     discount: product.discount || 0,
     weight: product.weight,
-    size: product.size || null,
+    size: product.size,
     published: product.published,
     status: product.status,
     tags: product.tags || null,
+    referenceKey: product.referenceKey
 });
 
 export const ProductUpdateDTO = (product: Product) => ({
