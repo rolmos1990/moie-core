@@ -5,7 +5,7 @@ import {Type} from "class-transformer";
 import {Municipality} from "./Municipality";
 import {Product} from "./Product";
 
-@Entity({name: 'Category', orderBy: {id: 'ASC'}})
+@Entity({name: 'Category', orderBy: {id: 'DESC'}})
 export class Category extends BaseModel{
     @PrimaryGeneratedColumn('increment')
     id: number;

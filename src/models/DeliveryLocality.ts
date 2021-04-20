@@ -6,7 +6,7 @@ import {
 import BaseModel from "../common/repositories/base.model";
 import {IsBoolean, IsDecimal, IsInt, Length} from "class-validator";
 
-@Entity({name: 'DeliveryLocality', orderBy: {id: 'ASC'}})
+@Entity({name: 'DeliveryLocality', orderBy: {id: 'DESC'}})
 export class DeliveryLocality extends BaseModel{
     @PrimaryGeneratedColumn('increment')
     id: number;

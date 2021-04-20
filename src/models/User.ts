@@ -9,7 +9,7 @@ import BaseModel from "../common/repositories/base.model";
 import {IsDate, IsEmail, Length, IsBoolean, IsDateString} from "class-validator";
 import { Type } from 'class-transformer';
 
-@Entity({name: 'User', orderBy: {id: 'ASC'}})
+@Entity({name: 'User', orderBy: {id: 'DESC'}})
 export class User extends BaseModel{
     @PrimaryGeneratedColumn('increment')
     id: number;

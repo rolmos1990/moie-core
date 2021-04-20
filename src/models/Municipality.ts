@@ -7,7 +7,7 @@ import BaseModel from "../common/repositories/base.model";
 import {IsBoolean, IsDecimal, IsInt, Length} from "class-validator";
 import {State} from "./State";
 
-@Entity({name: 'Municipality', orderBy: {id: 'ASC'}})
+@Entity({name: 'Municipality', orderBy: {id: 'DESC'}})
 export class Municipality extends BaseModel{
     @PrimaryGeneratedColumn('increment')
     id: number;

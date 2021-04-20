@@ -3,7 +3,7 @@ import BaseModel from "../common/repositories/base.model";
 import {IsNumber, Length} from "class-validator";
 
 //Equivalente a (talla)
-@Entity({name: 'Size', orderBy: {id: 'ASC'}})
+@Entity({name: 'Size', orderBy: {id: 'DESC'}})
 export class Size extends BaseModel{
 
     @PrimaryGeneratedColumn('increment')

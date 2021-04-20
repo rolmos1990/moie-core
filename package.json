@@ -7,7 +7,7 @@
       "start": "ts-node src/server.ts",
       "test": "echo \"Error: no test specified\" && exit 1",
       "typeorm": "NODE_ENV=env ts-node ./node_modules/typeorm/cli.js",
-      "typeorm:migrate": "npm run typeorm migration:generate -- -n updateProductAndSize --config src/common/persistence/mysql.persistence.ts --dir src/migration",
+      "typeorm:migrate": "npm run typeorm migration:generate -- -n addDeliveriesAndOrders --config src/common/persistence/mysql.persistence.ts --dir src/migration",
       "typeorm:run": "NODE_ENV=env npm run typeorm migration:run",
       "typeorm:revert": "NODE_ENV=env npm run typeorm migration:revert",
       "seed:generate": "ts-node typeorm migration:generate -c seed -n ",
