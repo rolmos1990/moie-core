@@ -8,4 +8,12 @@ export class FieldOptionService extends BaseService<FieldOption> {
     ){
         super(fieldOptionRepository);
     }
+
+    async findByName(name) : Promise<FieldOption>{
+        return await this.fieldOptionRepository.findByObject({ name: name})[0];
+    }
+    async findByGroup(group): Promise<FieldOption[]>{
+        return await this.fieldOptionRepository.findByObject({ group: group});
+    }
 }
+

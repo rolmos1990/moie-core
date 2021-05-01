@@ -14,14 +14,6 @@ export class Size extends BaseModel{
     @Length(3, 100, {groups: ['create','update']})
     name: string;
 
-    @Column({name:'reference_key', type: 'varchar', length: 4})
-    @Length(1, 4, {groups: ['create','update']})
-    referenceKey: string;
-
-    @Column({name:'start_from', type: 'integer', nullable: true})
-    @IsNumber()
-    startFrom: number;
-
     @Column("simple-array")
     sizes: string[];
 

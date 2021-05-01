@@ -35,3 +35,8 @@ export const ProductUpdateDTO = (product: Product) => ({
     status: product.status,
     tags: product.tags || null,
 });
+
+export const ProductQuoteDTO = (products) => products.map(product => ({
+    id: product.id,
+    qty: product.qty
+}));

@@ -26,6 +26,8 @@ import {app} from "./app";
 import {MediaManagementService} from "./services/mediaManagement.service";
 import {FieldOptionService} from "./services/fieldOption.service";
 import {FieldOptionRepository} from "./repositories/fieldOption.repository";
+import {DeliveryMethodService} from "./services/deliveryMethod.service";
+import {DeliveryMethodRepository} from "./repositories/deliveryMethod.repository";
 
 export default (app: express.Application): void => {
     const container = createContainer({
@@ -57,6 +59,7 @@ export default (app: express.Application): void => {
         categoryRepository: asClass(CategoryRepository).scoped(),
         productSizeRepository: asClass(ProductSizeRepository).scoped(),
         productImageRepository: asClass(ProductImageRepository).scoped(),
+        deliveryMethodRepository: asClass(DeliveryMethodRepository).scoped(),
         // services
         userService: asClass(UserService).scoped(),
         customerService: asClass(CustomerService).scoped(),
@@ -70,6 +73,7 @@ export default (app: express.Application): void => {
         productSizeService: asClass(ProductSizeService).scoped(),
         productImageService: asClass(ProductImageService).scoped(),
         mediaManagementService: asClass(MediaManagementService).scoped(),
+        deliveryMethodService: asClass(DeliveryMethodService).scoped(),
     });
 
     app.use(scopePerRequest(container));
