@@ -41,17 +41,17 @@ export class OrderDetail extends BaseModel{
     @JoinColumn({name: 'order_id'})
     order: Order;
 
-    @Column({name:'delivery_method_id', type: 'varchar', length: 255})
+    @Column({name:'product', type: 'varchar', length: 255})
     @Length(3, 255, {groups: ['create','update']})
     product: string;
 
-    @Column({name:'delivery_cost', type: 'varchar', length: 800, nullable: true})
+    @Column({name:'color', type: 'varchar', length: 800, nullable: true})
     @MaxLength(800, {groups: ['create','update']})
     color: string;
 
-    @Column({name:'charge_on_delivery', type: 'boolean'})
+    @Column({name:'size', type: 'numeric'})
     @IsBoolean({groups: ['create','update']})
-    size: boolean;
+    size: number;
 
     @Column({name:'origen', type: 'varchar', length: 150})
     @Length(3, 150, {groups: ['create','update']})

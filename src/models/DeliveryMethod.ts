@@ -8,6 +8,12 @@ import {IsBoolean, IsDate, IsEnum, Length} from "class-validator";
 import {Type} from "class-transformer";
 import {DeliveryTypes} from "../common/enum/deliveryTypes";
 
+export enum DeliveryEnum {
+    PREVIOUS_PAYMENT = DeliveryTypes.PREVIOUS_PAYMENT,
+    PAY_ONLY_DELIVERY = DeliveryTypes.PAY_ONLY_DELIVERY,
+    CHARGE_ON_DELIVERY = DeliveryTypes.CHARGE_ON_DELIVERY
+}
+
 export type DeliveryTypes = DeliveryTypes.PREVIOUS_PAYMENT | DeliveryTypes.PAY_ONLY_DELIVERY | DeliveryTypes.CHARGE_ON_DELIVERY;
 
 @Entity({name: 'DeliveryMethod', orderBy: {id: 'DESC'}})
@@ -23,13 +29,9 @@ export class DeliveryMethod extends BaseModel{
     @Length(3, 255, {groups: ['create','update']})
     name: string;
 
-    @Column({ type: "enum",  enum: [
-            DeliveryTypes.PREVIOUS_PAYMENT,
-            DeliveryTypes.PAY_ONLY_DELIVERY,
-            DeliveryTypes.CHARGE_ON_DELIVERY],
-            default: DeliveryTypes.PREVIOUS_PAYMENT
+    @Column({ type: 'set',  enum: DeliveryEnum,
+            default: [DeliveryTypes.PREVIOUS_PAYMENT]
     })
-    @IsEnum(DeliveryTypes)
     settings: DeliveryTypes[];
 
     @Column({type: 'boolean'})

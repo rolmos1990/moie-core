@@ -23,3 +23,10 @@ export const ProductSizeUpdateDTO = (productSize: ProductSize) => ({
     quantity: productSize.quantity,
     product: productSize.product
 });
+
+export const ProductOrderCreate = (product: any) => ({
+    discountPercentage: product.discountPercentage,
+    id: product.id,
+    productSize: product.size,
+    quantity: product.quantity
+});
