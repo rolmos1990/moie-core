@@ -1,8 +1,6 @@
 import {BaseController} from "../common/controllers/base.controller";
-import {Size} from "../models/Size";
 import {route} from "awilix-express";
 import {EntityTarget} from "typeorm";
-import {SizeService} from "../services/size.service";
 import {FieldOption} from "../models/FieldOption";
 import {FieldOptionService} from "../services/fieldOption.service";
 
