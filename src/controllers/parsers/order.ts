@@ -48,8 +48,9 @@ export class Order {
         this.deliveryCost = props.deliveryCost;
         this.deliveryMethod = props.deliveryMethod;
         this.origen = props.origen;
-        this.pieces = props.pieces;
         this.products = props.products;
+        this.piecesForChanges = props.piecesForChanges;
+        this.paymentMode = props.paymentMode;
 
         this.chargeOnDelivery = this.hasChargeOnDelivery(props);
     }
@@ -61,6 +62,14 @@ export class Order {
 
     @IsNumber()
     customer: number;
+
+    @IsNumber()
+    @IsOptional()
+    piecesForChanges: number;
+
+    @IsNumber()
+    @IsOptional()
+    paymentMode: number;
 
     @IsBoolean()
     chargeOnDelivery: boolean;
@@ -78,9 +87,6 @@ export class Order {
 
     @IsString()
     origen: string;
-
-    @IsNumber()
-    pieces: number
 
     products: OrderProduct[]
 }
@@ -120,6 +126,8 @@ export const OrderShowDTO = (order: OrderModel) => ({
     totalWeight: order.totalWeight,
     tracking: order.tracking,
     remember: order.remember,
+    piecesForChanges: order.piecesForChanges,
+    paymentMode: order.paymentMode,
     deliveryType: order.deliveryType,
     expiredDate: order.expiredDate,
     createdAt: order.createdAt,

@@ -86,6 +86,14 @@ export class Order extends BaseModel{
     @IsBoolean({groups: ['create','update']})
     remember: boolean;
 
+    @Column({name:'paymentMode', type: 'integer', nullable: true})
+    @IsBoolean({groups: ['create','update']})
+    paymentMode: number;
+
+    @Column({name:'pieces_for_changes', type: 'integer', nullable: true})
+    @IsBoolean({groups: ['create','update']})
+    piecesForChanges: number;
+
     @Column({name:'delivery_type', type: 'integer', nullable: true})
     @IsOptional()
     deliveryType : number;

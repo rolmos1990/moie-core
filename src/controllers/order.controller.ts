@@ -10,6 +10,7 @@ import {DeliveryMethod} from "../models/DeliveryMethod";
 import {DeliveryMethodService} from "../services/deliveryMethod.service";
 import {UserService} from "../services/user.service";
 import {OrderDetail} from "../models/OrderDetail";
+import {isPaymentMode, PaymentModes} from "../common/enum/paymentModes";
 
 @route('/order')
 export class OrderController extends BaseController<Order> {
@@ -83,11 +84,18 @@ export class OrderController extends BaseController<Order> {
     public async create(req: Request, res: Response) {
         try {
             const parse = await OrderCreateDTO(req.body);
+            console.log("parse", parse);
 
             const deliveryMethod: DeliveryMethod = await this.deliveryMethodService.findByCode(parse.deliveryMethod);
+
             if(!(deliveryMethod.settings.includes(parse.deliveryType.toString()))){
                 throw new InvalidArgumentException("El tipo de envio es invalido");
             }
+
+            if(![null, undefined].includes(parse.paymentMode) && !isPaymentMode(parse.paymentMode)){
+                throw new InvalidArgumentException("El modo de pago es invalido");
+            }
+
             const deliveryCost = await this.deliveryMethodService.deliveryMethodCost(deliveryMethod, parse.products);
 
             if(deliveryCost.cost > 0){
