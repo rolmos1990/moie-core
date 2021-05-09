@@ -1,11 +1,10 @@
 import {BaseService} from "../common/controllers/base.service";
-import {FieldOption} from "../models/FieldOption";
 import {DeliveryMethodRepository} from "../repositories/deliveryMethod.repository";
 import {DeliveryMethod} from "../models/DeliveryMethod";
 import {OrderProduct} from "../controllers/parsers/orderProduct";
 import {IDeliveryCost} from "../common/interfaces/IDeliveryCost";
 
-export class DeliveryMethodService extends BaseService<FieldOption> {
+export class DeliveryMethodService extends BaseService<DeliveryMethod> {
     constructor(
         private readonly deliveryMethodRepository: DeliveryMethodRepository<DeliveryMethod>
     ){

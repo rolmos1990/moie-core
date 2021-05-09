@@ -15,11 +15,11 @@ export class FieldOption extends BaseModel{
     group: string;
 
     @Column({name:'name', type: 'varchar', length: 100})
-    @Length(3, 255, {groups: ['create','update']})
+    @Length(1, 255, {groups: ['create','update']})
     name: string;
 
     @Column({name:'value', type: 'varchar', length: 600})
-    @Length(3, 255, {groups: ['create','update']})
+    @Length(1, 255, {groups: ['create','update']})
     value: string;
 
     isEmpty(): boolean {
