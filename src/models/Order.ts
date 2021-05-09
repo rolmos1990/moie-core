@@ -21,6 +21,9 @@ import {
 } from "class-validator";
 import {Type} from "class-transformer";
 import {Customer} from "./Customer";
+import {DeliveryMethod} from "./DeliveryMethod";
+import {ProductImage} from "./ProductImage";
+import {OrderDetail} from "./OrderDetail";
 
 /**
  * El isImpress -> o Impreso seria un Estatus más,
@@ -36,20 +39,21 @@ export class Order extends BaseModel{
     @JoinColumn({name: 'customer_id'})
     customer: Customer;
 
-    @Column({name:'delivery_method_id', type: 'varchar', length: 255})
-    @Length(3, 255, {groups: ['create','update']})
-    deliveryMethod: string;
+    @ManyToOne(() => DeliveryMethod)
+    @JoinColumn({name: 'delivery_method_id'})
+    deliveryMethod: DeliveryMethod;
 
-    @Column({name:'delivery_cost', type: 'varchar', length: 800, nullable: true})
-    @MaxLength(800, {groups: ['create','update']})
-    deliveryCost: string;
+    @Column({name:'delivery_cost', type: 'decimal'})
+    @IsDecimal({ decimal_digits: '2'}, {groups: ['create','update']})
+    deliveryCost: number;
 
     @Column({name:'charge_on_delivery', type: 'boolean'})
     @IsBoolean({groups: ['create','update']})
     chargeOnDelivery: boolean;
 
-    @Column({name:'origen', type: 'varchar', length: 150})
+    @Column({name:'origen', type: 'varchar', length: 150, nullable: true})
     @Length(3, 150, {groups: ['create','update']})
+    @IsOptional()
     origen: string;
 
     @Column({name:'total_amount', type: 'decimal'})
@@ -68,21 +72,23 @@ export class Order extends BaseModel{
     @IsDecimal({ decimal_digits: '2'}, {groups: ['create','update']})
     totalWeight: number;
 
-    @Column({name:'tracking', type: 'varchar', length: 200})
+    @Column({name:'tracking', type: 'varchar', length: 200, nullable: true})
     @Length(0,200, {groups: ['create','update']})
+    @IsOptional()
     tracking: string;
 
-    @Column({name:'remember', type: 'boolean'})
+    @Column({name:'remember', type: 'boolean', nullable: true})
     @IsBoolean({groups: ['create','update']})
     remember: boolean;
 
-    @Column({name:'delivery_type', type: 'boolean'})
-    @IsBoolean({groups: ['create','update']})
-    deliveryType : boolean;
+    @Column({name:'delivery_type', type: 'integer', nullable: true})
+    @IsOptional()
+    deliveryType : number;
 
-    @CreateDateColumn({name:'expired_date'})
+    @CreateDateColumn({name:'expired_date', nullable: true})
     @Type(() => Date)
     @IsDate()
+    @IsOptional()
     expiredDate: Date;
 
     @CreateDateColumn({name:'created_at'})
@@ -93,11 +99,15 @@ export class Order extends BaseModel{
     @UpdateDateColumn({name:'updated_at', nullable: true})
     @Type(() => Date)
     @IsDate()
+    @IsOptional()
     updatedAt: Date;
 
     @Column({name:'status', type: 'integer'})
     @IsNumber()
     status: number;
+
+    @OneToMany(() => OrderDetail, orderDetail => orderDetail.order)
+    orderDetails: OrderDetail[];
 
     isEmpty(): boolean {
         return (this.id == null);

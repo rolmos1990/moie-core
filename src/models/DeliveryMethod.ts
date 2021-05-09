@@ -9,9 +9,9 @@ import {Type} from "class-transformer";
 import {DeliveryTypes} from "../common/enum/deliveryTypes";
 
 export enum DeliveryEnum {
-    PREVIOUS_PAYMENT = DeliveryTypes.PREVIOUS_PAYMENT,
-    PAY_ONLY_DELIVERY = DeliveryTypes.PAY_ONLY_DELIVERY,
-    CHARGE_ON_DELIVERY = DeliveryTypes.CHARGE_ON_DELIVERY
+    PREVIOUS_PAYMENT = 1,
+    PAY_ONLY_DELIVERY = 2,
+    CHARGE_ON_DELIVERY = 3
 }
 
 export type DeliveryTypes = DeliveryTypes.PREVIOUS_PAYMENT | DeliveryTypes.PAY_ONLY_DELIVERY | DeliveryTypes.CHARGE_ON_DELIVERY;

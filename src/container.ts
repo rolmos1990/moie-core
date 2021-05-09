@@ -21,8 +21,6 @@ import {ProductSizeService} from "./services/productSize.service";
 import {ProductSizeRepository} from "./repositories/productSize.repository";
 import {ProductImageRepository} from "./repositories/productImage.repository";
 import {ProductImageService} from "./services/productImage.service";
-import {RunSeed} from "./seeds/run.seed";
-import {app} from "./app";
 import {MediaManagementService} from "./services/mediaManagement.service";
 import {FieldOptionService} from "./services/fieldOption.service";
 import {FieldOptionRepository} from "./repositories/fieldOption.repository";
@@ -36,18 +34,6 @@ export default (app: express.Application): void => {
     const container = createContainer({
         injectionMode: 'CLASSIC'
     });
-
-    //TODO -- cargar por lotes
-/*    container.loadModules(['services/!*.ts', 'repositories/!*.ts'], {
-        // we want `TodosService` to be registered as `todosService`.
-        formatName: 'camelCase',
-        resolverOptions: {
-            // We want instances to be scoped to the Koa request.
-            // We need to set that up.
-            lifetime: Lifetime.SCOPED
-        }
-    });*/
-
 
     container.register({
         // repositories

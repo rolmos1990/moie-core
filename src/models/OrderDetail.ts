@@ -26,6 +26,7 @@ import {Category} from "./Category";
 import {ProductImage} from "./ProductImage";
 import {Customer} from "./Customer";
 import {Order} from "./Order";
+import {Product} from "./Product";
 
 /**
  * El isImpress -> o Impreso seria un Estatus más,
@@ -41,21 +42,20 @@ export class OrderDetail extends BaseModel{
     @JoinColumn({name: 'order_id'})
     order: Order;
 
-    @Column({name:'product', type: 'varchar', length: 255})
-    @Length(3, 255, {groups: ['create','update']})
-    product: string;
+    @ManyToOne(() => Product)
+    @JoinColumn({name: 'product_id'})
+    product: Product;
 
     @Column({name:'color', type: 'varchar', length: 800, nullable: true})
     @MaxLength(800, {groups: ['create','update']})
     color: string;
 
-    @Column({name:'size', type: 'numeric'})
-    @IsBoolean({groups: ['create','update']})
+    @Column({name:'size', type: 'integer', nullable: true})
     size: number;
 
     @Column({name:'origen', type: 'varchar', length: 150})
-    @Length(3, 150, {groups: ['create','update']})
-    quantity: string;
+    @IsDecimal({ decimal_digits: '2'}, {groups: ['create','update']})
+    quantity: number;
 
     @Column({name:'price', type: 'decimal'})
     @IsDecimal({ decimal_digits: '2'}, {groups: ['create','update']})
@@ -68,6 +68,10 @@ export class OrderDetail extends BaseModel{
     @Column({name:'revenue', type: 'decimal', nullable: true, default: 0})
     @IsDecimal({ decimal_digits: '2'}, {groups: ['create','update']})
     revenue: number;
+
+    @Column({name:'weight', type: 'decimal', nullable: true, default: 0})
+    @IsDecimal({ decimal_digits: '2'}, {groups: ['create','update']})
+    weight: number;
 
     @Column({name:'discountPercent', type: 'decimal'})
     @IsDecimal({ decimal_digits: '2'}, {groups: ['create','update']})
