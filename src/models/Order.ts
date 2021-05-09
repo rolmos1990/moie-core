@@ -24,6 +24,7 @@ import {Customer} from "./Customer";
 import {DeliveryMethod} from "./DeliveryMethod";
 import {ProductImage} from "./ProductImage";
 import {OrderDetail} from "./OrderDetail";
+import {User} from "./User";
 
 /**
  * El isImpress -> o Impreso seria un Estatus más,
@@ -59,6 +60,10 @@ export class Order extends BaseModel{
     @Column({name:'total_amount', type: 'decimal'})
     @IsDecimal({ decimal_digits: '2'}, {groups: ['create','update']})
     totalAmount: number;
+
+    @Column({name:'sub_total', type: 'decimal'})
+    @IsDecimal({ decimal_digits: '2'}, {groups: ['create','update']})
+    subTotalAmount: number;
 
     @Column({name:'total_discount', type: 'decimal', nullable: true, default: 0})
     @IsDecimal({ decimal_digits: '2'}, {groups: ['create','update']})
@@ -101,6 +106,10 @@ export class Order extends BaseModel{
     @IsDate()
     @IsOptional()
     updatedAt: Date;
+
+    @ManyToOne(() => User)
+    @JoinColumn({name: 'user_id'})
+    user: User;
 
     @Column({name:'status', type: 'integer'})
     @IsNumber()

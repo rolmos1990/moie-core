@@ -4,6 +4,8 @@ import {InvalidArgumentException} from "../../common/exceptions";
 import {Order as OrderModel} from '../../models/Order';
 import {DeliveryMethodListDTO} from "./deliveryMethod";
 import {CustomerListDTO, CustomerShortDTO} from "./customer";
+import {DeliveryEnum} from "../../models/DeliveryMethod";
+import {UserShortDTO} from "./user";
 
 
 export const OrderCreateDTO = async (order: any) => {
@@ -40,14 +42,21 @@ export const OrderCreateDTO = async (order: any) => {
 export class Order {
     constructor(props){
         this.customer = props.customer;
-        this.chargeOnDelivery = props.chargeOnDelivery;
+        this.deliveryType = props.deliveryType;
         this.deliveryCost = props.deliveryCost;
         this.deliveryMethod = props.deliveryMethod;
-        this.deliveryType = props.deliveryType;
         this.origen = props.origen;
         this.pieces = props.pieces;
         this.products = props.products;
+
+        this.chargeOnDelivery = this.hasChargeOnDelivery(props);
     }
+
+    hasChargeOnDelivery(props) : boolean{
+        /** Cobro en la entrega */
+        return props.deliveryType === DeliveryEnum.CHARGE_ON_DELIVERY;
+    }
+
     @IsNumber()
     customer: number;
 
@@ -80,6 +89,7 @@ export const OrderListDTO = (order: OrderModel) => ({
     chargeOnDelivery: order.chargeOnDelivery,
     origen: order.origen,
     totalAmount: order.totalAmount,
+    subTotalAmount: order.subTotalAmount,
     totalDiscount: order.totalDiscount,
     totalRevenue: order.totalRevenue,
     totalWeight: order.totalWeight,
@@ -102,6 +112,7 @@ export const OrderShowDTO = (order: OrderModel) => ({
     chargeOnDelivery: order.chargeOnDelivery,
     origen: order.origen,
     totalAmount: order.totalAmount,
+    subTotalAmount: order.subTotalAmount,
     totalDiscount: order.totalDiscount,
     totalRevenue: order.totalRevenue,
     totalWeight: order.totalWeight,
@@ -115,5 +126,6 @@ export const OrderShowDTO = (order: OrderModel) => ({
     quantity: order.orderDetails && order.orderDetails.length,
     orderDetails: order.orderDetails,
     customer: CustomerListDTO(order.customer),
-    deliveryMethod: DeliveryMethodListDTO(order.deliveryMethod)
+    deliveryMethod: DeliveryMethodListDTO(order.deliveryMethod),
+    user: UserShortDTO(order.user)
 });

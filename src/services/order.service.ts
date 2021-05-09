@@ -14,6 +14,7 @@ import {CustomerService} from "./customer.service";
 import {DeliveryMethod} from "../models/DeliveryMethod";
 import {IProductDetail} from "../common/interfaces/IProductSize";
 import {Product} from "../models/Product";
+import {User} from "../models/User";
 
 export class OrderService extends BaseService<Order> {
     constructor(
@@ -29,7 +30,7 @@ export class OrderService extends BaseService<Order> {
      * Agregar una orden al modulo de ordenes
      * @param order
      */
-    async addOrder(parse: OrderParser, deliveryMethod: DeliveryMethod){
+    async addOrder(parse: OrderParser, deliveryMethod: DeliveryMethod, user: User){
         try {
             const customer = await this.customerService.find(parse.customer);
 
@@ -49,15 +50,17 @@ export class OrderService extends BaseService<Order> {
 
             const costs = await this.getCalculateCosts(products);
 
-            order.totalAmount = costs.totalAmount;
+            order.totalAmount = (costs.totalAmount - costs.totalDiscount) + parse.deliveryCost;
+            order.subTotalAmount = costs.totalAmount;
             order.totalDiscount = costs.totalDiscount;
             order.totalRevenue = costs.totalRevenue;
             order.totalWeight = costs.totalWeight;
+            order.user = user;
 
             const orderRegister = await this.createOrUpdate(order);
             await this.addDetail(products);
 
-            return await this.find(orderRegister.id, ['orderDetails', 'customer', 'deliveryMethod']);
+            return await this.find(orderRegister.id, ['orderDetails', 'customer', 'deliveryMethod', 'user']);
 
         }catch(e){
             throw e;
@@ -74,13 +77,13 @@ export class OrderService extends BaseService<Order> {
         let totalDiscount = 0;
         let totalRevenue = 0;
         orderDetails.map(item => {
-           totalAmount = totalAmount + item.price;
            totalWeight = totalAmount + item.weight;
            if(item.discountPercent > 0) {
-               totalDiscount = totalDiscount + ((item.price * item.discountPercent) / 100)
+               totalDiscount = totalDiscount + ((item.price * item.discountPercent) / 100);
            } else {
                totalDiscount = 0;
            }
+           totalAmount = totalAmount + item.price;
            totalRevenue = totalRevenue + item.revenue;
         });
 

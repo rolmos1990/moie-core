@@ -8,12 +8,14 @@ import {Request, Response} from "express";
 import {InvalidArgumentException} from "../common/exceptions";
 import {DeliveryMethod} from "../models/DeliveryMethod";
 import {DeliveryMethodService} from "../services/deliveryMethod.service";
+import {UserService} from "../services/user.service";
 
 @route('/order')
 export class OrderController extends BaseController<Order> {
     constructor(
         private readonly orderService: OrderService,
-        private readonly deliveryMethodService: DeliveryMethodService
+        private readonly deliveryMethodService: DeliveryMethodService,
+        private readonly userService: UserService
     ){
         super(orderService);
     };
@@ -89,7 +91,11 @@ export class OrderController extends BaseController<Order> {
                 parse.deliveryCost = deliveryCost.cost;
             }
 
-            const order: Order = await this.orderService.addOrder(parse, deliveryMethod);
+            /** TODO -- Asociar usuario a la orden */
+            const user = await this.userService.find(1);
+
+
+            const order: Order = await this.orderService.addOrder(parse, deliveryMethod, user);
 
             return res.json({status: 200 , order: OrderShowDTO(order)});
         }catch(e){
@@ -98,6 +104,6 @@ export class OrderController extends BaseController<Order> {
     }
 
     protected getDefaultRelations(): Array<string> {
-        return ['customer', 'deliveryMethod', 'orderDetails'];
+        return ['customer', 'deliveryMethod', 'orderDetails', 'user'];
     }
 }

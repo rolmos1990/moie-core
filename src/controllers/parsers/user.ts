@@ -35,3 +35,8 @@ export const UserUpdateDTO = (user: User) => ({
     status: user.status,
     updatedAt: new Date()
 });
+
+export const UserShortDTO = (user: User) => ({
+    id: user.id,
+    name: user.name + " " + user.lastname
+});
