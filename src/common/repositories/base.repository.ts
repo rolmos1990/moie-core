@@ -1,6 +1,7 @@
 import {Repository} from "typeorm";
 import {PageQuery} from "../controllers/page.query";
 import {OperationQuery} from "../controllers/operation.query";
+import {ApplicationException, InvalidArgumentException} from "../exceptions";
 
 export default abstract class BaseRepository<T> {
     protected readonly repositoryManager : Repository<T>;
@@ -61,7 +62,11 @@ export default abstract class BaseRepository<T> {
     }
 
     async find(id: number, relations = []){
-        return await this.repositoryManager.findOneOrFail(id, {relations});
+        const data = await this.repositoryManager.findOne(id, {relations});
+        if(!data){
+            throw new InvalidArgumentException("No se ha encontrado un registro asociado");
+        }
+        return data;
     }
 
     async save(entity: T){

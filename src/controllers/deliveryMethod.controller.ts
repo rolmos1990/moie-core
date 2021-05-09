@@ -59,7 +59,6 @@ export class DeliveryMethodController extends BaseController<DeliveryMethod> {
                 amount: 0.00,
                 hasCharge: true
             };
-            console.log("HAS DELIVERY METHOD", deliveryMethod);
             if(deliveryMethod) {
 
                 if (quoteRequest.deliveryMethodCode === "INTERRAPIDISIMO") {

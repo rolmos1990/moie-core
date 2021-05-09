@@ -3,7 +3,7 @@ import {Customer} from "../models/Customer";
 import {EntityTarget} from "typeorm";
 import {CustomerService} from "../services/customer.service";
 import {route} from "awilix-express";
-import {CustomerCreateDTO, CustomerListDTO, CustomerUpdateDTO} from "./parsers/customer";
+import {CustomerCreateDTO, CustomerListDTO, CustomerShowDTO, CustomerUpdateDTO} from "./parsers/customer";
 import { PageQuery } from "../common/controllers/page.query";
 
 @route('/customer')
@@ -33,8 +33,13 @@ export class CustomerController extends BaseController<Customer> {
         return new Customer();
     }
 
-    getParseGET(entity: Customer): Object {
-        return CustomerListDTO(entity);
+    getParseGET(entity: Customer, isDetail: boolean): Object {
+        if(isDetail){
+            return CustomerShowDTO(entity);
+        }
+        else{
+            return CustomerListDTO(entity);
+        }
     }
 
     getParsePOST(entity: Customer): Object {

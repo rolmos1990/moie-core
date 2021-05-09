@@ -98,13 +98,10 @@ export class OrderService extends BaseService<Order> {
     async getProducts(products: OrderProduct[],order: Order) : Promise<OrderDetail[]> {
         const orderDetails : OrderDetail[] = [];
         await Promise.all(products.map(async item => {
-            console.log("producto", item);
             if(!item.productSize){
                 throw new InvalidArgumentException("No podemos encontrar el producto indicado");
             }
             const productSize = await this.productSizeService.find(item.productSize, ['product']);
-            console.log("PRODUCT SIZE", productSize);
-            console.log("PRODUCT SIZE", productSize.quantity);
             /** Validar cantidad de productos */
             if(productSize.quantity <= 0){
                 throw new InvalidArgumentException("No hay disponibilidad:  - " + productSize.product.reference + " ("+productSize.name+")");

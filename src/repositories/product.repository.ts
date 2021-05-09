@@ -37,17 +37,12 @@ export class ProductRepository<T> extends BaseRepository<Product>{
             .addOrderBy('reference', 'DESC').getOne();
 
         let nextReference =  referenceKey + ((fieldOptions.value) ? parseInt(fieldOptions.value['startFrom']) + 1 || 1 : 1);
-        console.log("PRODUCT BEFORE", product);
-        console.log("NEXT REFERENCE", nextReference);
 
         if(product){
             const reference = product.reference;
-            console.log("REFERENCE", reference);
             const sequence = parseInt(reference.replace(referenceKey, "").toString());
-            console.log("SEQUENCE", sequence);
             const nextSequence = sequence + 1;
             nextReference = referenceKey + nextSequence;
-            console.log("NEXT REFERENCE", nextReference);
         }
         return nextReference;
     }

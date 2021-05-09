@@ -1,6 +1,9 @@
 import {IsBoolean, IsNumber, IsOptional, IsString, validate} from "class-validator";
 import {OrderProduct} from "./orderProduct";
 import {InvalidArgumentException} from "../../common/exceptions";
+import {Order as OrderModel} from '../../models/Order';
+import {DeliveryMethodListDTO} from "./deliveryMethod";
+import {CustomerListDTO, CustomerShortDTO} from "./customer";
 
 
 export const OrderCreateDTO = async (order: any) => {
@@ -26,8 +29,6 @@ export const OrderCreateDTO = async (order: any) => {
         order = new Order(order);
         const orderErrors = await validate(order);
         if(orderErrors.length > 0){
-            console.log("DETALLE DE Error", orderErrors);
-            console.log("Datos de orden invalidos");
             return new InvalidArgumentException("Datos invalidos");
         }
         return order;
@@ -72,3 +73,47 @@ export class Order {
 
     products: OrderProduct[]
 }
+
+export const OrderListDTO = (order: OrderModel) => ({
+    id: order.id,
+    deliveryCost: order.deliveryCost,
+    chargeOnDelivery: order.chargeOnDelivery,
+    origen: order.origen,
+    totalAmount: order.totalAmount,
+    totalDiscount: order.totalDiscount,
+    totalRevenue: order.totalRevenue,
+    totalWeight: order.totalWeight,
+    tracking: order.tracking,
+    remember: order.remember,
+    deliveryType: order.deliveryType,
+    expiredDate: order.expiredDate,
+    createdAt: order.createdAt,
+    updatedAt: order.updatedAt,
+    status: order.status,
+    quantity: order.orderDetails && order.orderDetails.length,
+    customer: CustomerShortDTO(order.customer),
+    deliveryMethod: DeliveryMethodListDTO(order.deliveryMethod)
+});
+
+
+export const OrderShowDTO = (order: OrderModel) => ({
+    id: order.id,
+    deliveryCost: order.deliveryCost,
+    chargeOnDelivery: order.chargeOnDelivery,
+    origen: order.origen,
+    totalAmount: order.totalAmount,
+    totalDiscount: order.totalDiscount,
+    totalRevenue: order.totalRevenue,
+    totalWeight: order.totalWeight,
+    tracking: order.tracking,
+    remember: order.remember,
+    deliveryType: order.deliveryType,
+    expiredDate: order.expiredDate,
+    createdAt: order.createdAt,
+    updatedAt: order.updatedAt,
+    status: order.status,
+    quantity: order.orderDetails && order.orderDetails.length,
+    orderDetails: order.orderDetails,
+    customer: CustomerListDTO(order.customer),
+    deliveryMethod: DeliveryMethodListDTO(order.deliveryMethod)
+});

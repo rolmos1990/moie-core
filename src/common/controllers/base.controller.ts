@@ -23,7 +23,7 @@ export abstract class BaseController<Parse> {
 
     public abstract getInstance() : Object;
     public abstract getEntityTarget() : EntityTarget<Parse>;
-    public abstract getParseGET(entity: Parse) : Object;
+    public abstract getParseGET(entity: Parse, isDetail: boolean) : Object;
     public abstract getParsePOST(entity: Parse) : Object;
     public abstract getParsePUT(entity: Parse) : Object;
 
@@ -49,7 +49,7 @@ export abstract class BaseController<Parse> {
             let items: Array<Object> = await this.service.all(page);
 
             if(items && items.length > 0){
-                items = items.map(item => this.getParseGET(<Parse> item));
+                items = items.map(item => this.getParseGET(<Parse> item, false));
             }
 
             const response = PageDTO(items || [], countRegisters, pageNumber + 1, limit);
@@ -71,7 +71,7 @@ export abstract class BaseController<Parse> {
                 relations = this.getDefaultRelations();
             }
             const item = await this.service.find(id, relations);
-            res.json(this.getParseGET(item));
+            res.json(this.getParseGET(item, true));
         }catch(e){
             this.handleException(e, res);
             console.log("error", e);

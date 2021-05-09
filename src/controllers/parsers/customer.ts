@@ -1,5 +1,7 @@
 import {Customer} from "../../models/Customer";
 import {converterFirstArrayObject, converterPhoneInColombianFormat} from "../../common/helper/converters";
+import {StateShortDTO} from "./state";
+import {MunicipalityShortDTO} from "./municipality";
 
 export const CustomerCreateDTO = (customer: Customer) => ({
     name: customer.name,
@@ -16,7 +18,7 @@ export const CustomerCreateDTO = (customer: Customer) => ({
     updatedAt: null
 });
 
-export const CustomerListDTO = (customer: Customer) => ({
+export const CustomerShowDTO = (customer: Customer) => ({
     id: customer.id,
     name: customer.name,
     email: customer.email,
@@ -27,10 +29,22 @@ export const CustomerListDTO = (customer: Customer) => ({
     hasNotification: customer.hasNotification ? true : false,
     status: customer.status ? true : false,
     createdAt: customer.createdAt,
-    state: customer.state || null,
-    municipality: customer.municipality || null,
+    state: StateShortDTO(customer.state) || null,
+    municipality: MunicipalityShortDTO(customer.municipality) || null,
     temporalAddress: converterFirstArrayObject(customer.temporalAddress),
     updatedAt: customer.updatedAt
+});
+
+export const CustomerListDTO = (customer: Customer) => ({
+    id: customer.id,
+    name: customer.name,
+    email: customer.email,
+    document: customer.document,
+    phone:converterPhoneInColombianFormat(customer.phone),
+    cellphone: converterPhoneInColombianFormat(customer.cellphone),
+    isMayorist: customer.isMayorist ? true : false,
+    status: customer.status ? true : false,
+    createdAt: customer.createdAt
 });
 
 export const CustomerUpdateDTO = (customer: Customer) => ({
@@ -45,4 +59,10 @@ export const CustomerUpdateDTO = (customer: Customer) => ({
     municipality: customer.municipality || null,
     state: customer.state || null,
     updatedAt: new Date(),
+});
+
+export const CustomerShortDTO = (customer: Customer) => ({
+    id: customer.id,
+    name: customer.name,
+    email: customer.email
 });

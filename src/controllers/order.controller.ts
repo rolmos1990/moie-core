@@ -3,7 +3,7 @@ import {EntityTarget} from "typeorm";
 import {Order} from "../models/Order";
 import {OrderService} from "../services/order.service";
 import {POST, route} from "awilix-express";
-import {OrderCreateDTO} from "./parsers/order";
+import {OrderCreateDTO, OrderListDTO, OrderShowDTO} from "./parsers/order";
 import {Request, Response} from "express";
 import {InvalidArgumentException} from "../common/exceptions";
 import {DeliveryMethod} from "../models/DeliveryMethod";
@@ -37,8 +37,12 @@ export class OrderController extends BaseController<Order> {
         return new Order();
     }
 
-    getParseGET(entity: Order): Object {
-        return entity;
+    getParseGET(entity: Order, isDetail: false): Object {
+        if(isDetail){
+            return OrderShowDTO(entity)
+        } else {
+            return OrderListDTO(entity);
+        }
     }
 
     getParsePOST(entity: Object): Object {
@@ -76,7 +80,6 @@ export class OrderController extends BaseController<Order> {
             const parse = await OrderCreateDTO(req.body);
 
             const deliveryMethod: DeliveryMethod = await this.deliveryMethodService.findByCode(parse.deliveryMethod);
-            console.log("DELIVERY SETTINGS", deliveryMethod.settings);
             if(!(deliveryMethod.settings.includes(parse.deliveryType.toString()))){
                 throw new InvalidArgumentException("El tipo de envio es invalido");
             }
@@ -88,7 +91,7 @@ export class OrderController extends BaseController<Order> {
 
             const order: Order = await this.orderService.addOrder(parse, deliveryMethod);
 
-            return res.json({status: 200 , order});
+            return res.json({status: 200 , order: OrderShowDTO(order)});
         }catch(e){
             this.handleException(e, res);
         }

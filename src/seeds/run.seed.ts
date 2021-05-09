@@ -47,7 +47,6 @@ export class RunSeed {
     constructor(
     ) {
         if(QUERY_IS_ACTIVE.state) {
-            console.log("CREATING STATE...");
             const state = getRepository(State);
             StateSeed.map(async item => {
                 const entity = convertToEntity(new State(), item);
@@ -56,7 +55,6 @@ export class RunSeed {
         }
 
         if(QUERY_IS_ACTIVE.municipality) {
-            console.log("CREATING MUNICIPALITY...");
             const municipality = getRepository(Municipality);
             MunicipalitySeed.map(async item => {
                 const entity = convertToEntity(new Municipality(), item);
