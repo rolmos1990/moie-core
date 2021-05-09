@@ -47,11 +47,10 @@ export class OrderDetail extends BaseModel{
     product: Product;
 
     @Column({name:'color', type: 'varchar', length: 800, nullable: true})
-    @MaxLength(800, {groups: ['create','update']})
     color: string;
 
-    @Column({name:'size', type: 'integer', nullable: true})
-    size: number;
+    @Column({name:'size', type: 'varchar', length: 100})
+    size: string;
 
     @Column({name:'origen', type: 'varchar', length: 150})
     @IsDecimal({ decimal_digits: '2'}, {groups: ['create','update']})

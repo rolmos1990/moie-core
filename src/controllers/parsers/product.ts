@@ -1,4 +1,5 @@
 import {Product} from "../../models/Product";
+import {ProductImageShortDTO} from "./productImage";
 
 export const ProductCreateDTO = (product: Product) => ({
     name: product.name,
@@ -40,3 +41,9 @@ export const ProductQuoteDTO = (products) => products.map(product => ({
     id: product.id,
     qty: product.qty
 }));
+
+export const ProductShortDTO = (product) => ({
+    reference: product.reference,
+    name: product.name,
+    productImage: product.productImage && product.productImage.map(item => ProductImageShortDTO(item))
+});

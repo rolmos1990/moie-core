@@ -6,6 +6,8 @@ import {DeliveryMethodListDTO} from "./deliveryMethod";
 import {CustomerListDTO, CustomerShortDTO} from "./customer";
 import {DeliveryEnum} from "../../models/DeliveryMethod";
 import {UserShortDTO} from "./user";
+import {OrderDetail} from "../../models/OrderDetail";
+import {ProductShortDTO} from "./product";
 
 
 export const OrderCreateDTO = async (order: any) => {
@@ -124,8 +126,19 @@ export const OrderShowDTO = (order: OrderModel) => ({
     updatedAt: order.updatedAt,
     status: order.status,
     quantity: order.orderDetails && order.orderDetails.length,
-    orderDetails: order.orderDetails,
+    orderDetails: order.orderDetails && order.orderDetails.map(item => OrderDetailShowDTO(item)),
     customer: CustomerListDTO(order.customer),
     deliveryMethod: DeliveryMethodListDTO(order.deliveryMethod),
     user: UserShortDTO(order.user)
+});
+
+export const OrderDetailShowDTO = (orderDetail: OrderDetail) => ({
+    id: orderDetail.id,
+    color: orderDetail.color,
+    size: orderDetail.size,
+    quantity: orderDetail.quantity,
+    price: orderDetail.price,
+    weight: orderDetail.weight,
+    discountPercent: orderDetail.discountPercent,
+    product: ProductShortDTO(orderDetail.product)
 });

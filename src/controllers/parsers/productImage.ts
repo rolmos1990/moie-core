@@ -25,3 +25,10 @@ export const ProductImageUpdateDTO = (productImage: ProductImage) => ({
     path: productImage.path,
     product: productImage.product
 });
+
+export const ProductImageShortDTO = (productImage: ProductImage) => ({
+    group: productImage.group,
+    thumbs: productImage.thumbs,
+    filename: productImage.filename,
+    path: productImage.path
+});

@@ -9,6 +9,7 @@ import {InvalidArgumentException} from "../common/exceptions";
 import {DeliveryMethod} from "../models/DeliveryMethod";
 import {DeliveryMethodService} from "../services/deliveryMethod.service";
 import {UserService} from "../services/user.service";
+import {OrderDetail} from "../models/OrderDetail";
 
 @route('/order')
 export class OrderController extends BaseController<Order> {
@@ -39,8 +40,10 @@ export class OrderController extends BaseController<Order> {
         return new Order();
     }
 
-    getParseGET(entity: Order, isDetail: false): Object {
+    async getParseGET(entity: Order, isDetail: false): Promise<Object> {
         if(isDetail){
+            const orderDetails: OrderDetail[] = await this.orderService.getDetails(entity);
+            entity.orderDetails = orderDetails;
             return OrderShowDTO(entity)
         } else {
             return OrderListDTO(entity);
@@ -96,6 +99,8 @@ export class OrderController extends BaseController<Order> {
 
 
             const order: Order = await this.orderService.addOrder(parse, deliveryMethod, user);
+            const orderDetails: OrderDetail[] = await this.orderService.getDetails(order);
+            order.orderDetails = orderDetails;
 
             return res.json({status: 200 , order: OrderShowDTO(order)});
         }catch(e){

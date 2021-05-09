@@ -119,7 +119,7 @@ export class OrderService extends BaseService<Order> {
             orderDetail.quantity = item.quantity;
             orderDetail.revenue = productSize.product.price - productSize.product.cost;
             orderDetail.weight = productSize.product.weight;
-            orderDetail.size = 1;
+            orderDetail.size = productSize.name;
             orderDetail.product = productSize.product;
             orderDetails.push(orderDetail);
         }));
@@ -133,5 +133,9 @@ export class OrderService extends BaseService<Order> {
             od.push(order);
         }
         return od;
+    }
+
+    async getDetails(order: Order) : Promise<OrderDetail[]>{
+        return await this.orderDetailRepository.findBy('order', order, ['product','product.productImage']);
     }
 }
