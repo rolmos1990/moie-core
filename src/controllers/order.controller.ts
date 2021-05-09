@@ -108,7 +108,11 @@ export class OrderController extends BaseController<Order> {
         }
     }
 
-    protected getDefaultRelations(): Array<string> {
-        return ['customer', 'deliveryMethod', 'orderDetails', 'user'];
+    protected getDefaultRelations(isDetail): Array<string> {
+        if(isDetail) {
+            return ['customer', 'deliveryMethod', 'user'];
+        } else {
+            return ['customer', 'deliveryMethod', 'orderDetails', 'user'];
+        }
     }
 }

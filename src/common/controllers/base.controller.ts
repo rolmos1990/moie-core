@@ -43,13 +43,13 @@ export abstract class BaseController<Parse> {
             let page = new PageQuery(limit,pageNumber,queryCondition, operationQuery);
             const countRegisters = await this.service.count(page);
 
-            if(this.getDefaultRelations()){
-                page.setRelations(this.getDefaultRelations());
+            if(this.getDefaultRelations(false)){
+                page.setRelations(this.getDefaultRelations(false));
             }
             let items: Array<Object> = await this.service.all(page);
 
             if(items && items.length > 0){
-                items = items.map(item => this.getParseGET(<Parse> item, false));
+                items = await Promise.all(items.map(async item => await this.getParseGET(<Parse> item, false)));
             }
 
             const response = PageDTO(items || [], countRegisters, pageNumber + 1, limit);
@@ -67,8 +67,8 @@ export abstract class BaseController<Parse> {
             const query = req.params;
             const id = query.id;
             let relations = [];
-            if(this.getDefaultRelations()){
-                relations = this.getDefaultRelations();
+            if(this.getDefaultRelations(true)){
+                relations = this.getDefaultRelations(true);
             }
             const item = await this.service.find(id, relations);
             const result = await this.getParseGET(item, true);
@@ -96,7 +96,7 @@ export abstract class BaseController<Parse> {
             await this.beforeCreate(entity);
             const response = await this.service.createOrUpdate(entity);
             await this.afterCreate(response);
-            const newEntity = await this.service.find(response.id, this.getDefaultRelations() || []);
+            const newEntity = await this.service.find(response.id, this.getDefaultRelations(true) || []);
             const name = this.getEntityTarget()['name'];
             return res.json({status: 200, [name.toString().toLowerCase()]: newEntity});
         }catch(e){
@@ -156,7 +156,7 @@ export abstract class BaseController<Parse> {
         return await validate(obj, { groups });
     }
     /* define your relations for the entity */
-    protected abstract getDefaultRelations() : Array<string>;
+    protected abstract getDefaultRelations(isDetail: boolean) : Array<string>;
 
     /* Before create object in repository */
     protected abstract beforeCreate(item: Object): void;
