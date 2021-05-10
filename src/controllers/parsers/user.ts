@@ -37,6 +37,6 @@ export const UserUpdateDTO = (user: User) => ({
 });
 
 export const UserShortDTO = (user: User) => ({
-    id: user.id,
-    name: user.name + " " + user.lastname
+    id: user && user.id,
+    name: user && user.name + " " + user.lastname
 });

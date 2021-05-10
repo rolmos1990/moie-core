@@ -119,10 +119,43 @@ export class OrderController extends BaseController<Order> {
         }
     }
 
+    @route('/nextStatus')
+    @POST()
+    public async nextStatus(req: Request, res: Response) {
+        try {
+            const request = req.body;
+            if (!request.order) {
+                throw new InvalidArgumentException("La orden no ha sido indicada");
+            }
+
+            /** LLevar a un servicio que administre los estados */
+            /** Entregar al servicio (sesión, orden) */
+
+            const entity = await this.orderService.find(parseInt(request.order));
+            if(entity.status === 1){
+                entity.status = 2;
+            } else if(entity.status === 2){
+                entity.status = 3;
+            }
+
+            const saved : Order = await this.orderService.createOrUpdate(entity);
+            const order: Order = await this.orderService.find(saved.id, this.getDefaultRelations(true));
+            const orderDetails: OrderDetail[] = await this.orderService.getDetails(order);
+            order.orderDetails = orderDetails;
+
+            return res.json({status: 200, order: OrderShowDTO(order)});
+
+        }catch(e){
+            this.handleException(e, res);
+            console.log("error", e);
+        }
+    }
+
     @route('/:id')
     @PUT()
     public async update(req: Request, res: Response) {
         try {
+            /** TODO -- Estructurar mejor dentro del servicio */
             const oldEntity = await this.orderService.find(parseInt(req.params.id));
             if(oldEntity) {
                 const orderDetails = await this.orderService.getDetails(oldEntity);
@@ -174,7 +207,7 @@ export class OrderController extends BaseController<Order> {
                 const order: Order = await this.orderService.addOrUpdateOrder(parse, deliveryMethod, null, oldEntity);
                 order.orderDetails = orderDetails;
 
-                return res.json({status: 200, order});
+                return res.json({status: 200, order: OrderShowDTO(order)});
             }
         }catch(e){
             this.handleException(e, res);
