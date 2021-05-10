@@ -52,8 +52,8 @@ export class OrderDetail extends BaseModel{
     @Column({name:'size', type: 'varchar', length: 100})
     size: string;
 
-    @Column({name:'origen', type: 'varchar', length: 150})
-    @IsDecimal({ decimal_digits: '2'}, {groups: ['create','update']})
+    @Column({name:'quantity', type: 'integer'})
+    @IsNumber({}, {groups: ['create','update']})
     quantity: number;
 
     @Column({name:'price', type: 'decimal'})
@@ -78,6 +78,15 @@ export class OrderDetail extends BaseModel{
 
     isEmpty(): boolean {
         return (this.id == null);
+    }
+
+    equals(orderDetail: OrderDetail): boolean {
+        if(this.product.reference === orderDetail.product.reference &&
+           this.size === orderDetail.size &&
+           this.color === orderDetail.color){
+            return true;
+        }
+        return false;
     }
 
 }

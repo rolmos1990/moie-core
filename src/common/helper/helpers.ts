@@ -25,3 +25,12 @@ export function decodeBase64Image(dataString) : DecodeDataObj | Error {
 
     return rsp;
 }
+
+export function existsInEntity(entityArray, entitySearch){
+    const exists = entityArray.filter(item =>
+        (item.equals(entitySearch)));
+    if(exists && exists.length > 0) {
+        return {exists: true, value: exists[0]};
+    }
+    return {exists: false, value: null};
+}

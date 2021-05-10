@@ -1,7 +1,8 @@
-import {Repository} from "typeorm";
+import {EntityTarget, Repository} from "typeorm";
 import {PageQuery} from "../controllers/page.query";
 import {OperationQuery} from "../controllers/operation.query";
 import {ApplicationException, InvalidArgumentException} from "../exceptions";
+import {ProductSize} from "../../models/ProductSize";
 
 export default abstract class BaseRepository<T> {
     protected readonly repositoryManager : Repository<T>;
@@ -61,6 +62,18 @@ export default abstract class BaseRepository<T> {
         });
     }
 
+    async findOneByObject(field: Object, relations = []){
+        try {
+            const item = await this.repositoryManager.find({
+                where: field,
+                relations
+            });
+            return item[0];
+        }catch(e){
+            throw new InvalidArgumentException("No se ha encontrado item requerido");
+        }
+    }
+
     async find(id: number, relations = []){
         const data = await this.repositoryManager.findOne(id, {relations});
         if(!data){
@@ -75,6 +88,16 @@ export default abstract class BaseRepository<T> {
 
     async delete(id: T){
         await this.repositoryManager.delete(id);
+    }
+
+    /** options: {firstName: '', lastName: ''} -- filter where increment */
+    async increment(entity: EntityTarget<ProductSize>, options, columnToIncrement, valueToIncrement){
+        await this.repositoryManager.manager.increment(entity,options,columnToIncrement,valueToIncrement);
+    }
+
+    /** options: {firstName: '', lastName: ''} -- filter where decrement */
+    async decrement(entity: EntityTarget<ProductSize>, options, columnToDecrement, valueToDecrement){
+        await this.repositoryManager.manager.decrement(entity,options,columnToDecrement,valueToDecrement);
     }
 
 };

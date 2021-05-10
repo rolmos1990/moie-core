@@ -1,11 +1,12 @@
 import {BaseService} from "../common/controllers/base.service";
 import {ProductSize} from "../models/ProductSize";
-import {InvalidArgumentException} from "../common/exceptions";
+import {ApplicationException, InvalidArgumentException} from "../common/exceptions";
 import {ProductSizeRepository} from "../repositories/productSize.repository";
 import {isEmpty} from "../common/helper/helpers";
 import {Product} from "../models/Product";
 import {IProductSize} from "../common/interfaces/IProductSize";
 import {LIMIT_SAVE_BATCH} from "../common/persistence/mysql.persistence";
+import {OrderDetail} from "../models/OrderDetail";
 
 export class ProductSizeService extends BaseService<ProductSize> {
     constructor(
@@ -74,5 +75,22 @@ export class ProductSizeService extends BaseService<ProductSize> {
         }
         const productSizes = await this.productSizeRepository.findBy('product', id, relations);
         return productSizes || [];
+    }
+
+    /** Quantity - si quantity es positive se incrementa en el inventario, si es negative se resta */
+    public async updateInventary(orderDetail: OrderDetail, quantity){
+        try {
+            if(quantity < 0){
+                console.log("-- DECREMENTO", {color: orderDetail.color, name: orderDetail.size, product: orderDetail.product});
+                await this.productSizeRepository.decrement(ProductSize, {color: orderDetail.color, name: orderDetail.size, product: orderDetail.product}, 'quantity', Math.abs(quantity));
+            } else {
+                console.log("-- INCREMENTO", {color: orderDetail.color, name: orderDetail.size, product: orderDetail.product});
+                await this.productSizeRepository.increment(ProductSize, {color: orderDetail.color, name: orderDetail.size, product: orderDetail.product}, 'quantity', Math.abs(quantity));
+            }
+        }catch(e){
+            console.log("error mostrado", e);
+            console.log();
+            throw new ApplicationException("No se ha encontrado producto {"+orderDetail.product.reference+"} en el Inventario");
+        }
     }
 }

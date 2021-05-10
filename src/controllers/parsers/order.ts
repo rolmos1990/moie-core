@@ -91,6 +91,70 @@ export class Order {
     products: OrderProduct[]
 }
 
+export const OrderUpdateDTO = async (order: any) => {
+    try {
+        order = new OrderUpdate(order);
+        const orderErrors = await validate(order);
+        if(orderErrors.length > 0){
+            return orderErrors[0].value;
+        }
+        return order;
+    }catch(e){
+        return new InvalidArgumentException("No podemos procesar su solicitud");
+    }
+}
+
+export class OrderUpdate {
+    constructor(props){
+        this.customer = props.customer;
+        this.deliveryType = props.deliveryType;
+        this.deliveryCost = props.deliveryCost;
+        this.deliveryMethod = props.deliveryMethod;
+        this.origen = props.origen;
+        this.piecesForChanges = props.piecesForChanges;
+        this.paymentMode = props.paymentMode;
+
+        this.chargeOnDelivery = this.hasChargeOnDelivery(props);
+    }
+
+    hasChargeOnDelivery(props) : boolean{
+        /** Cobro en la entrega */
+        return props.deliveryType === DeliveryEnum.CHARGE_ON_DELIVERY;
+    }
+
+    @IsNumber()
+    @IsOptional()
+    customer: number;
+
+    @IsNumber()
+    @IsOptional()
+    piecesForChanges: number;
+
+    @IsNumber()
+    @IsOptional()
+    paymentMode: number;
+
+    @IsBoolean()
+    @IsOptional()
+    chargeOnDelivery: boolean;
+
+    @IsNumber()
+    @IsOptional()
+    deliveryCost: number;
+
+    @IsString()
+    @IsOptional()
+    deliveryMethod: string;
+
+    @IsNumber()
+    @IsOptional()
+    deliveryType: number;
+
+    @IsString()
+    @IsOptional()
+    origen: string;
+}
+
 export const OrderListDTO = (order: OrderModel) => ({
     id: order.id,
     deliveryCost: order.deliveryCost,

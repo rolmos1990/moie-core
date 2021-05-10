@@ -15,53 +15,93 @@ import {DeliveryMethod} from "../models/DeliveryMethod";
 import {IProductDetail} from "../common/interfaces/IProductSize";
 import {Product} from "../models/Product";
 import {User} from "../models/User";
+import {OrderProductTrace} from "../common/helper/orderTrace";
+import {existsInEntity} from "../common/helper/helpers";
 
 export class OrderService extends BaseService<Order> {
     constructor(
         private readonly orderRepository: OrderRepository<Order>,
         private readonly  orderDetailRepository: OrderDetailRepository<OrderDetail>,
         private readonly productSizeService: ProductSizeService,
-        private readonly customerService: CustomerService,
+        private readonly customerService: CustomerService
     ){
         super(orderRepository);
+    }
+
+    async updateOrder(parse: OrderDetail[], oldProducts: OrderDetail[], order: Order) : Promise<OrderDetail[]> {
+        const pmanager = new OrderProductTrace(oldProducts, parse);
+
+        pmanager.process();
+        const diferentialProducts = pmanager.getBatches();
+
+        /** Actualizar */
+        if (diferentialProducts.updated.length > 0) {
+            await this.updateProductDetail(diferentialProducts.updated);
+        }
+
+        /** Agregar */
+        if (diferentialProducts.added.length > 0) {
+            await this.addDetail(diferentialProducts.added);
+        }
+
+        /** Eliminar */
+        if (diferentialProducts.deleted.length > 0) {
+            await this.removeDetail(diferentialProducts.deleted);
+        }
+
+        return await this.getDetails(order);
     }
 
     /**
      * Agregar una orden al modulo de ordenes
      * @param order
      */
-    async addOrder(parse: OrderParser, deliveryMethod: DeliveryMethod, user: User){
+    async addOrUpdateOrder(parse: OrderParser, deliveryMethod: DeliveryMethod, user: User, oldOrder: Order){
         try {
             const customer = await this.customerService.find(parse.customer);
 
             const order = new Order();
-            order.customer = customer;
-            order.origen = parse.origen;
-            order.chargeOnDelivery = parse.chargeOnDelivery;
-            order.deliveryType = parse.deliveryType;
-            order.deliveryCost = parse.deliveryCost;
-            order.deliveryMethod = deliveryMethod;
-            order.expiredDate = new Date();
-            order.status = 1;
-            order.tracking = "";
-            order.remember = false;
-            order.createdAt = new Date();
 
-            const products = await this.getProducts(parse.products, order);
+            if(oldOrder){
+                order.id = oldOrder.id;
+            }
+
+            order.customer = customer;
+            order.origen = parse.origen || order.origen;
+            order.chargeOnDelivery = parse.chargeOnDelivery || order.chargeOnDelivery;
+            order.deliveryType = parse.deliveryType || order.deliveryType;
+            order.deliveryCost = parse.deliveryCost || order.deliveryCost;
+            order.deliveryMethod = deliveryMethod || order.deliveryMethod;
+            order.expiredDate = new Date();
+            order.status = order.status || 1;
+            order.tracking = order.tracking || "";
+            order.remember = order.remember || false;
+            order.createdAt = order.createdAt || new Date();
+
+            let products;
+
+            if(!oldOrder) {
+                products = await this.getProducts(parse.products, order);
+            } else {
+                products = oldOrder.orderDetails;
+            }
 
             const costs = await this.getCalculateCosts(products);
 
-            order.totalAmount = (costs.totalAmount - costs.totalDiscount) + parse.deliveryCost;
+            order.totalAmount = (costs.totalAmount - costs.totalDiscount) + (parse.deliveryCost || order.deliveryCost || 0);
             order.subTotalAmount = costs.totalAmount;
             order.totalDiscount = costs.totalDiscount;
             order.totalRevenue = costs.totalRevenue;
             order.totalWeight = costs.totalWeight;
-            order.user = user;
-            order.piecesForChanges = parse.piecesForChanges || null;
-            order.paymentMode = parse.paymentMode || null;
+            order.user = order.user || user;
+            order.piecesForChanges = parse.piecesForChanges || order.piecesForChanges || null;
+            order.paymentMode = parse.paymentMode || order.paymentMode || null;
 
             const orderRegister = await this.createOrUpdate(order);
-            await this.addDetail(products);
+
+            if(!oldOrder) {
+                await this.addDetail(products);
+            }
 
             return await this.find(orderRegister.id, ['orderDetails', 'customer', 'deliveryMethod', 'user']);
 
@@ -103,15 +143,14 @@ export class OrderService extends BaseService<Order> {
      * */
     async getProducts(products: OrderProduct[],order: Order) : Promise<OrderDetail[]> {
         const orderDetails : OrderDetail[] = [];
+        if(!products || products.length <= 0){
+            throw new InvalidArgumentException("No se ha recibido productos");
+        }
         await Promise.all(products.map(async item => {
             if(!item.productSize){
-                throw new InvalidArgumentException("No podemos encontrar el producto indicado");
+                throw new InvalidArgumentException("No se ha indicado la talla relacionada a uno de los productos");
             }
             const productSize = await this.productSizeService.find(item.productSize, ['product']);
-            /** Validar cantidad de productos */
-            if(productSize.quantity <= 0){
-                throw new InvalidArgumentException("No hay disponibilidad:  - " + productSize.product.reference + " ("+productSize.name+")");
-            }
 
             const orderDetail = new OrderDetail();
             orderDetail.order = order;
@@ -124,6 +163,26 @@ export class OrderService extends BaseService<Order> {
             orderDetail.weight = productSize.product.weight;
             orderDetail.size = productSize.name;
             orderDetail.product = productSize.product;
+
+            const beforeOrder = existsInEntity(order.orderDetails, orderDetail);
+
+            if(orderDetail.quantity <= 0){
+                throw new InvalidArgumentException("Verifique las cantidades para producto: " + productSize.product.reference + " ("+productSize.name+")");
+            }
+
+            /** Update order Validation */
+            if(beforeOrder.exists){
+                const realQuantity = beforeOrder.value.quantity + productSize.quantity;
+                console.log("-- REAL QUANTITY", realQuantity);
+                console.log("-- QUANTITY REQUESTED", item.quantity);
+                if(realQuantity <= 0 || realQuantity < item.quantity){
+                    throw new InvalidArgumentException("No hay disponibilidad:  - " + productSize.product.reference + " ("+productSize.name+")");
+                }
+            } else if(productSize.quantity <= 0 || productSize.quantity < item.quantity){
+                /** New Order Validation */
+                throw new InvalidArgumentException("No hay disponibilidad:  - " + productSize.product.reference + " ("+productSize.name+")");
+            }
+
             orderDetails.push(orderDetail);
         }));
         return orderDetails;
@@ -138,7 +197,38 @@ export class OrderService extends BaseService<Order> {
         return od;
     }
 
+    async removeDetail(orderDetails: OrderDetail[]){
+        for(let i = 0; i < orderDetails.length ; i++){
+            await this.orderDetailRepository.delete(orderDetails[i]);
+        }
+    }
+
     async getDetails(order: Order) : Promise<OrderDetail[]>{
         return await this.orderDetailRepository.findBy('order', order, ['product','product.productImage']);
+    }
+
+    /** Actualizar el detalle de productos */
+    async updateProductDetail(updates: any){
+        await Promise.all(updates.map(async item => {
+           const orderDetail : OrderDetail = item.orderDetail;
+            await this.productSizeService.updateInventary(orderDetail, item.diff);
+            console.log("DIFERENCIAL OBTENIDO --", item.diff);
+            /** < 1 Aumente 1 en cantidad de lo anterior */
+            if(item.diff < 0) {
+                console.log("INCREMENTO --"+ Math.abs(item.diff));
+                await this.orderDetailRepository.increment(OrderDetail, {
+                    color: orderDetail.color,
+                    size: orderDetail.size,
+                    product: orderDetail.product
+                }, 'quantity', Math.abs(item.diff));
+            } else {
+                console.log("DECREMENTO -- "+ Math.abs(item.diff));
+                await this.orderDetailRepository.decrement(OrderDetail, {
+                    color: orderDetail.color,
+                    size: orderDetail.size,
+                    product: orderDetail.product
+                }, 'quantity', item.diff);
+            }
+        }));
     }
 }
