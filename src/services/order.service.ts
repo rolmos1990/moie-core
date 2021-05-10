@@ -46,8 +46,6 @@ export class OrderService extends BaseService<Order> {
             order.tracking = "";
             order.remember = false;
             order.createdAt = new Date();
-            order.piecesForChanges = order.piecesForChanges || null;
-            order.paymentMode = order.paymentMode || null;
 
             const products = await this.getProducts(parse.products, order);
 
@@ -59,6 +57,8 @@ export class OrderService extends BaseService<Order> {
             order.totalRevenue = costs.totalRevenue;
             order.totalWeight = costs.totalWeight;
             order.user = user;
+            order.piecesForChanges = parse.piecesForChanges || null;
+            order.paymentMode = parse.paymentMode || null;
 
             const orderRegister = await this.createOrUpdate(order);
             await this.addDetail(products);
