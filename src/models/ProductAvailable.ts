@@ -1,6 +1,6 @@
 import {
     JoinColumn,
-    ManyToOne,
+    ManyToOne, OneToOne, PrimaryGeneratedColumn,
     ViewColumn, ViewEntity
 } from "typeorm";
 import BaseModel from "../common/repositories/base.model";
@@ -32,9 +32,10 @@ import {Product} from "./Product";
 
 export class ProductAvailable extends BaseModel{
 
-    @ManyToOne(() => Product, product => product.productAvailable)
+    @PrimaryGeneratedColumn()
+    @OneToOne(() => Product, product => product.productAvailable)
     @JoinColumn({name:'id'})
-    product: number;
+    id: number;
 
     @ViewColumn({name:'available'})
     available: number;
@@ -46,7 +47,7 @@ export class ProductAvailable extends BaseModel{
     completed: number;
 
     isEmpty(): boolean {
-        return (this.product == null);
+        return (this.id == null);
     }
 
 }
