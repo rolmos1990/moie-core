@@ -89,6 +89,7 @@ export class PageQuery {
      */
 
     addOrder(field: string, value: OrderConditional){
+        console.log("ADD ORDER", field);/**/
         Reflect.set(this.order,field, value);
     }
 
@@ -141,6 +142,14 @@ export class PageQuery {
     }
 
     /**
+     * Return the OperationQuery in the Page
+     * @get
+     */
+    hasOperation() : boolean{
+        return this.operators !== null;
+    }
+
+    /**
      * Add Relations for Specific Paginator
      * @get
      */
@@ -171,6 +180,10 @@ export class PageQuery {
         Reflect.set(this.condition, 'group', this.getGroups());
         if(this.relations.length > 0) {
             Reflect.set(this.condition, 'relations', this.getRelations());
+        }
+        if(this.order){
+            console.log("ORDER", this.order);
+            Reflect.set(this.condition, 'order', this.order);
         }
 
         return this.condition;

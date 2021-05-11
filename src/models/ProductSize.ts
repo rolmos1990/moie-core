@@ -4,7 +4,7 @@ import {Product} from "./Product";
 import {Length, Min} from "class-validator";
 
 //remplazaria a 'existencia'
-@Entity({name: 'ProductSize', orderBy: {id: 'DESC'}})
+@Entity({name: 'ProductSize'})
 export class ProductSize extends BaseModel{
 
     @PrimaryGeneratedColumn('increment')

@@ -50,7 +50,11 @@ export class CustomerController extends BaseController<Customer> {
         return CustomerUpdateDTO(entity);
     }
 
-    protected getDefaultRelations(): Array<string> {
-        return ['municipality', 'state', 'temporalAddress'];
+    protected getDefaultRelations(isDetail: boolean): Array<string> {
+        if(isDetail){
+            return ['municipality', 'state', 'temporalAddress'];
+        } else {
+            return ['municipality', 'state'];
+        }
     }
 }

@@ -1,5 +1,5 @@
 import {Request, Response} from 'express';
-import {GET,POST, PUT, DELETE, route} from "awilix-express";
+import {DELETE, GET, POST, PUT, route} from "awilix-express";
 import {ConditionalQuery} from "./conditional.query";
 import {PageQuery} from "./page.query";
 import {IService} from "../interfaces/IService";
@@ -8,6 +8,7 @@ import {EntityTarget, getConnection} from "typeorm";
 import {OperationQuery} from "./operation.query";
 import {PageDTO} from "../../controllers/parsers/page";
 import {ApplicationException, ConditionalException, InvalidArgumentException} from "../exceptions";
+import {OrderConditional} from "../enum/order.conditional";
 
 const GROUPS = {
     POST: 'create',
@@ -41,6 +42,11 @@ export abstract class BaseController<Parse> {
             const queryCondition = ConditionalQuery.ConvertIntoConditionalParams(conditional);
             const operationQuery = new OperationQuery(operation, group);
             let page = new PageQuery(limit,pageNumber,queryCondition, operationQuery);
+
+            if(!query.operation){
+                page.addOrder('id', OrderConditional.DESC);
+            }
+            console.log("PAGE INFO", page.get());
             const countRegisters = await this.service.count(page);
 
             if(this.getDefaultRelations(false)){

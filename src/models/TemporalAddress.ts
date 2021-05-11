@@ -8,7 +8,7 @@ import {Length} from "class-validator";
 import {Customer} from "./Customer";
 import {State} from "./State";
 
-@Entity({name: 'TemporalAddress', orderBy: {id: 'DESC'}})
+@Entity({name: 'TemporalAddress'})
 export class TemporalAddress extends BaseModel {
     @PrimaryGeneratedColumn('increment')
     id: number;

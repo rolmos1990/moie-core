@@ -11,8 +11,9 @@ import { Type } from 'class-transformer';
 import {Municipality} from "./Municipality";
 import {State} from "./State";
 import {TemporalAddress} from "./TemporalAddress";
+import {Order} from "./Order";
 
-@Entity({name: 'Customer', orderBy: {id: 'DESC'}})
+@Entity({name: 'Customer'})
 export class Customer extends BaseModel{
     @PrimaryGeneratedColumn('increment')
     id: number;

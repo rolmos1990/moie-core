@@ -30,7 +30,7 @@ import {User} from "./User";
  * El isImpress -> o Impreso seria un Estatus más,
  *
  */
-@Entity({name: 'Order', orderBy: {id: 'ASC'}})
+@Entity({name: 'Order'})
 export class Order extends BaseModel{
 
     @PrimaryGeneratedColumn('increment')

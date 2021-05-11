@@ -19,7 +19,7 @@ export const SIZES = {
     ORIGINAL: 800
 };
 
-@Entity({name: 'ProductImage', orderBy: {id: 'ASC'}})
+@Entity({name: 'ProductImage'})
 export class ProductImage extends BaseModel{
 
     @PrimaryGeneratedColumn('increment')
