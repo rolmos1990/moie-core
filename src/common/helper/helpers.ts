@@ -27,6 +27,9 @@ export function decodeBase64Image(dataString) : DecodeDataObj | Error {
 }
 
 export function existsInEntity(entityArray, entitySearch){
+    if(!entityArray || entityArray.length <= 0){
+        return {exists: false, value: null};
+    }
     const exists = entityArray.filter(item =>
         (item.equals(entitySearch)));
     if(exists && exists.length > 0) {

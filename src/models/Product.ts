@@ -3,7 +3,7 @@ import {
     CreateDateColumn,
     Entity, JoinColumn,
     ManyToOne,
-    OneToMany,
+    OneToMany, OneToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn
 } from "typeorm";
@@ -14,6 +14,7 @@ import {ProductSize} from "./ProductSize";
 import {Size} from "./Size";
 import {Category} from "./Category";
 import {ProductImage} from "./ProductImage";
+import {ProductAvailable} from "./ProductAvailable";
 
 @Entity({name: 'Product', orderBy: {id: 'ASC'}})
 export class Product extends BaseModel{
@@ -94,6 +95,9 @@ export class Product extends BaseModel{
 
     @OneToMany(() => ProductImage, productImage => productImage.product)
     productImage: ProductImage[];
+
+    @OneToOne(() => ProductAvailable, productAvailable => productAvailable.product)
+    productAvailable: ProductAvailable;
 
     @Column({type: 'boolean', default: 0})
     @IsBoolean({groups: ['create','update']})

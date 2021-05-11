@@ -1,5 +1,49 @@
 import {Product} from "../../models/Product";
 import {ProductImageShortDTO} from "./productImage";
+import {ProductAvailableDTO} from "./productAvailable";
+
+export const ProductListDTO = (product: Product) => ({
+    id: product.id,
+    name: product.name,
+    reference: product.reference,
+    material: product.material,
+    provider: product.provider,
+    category: product.category,
+    description: product.description || "",
+    price: product.price,
+    discount: product.discount || 0,
+    weight: product.weight,
+    published: product.published,
+    tags: product.tags || null,
+    createdAt: product.createdAt,
+    updatedAt: product.updatedAt,
+    status: product.status,
+    productImage: product.productImage,
+    productAvailable: product.productAvailable && ProductAvailableDTO(product.productAvailable)
+});
+
+export const ProductDetailDTO = (product: Product) => ({
+    id: product.id,
+    name: product.name,
+    reference: product.reference,
+    material: product.material,
+    provider: product.provider,
+    category: product.category,
+    description: product.description || "",
+    price: product.price,
+    cost: product.cost,
+    weight: product.weight,
+    discount: product.discount || 0,
+    published: product.published,
+    tags: product.tags || null,
+    createdAt: product.createdAt,
+    updatedAt: product.updatedAt,
+    status: product.status,
+    productImage: product.productImage,
+    size: product.size,
+    productSize: product.productSize,
+    productAvailable: product.productAvailable && ProductAvailableDTO(product.productAvailable)
+});
 
 export const ProductCreateDTO = (product: Product) => ({
     name: product.name,

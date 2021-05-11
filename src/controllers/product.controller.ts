@@ -3,7 +3,7 @@ import {BaseController} from "../common/controllers/base.controller";
 import {Product} from "../models/Product";
 import {EntityTarget} from "typeorm";
 import {ProductService} from "../services/product.service";
-import {ProductCreateDTO, ProductUpdateDTO} from "./parsers/product";
+import {ProductCreateDTO, ProductDetailDTO, ProductListDTO, ProductUpdateDTO} from "./parsers/product";
 import {IProductSize} from "../common/interfaces/IProductSize";
 import {ApplicationException, InvalidArgumentException} from "../common/exceptions";
 import {ProductSizeService} from "../services/productSize.service";
@@ -60,7 +60,7 @@ export class ProductController extends BaseController<Product> {
     }
 
     protected getDefaultRelations(): Array<string> {
-        return ['size','category','productImage', 'productSize'];
+        return ['size','category','productImage', 'productSize', 'productAvailable'];
     }
 
     getEntityTarget(): EntityTarget<Product> {
@@ -71,8 +71,12 @@ export class ProductController extends BaseController<Product> {
         return new Product();
     }
 
-    getParseGET(entity: Product): Object {
-        return entity;
+    getParseGET(entity: Product, isDetail: boolean): Object {
+        if(isDetail) {
+            return ProductDetailDTO(entity);
+        } else {
+            return ProductListDTO(entity);
+        }
     }
 
     getParsePOST(entity: Product): Object {

@@ -57,7 +57,7 @@ export class Order {
 
     hasChargeOnDelivery(props) : boolean{
         /** Cobro en la entrega */
-        return props.deliveryType === DeliveryEnum.CHARGE_ON_DELIVERY;
+        return props.deliveryType === DeliveryEnum.CHARGE_ON_DELIVERY ? true: false;
     }
 
     @IsNumber()

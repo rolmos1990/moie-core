@@ -68,7 +68,7 @@ export class OrderService extends BaseService<Order> {
 
             order.customer = customer;
             order.origen = parse.origen || order.origen;
-            order.chargeOnDelivery = parse.chargeOnDelivery || order.chargeOnDelivery;
+            order.chargeOnDelivery = [true, false].includes(parse.chargeOnDelivery) ? parse.chargeOnDelivery : order.chargeOnDelivery;
             order.deliveryType = parse.deliveryType || order.deliveryType;
             order.deliveryCost = parse.deliveryCost || order.deliveryCost;
             order.deliveryMethod = deliveryMethod || order.deliveryMethod;
