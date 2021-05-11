@@ -9,30 +9,31 @@ import {Product} from "./Product";
 @ViewEntity({
     name: 'ProductAvailableView',
     expression: `
-        SELECT product_id,
+        SELECT id,
                (Select SUM(quantity)
                 from ProductSize
-                where product_id = "OrderDetail".product_id
+                where product_id = \`Product\`.id
                 group by ProductSize.product_id) as available,
                (Select SUM(OrderDetail.quantity) as Reserved
                 from OrderDetail
-                         inner join "Order" on OrderDetail.order_id = "Order".id
-                where "Order".status = 1
+                         inner join \`Order\` on OrderDetail.order_id = \`Order\`.id
+                where \`Order\`.status = 1
+                  and OrderDetail.product_id = Product.id
                 group by OrderDetail.product_id) as reserved,
                (Select SUM(OrderDetail.quantity)
                 from OrderDetail
-                         inner join "Order" on OrderDetail.order_id = "Order".id
-                where "Order".status IN (4, 5)
+                         inner join \`Order\` on OrderDetail.order_id = \`Order\`.id
+                where \`Order\`.status IN (4, 5)
+                  and OrderDetail.product_id = Product.id
                 group by OrderDetail.product_id) as completed
-        from OrderDetail
-        group by OrderDetail.product_id;
+        from Product;
     `
 })
 
 export class ProductAvailable extends BaseModel{
 
     @ManyToOne(() => Product, product => product.productAvailable)
-    @JoinColumn({name:'product_id'})
+    @JoinColumn({name:'id'})
     product: number;
 
     @ViewColumn({name:'available'})
