@@ -1,4 +1,4 @@
 export const MunicipalityShortDTO = (municipality) => ({
-    id: municipality.id,
-    name: municipality.name
+    id: municipality && municipality.id,
+    name: municipality && municipality.name
 });

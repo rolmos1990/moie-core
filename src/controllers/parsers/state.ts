@@ -1,4 +1,4 @@
 export const StateShortDTO = (state) => ({
-    id: state.id,
-    name: state.name
+    id: state && state.id,
+    name: state && state.name
 });

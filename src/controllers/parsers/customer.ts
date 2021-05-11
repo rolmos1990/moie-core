@@ -44,6 +44,9 @@ export const CustomerListDTO = (customer: Customer) => ({
     cellphone: converterPhoneInColombianFormat(customer.cellphone),
     isMayorist: customer.isMayorist ? true : false,
     status: customer.status ? true : false,
+    state: StateShortDTO(customer.state) || null,
+    municipality: MunicipalityShortDTO(customer.municipality) || null,
+    temporalAddress: converterFirstArrayObject(customer.temporalAddress),
     createdAt: customer.createdAt
 });
 
