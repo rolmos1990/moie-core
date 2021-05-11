@@ -89,7 +89,6 @@ export class PageQuery {
      */
 
     addOrder(field: string, value: OrderConditional){
-        console.log("ADD ORDER", field);/**/
         Reflect.set(this.order,field, value);
     }
 
@@ -182,7 +181,6 @@ export class PageQuery {
             Reflect.set(this.condition, 'relations', this.getRelations());
         }
         if(this.order){
-            console.log("ORDER", this.order);
             Reflect.set(this.condition, 'order', this.order);
         }
 

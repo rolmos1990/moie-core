@@ -173,8 +173,6 @@ export class OrderService extends BaseService<Order> {
             /** Update order Validation */
             if(beforeOrder.exists){
                 const realQuantity = beforeOrder.value.quantity + productSize.quantity;
-                console.log("-- REAL QUANTITY", realQuantity);
-                console.log("-- QUANTITY REQUESTED", item.quantity);
                 if(realQuantity <= 0 || realQuantity < item.quantity){
                     throw new InvalidArgumentException("No hay disponibilidad:  - " + productSize.product.reference + " ("+productSize.name+")");
                 }
@@ -212,17 +210,14 @@ export class OrderService extends BaseService<Order> {
         await Promise.all(updates.map(async item => {
            const orderDetail : OrderDetail = item.orderDetail;
             await this.productSizeService.updateInventary(orderDetail, item.diff);
-            console.log("DIFERENCIAL OBTENIDO --", item.diff);
             /** < 1 Aumente 1 en cantidad de lo anterior */
             if(item.diff < 0) {
-                console.log("INCREMENTO --"+ Math.abs(item.diff));
                 await this.orderDetailRepository.increment(OrderDetail, {
                     color: orderDetail.color,
                     size: orderDetail.size,
                     product: orderDetail.product
                 }, 'quantity', Math.abs(item.diff));
             } else {
-                console.log("DECREMENTO -- "+ Math.abs(item.diff));
                 await this.orderDetailRepository.decrement(OrderDetail, {
                     color: orderDetail.color,
                     size: orderDetail.size,

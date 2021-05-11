@@ -50,9 +50,6 @@ export class DeliveryMethodController extends BaseController<DeliveryMethod> {
     public async getQuote(req: Request, res: Response) {
         try {
             const quoteRequest = RequestQuoteDTO(req.body);
-
-            console.log("QUOTE REQUEST", quoteRequest);
-
             const deliveryMethod = await this.deliveryMethodService.findByCode(quoteRequest.deliveryMethodCode);
 
             let quote = {

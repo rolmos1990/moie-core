@@ -81,15 +81,11 @@ export class ProductSizeService extends BaseService<ProductSize> {
     public async updateInventary(orderDetail: OrderDetail, quantity){
         try {
             if(quantity < 0){
-                console.log("-- DECREMENTO", {color: orderDetail.color, name: orderDetail.size, product: orderDetail.product});
                 await this.productSizeRepository.decrement(ProductSize, {color: orderDetail.color, name: orderDetail.size, product: orderDetail.product}, 'quantity', Math.abs(quantity));
             } else {
-                console.log("-- INCREMENTO", {color: orderDetail.color, name: orderDetail.size, product: orderDetail.product});
                 await this.productSizeRepository.increment(ProductSize, {color: orderDetail.color, name: orderDetail.size, product: orderDetail.product}, 'quantity', Math.abs(quantity));
             }
         }catch(e){
-            console.log("error mostrado", e);
-            console.log();
             throw new ApplicationException("No se ha encontrado producto {"+orderDetail.product.reference+"} en el Inventario");
         }
     }

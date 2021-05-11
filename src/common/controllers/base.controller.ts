@@ -46,7 +46,6 @@ export abstract class BaseController<Parse> {
             if(!query.operation){
                 page.addOrder('id', OrderConditional.DESC);
             }
-            console.log("PAGE INFO", page.get());
             const countRegisters = await this.service.count(page);
 
             if(this.getDefaultRelations(false)){
