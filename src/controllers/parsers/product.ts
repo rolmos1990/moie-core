@@ -1,6 +1,7 @@
 import {Product} from "../../models/Product";
 import {ProductImageShortDTO} from "./productImage";
 import {ProductAvailableDTO} from "./productAvailable";
+import {CustomerShortDTO} from "./customer";
 
 export const ProductListDTO = (product: Product) => ({
     id: product.id,
@@ -90,4 +91,17 @@ export const ProductShortDTO = (product) => ({
     reference: product.reference,
     name: product.name,
     productImage: product.productImage && product.productImage.map(item => ProductImageShortDTO(item))
+});
+
+export const ProductPendingsDTO = (product: any) => ({
+    color: product.color,
+    size: product.size,
+    quantity: product.quantity,
+    order: {
+        id: product.order.id,
+        status: product.order.status,
+        createdAt: product.order.createdAt,
+        updatedAt: product.order.updatedAt
+    },
+    customer: CustomerShortDTO(product.order.customer)
 });

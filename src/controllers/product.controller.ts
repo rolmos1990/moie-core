@@ -1,19 +1,27 @@
-import {POST, PUT, route} from "awilix-express";
+import {GET, POST, PUT, route} from "awilix-express";
 import {BaseController} from "../common/controllers/base.controller";
 import {Product} from "../models/Product";
 import {EntityTarget} from "typeorm";
 import {ProductService} from "../services/product.service";
-import {ProductCreateDTO, ProductDetailDTO, ProductListDTO, ProductUpdateDTO} from "./parsers/product";
+import {
+    ProductCreateDTO,
+    ProductDetailDTO,
+    ProductListDTO,
+    ProductPendingsDTO,
+    ProductUpdateDTO
+} from "./parsers/product";
 import {IProductSize} from "../common/interfaces/IProductSize";
 import {ApplicationException, InvalidArgumentException} from "../common/exceptions";
 import {ProductSizeService} from "../services/productSize.service";
 import {Request, Response} from "express";
+import {OrderService} from "../services/order.service";
 
 @route('/product')
 export class ProductController extends BaseController<Product> {
     constructor(
         private readonly productService: ProductService,
         private readonly productSizeService: ProductSizeService,
+        private readonly orderService: OrderService,
     ){
         super(productService, productSizeService);
     };
@@ -33,6 +41,30 @@ export class ProductController extends BaseController<Product> {
     }
 
     protected beforeUpdate(item: Object): void {
+    }
+
+    @route('/:id/productPendings')
+    @GET()
+    /**
+     * Product Pendings
+     * @param req
+     * @param res
+     * @protected
+     */
+    protected async getProductPendings(req: Request, res: Response){
+        const id = req.params.id;
+        try {
+            let products = await this.orderService.getOrderDetailByProductIdAndStatuses(id, [1,2]);
+            return res.json({status: 200, products: products.map(item => ProductPendingsDTO(item)) } );
+        }catch(e){
+            if (e.name === InvalidArgumentException.name || e.name === "EntityNotFound") {
+                this.handleException(new InvalidArgumentException("Producto no ha sido encontrado"), res);
+            }
+            else{
+                this.handleException(new ApplicationException(), res);
+
+            }
+        }
     }
 
     @route('/:id/changeSize')
