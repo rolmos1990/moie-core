@@ -100,4 +100,8 @@ export default abstract class BaseRepository<T> {
         await this.repositoryManager.manager.decrement(entity,options,columnToDecrement,valueToDecrement);
     }
 
+    public createQueryBuilder(name){
+        return this.repositoryManager.createQueryBuilder(name);
+    }
+
 };

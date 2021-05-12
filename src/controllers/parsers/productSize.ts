@@ -30,3 +30,8 @@ export const ProductOrderCreate = (product: any) => ({
     productSize: product.size,
     quantity: product.quantity
 });
+
+export const ProductSizeShort = (productSize: any) => ({
+    id: productSize.id || null,
+    quantity: productSize.quantity || 0
+});

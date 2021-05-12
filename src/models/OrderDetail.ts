@@ -38,6 +38,8 @@ export class OrderDetail extends BaseModel{
     @PrimaryGeneratedColumn('increment')
     id: number;
 
+    productSize: ProductSize
+
     @ManyToOne(() => Order)
     @JoinColumn({name: 'order_id'})
     order: Order;

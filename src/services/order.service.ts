@@ -13,6 +13,7 @@ import {DeliveryMethod} from "../models/DeliveryMethod";
 import {User} from "../models/User";
 import {OrderProductTrace} from "../common/helper/orderTrace";
 import {existsInEntity} from "../common/helper/helpers";
+import {ProductSize} from "../models/ProductSize";
 
 export class OrderService extends BaseService<Order> {
     constructor(
@@ -198,7 +199,14 @@ export class OrderService extends BaseService<Order> {
     }
 
     async getDetails(order: Order): Promise<OrderDetail[]> {
-        return await this.orderDetailRepository.findBy('order', order, ['product', 'product.productImage']);
+        console.log("ORDER MOSTRADA", order.id);
+        return await this.orderDetailRepository.createQueryBuilder('orderDetail')
+            .where('orderDetail.order = :value', {value: order.id})
+            .leftJoinAndSelect('orderDetail.product', 'p')
+            .leftJoinAndSelect('p.productImage', 'pi')
+            .leftJoinAndMapOne('orderDetail.productSize', ProductSize,'ps', 'ps.color = orderDetail.color and ps.name = orderDetail.size and ps.product = orderDetail.product')
+            .innerJoin('orderDetail.product', 'product')
+            .getMany();
     }
 
     /** Actualizar el detalle de productos */

@@ -8,6 +8,7 @@ import {DeliveryEnum} from "../../models/DeliveryMethod";
 import {UserShortDTO} from "./user";
 import {OrderDetail} from "../../models/OrderDetail";
 import {ProductShortDTO} from "./product";
+import {ProductSizeShort} from "./productSize";
 
 
 export const OrderCreateDTO = async (order: any) => {
@@ -204,7 +205,7 @@ export const OrderShowDTO = (order: OrderModel) => ({
     user: UserShortDTO(order.user)
 });
 
-export const OrderDetailShowDTO = (orderDetail: OrderDetail) => ({
+export const OrderDetailShowDTO = (orderDetail: OrderDetail | any) => ({
     id: orderDetail.id,
     color: orderDetail.color,
     size: orderDetail.size,
@@ -212,5 +213,6 @@ export const OrderDetailShowDTO = (orderDetail: OrderDetail) => ({
     price: orderDetail.price,
     weight: orderDetail.weight,
     discountPercent: orderDetail.discountPercent,
-    product: ProductShortDTO(orderDetail.product)
+    product: ProductShortDTO(orderDetail.product),
+    productSize: ProductSizeShort(orderDetail.productSize)
 });
