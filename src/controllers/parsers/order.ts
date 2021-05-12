@@ -214,5 +214,5 @@ export const OrderDetailShowDTO = (orderDetail: OrderDetail | any) => ({
     weight: orderDetail.weight,
     discountPercent: orderDetail.discountPercent,
     product: ProductShortDTO(orderDetail.product),
-    productSize: ProductSizeShort(orderDetail.productSize)
+    productSize: ProductSizeShort(orderDetail.productSize, orderDetail.quantity)
 });
