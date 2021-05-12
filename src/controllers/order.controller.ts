@@ -158,7 +158,7 @@ export class OrderController extends BaseController<Order> {
             /** TODO -- Estructurar mejor dentro del servicio */
             const oldEntity = await this.orderService.find(parseInt(req.params.id));
             if(oldEntity) {
-                const orderDetails = await this.orderService.getDetails(oldEntity);
+                let orderDetails = await this.orderService.getDetails(oldEntity);
                 oldEntity.orderDetails = orderDetails;
 
                 //se actualiza inventario
@@ -173,7 +173,7 @@ export class OrderController extends BaseController<Order> {
                         throw e;
                     }
 
-                    const orderDetails = await this.orderService.updateOrder(parseOrderDetail, oldEntity.orderDetails, oldEntity);
+                    orderDetails = await this.orderService.updateOrder(parseOrderDetail, oldEntity.orderDetails, oldEntity);
                     oldEntity.orderDetails = orderDetails;
                 }
 
