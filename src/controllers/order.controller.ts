@@ -2,7 +2,7 @@ import {BaseController} from "../common/controllers/base.controller";
 import {EntityTarget} from "typeorm";
 import {Order} from "../models/Order";
 import {OrderService} from "../services/order.service";
-import {POST, PUT, route} from "awilix-express";
+import {GET, POST, PUT, route} from "awilix-express";
 import {OrderCreateDTO, OrderListDTO, OrderShowDTO, OrderUpdateDTO} from "./parsers/order";
 import {Request, Response} from "express";
 import {InvalidArgumentException} from "../common/exceptions";
@@ -10,10 +10,10 @@ import {DeliveryMethod} from "../models/DeliveryMethod";
 import {DeliveryMethodService} from "../services/deliveryMethod.service";
 import {UserService} from "../services/user.service";
 import {OrderDetail} from "../models/OrderDetail";
-import {isPaymentMode, PaymentModes} from "../common/enum/paymentModes";
-import {OrderProductTrace} from "../common/helper/orderTrace";
+import {isPaymentMode} from "../common/enum/paymentModes";
 import {OrderProduct} from "./parsers/orderProduct";
 import { CustomerService } from "../services/customer.service";
+import {TemplateService} from "../services/template.service";
 
 @route('/order')
 export class OrderController extends BaseController<Order> {
@@ -21,7 +21,8 @@ export class OrderController extends BaseController<Order> {
         private readonly orderService: OrderService,
         private readonly deliveryMethodService: DeliveryMethodService,
         private readonly userService: UserService,
-        private readonly customerService: CustomerService
+        private readonly customerService: CustomerService,
+        private readonly templateService: TemplateService
     ){
         super(orderService);
     };
@@ -113,6 +114,8 @@ export class OrderController extends BaseController<Order> {
             const orderDetails: OrderDetail[] = await this.orderService.getDetails(order);
             order.orderDetails = orderDetails;
 
+            console.log("LLEGO AQUI...", order);
+
             return res.json({status: 200 , order: OrderShowDTO(order)});
         }catch(e){
             this.handleException(e, res);
@@ -156,7 +159,7 @@ export class OrderController extends BaseController<Order> {
     public async update(req: Request, res: Response) {
         try {
             /** TODO -- Estructurar mejor dentro del servicio */
-            const oldEntity = await this.orderService.find(parseInt(req.params.id));
+            const oldEntity = await this.orderService.find(parseInt(req.params.id), ['orderDelivery']);
             if(oldEntity) {
                 let orderDetails = await this.orderService.getDetails(oldEntity);
                 oldEntity.orderDetails = orderDetails;
@@ -215,11 +218,62 @@ export class OrderController extends BaseController<Order> {
         }
     }
 
+    /**
+     * Obtener plantilla de impresión
+     * @param req
+     * @param res
+     */
+    @route('/:id/print')
+    @GET()
+    public async print(req: Request, res: Response) {
+        try {
+            const order = await this.orderService.find(parseInt(req.params.id), ['orderDelivery', 'customer', 'user', 'deliveryMethod']);
+            if (order) {
+                const templateName = this.orderService.getPrintTemplate(order);
+                const template = await this.templateService.getTemplate(templateName, {order});
+                if(!template){
+                    console.error("-- template name not found", templateName);
+                    throw new InvalidArgumentException("No se ha encontrado un resumen para esta orden");
+                }
+                return res.json({status: 200, html: template});
+            }
+        }catch(e){
+            this.handleException(e, res);
+            console.log("error", e);
+        }
+    }
+
+    /**
+     * Obtener resumen de una orden
+     * @param req
+     * @param res
+     */
+    @route('/:id/boardResume')
+    @GET()
+    public async getResume(req: Request, res: Response) {
+        try {
+            const order = await this.orderService.find(parseInt(req.params.id), ['orderDelivery', 'customer', 'user', 'deliveryMethod']);
+            if (order) {
+                const templateName = this.orderService.getBoardRuleTemplate(order);
+                const template = await this.templateService.getTemplate(templateName, {order});
+                if(!template){
+                    console.error("-- template name not found", templateName);
+                    throw new InvalidArgumentException("No se ha encontrado un resumen para esta orden");
+                }
+                return res.json({status: 200, text: template});
+            }
+            throw new InvalidArgumentException("No podemos procesar esta solicitud.");
+        }catch(e){
+            this.handleException(e, res);
+            console.log("error", e);
+        }
+    }
+
     protected getDefaultRelations(isDetail): Array<string> {
         if(isDetail) {
-            return ['customer', 'deliveryMethod', 'user', 'customer.municipality', 'customer.state'];
+            return ['customer', 'deliveryMethod', 'user', 'customer.municipality', 'customer.state', 'orderDelivery'];
         } else {
-            return ['customer', 'deliveryMethod', 'orderDetails', 'user', 'customer.municipality', 'customer.state'];
+            return ['customer', 'deliveryMethod', 'orderDetails', 'user', 'customer.municipality', 'customer.state', 'orderDelivery'];
         }
     }
 }

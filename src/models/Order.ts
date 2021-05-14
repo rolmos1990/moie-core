@@ -3,28 +3,25 @@ import {
     CreateDateColumn,
     Entity, JoinColumn,
     ManyToOne,
-    OneToMany,
+    OneToMany, OneToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn
 } from "typeorm";
 import BaseModel from "../common/repositories/base.model";
 import {
-    isBoolean,
     IsBoolean,
     IsDate,
     IsDecimal,
-    isNumber,
     IsNumber,
     IsOptional,
     Length,
-    MaxLength
 } from "class-validator";
 import {Type} from "class-transformer";
 import {Customer} from "./Customer";
 import {DeliveryMethod} from "./DeliveryMethod";
-import {ProductImage} from "./ProductImage";
 import {OrderDetail} from "./OrderDetail";
 import {User} from "./User";
+import {OrderDelivery} from "./OrderDelivery";
 
 /**
  * El isImpress -> o Impreso seria un Estatus más,
@@ -43,14 +40,6 @@ export class Order extends BaseModel{
     @ManyToOne(() => DeliveryMethod)
     @JoinColumn({name: 'delivery_method_id'})
     deliveryMethod: DeliveryMethod;
-
-    @Column({name:'delivery_cost', type: 'decimal'})
-    @IsDecimal({ decimal_digits: '2'}, {groups: ['create','update']})
-    deliveryCost: number;
-
-    @Column({name:'charge_on_delivery', type: 'boolean'})
-    @IsBoolean({groups: ['create','update']})
-    chargeOnDelivery: boolean;
 
     @Column({name:'origen', type: 'varchar', length: 150, nullable: true})
     @Length(3, 150, {groups: ['create','update']})
@@ -77,11 +66,6 @@ export class Order extends BaseModel{
     @IsDecimal({ decimal_digits: '2'}, {groups: ['create','update']})
     totalWeight: number;
 
-    @Column({name:'tracking', type: 'varchar', length: 200, nullable: true})
-    @Length(0,200, {groups: ['create','update']})
-    @IsOptional()
-    tracking: string;
-
     @Column({name:'remember', type: 'boolean', nullable: true})
     @IsBoolean({groups: ['create','update']})
     remember: boolean;
@@ -95,10 +79,6 @@ export class Order extends BaseModel{
     @IsNumber()
     @IsOptional()
     piecesForChanges: number;
-
-    @Column({name:'delivery_type', type: 'integer', nullable: true})
-    @IsOptional()
-    deliveryType : number;
 
     @CreateDateColumn({name:'expired_date', nullable: true})
     @Type(() => Date)
@@ -127,6 +107,9 @@ export class Order extends BaseModel{
 
     @OneToMany(() => OrderDetail, orderDetail => orderDetail.order)
     orderDetails: OrderDetail[];
+
+    @OneToOne(() => OrderDelivery, orderDelivery => orderDelivery.order)
+    orderDelivery: OrderDelivery;
 
     isEmpty(): boolean {
         return (this.id == null);

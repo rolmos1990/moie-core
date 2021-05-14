@@ -3,6 +3,11 @@ import {readFileSync, writeFile, writeFileSync} from "fs";
 import {UtilService} from "../common/controllers/util.service";
 import {extension} from 'mime-types';
 import ResizeImg = require("resize-img");
+import {launch} from 'puppeteer';
+import {compile} from 'handlebars';
+import * as path from "path";
+import {create} from 'handlebars-pdf';
+const createHTML = require('create-html');
 
 const CONFIG_MEDIA = {
     IMAGE_PATH: './uploads',
@@ -94,5 +99,82 @@ export class MediaManagementService extends UtilService {
         });
 
         await Promise.all(saved);
+    }
+
+    async createHTML(){
+        try {
+
+            const data = {
+                name: "Ramon",
+                lastname: "Olmos",
+                order:{
+                    id: 123,
+                    status: 2
+                }
+            };
+
+            var templateHtml = readFileSync(path.join(process.cwd(), '/src/templates/report.html'), 'utf8');
+            var template = compile(templateHtml)(data);
+
+            let document = {
+                template:  template,
+                context: {
+                    name: "Hello",
+                    order:{
+                        id: 123
+                    }
+                },
+                path: "./src/storage/tmp/test-"+Math.random()+".html"
+            }
+
+            var html = createHTML({
+                title: 'report.html',
+                body: template
+            })
+
+            await writeFile("./src/storage/tmp/test-"+Math.random()+".html", html, function(err){
+                if (err) console.log(err)
+            });
+
+        }catch(e){
+            console.log("error", e.message);
+        }
+    }
+
+    /**
+     * Generar un fichero PDF
+     * Genera un fichero PDF indicando la plantilla y el objeto de entrada
+     */
+    async createPDF(){
+        console.log("ENTRANDO..");
+        try {
+
+            const data = {
+                name: "Ramon",
+                lastname: "Olmos",
+                order:{
+                    id: 123
+                }
+            };
+
+            var templateHtml = readFileSync(path.join(process.cwd(), '/src/templates/report.html'), 'utf8');
+            var template = compile(templateHtml)(data);
+
+            let document = {
+                template:  template,
+                context: {
+                    name: "Hello",
+                    order:{
+                        id: 123
+                    }
+                },
+                path: "./src/storage/tmp/test-"+Math.random()+".pdf"
+            }
+
+            await create(document);
+
+        }catch(e){
+            console.log("error", e.message);
+        }
     }
 }

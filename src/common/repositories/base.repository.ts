@@ -77,7 +77,7 @@ export default abstract class BaseRepository<T> {
     async find(id: number, relations = []){
         const data = await this.repositoryManager.findOne(id, {relations});
         if(!data){
-            throw new InvalidArgumentException("No se ha encontrado un registro asociado");
+            throw new InvalidArgumentException("No hemos encontrado un registro para esta solicitud");
         }
         return data;
     }

@@ -1,0 +1,281 @@
+<style>
+    /* Eric Meyer's CSS Reset */
+    html, body, div, span, applet, object, iframe,
+    h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+    a, abbr, acronym, address, big, cite, code,
+    del, dfn, em, img, ins, kbd, q, s, samp,
+    small, strike, sub, sup, tt, var,
+    b, u, i, center,
+    dl, dt, dd, ol, ul, li,
+    fieldset, form, label, legend,
+    table, caption, tbody, tfoot, thead, tr, th, td,
+    article, aside, canvas, details, embed,
+    figure, figcaption, footer, header, hgroup,
+    menu, nav, output, ruby, section, summary,
+    time, mark, audio, video {
+        margin: 0;
+        padding: 0;
+        border: 0;
+        line-height: 20px;
+        font-family: monospace;
+        vertical-align: baseline;
+        font-size: 16px;
+    }
+    /* HTML5 display-role reset for older browsers */
+    article, aside, details, figcaption, figure,
+    footer, header, hgroup, menu, nav, section {
+        display: block;
+    }
+    body {
+        line-height: 1;
+    }
+    ol, ul {
+        list-style: none;
+    }
+    blockquote, q {
+        quotes: none;
+    }
+    blockquote: before, blockquote: after,
+    q: before, q: after {
+        content: '';
+        content: none;
+    }
+    table {
+        border-collapse: collapse;
+        border-spacing: 0;
+    }
+    /* End of Eric Meyer's CSS Reset */
+
+    article, aside, details, figcaption, figure, footer, header, hgroup, main, nav, section, summary {
+        display: block;
+    }
+    body {
+        width: 100%;
+    }
+    .wrapper {
+        width: 670px;
+        margin: 0 auto;
+        page-break-after: always;
+    }
+
+
+    /* Header
+    -----------------------------------------------------------------------------*/
+    .header {
+        margin-bottom: 25px;
+    }
+    .order_info{
+        width: 270px;
+        float: left;
+        height: 70px;
+        text-align: center;
+    }
+    .order_info p{
+        line-height: 18px;
+        font-size: 0.9em;
+        vertical-align: middle;
+    }
+    .logo{
+        width: 400px;
+        height: 70px;
+        float: left;
+    }
+    .logo span{
+        font-size: 1.5em;
+        color: red;
+        line-height: 34px;
+        vertical-align: middle;
+        display: inline-block;
+    }
+    .logo svg{
+        line-height: 54px;
+        vertical-align: middle;
+        display: inline-block;
+    }
+    .client_info{
+        width: 100%;
+        margin-bottom: 8px;
+        border-bottom: solid 1px #000;
+    }
+    .client_info2{
+        padding-top: 15px;
+    }
+    .client_info2 table{
+        width: 100%;
+    }
+    .client_info2 table td{
+        border: solid 1px lightgray;
+    }
+    .envio{
+        font-size: 24px;
+        font-weight: bold;
+        color: red;
+    }
+
+    /* Middle
+    -----------------------------------------------------------------------------*/
+    .content {
+    }
+    .content table{
+        width: 100%;
+    }
+    .content table thead{
+        font-weight: bold;
+    }
+    .content table tbody tr{
+        border-top-width: thin;
+        border-top-style: solid;
+        border-top-color: black;
+    }
+    .content table tbody tr td{
+        font-size: 1.3em;
+        padding: 2px;
+    }
+    .mas_de_uno{
+        background: #dfdfdf;
+    }
+
+
+
+    /* Footer
+    -----------------------------------------------------------------------------*/
+    .footer {
+        height: 50px;
+    }
+    .imprimir{
+        margin-top: 20px;
+        width: 350px;
+        float: left;
+        text-align: center;
+    }
+    .imprimir button{
+        font-size: 20px;
+    }
+    .order_total{
+        margin-top: 20px;
+        width: 320px;
+        float: left;
+    }
+    @media print{
+        .imprimir button{
+            display: none;
+        }
+    }
+</style>
+<html>
+<body>
+<div class="wrapper">
+    <header class="header">
+        <div class="logo" id="logo_{{order.id}}">
+            <span id="total_{{order.id}}"></span><br>
+            {{#if order.isInternalDelivery}}
+            <span style="font-size: 1.2em">{{order.paymentMode}}
+                <?php if($venta['piezasCambio'] > 0){ ?>
+                Piezas para cambio: {{order.piecesForChanges}}
+                <?php } ?>
+                </span>
+            {{/if}}
+        </div>
+        <div class="order_info">
+            <svg id="barcode_{{order.id}}"></svg>
+            <p><strong># Pedido:</strong> {{order.id}}</p>
+        </div>
+        <div class="client_info">
+            <p>
+                <strong>Cliente:</strong>
+                {{order.customer.name}}
+                <strong>CC/NIT:</strong> {{order.customer.document}}
+            </p>
+            <p><strong>Dirección:</strong> <strong>{{order.address}}</strong><?='<strong>' . $venta['cliente']['ciudad'] . '.</strong> ' . $venta['cliente']['direccion'] . ' <strong>Dpto.:</strong> ' . $venta['cliente']['estado'];?></p>
+            <p><strong>Teléfonos:</strong> +50764739851 64739851</p>
+        </div>
+        <?php if(count($venta['observaciones'])>0){ ?>
+        <h2>Observaciones</h2>
+        <table style="color:red">
+            Observación 1asldkj asldkj alskdj asldkjas lkdsa lasjldkasddsaad
+        </table>
+        <?php } ?>
+        <div class="client_info2">
+            <table style="width:100%;">
+                <tr>
+                    <td style="width:30%;">Pedido # 123123123</td>
+                    <td style="width:35%; text-align: center;">Fecha - Hora</td>
+                    <td style="width:35%; text-align: center;">Preparador</td>
+                </tr>
+                <tr>
+                    <td>
+                        Ramon Olmos
+                    </td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </table>
+        </div>
+    </header>
+
+    <div class="content">
+        <table>
+            <thead>
+            <tr>
+                <td>
+                    Ref.
+                </td>
+                <td>
+                    Color
+                </td>
+                <td>
+                    Talla
+                </td>
+                <td style="text-align: right;">
+                    Cant.
+                </td>
+                <td style="text-align: right;">
+                    Precio c/desc.
+                </td>
+            </tr>
+            </thead>
+            <tbody>
+            <?php
+                    $cantidad = 0;
+                    $total = 0;
+                    foreach($venta['productos'] as $p){
+                        $cantidad += $p['cantidad'];
+                        $total += ($p['precio'] * (1-($p['ajuste']/100)))*$p['cantidad'];
+                        ?>
+            <tr <?php if($p['cantidad']> 1){
+            echo 'class="mas_de_uno"';
+            }?>>
+            <td style="font-weight: bold;">
+                <?=$p['id'];?>
+            </td>
+            <td style="font-weight: bold;">
+                <?=$p['color'];?>
+            </td>
+            <td style="font-weight: bold;">
+                <?=$p['talla'];?>
+            </td>
+            <td style="text-align: right;font-weight: bold;">
+                <?=$p['cantidad'];?>
+            </td>
+            <td style="text-align: right;">
+                <?=number_format(($p['precio'] * (1-($p['ajuste']/100))), 2);?>
+            </td>
+            </tr>
+            <?php } ?>
+            </tbody>
+        </table>
+    </div>
+    <div class="footer">
+        <div class="imprimir">
+
+        </div>
+        <div class="order_total">
+            <p>Cantidad de piezas: <strong><?=$cantidad;?></strong></p>
+            <p>Subtotal: <strong><?=number_format($total,2);?></strong></p>
+            <p>Envío: <strong><?=number_format($venta['montoEnvio'],2);?></strong></p>
+            <p>Total: <strong><?=number_format(($total + $venta['montoEnvio']),2);?></strong></p>
+        </div>
+    </div>
+</div><!-- .wrapper -->
+</body>
+</html>

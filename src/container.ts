@@ -29,6 +29,11 @@ import {DeliveryMethodRepository} from "./repositories/deliveryMethod.repository
 import {OrderRepository} from "./repositories/order.repository";
 import {OrderService} from "./services/order.service";
 import {OrderDetailRepository} from "./repositories/orderDetail.repository";
+import {NotificationRepository} from "./repositories/notification.repository";
+import {NotificationService} from "./services/notification.service";
+import {OrderDeliveryRepository} from "./repositories/orderDelivery.repository";
+import {TemplateService} from "./services/template.service";
+import {TemplateRepository} from "./repositories/template.repository";
 
 export default (app: express.Application): void => {
     const container = createContainer({
@@ -51,6 +56,9 @@ export default (app: express.Application): void => {
         deliveryMethodRepository: asClass(DeliveryMethodRepository).scoped(),
         orderRepository: asClass(OrderRepository).scoped(),
         orderDetailRepository: asClass(OrderDetailRepository).scoped(),
+        orderDeliveryRepository: asClass(OrderDeliveryRepository).scoped(),
+        notificationRepository: asClass(NotificationRepository).scoped(),
+        templateRepository: asClass(TemplateRepository).scoped(),
         // services
         userService: asClass(UserService).scoped(),
         customerService: asClass(CustomerService).scoped(),
@@ -66,6 +74,8 @@ export default (app: express.Application): void => {
         mediaManagementService: asClass(MediaManagementService).scoped(),
         deliveryMethodService: asClass(DeliveryMethodService).scoped(),
         orderService: asClass(OrderService).scoped(),
+        notificationService: asClass(NotificationService).scoped(),
+        templateService: asClass(TemplateService).scoped(),
     });
 
     app.use(scopePerRequest(container));

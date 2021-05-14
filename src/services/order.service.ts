@@ -15,11 +15,15 @@ import {OrderProductTrace} from "../common/helper/orderTrace";
 import {existsInEntity} from "../common/helper/helpers";
 import {ProductSize} from "../models/ProductSize";
 import {Product} from "../models/Product";
+import {OrderDelivery} from "../models/OrderDelivery";
+import {OrderDeliveryRepository} from "../repositories/orderDelivery.repository";
+import {DeliveryTypes, getDeliveryType} from "../common/enum/deliveryTypes";
 
 export class OrderService extends BaseService<Order> {
     constructor(
         private readonly orderRepository: OrderRepository<Order>,
         private readonly  orderDetailRepository: OrderDetailRepository<OrderDetail>,
+        private readonly  orderDeliveryRepository: OrderDeliveryRepository<OrderDelivery>,
         private readonly productSizeService: ProductSizeService,
         private readonly customerService: CustomerService
     ) {
@@ -59,20 +63,28 @@ export class OrderService extends BaseService<Order> {
             const customer = await this.customerService.find(parse.customer);
 
             const order = new Order();
+            const orderDelivery = new OrderDelivery();
+            order.orderDelivery = orderDelivery;
+
+            console.log("ORDER DELIVERY", order.orderDelivery);
+            console.log("ORDER DELIVERY COST", order.orderDelivery.deliveryCost);
 
             if (oldOrder) {
                 order.id = oldOrder.id;
             }
 
+            const deliveryCost = parse.deliveryCost || order.orderDelivery.deliveryCost || 0;
+            console.log("deliveryCost", deliveryCost);
+
             order.customer = customer;
             order.origen = parse.origen || order.origen;
-            order.chargeOnDelivery = [true, false].includes(parse.chargeOnDelivery) ? parse.chargeOnDelivery : order.chargeOnDelivery;
-            order.deliveryType = parse.deliveryType || order.deliveryType;
-            order.deliveryCost = parse.deliveryCost || order.deliveryCost;
+            order.orderDelivery.chargeOnDelivery = [true, false].includes(parse.chargeOnDelivery) ? parse.chargeOnDelivery : order.orderDelivery.chargeOnDelivery;
+            order.orderDelivery.deliveryType = parse.deliveryType || order.orderDelivery.deliveryType;
+            order.orderDelivery.deliveryCost = deliveryCost;
             order.deliveryMethod = deliveryMethod || order.deliveryMethod;
             order.expiredDate = new Date();
             order.status = order.status || 1;
-            order.tracking = order.tracking || "";
+            order.orderDelivery.tracking = order.orderDelivery.tracking || "";
             order.remember = order.remember || false;
             order.createdAt = order.createdAt || new Date();
 
@@ -86,7 +98,7 @@ export class OrderService extends BaseService<Order> {
 
             const costs = await this.getCalculateCosts(products);
 
-            order.totalAmount = (costs.totalAmount - costs.totalDiscount) + (parse.deliveryCost || order.deliveryCost || 0);
+            order.totalAmount = (costs.totalAmount - costs.totalDiscount) + deliveryCost;
             order.subTotalAmount = costs.totalAmount;
             order.totalDiscount = costs.totalDiscount;
             order.totalRevenue = costs.totalRevenue;
@@ -96,12 +108,14 @@ export class OrderService extends BaseService<Order> {
             order.paymentMode = parse.paymentMode || order.paymentMode || null;
 
             const orderRegister = await this.createOrUpdate(order);
+            order.orderDelivery.order = orderRegister;
+            await this.orderDeliveryRepository.save(order.orderDelivery)
 
             if (!oldOrder) {
                 await this.addDetail(products);
             }
 
-            return await this.find(orderRegister.id, ['orderDetails', 'customer', 'deliveryMethod', 'user', 'customer.municipality', 'customer.state']);
+            return await this.find(orderRegister.id, ['orderDetails', 'customer', 'deliveryMethod', 'user', 'customer.municipality', 'customer.state', 'orderDelivery']);
 
         } catch (e) {
             throw e;
@@ -238,5 +252,24 @@ export class OrderService extends BaseService<Order> {
                 }, 'quantity', item.diff);
             }
         }));
+    }
+
+    /**
+     * @param Order order
+     * Obtener plantilla dependiendo de la orden
+     */
+    getBoardRuleTemplate(order: Order) {
+        const aliasFree = order.orderDelivery.deliveryCost == 0 ? 'FREE' : 'PAID';
+        const deliveryTemplateName = `COPY_RESUME_${getDeliveryType(order.orderDelivery.deliveryType)}_${order.deliveryMethod.code}_${aliasFree}`;
+        return deliveryTemplateName;
+    }
+
+    /**
+     * @param Order order
+     * Obtener plantilla dependiendo de la orden
+     */
+    getPrintTemplate(order: Order) {
+        const deliveryTemplateName = `PRINT_${getDeliveryType(order.orderDelivery.deliveryType)}_${order.deliveryMethod.code}`;
+        return deliveryTemplateName;
     }
 }

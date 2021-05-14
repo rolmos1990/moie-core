@@ -9,6 +9,7 @@ import {UserShortDTO} from "./user";
 import {OrderDetail} from "../../models/OrderDetail";
 import {ProductShortDTO} from "./product";
 import {ProductSizeShort} from "./productSize";
+import {OrderDeliveryListDTO, OrderDeliveryShowDTO} from "./orderDelivery";
 
 
 export const OrderCreateDTO = async (order: any) => {
@@ -92,14 +93,15 @@ export class Order {
     products: OrderProduct[]
 }
 
-export const OrderUpdateDTO = async (order: any) => {
+export const OrderUpdateDTO = async (orderRequest: any) => {
     try {
-        order = new OrderUpdate(order);
-        const orderErrors = await validate(order);
+        orderRequest = new OrderUpdate(orderRequest);
+        const orderErrors = await validate(orderRequest);
+        console.log(orderErrors);
         if(orderErrors.length > 0){
             return orderErrors[0].value;
         }
-        return order;
+        return orderRequest;
     }catch(e){
         return new InvalidArgumentException("No podemos procesar su solicitud");
     }
@@ -115,7 +117,7 @@ export class OrderUpdate {
         this.piecesForChanges = props.piecesForChanges;
         this.paymentMode = props.paymentMode;
 
-        this.chargeOnDelivery = this.hasChargeOnDelivery(props);
+        this.chargeOnDelivery = this.hasChargeOnDelivery(props) || false;
     }
 
     hasChargeOnDelivery(props) : boolean{
@@ -158,42 +160,37 @@ export class OrderUpdate {
 
 export const OrderListDTO = (order: OrderModel) => ({
     id: order.id,
-    deliveryCost: order.deliveryCost,
-    chargeOnDelivery: order.chargeOnDelivery,
+    deliveryMethod: DeliveryMethodListDTO(order.deliveryMethod),
+    orderDelivery: OrderDeliveryListDTO(order.orderDelivery),
     origen: order.origen,
     totalAmount: order.totalAmount,
     subTotalAmount: order.subTotalAmount,
     totalDiscount: order.totalDiscount,
     totalRevenue: order.totalRevenue,
     totalWeight: order.totalWeight,
-    tracking: order.tracking,
     remember: order.remember,
-    deliveryType: order.deliveryType,
     expiredDate: order.expiredDate,
     createdAt: order.createdAt,
     updatedAt: order.updatedAt,
     status: order.status,
     quantity: order.orderDetails && order.orderDetails.length,
     customer: CustomerShortDTO(order.customer),
-    deliveryMethod: DeliveryMethodListDTO(order.deliveryMethod)
 });
 
 
 export const OrderShowDTO = (order: OrderModel) => ({
     id: order.id,
-    deliveryCost: order.deliveryCost,
-    chargeOnDelivery: order.chargeOnDelivery,
+    deliveryMethod: DeliveryMethodListDTO(order.deliveryMethod),
+    orderDelivery: OrderDeliveryShowDTO(order.orderDelivery),
     origen: order.origen,
     totalAmount: order.totalAmount,
     subTotalAmount: order.subTotalAmount,
     totalDiscount: order.totalDiscount,
     totalRevenue: order.totalRevenue,
     totalWeight: order.totalWeight,
-    tracking: order.tracking,
     remember: order.remember,
     piecesForChanges: order.piecesForChanges,
     paymentMode: order.paymentMode,
-    deliveryType: order.deliveryType,
     expiredDate: order.expiredDate,
     createdAt: order.createdAt,
     updatedAt: order.updatedAt,
@@ -201,7 +198,6 @@ export const OrderShowDTO = (order: OrderModel) => ({
     quantity: order.orderDetails && order.orderDetails.length,
     orderDetails: order.orderDetails && order.orderDetails.map(item => OrderDetailShowDTO(item)),
     customer: CustomerListDTO(order.customer),
-    deliveryMethod: DeliveryMethodListDTO(order.deliveryMethod),
     user: UserShortDTO(order.user)
 });
 

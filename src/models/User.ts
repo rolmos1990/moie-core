@@ -1,13 +1,15 @@
 import {
     Column,
     CreateDateColumn,
-    Entity,
+    Entity, OneToMany,
     PrimaryGeneratedColumn,
     UpdateDateColumn
 } from "typeorm";
 import BaseModel from "../common/repositories/base.model";
 import {IsDate, IsEmail, Length, IsBoolean, IsDateString} from "class-validator";
 import { Type } from 'class-transformer';
+import {OrderDetail} from "./OrderDetail";
+import { Notification } from "./Notification";
 
 @Entity({name: 'User'})
 export class User extends BaseModel{
@@ -57,6 +59,9 @@ export class User extends BaseModel{
     @Type(() => Date)
     @IsDate()
     updatedAt: Date;
+
+    @OneToMany(() => Notification, notifications => notifications.user)
+    notifications: Notification[];
 
     equals(obj: any) {
         if(obj instanceof User === false){
