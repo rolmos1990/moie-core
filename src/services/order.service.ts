@@ -114,6 +114,7 @@ export class OrderService extends BaseService<Order> {
             order.user = order.user || user;
             order.piecesForChanges = parse.piecesForChanges || order.piecesForChanges || null;
             order.paymentMode = parse.paymentMode || order.paymentMode || null;
+            order.quantity = products.length;
 
             const orderRegister = await this.createOrUpdate(order);
             order.orderDelivery.order = orderRegister;

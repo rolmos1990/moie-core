@@ -80,6 +80,10 @@ export class Order extends BaseModel{
     @IsOptional()
     piecesForChanges: number;
 
+    @Column({name:'quantity', type: 'integer'})
+    @IsNumber()
+    quantity: number;
+
     @CreateDateColumn({name:'expired_date', nullable: true})
     @Type(() => Date)
     @IsDate()
