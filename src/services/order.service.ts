@@ -114,11 +114,18 @@ export class OrderService extends BaseService<Order> {
             order.user = order.user || user;
             order.piecesForChanges = parse.piecesForChanges || order.piecesForChanges || null;
             order.paymentMode = parse.paymentMode || order.paymentMode || null;
-            order.quantity = products.length;
+            order.quantity = products.reduce((sum,product) => (sum.quantity + product.quantity, 0)).quantity;
 
             const orderRegister = await this.createOrUpdate(order);
             order.orderDelivery.order = orderRegister;
-            await this.orderDeliveryRepository.save(order.orderDelivery)
+            await this.orderDeliveryRepository.save(order.orderDelivery);
+
+            //Actualizar cliente como mayorista
+            try {
+                await this.customerService.isMayorist(customer, order.quantity, true);
+            }catch(e){
+                console.log("No se actualizo mayorista", e.message);
+            }
 
             if (!oldOrder) {
                 await this.addDetail(products);
