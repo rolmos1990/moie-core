@@ -19,14 +19,12 @@ export class TemplateService extends BaseService<Template> {
     async getTemplate(templateName, dataObject: Object){
         try {
             const template = await this.templateRepository.findOneByObject({reference: templateName});
-            console.log("SE ENCONTRO PLANTILLA?", template);
             if(template){
                 return compile(template.template)({...dataObject});
             } else {
                 throw new ApplicationException("No se ha encontrado plantilla - " + templateName);
             }
         }catch(e){
-            console.log("PROBLEMA OCURRIDO", e);
             throw new ApplicationException("Ha ocurrido un problema con la plantilla - " + templateName);
         }
     }
