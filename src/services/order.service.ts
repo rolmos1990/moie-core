@@ -18,6 +18,7 @@ import {Product} from "../models/Product";
 import {OrderDelivery} from "../models/OrderDelivery";
 import {OrderDeliveryRepository} from "../repositories/orderDelivery.repository";
 import {DeliveryTypes, getDeliveryType} from "../common/enum/deliveryTypes";
+import {DeliveryMethodService} from "./deliveryMethod.service";
 
 export class OrderService extends BaseService<Order> {
     constructor(
@@ -25,7 +26,8 @@ export class OrderService extends BaseService<Order> {
         private readonly  orderDetailRepository: OrderDetailRepository<OrderDetail>,
         private readonly  orderDeliveryRepository: OrderDeliveryRepository<OrderDelivery>,
         private readonly productSizeService: ProductSizeService,
-        private readonly customerService: CustomerService
+        private readonly customerService: CustomerService,
+        private readonly deliveryMethodService: DeliveryMethodService
     ) {
         super(orderRepository);
     }
@@ -58,12 +60,18 @@ export class OrderService extends BaseService<Order> {
      * Agregar una orden al modulo de ordenes
      * @param order
      */
-    async addOrUpdateOrder(parse: OrderParser, deliveryMethod: DeliveryMethod, user: User, oldOrder: Order) {
+    async addOrUpdateOrder(parse: OrderParser, deliveryMethod: DeliveryMethod, user: User, oldOrder: Order, updateAddress = false) {
         try {
-            const customer = await this.customerService.find(parse.customer);
+            const customer = await this.customerService.find(parse.customer || oldOrder.customer.id, ['state', 'municipality']);
 
             const order = new Order();
-            const orderDelivery = new OrderDelivery();
+
+            let orderDelivery = new OrderDelivery();
+            if(updateAddress) {
+                const method = deliveryMethod || oldOrder.deliveryMethod;
+                orderDelivery = await this.deliveryMethodService.deliveryMethodAddress(method, customer, parse.deliveryLocality);
+            }
+
             order.orderDelivery = orderDelivery;
 
             console.log("ORDER DELIVERY", order.orderDelivery);

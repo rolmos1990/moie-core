@@ -1,4 +1,5 @@
 import {Any} from "typeorm";
+import {DeliveryWebService} from "../enum/deliveryTypes";
 
 export interface DecodeDataObj {
     type: string,
@@ -36,4 +37,13 @@ export function existsInEntity(entityArray, entitySearch){
         return {exists: true, value: exists[0]};
     }
     return {exists: false, value: null};
+}
+
+export function hasInEnum(keyName, enumerations) {
+    for (let key in enumerations) {
+        if(keyName.toString().toUpperCase() == key){
+            return true;
+        }
+    }
+    return false;
 }

@@ -110,7 +110,7 @@ export class OrderController extends BaseController<Order> {
             const user = await this.userService.find(1);
 
 
-            const order: Order = await this.orderService.addOrUpdateOrder(parse, deliveryMethod, user, null);
+            const order: Order = await this.orderService.addOrUpdateOrder(parse, deliveryMethod, user, null, false);
             const orderDetails: OrderDetail[] = await this.orderService.getDetails(order);
             order.orderDetails = orderDetails;
 
@@ -159,7 +159,8 @@ export class OrderController extends BaseController<Order> {
     public async update(req: Request, res: Response) {
         try {
             /** TODO -- Estructurar mejor dentro del servicio */
-            const oldEntity = await this.orderService.find(parseInt(req.params.id), ['orderDelivery']);
+            /** TODO -- agregar refreshAddress -> si recibo esto refrescar la dirección */
+            const oldEntity = await this.orderService.find(parseInt(req.params.id), ['orderDelivery', 'deliveryMethod', 'customer']);
             if(oldEntity) {
                 let orderDetails = await this.orderService.getDetails(oldEntity);
                 oldEntity.orderDetails = orderDetails;
@@ -206,8 +207,8 @@ export class OrderController extends BaseController<Order> {
                     }
                     oldEntity.paymentMode = parse.paymentMode;
                 }
-
-                const order: Order = await this.orderService.addOrUpdateOrder(parse, deliveryMethod, null, oldEntity);
+                console.log("refresh order", parse.refreshAddress);
+                const order: Order = await this.orderService.addOrUpdateOrder(parse, deliveryMethod, null, oldEntity, parse.refreshAddress);
                 order.orderDetails = orderDetails;
 
                 return res.json({status: 200, order: OrderShowDTO(order)});

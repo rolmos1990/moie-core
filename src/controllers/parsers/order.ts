@@ -53,6 +53,7 @@ export class Order {
         this.products = props.products;
         this.piecesForChanges = props.piecesForChanges;
         this.paymentMode = props.paymentMode;
+        this.deliveryLocality = props.deliveryLocality;
 
         this.chargeOnDelivery = this.hasChargeOnDelivery(props);
     }
@@ -87,6 +88,10 @@ export class Order {
     @IsOptional()
     deliveryType: number;
 
+    @IsNumber()
+    @IsOptional()
+    deliveryLocality: number;
+
     @IsString()
     origen: string;
 
@@ -116,8 +121,11 @@ export class OrderUpdate {
         this.origen = props.origen;
         this.piecesForChanges = props.piecesForChanges;
         this.paymentMode = props.paymentMode;
+        this.deliveryLocality = props.deliveryLocality;
 
         this.chargeOnDelivery = this.hasChargeOnDelivery(props) || false;
+
+        this.refreshAddress = props.refreshAddress;
     }
 
     hasChargeOnDelivery(props) : boolean{
@@ -153,9 +161,17 @@ export class OrderUpdate {
     @IsOptional()
     deliveryType: number;
 
+    @IsNumber()
+    @IsOptional()
+    deliveryLocality: number;
+
     @IsString()
     @IsOptional()
     origen: string;
+
+    @IsBoolean()
+    @IsOptional()
+    refreshAddress: boolean;
 }
 
 export const OrderListDTO = (order: OrderModel) => ({

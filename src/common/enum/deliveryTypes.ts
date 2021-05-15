@@ -4,6 +4,14 @@ export enum DeliveryTypes {
     CHARGE_ON_DELIVERY = 3 //Cobro en destino
 };
 
+export enum DeliveryWebService {
+    INTERRAPIDISIMO_SERVICE= 'INTERRAPIDISIMO_WEB'
+};
+
+export enum DeliveryLocation {
+    INTERRAPIDISIMO = 'INTERRAPIDISIMO'
+};
+
 export function getDeliveryType(deliveryType){
     switch(deliveryType) {
         case DeliveryTypes.PREVIOUS_PAYMENT:

@@ -3,13 +3,14 @@ import {EntityTarget} from "typeorm";
 import {StateService} from "../services/state.service";
 import {route} from "awilix-express";
 import {Template} from "../models/Template";
+import {TemplateService} from "../services/template.service";
 
 @route('/template')
 export class TemplateController extends BaseController<Template> {
     constructor(
-        private readonly stateService: StateService
+        private readonly templateService: TemplateService
     ){
-        super(stateService);
+        super(templateService);
     };
     protected afterCreate(item: Object): void {
     }
