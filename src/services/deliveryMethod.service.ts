@@ -19,7 +19,7 @@ export class DeliveryMethodService extends BaseService<DeliveryMethod> {
     }
 
     /** Obtiene el tipo de dirección que trabaja el metodo de Envio */
-    async deliveryMethodAddress(deliveryMethod: DeliveryMethod, customer: Customer, locality: number = null) : Promise<OrderDelivery>{
+    async deliveryMethodAddress(deliveryMethod: DeliveryMethod, customer: Customer, locality: number = null, tracking = null) : Promise<OrderDelivery>{
         const orderDelivery = new OrderDelivery();
 
         if(!deliveryMethod){
@@ -36,6 +36,9 @@ export class DeliveryMethodService extends BaseService<DeliveryMethod> {
             try {
                 const deliveryLocality = await this.deliveryLocalityService.find(locality);
                 orderDelivery.deliveryLocality = deliveryLocality;
+                if(orderDelivery.tracking){
+                    orderDelivery.tracking = tracking;
+                }
                 return orderDelivery;
             }catch(e){
                 throw new InvalidArgumentException("No se ha encontrado la localidad seleccionada");

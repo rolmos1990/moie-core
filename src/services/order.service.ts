@@ -1,5 +1,5 @@
 import {BaseService} from "../common/controllers/base.service";
-import {Order as OrderParser} from "../controllers/parsers/order";
+import {OrderUpdate as OrderParserUpdate} from '../controllers/parsers/order';
 
 import {OrderRepository} from "../repositories/order.repository";
 import {OrderDetail} from "../models/OrderDetail";
@@ -60,7 +60,7 @@ export class OrderService extends BaseService<Order> {
      * Agregar una orden al modulo de ordenes
      * @param order
      */
-    async addOrUpdateOrder(parse: OrderParser, deliveryMethod: DeliveryMethod, user: User, oldOrder: Order, updateAddress = false) {
+    async addOrUpdateOrder(parse: OrderParserUpdate , deliveryMethod: DeliveryMethod, user: User, oldOrder: Order, updateAddress = false) {
         try {
             const customer = await this.customerService.find(parse.customer || oldOrder.customer.id, ['state', 'municipality']);
 
@@ -69,7 +69,7 @@ export class OrderService extends BaseService<Order> {
             let orderDelivery = new OrderDelivery();
             if(updateAddress) {
                 const method = deliveryMethod || oldOrder.deliveryMethod;
-                orderDelivery = await this.deliveryMethodService.deliveryMethodAddress(method, customer, parse.deliveryLocality);
+                orderDelivery = await this.deliveryMethodService.deliveryMethodAddress(method, customer, parse.deliveryLocality, parse.tracking);
             }
 
             order.orderDelivery = orderDelivery;
