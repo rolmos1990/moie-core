@@ -10,10 +10,11 @@ import {DeliveryMethod} from "../models/DeliveryMethod";
 import {DeliveryMethodService} from "../services/deliveryMethod.service";
 import {UserService} from "../services/user.service";
 import {OrderDetail} from "../models/OrderDetail";
-import {isPaymentMode} from "../common/enum/paymentModes";
+import {isCash, isPaymentMode} from "../common/enum/paymentModes";
 import {OrderProduct} from "./parsers/orderProduct";
 import { CustomerService } from "../services/customer.service";
 import {TemplateService} from "../services/template.service";
+import {getDeliveryShortType, QrBarImage} from "../common/helper/helpers";
 
 @route('/order')
 export class OrderController extends BaseController<Order> {
@@ -228,10 +229,22 @@ export class OrderController extends BaseController<Order> {
     @GET()
     public async print(req: Request, res: Response) {
         try {
-            const order = await this.orderService.find(parseInt(req.params.id), ['orderDelivery', 'customer', 'user', 'deliveryMethod']);
+            const order = await this.orderService.find(parseInt(req.params.id), ['orderDelivery', 'customer','customer.state','customer.municipality', 'user', 'deliveryMethod', 'orderDetails']);
             if (order) {
                 const templateName = this.orderService.getPrintTemplate(order);
-                const template = await this.templateService.getTemplate(templateName, {order});
+                console.log("-- find templateName: ", templateName);
+                const qrBar = await QrBarImage(order.id);
+                const deliveryShortType = getDeliveryShortType(order.orderDelivery.deliveryType);
+                const object = {
+                    order,
+                    qrBar,
+                    orderDetails: order.orderDetails,
+                    hasPayment: isPaymentMode(order.paymentMode),
+                    isCash: isCash(order.paymentMode),
+                    hasPiecesForChanges: (order.piecesForChanges && order.piecesForChanges > 0),
+                    deliveryShortType: deliveryShortType
+                };
+                const template = await this.templateService.getTemplate(templateName, object);
                 if(!template){
                     console.error("-- template name not found", templateName);
                     throw new InvalidArgumentException("No se ha encontrado un resumen para esta orden");

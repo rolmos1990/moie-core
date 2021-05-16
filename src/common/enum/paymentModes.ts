@@ -6,3 +6,13 @@ export enum PaymentModes {
 export const isPaymentMode = (paymentMode) => {
     return [PaymentModes.CASH,PaymentModes.WIRETRANSFER].includes(paymentMode);
 }
+
+export const isCash = (paymentMode) => {
+    if(!paymentMode){
+        return false;
+    }
+    if(paymentMode == PaymentModes.CASH){
+        return true;
+    }
+    return false;
+}

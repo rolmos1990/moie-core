@@ -1,5 +1,8 @@
 import {Any} from "typeorm";
-import {DeliveryWebService} from "../enum/deliveryTypes";
+import {DeliveryTypes, DeliveryWebService} from "../enum/deliveryTypes";
+import {InvalidArgumentException} from "../exceptions";
+const bwipjs = require('bwip-js');
+
 
 export interface DecodeDataObj {
     type: string,
@@ -46,4 +49,52 @@ export function hasInEnum(keyName, enumerations) {
         }
     }
     return false;
+}
+
+function textToBarCodeBase64 (text, height, width) {
+    return new Promise((resolve, reject) => {
+        bwipjs.toBuffer({
+            bcid: 'code128',
+            text: text + "",
+            scaleX: 2,
+            scaleY: 2,
+            height: 6,
+            includetext: false,
+            textxalign: 'center',
+        }, function(error, buffer) {
+            if(error) {
+                reject(error)
+            } else {
+                let gifBase64 = `data:image/gif;base64,${buffer.toString('base64')}`
+                resolve(gifBase64)
+            }
+        })
+    })
+}
+
+/** Entrega una HTML de Imagen Código QR */
+export async function QrBarImage(text, height = 400, width = 100){
+    try {
+        const imgsrc = await textToBarCodeBase64(text, height, width);
+        return '<img src="' + imgsrc + '" />';
+    }catch(e){
+        console.log("se ha producido un error al obtener la imagen", e.message);
+        return '<div title="ImageNotFound"></div>'
+    }
+}
+
+export function getDeliveryShortType(deliveryType){
+    switch(deliveryType){
+        case DeliveryTypes.PREVIOUS_PAYMENT:
+            return "CC";
+        break;
+        case DeliveryTypes.PAY_ONLY_DELIVERY:
+            return "PP COD";
+        break;
+        case DeliveryTypes.CHARGE_ON_DELIVERY:
+            return "CE";
+        break;
+        default:
+            "";
+    }
 }

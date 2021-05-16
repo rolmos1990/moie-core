@@ -285,7 +285,7 @@ export class OrderService extends BaseService<Order> {
      * Obtener plantilla dependiendo de la orden
      */
     getPrintTemplate(order: Order) {
-        const deliveryTemplateName = `PRINT_${getDeliveryType(order.orderDelivery.deliveryType)}_${order.deliveryMethod.code}`;
+        const deliveryTemplateName = `PRINT_${order.deliveryMethod.code}`;
         return deliveryTemplateName;
     }
 }
