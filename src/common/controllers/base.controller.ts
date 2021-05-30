@@ -10,7 +10,7 @@ import {PageDTO} from "../../controllers/parsers/page";
 import {ApplicationException, ConditionalException, InvalidArgumentException} from "../exceptions";
 import {OrderConditional} from "../enum/order.conditional";
 
-const GROUPS = {
+export const GROUPS = {
     POST: 'create',
     PUT: 'update'
 };
