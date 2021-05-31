@@ -8,6 +8,7 @@ import {InvalidArgumentException} from "../common/exceptions";
 import {CustomerService} from "../services/customer.service";
 import {OrderService} from "../services/order.service";
 import BaseModel from "../common/repositories/base.model";
+import {CommentListDTO} from "./parsers/comment";
 
 @route('/comment')
 export class CommentController extends BaseController<Comment> {
@@ -39,7 +40,7 @@ export class CommentController extends BaseController<Comment> {
     }
 
     getParseGET(entity: Comment, isDetail: boolean): Object {
-       return entity;
+       return CommentListDTO(entity);
     }
 
     getParsePOST(entity: Comment): Object {
@@ -105,9 +106,9 @@ export class CommentController extends BaseController<Comment> {
 
     protected getDefaultRelations(isDetail: boolean): Array<string> {
         if(isDetail){
-            return [];
+            return ['user'];
         } else {
-            return [];
+            return ['user'];
         }
     }
 }
