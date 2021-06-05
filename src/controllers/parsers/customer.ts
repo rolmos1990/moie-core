@@ -2,6 +2,12 @@ import {Customer} from "../../models/Customer";
 import {converterFirstArrayObject, converterPhoneInColombianFormat} from "../../common/helper/converters";
 import {StateShortDTO} from "./state";
 import {MunicipalityShortDTO} from "./municipality";
+import {DeliveryEnum} from "../../models/DeliveryMethod";
+import {IsBoolean, IsDate, IsDateString, IsNumber, IsOptional, validate} from "class-validator";
+import {InvalidArgumentException} from "../../common/exceptions";
+import {OrderProduct} from "./orderProduct";
+import {Order} from "./order";
+const moment = require("moment");
 
 export const CustomerCreateDTO = (customer: Customer) => ({
     name: customer.name,
@@ -64,8 +70,58 @@ export const CustomerUpdateDTO = (customer: Customer) => ({
     updatedAt: new Date(),
 });
 
+export const requestStatDTO = async (request: any) => {
+    try {
+        request = new RequestStats(request);
+        const statErrors = await validate(request);
+        console.log("STATS ERRORS", statErrors.length);
+        if(statErrors.length > 0){
+            const errorMessage = Object.values(statErrors[0].constraints)[0];
+            throw new InvalidArgumentException(errorMessage);
+        } else {
+            return request;
+        }
+    }catch(e){
+        throw new InvalidArgumentException(e.message);
+    }
+}
+
+export class RequestStats {
+    constructor(props) {
+
+        if(props.beforeDate) {
+            this.beforeDate = moment(props.beforeDate, 'YYYY-MM-DD').format('YYYY-MM-DD');
+        }
+        if(props.afterDate) {
+            this.afterDate = moment(props.afterDate, 'YYYY-MM-DD').format("YYYY-MM-DD");
+        }
+        console.log("CATEGORY MODE -- ", props.categoryMode);
+        this.categoryMode = props.categoryMode && props.categoryMode !== false && props.categoryMode !== "false" ? true : false;
+    }
+    @IsBoolean({"message": "categoryMode - Debe ser indicado"})
+    @IsOptional()
+    categoryMode: boolean;
+
+    @IsDateString({},{"message": "$property - Debe ser una fecha valida"})
+    @IsOptional()
+    beforeDate: Date;
+
+    @IsDateString({},{"message": "$property - Debe ser una fecha valida"})
+    @IsOptional()
+    afterDate: Date;
+}
+
 export const CustomerShortDTO = (customer: Customer) => ({
     id: customer.id,
     name: customer.name,
     email: customer.email
 });
+
+const stats = (stat) => ({
+    id: stat.productId || stat.categoryId,
+    sumPrices: stat.sumPrices,
+    qty: stat.qty,
+    name: stat.name
+});
+
+export const Stats = (object: any) => (object && object.length > 0 && object.map(item => stats(item)));

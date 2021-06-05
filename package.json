@@ -33,6 +33,7 @@
       "handlebars-pdf": "^1.0.1",
       "jsonwebtoken": "^8.5.1",
       "mime-types": "^2.1.29",
+      "moment": "^2.29.1",
       "mysql": "^2.14.1",
       "puppeteer": "^9.1.1",
       "reflect-metadata": "^0.1.10",

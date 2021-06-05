@@ -2,9 +2,19 @@ import {BaseController} from "../common/controllers/base.controller";
 import {Customer} from "../models/Customer";
 import {EntityTarget} from "typeorm";
 import {CustomerService} from "../services/customer.service";
-import {route} from "awilix-express";
-import {CustomerCreateDTO, CustomerListDTO, CustomerShowDTO, CustomerUpdateDTO} from "./parsers/customer";
+import {GET, route} from "awilix-express";
+import {
+    CustomerCreateDTO,
+    CustomerListDTO,
+    CustomerShowDTO,
+    CustomerUpdateDTO, requestStatDTO,
+    RequestStats,
+    Stats
+} from "./parsers/customer";
 import { PageQuery } from "../common/controllers/page.query";
+import {Request, Response} from "express";
+import {InvalidArgumentException} from "../common/exceptions";
+import {getAllStatus} from "../common/enum/orderStatus";
 
 @route('/customer')
 export class CustomerController extends BaseController<Customer> {
@@ -31,6 +41,29 @@ export class CustomerController extends BaseController<Customer> {
 
     getInstance(): Object {
         return new Customer();
+    }
+
+    /** Obtener estadisticas de productos {qty, sumPrice, productId, name} */
+    @GET()
+    @route('/:id/stats')
+    async getProductsStats(req: Request, res: Response){
+        try {
+            const id = req.params.id;
+            const params = req.query;
+            const customer = await this.customerService.find(parseInt(id));
+
+            const queryData = await requestStatDTO(params);
+            const beforeDate = queryData.beforeDate || null;
+            const afterDate = queryData.afterDate || null;
+            const categoryMode = queryData.categoryMode;
+
+            const stats = await this.customerService.getOrdersByProduct(customer, getAllStatus(), beforeDate, afterDate, categoryMode);
+            const statsFormat = Stats(stats) || [];
+            res.json(statsFormat);
+        }catch(e){
+            console.log("error generado...", e);
+            this.handleException(e, res);
+        }
     }
 
     getParseGET(entity: Customer, isDetail: boolean): Object {
