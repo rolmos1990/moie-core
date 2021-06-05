@@ -42,7 +42,7 @@ export class CustomerController extends BaseController<Customer> {
     getInstance(): Object {
         return new Customer();
     }
-
+    /** --> query {{base_url}}/customer/77032/stats?beforeDate=2000-10-10&afterDate=1998-10-10&categoryMode=true */
     /** Obtener estadisticas de productos {qty, sumPrice, productId, name} */
     @GET()
     @route('/:id/stats')
