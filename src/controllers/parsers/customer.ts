@@ -111,6 +111,41 @@ export class RequestStats {
     afterDate: Date;
 }
 
+export const requestOrderStatDTO = async (request: any) => {
+    try {
+        request = new RequestOrderStats(request);
+        const statErrors = await validate(request);
+        if(statErrors.length > 0){
+            const errorMessage = Object.values(statErrors[0].constraints)[0];
+            throw new InvalidArgumentException(errorMessage);
+        } else {
+            return request;
+        }
+    }catch(e){
+        throw new InvalidArgumentException(e.message);
+    }
+}
+
+export class RequestOrderStats {
+    constructor(props) {
+
+        if(props.beforeDate) {
+            this.beforeDate = moment(props.beforeDate, 'YYYY-MM-DD').format('YYYY-MM-DD');
+        }
+        if(props.afterDate) {
+            this.afterDate = moment(props.afterDate, 'YYYY-MM-DD').format("YYYY-MM-DD");
+        }
+    }
+
+    @IsDateString({},{"message": "$property - Debe ser una fecha valida"})
+    @IsOptional()
+    beforeDate: Date;
+
+    @IsDateString({},{"message": "$property - Debe ser una fecha valida"})
+    @IsOptional()
+    afterDate: Date;
+}
+
 export const CustomerShortDTO = (customer: Customer) => ({
     id: customer.id,
     name: customer.name,
@@ -125,3 +160,11 @@ const stats = (stat) => ({
 });
 
 export const Stats = (object: any) => (object && object.length > 0 && object.map(item => stats(item)));
+
+const order_stats = (stat) => ({
+    status: stat.status,
+    qty: stat.qty,
+    sumPrices: stat.sumPrices,
+});
+
+export const OrderStats = (object: any) => (object && object.length > 0 && object.map(item => order_stats(item)));

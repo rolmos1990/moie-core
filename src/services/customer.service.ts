@@ -59,6 +59,36 @@ export class CustomerService extends BaseService<Customer> {
     }
 
 
+    /** Obtener cantidad de ordenes por estado en un cliente */
+    async getOrdersStats(customer: Customer, statuses: OrderStatus[] = getAllStatus(), beforeDate, afterDate){
+        console.log("BEFORE DATE SEARCH -- ", beforeDate);
+        const query = this.orderRepository.createQueryBuilder("o")
+
+        let params = {'statuses': statuses};
+
+        if(customer != null){
+            query.andWhere("o.customer = :customer");
+            params['customer'] = customer.id;
+        }
+
+        if(beforeDate) {
+            query.andWhere("o.createdAt < :before");
+            params['before'] = beforeDate;
+        }
+        if(afterDate){
+            query.andWhere("o.createdAt >= :after");
+            params['after'] = afterDate;
+        }
+
+        query.groupBy("o.status");
+        query.select("COUNT(o.status) as qty, o.status as status, SUM(o.total_amount) as sumPrices");
+
+        query.andWhere('o.status IN (:statuses)')
+        query.setParameters(params);
+
+        return await query.getRawMany();
+    }
+
 
 
     /** Obtener el historico de ultimas ordenes de un cliente */

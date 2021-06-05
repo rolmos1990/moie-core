@@ -7,7 +7,7 @@ import {
     CustomerCreateDTO,
     CustomerListDTO,
     CustomerShowDTO,
-    CustomerUpdateDTO, requestStatDTO,
+    CustomerUpdateDTO, OrderStats, requestOrderStatDTO, requestStatDTO,
     RequestStats,
     Stats
 } from "./parsers/customer";
@@ -59,6 +59,29 @@ export class CustomerController extends BaseController<Customer> {
 
             const stats = await this.customerService.getOrdersByProduct(customer, getAllStatus(), beforeDate, afterDate, categoryMode);
             const statsFormat = Stats(stats) || [];
+            res.json(statsFormat);
+        }catch(e){
+            console.log("error generado...", e);
+            this.handleException(e, res);
+        }
+    }
+
+    /* categoryMode -> opcional */
+    /** Obtener estadisticas de productos {qty, sumPrice, productId, name} */
+    @GET()
+    @route('/:id/order_stats')
+    async getOrderStats(req: Request, res: Response){
+        try {
+            const id = req.params.id;
+            const params = req.query;
+            const customer = await this.customerService.find(parseInt(id));
+
+            const queryData = await requestOrderStatDTO(params);
+            const beforeDate = queryData.beforeDate || null;
+            const afterDate = queryData.afterDate || null;
+
+            const stats = await this.customerService.getOrdersStats(customer, getAllStatus(), beforeDate, afterDate);
+            const statsFormat = OrderStats(stats) || [];
             res.json(statsFormat);
         }catch(e){
             console.log("error generado...", e);
