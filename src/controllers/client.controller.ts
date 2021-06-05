@@ -67,7 +67,8 @@ export class CustomerController extends BaseController<Customer> {
     }
 
     /* categoryMode -> opcional */
-    /** Obtener estadisticas de productos {qty, sumPrice, productId, name} */
+    /** query: {{base_url}}/customer/77032/order_stats??beforeDate=2000-10-10&afterDate=1998-10-10 */
+    /** Obtener estadisticas de Ordenes {status, qty, sumPrices} */
     @GET()
     @route('/:id/order_stats')
     async getOrderStats(req: Request, res: Response){
