@@ -199,6 +199,7 @@ export const OrderListDTO = (order: OrderModel) => ({
     status: order.status,
     quantity: order.quantity,
     customer: CustomerShortDTO(order.customer),
+    user: UserShortDTO(order.user)
 });
 
 
