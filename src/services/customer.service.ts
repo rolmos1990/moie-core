@@ -30,16 +30,18 @@ export class CustomerService extends BaseService<Customer> {
 
         let params = {'statuses': statuses};
 
-        if(customer != null){
+        console.log("CUSTOMER SEARCH -- ", customer.id);
+
+        if(customer){
             query.andWhere("o.customer = :customer");
             params['customer'] = customer.id;
         }
         if(beforeDate) {
-            query.andWhere("o.createdAt < :before");
+            query.andWhere("DATE(o.createdAt) <= :before");
             params['before'] = beforeDate;
         }
         if(afterDate){
-            query.andWhere("o.createdAt >= :after");
+            query.andWhere("DATE(o.createdAt) >= :after");
             params['after'] = afterDate;
         }
 
@@ -55,7 +57,11 @@ export class CustomerService extends BaseService<Customer> {
         query.andWhere('o.status IN (:statuses)')
         query.setParameters(params);
 
-        return await query.getRawMany();
+        const result = await query.getRawMany();
+
+        console.log("DEBUG ALL RESULT", result);
+
+        return result;
     }
 
 
@@ -66,17 +72,17 @@ export class CustomerService extends BaseService<Customer> {
 
         let params = {'statuses': statuses};
 
-        if(customer != null){
+        if(customer){
             query.andWhere("o.customer = :customer");
             params['customer'] = customer.id;
         }
 
         if(beforeDate) {
-            query.andWhere("o.createdAt < :before");
+            query.andWhere("DATE(o.createdAt) <= :before");
             params['before'] = beforeDate;
         }
         if(afterDate){
-            query.andWhere("o.createdAt >= :after");
+            query.andWhere("DATE(o.createdAt) >= :after");
             params['after'] = afterDate;
         }
 
