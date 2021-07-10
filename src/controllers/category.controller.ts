@@ -48,4 +48,8 @@ export class CategoryController extends BaseController<Category> {
         return entity;
     }
 
+    getGroupRelations(): Array<string> {
+        return [];
+    }
+
 }

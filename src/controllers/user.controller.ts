@@ -54,4 +54,7 @@ export class UserController extends BaseController<User> {
     protected getDefaultRelations(): Array<string> {
         return [];
     }
+    getGroupRelations(): Array<string> {
+        return [];
+    }
 }

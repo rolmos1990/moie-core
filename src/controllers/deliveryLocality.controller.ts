@@ -43,5 +43,8 @@ export class DeliveryLocalityController extends BaseController<DeliveryLocality>
     protected getDefaultRelations(): Array<string> {
         return [];
     }
+    getGroupRelations(): Array<string> {
+        return [];
+    }
 
 }

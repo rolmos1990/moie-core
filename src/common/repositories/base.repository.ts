@@ -23,17 +23,22 @@ export default abstract class BaseRepository<T> {
             }
             const sum = await this.repositoryManager
                 .createQueryBuilder(tableName)
-                .select(select)
+                //.select(select)
                 .where(page.getWhere())
-                .groupBy(operators.getGroups().join(","));
-            return sum.getRawMany();
+                .groupBy(operators.getGroups().map(item => tableName + "." + item).join(","));
+            if(page.getRelations().length > 0){
+                page.getRelations().forEach(item => {
+                    sum.leftJoinAndSelect( tableName + "." + item, item);
+                });
+            }
+            return sum.getMany();
         }
         else if(operators.isGroup()){
             const tableName = this.repositoryManager.metadata.tableName;
             const sum = await this.repositoryManager
                 .createQueryBuilder(tableName)
                 .where(page.getWhere())
-                .groupBy(operators.getGroups().join(","));
+                .groupBy(operators.getGroups().map(item => tableName + "." +item).join(","));
             if(page.getRelations().length > 0){
                 page.getRelations().forEach(item => {
                    sum.leftJoinAndSelect( tableName + "." + item, item);

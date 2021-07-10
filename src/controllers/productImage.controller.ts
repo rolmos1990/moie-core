@@ -78,4 +78,7 @@ export class ProductImageController extends BaseController<ProductImage> {
     protected getDefaultRelations(): Array<string> {
         return ['product'];
     }
+    getGroupRelations(): Array<string> {
+        return [];
+    }
 }

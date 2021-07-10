@@ -47,5 +47,8 @@ export class TemplateController extends BaseController<Template> {
     protected getDefaultRelations(): Array<string> {
         return [];
     }
+    getGroupRelations(): Array<string> {
+        return [];
+    }
 
 }

@@ -114,4 +114,8 @@ export class CustomerController extends BaseController<Customer> {
             return ['municipality', 'state'];
         }
     }
+
+    getGroupRelations(): Array<string> {
+        return [];
+    }
 }

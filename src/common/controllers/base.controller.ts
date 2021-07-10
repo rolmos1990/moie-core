@@ -9,6 +9,7 @@ import {OperationQuery} from "./operation.query";
 import {PageDTO} from "../../controllers/parsers/page";
 import {ApplicationException, ConditionalException, InvalidArgumentException} from "../exceptions";
 import {OrderConditional} from "../enum/order.conditional";
+import {isEmpty} from "../helper/helpers";
 
 export const GROUPS = {
     POST: 'create',
@@ -48,12 +49,18 @@ export abstract class BaseController<Parse> {
             }
             const countRegisters = await this.service.count(page);
 
+            /** Relations by Default */
             if(this.getDefaultRelations(false)){
                 page.setRelations(this.getDefaultRelations(false));
             }
+
+            /** Relations with groups */
+            if(this.getGroupRelations() && !isEmpty(group)){
+                page.setRelations(this.getGroupRelations());
+            }
             let items: Array<Object> = await this.service.all(page);
 
-            if(items && items.length > 0){
+            if((items && items.length) > 0){
                 items = await Promise.all(items.map(async item => await this.getParseGET(<Parse> item, false)));
             }
 
@@ -162,6 +169,9 @@ export abstract class BaseController<Parse> {
     }
     /* define your relations for the entity */
     protected abstract getDefaultRelations(isDetail: boolean) : Array<string>;
+
+    /* define your relations for the group */
+    public abstract getGroupRelations() : Array<string>;
 
     /* Before create object in repository */
     protected abstract beforeCreate(item: Object): void;

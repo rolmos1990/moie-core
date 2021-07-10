@@ -183,7 +183,7 @@ export class OrderUpdate {
 }
 
 export const OrderListDTO = (order: OrderModel) => ({
-    id: order.id,
+    id: order ? order.id : null,
     deliveryMethod: DeliveryMethodListDTO(order.deliveryMethod),
     orderDelivery: OrderDeliveryListDTO(order.orderDelivery),
     origen: order.origen,

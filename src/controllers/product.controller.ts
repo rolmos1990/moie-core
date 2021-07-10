@@ -118,5 +118,8 @@ export class ProductController extends BaseController<Product> {
     getParsePUT(entity: Product): Object {
         return ProductUpdateDTO(entity);
     }
+    getGroupRelations(): Array<string> {
+        return [];
+    }
 
 }

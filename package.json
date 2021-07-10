@@ -38,7 +38,8 @@
       "puppeteer": "^9.1.1",
       "reflect-metadata": "^0.1.10",
       "resize-img": "^2.0.0",
-      "typeorm": "0.2.31"
+      "typeorm": "0.2.31",
+      "typeorm-revisions": "0.0.5"
    },
    "devDependencies": {
       "@types/bcryptjs": "^2.4.2",

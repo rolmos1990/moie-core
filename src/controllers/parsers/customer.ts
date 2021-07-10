@@ -147,9 +147,9 @@ export class RequestOrderStats {
 }
 
 export const CustomerShortDTO = (customer: Customer) => ({
-    id: customer.id,
-    name: customer.name,
-    email: customer.email
+    id: customer ? customer.id : null,
+    name: customer ? customer.name : null,
+    email: customer ? customer.email : null
 });
 
 const stats = (stat) => ({

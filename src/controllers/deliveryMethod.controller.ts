@@ -75,5 +75,8 @@ export class DeliveryMethodController extends BaseController<DeliveryMethod> {
             this.handleException(e, res);
         }
     }
+    getGroupRelations(): Array<string> {
+        return [];
+    }
 
 }

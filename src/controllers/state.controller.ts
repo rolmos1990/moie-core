@@ -47,5 +47,8 @@ export class StateController extends BaseController<State> {
     protected getDefaultRelations(): Array<string> {
         return [];
     }
+    getGroupRelations(): Array<string> {
+        return [];
+    }
 
 }

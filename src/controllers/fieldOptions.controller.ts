@@ -48,5 +48,8 @@ export class FieldOptionController extends BaseController<FieldOption> {
     getParsePUT(entity: FieldOption): Object {
         return entity;
     }
+    getGroupRelations(): Array<string> {
+        return [];
+    }
 
 }

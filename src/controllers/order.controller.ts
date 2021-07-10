@@ -290,4 +290,8 @@ export class OrderController extends BaseController<Order> {
             return ['customer', 'deliveryMethod', 'orderDetails', 'user', 'customer.municipality', 'customer.state', 'orderDelivery'];
         }
     }
+
+    getGroupRelations(): Array<string> {
+        return ['user'];
+    }
 }

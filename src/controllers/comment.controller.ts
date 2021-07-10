@@ -111,4 +111,8 @@ export class CommentController extends BaseController<Comment> {
             return ['user'];
         }
     }
+
+    getGroupRelations(): Array<string> {
+        return [];
+    }
 }

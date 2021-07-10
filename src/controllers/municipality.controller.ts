@@ -47,4 +47,7 @@ export class MunicipalityController extends BaseController<Municipality> {
     protected getDefaultRelations(): Array<string> {
         return ['state'];
     }
+    getGroupRelations(): Array<string> {
+        return [];
+    }
 }

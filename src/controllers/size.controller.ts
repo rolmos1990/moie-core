@@ -48,5 +48,8 @@ export class SizeController extends BaseController<Size> {
     getParsePUT(entity: Size): Object {
         return entity;
     }
+    getGroupRelations(): Array<string> {
+        return [];
+    }
 
 }
