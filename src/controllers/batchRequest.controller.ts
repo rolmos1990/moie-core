@@ -1,15 +1,17 @@
-import {BaseController} from "../common/controllers/base.controller";
 import {EntityTarget} from "typeorm";
 import {BatchRequest} from "../models/BatchRequest";
 import {BatchRequestService} from "../services/batchRequest.service";
 import {route} from "awilix-express";
+import {UserRequiredController} from "../common/controllers/userRequired.controller";
+import {UserService} from "../services/user.service";
 
 @route('/batchRequest')
-export class BatchRequestController extends BaseController<BatchRequest> {
+export class BatchRequestController extends UserRequiredController<BatchRequest> {
     constructor(
-        private readonly batchRequestService: BatchRequestService
+        protected readonly userService: UserService,
+        protected readonly batchRequestService: BatchRequestService
     ){
-        super(batchRequestService);
+        super(userService, batchRequestService);
     };
     protected afterCreate(item: Object): void {
     }

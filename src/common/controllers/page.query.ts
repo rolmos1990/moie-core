@@ -164,6 +164,17 @@ export class PageQuery {
         return this.relations;
     }
 
+    /**
+     * Add Relations for Specific Paginator if not exists
+     * @void
+     */
+    addRelation(relation: string){
+        if(!this.relations.includes(relation)) {
+            this.relations.push(relation);
+        }
+    }
+
+
 
     /**
      * Return the build PageQuery for use in your repository

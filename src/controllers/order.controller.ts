@@ -329,10 +329,13 @@ export class OrderController extends BaseController<Order> {
 
                 await Promise.all(result);
 
+                const user = await this.userService.find(req["user"]);
+
                 const save = await this.batchRequestService.createOrUpdate({
                     body: batchHtml,
                     type: BatchRequestTypes.IMPRESSION,
-                    status: BatchRequestTypesStatus.COMPLETED
+                    status: BatchRequestTypesStatus.COMPLETED,
+                    user: user
                 });
 
                 return res.json({status: 200, batch: {...save}});
