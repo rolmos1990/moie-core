@@ -39,14 +39,17 @@ export class UserService extends BaseService<User> {
             const user = await this.userRepository.findByUsername(usernameOrEmail);
 
             if(!user){
-                throw new InvalidArgumentException("Usuario indicado no se encuentra registrado");
+                throw new InvalidArgumentException("No hemos encontrado el usuario registrado");
+            }
+            try {
+                await this.userRepository.changePassword(usernameOrEmail, password);
+            }catch(e){
+                throw new InvalidArgumentException("No hemos podido realizar la actualización de contraseña del usuario");
             }
 
-            await this.userRepository.changePassword(usernameOrEmail, password);
-
-            return {success: true};
+            return {code: 200};
         }catch(e){
-            return {success: false};
+            return {code: 400, error: e.message};
         }
     }
 
