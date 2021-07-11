@@ -15,6 +15,12 @@ import {OrderProduct} from "./parsers/orderProduct";
 import { CustomerService } from "../services/customer.service";
 import {TemplateService} from "../services/template.service";
 import {getDeliveryShortType, QrBarImage} from "../common/helper/helpers";
+import {ConditionalQuery} from "../common/controllers/conditional.query";
+import {PageQuery} from "../common/controllers/page.query";
+import {OperationQuery} from "../common/controllers/operation.query";
+import {OrderStatus} from "../common/enum/orderStatus";
+import {BatchRequestService} from "../services/batchRequest.service";
+import {BatchRequestTypes, BatchRequestTypesStatus} from "../common/enum/batchRequestTypes";
 
 @route('/order')
 export class OrderController extends BaseController<Order> {
@@ -23,7 +29,8 @@ export class OrderController extends BaseController<Order> {
         private readonly deliveryMethodService: DeliveryMethodService,
         private readonly userService: UserService,
         private readonly customerService: CustomerService,
-        private readonly templateService: TemplateService
+        private readonly templateService: TemplateService,
+        private readonly batchRequestService: BatchRequestService
     ){
         super(orderService);
     };
@@ -115,8 +122,6 @@ export class OrderController extends BaseController<Order> {
             const order: Order = await this.orderService.addOrUpdateOrder(parse, deliveryMethod, user, null, false);
             const orderDetails: OrderDetail[] = await this.orderService.getDetails(order);
             order.orderDetails = orderDetails;
-
-            console.log("LLEGO AQUI...", order);
 
             return res.json({status: 200 , order: OrderShowDTO(order)});
         }catch(e){
@@ -251,6 +256,89 @@ export class OrderController extends BaseController<Order> {
                     throw new InvalidArgumentException("No se ha encontrado un resumen para esta orden");
                 }
                 return res.json({status: 200, html: template});
+            }
+        }catch(e){
+            this.handleException(e, res);
+            console.log("error", e);
+        }
+    }
+
+    /**
+     * Obtener plantilla de impresión
+     * @param req
+     * @param res
+     */
+    @route('/batch/printRequest')
+    @GET()
+    public async printRequest(req: Request, res: Response) {
+        try {
+            const limitForQueries = 5000; //Limite para una petición
+
+            const query = req.query;
+            const conditional = query.conditional ? query.conditional + "" : null;
+
+            const queryCondition = ConditionalQuery.ConvertIntoConditionalParams(conditional);
+            const operationQuery = new OperationQuery(null, null);
+            let page = new PageQuery(limitForQueries,0,queryCondition, operationQuery);
+
+            const countRegisters = await this.orderService.count(page);
+
+            page.setRelations(['orderDelivery', 'customer','customer.state','customer.municipality', 'user', 'deliveryMethod', 'orderDetails']);
+
+            let orders: Array<Order> = await this.orderService.all(page);
+
+            let isImpress = true;
+
+            if(orders.length > 0){
+                let orderId = 0;
+                orders.forEach(item  => {
+                    //Regla para poder ser impresa
+                    if(item.status <= OrderStatus.PENDING){
+                        isImpress = false;
+                        orderId = item.id;
+                    }
+                });
+
+                if(!isImpress){
+                    throw new InvalidArgumentException("Orden : "+orderId+" No puede ser impresa");
+                }
+
+                let batchHtml : any = [];
+                const qrBar : any = [];
+
+                const result = orders.map(async order => {
+                    const templateName = this.orderService.getPrintTemplate(order);
+                    qrBar[order.id] = await QrBarImage(order.id);
+                    const deliveryShortType = getDeliveryShortType(order.orderDelivery.deliveryType);
+                    const object = {
+                        order,
+                        qrBar: qrBar[order.id],
+                        orderDetails: order.orderDetails,
+                        hasPayment: isPaymentMode(order.paymentMode),
+                        isCash: isCash(order.paymentMode),
+                        hasPiecesForChanges: (order.piecesForChanges && order.piecesForChanges > 0),
+                        deliveryShortType: deliveryShortType
+                    };
+                    const template = await this.templateService.getTemplate(templateName, object);
+                    if(!template){
+                        throw new InvalidArgumentException("No se ha encontrado un resumen para esta orden");
+                    }
+
+                    return batchHtml.push({order: order.id, html: template});
+                });
+
+                await Promise.all(result);
+
+                const save = await this.batchRequestService.createOrUpdate({
+                    body: batchHtml,
+                    type: BatchRequestTypes.IMPRESSION,
+                    status: BatchRequestTypesStatus.COMPLETED
+                });
+
+                return res.json({status: 200, batch: {...save}});
+
+            } else {
+                return res.json({status: 400, error: "No se han encontrado registros"});
             }
         }catch(e){
             this.handleException(e, res);

@@ -36,6 +36,8 @@ import {TemplateService} from "./services/template.service";
 import {TemplateRepository} from "./repositories/template.repository";
 import {CommentService} from "./services/comment.service";
 import {CommentRepository} from "./repositories/comment.repository";
+import {BatchRequestService} from "./services/batchRequest.service";
+import {BatchRequestRepository} from "./repositories/batchRequest.repository";
 
 export default (app: express.Application): void => {
     const container = createContainer({
@@ -62,6 +64,7 @@ export default (app: express.Application): void => {
         notificationRepository: asClass(NotificationRepository).scoped(),
         templateRepository: asClass(TemplateRepository).scoped(),
         commentRepository: asClass(CommentRepository).scoped(),
+        printRequestRepository:  asClass(BatchRequestRepository).scoped(),
         // services
         userService: asClass(UserService).scoped(),
         customerService: asClass(CustomerService).scoped(),
@@ -80,6 +83,7 @@ export default (app: express.Application): void => {
         notificationService: asClass(NotificationService).scoped(),
         templateService: asClass(TemplateService).scoped(),
         commentService: asClass(CommentService).scoped(),
+        printRequestService: asClass(BatchRequestService).scoped()
     });
 
     app.use(scopePerRequest(container));
