@@ -10,6 +10,7 @@ const PublicServices = [
 
 export const Authorization = (req: Request, res: Response, next: NextFunction) => {
     if(PublicServices.includes(req.path) || req.header("Authorization") == 'test'){
+        req['user'] = {id: 1}; //tst user
         next();
         return;
     }
@@ -31,7 +32,7 @@ export const Authorization = (req: Request, res: Response, next: NextFunction) =
                 return res.status(401).send("No autorizado!");
             }*/
         }
-        console.log("User logged: ", verified);
+
         req['user'] = verified;
         next();
     }

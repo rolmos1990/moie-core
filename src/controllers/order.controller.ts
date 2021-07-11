@@ -108,7 +108,8 @@ export class OrderController extends BaseController<Order> {
             }
 
             /** TODO -- Asociar usuario a la orden */
-            const user = await this.userService.find(1);
+            const userIdFromSession = req['user'].id;
+            const user = await this.userService.find(userIdFromSession);
 
 
             const order: Order = await this.orderService.addOrUpdateOrder(parse, deliveryMethod, user, null, false);
