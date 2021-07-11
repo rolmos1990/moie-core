@@ -3,6 +3,9 @@ import {PageQuery} from "../controllers/page.query";
 import {OperationQuery} from "../controllers/operation.query";
 import {ApplicationException, InvalidArgumentException} from "../exceptions";
 import {ProductSize} from "../../models/ProductSize";
+import {RawSqlResultsToEntityTransformer} from "typeorm/query-builder/transformer/RawSqlResultsToEntityTransformer";
+import {RelationIdLoader} from "typeorm/query-builder/relation-id/RelationIdLoader";
+import {RelationCountLoader} from "typeorm/query-builder/relation-count/RelationCountLoader";
 
 export default abstract class BaseRepository<T> {
     protected readonly repositoryManager : Repository<T>;
@@ -16,22 +19,66 @@ export default abstract class BaseRepository<T> {
         if(operators.isOperator()) {
             const tableName = this.repositoryManager.metadata.tableName;
             let select = "*";
-            if(operators.getGroups().length > 0){
+
+/*            if(operators.getGroups().length > 0){
                 select = operators.getOperator().join(",") + "," + operators.getGroups().join(",");
-            } else {
-                select = operators.getOperator().join(",");
-            }
-            const sum = await this.repositoryManager
+            }*/
+
+            const sum = this.repositoryManager
                 .createQueryBuilder(tableName)
-                //.select(select)
                 .where(page.getWhere())
-                .groupBy(operators.getGroups().map(item => tableName + "." + item).join(","));
+                .groupBy(operators.getGroups().map(item => tableName + "." + item).join(","))
+                .setLock('pessimistic_write');
+
             if(page.getRelations().length > 0){
                 page.getRelations().forEach(item => {
                     sum.leftJoinAndSelect( tableName + "." + item, item);
                 });
             }
-            return sum.getMany();
+            if(operators.getGroups().length > 0){
+                sum.addSelect(operators.getOperator().map(item => item.operator + " AS " + tableName + "_" + item.alias).join(","));
+                sum.addSelect(operators.getGroups().join(","));
+            } else {
+                sum.select(this.repositoryManager.metadata.columns.map(item => tableName + "." + item.databaseNameWithoutPrefixes).join(","))
+            }
+
+            let query = sum.getQuery();
+
+            // 👇 Here is where you can modify the SQL for the query to suit your requirements
+            //query = query.replace(/ WITH \(UPDLOCK, ROWLOCK\) /, ' WITH (UPDLOCK, READPAST) ');
+
+            console.log("query", query);
+            const rawResults = await sum.getRawMany();
+
+            const queryRunner =  this.repositoryManager.manager.connection.createQueryRunner();
+
+            const relationIdLoader = new RelationIdLoader(
+                this.repositoryManager.manager.connection,
+                queryRunner,
+                sum.expressionMap.relationIdAttributes,
+            );
+
+            const relationCountLoader = new RelationCountLoader(
+                this.repositoryManager.manager.connection,
+                queryRunner,
+                sum.expressionMap.relationCountAttributes,
+            );
+
+            const rawRelationIdResults = await relationIdLoader.load(rawResults);
+            const rawRelationCountResults = await relationCountLoader.load(rawResults);
+
+
+            const transformer = new RawSqlResultsToEntityTransformer(
+                sum.expressionMap,
+                this.repositoryManager.manager.connection.driver,
+                rawRelationIdResults,
+                rawRelationCountResults,
+                queryRunner,
+            );
+
+            const result = transformer.transform(rawResults, sum.expressionMap.mainAlias);
+
+            return result;
         }
         else if(operators.isGroup()){
             const tableName = this.repositoryManager.metadata.tableName;

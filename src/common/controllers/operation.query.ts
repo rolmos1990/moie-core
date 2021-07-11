@@ -8,7 +8,7 @@ import {InvalidArgumentException} from "../exceptions";
 export class OperationQuery {
 
     private group: Array<String> = [];
-    private operators: Array<String> = [];
+    private operators: Array<any> = [];
     private validOperators = ['SUM','COUNT','AVG'];
 
     constructor(operation: string | null, group: string | null){
@@ -28,7 +28,7 @@ export class OperationQuery {
     buildOperatorQuery(operation: string){
 
         let operationSplit = operation.split(",");
-        let result: Array<string> = [];
+        let result: Array<Object> = [];
         if(operationSplit.length > 0){
             let hasError = false;
             let operator = "";
@@ -39,7 +39,7 @@ export class OperationQuery {
                         const operator = opValue[1];
                         let field = opValue[0];
                         field = field.split(/(?=[A-Z])/).join('_').toLowerCase()
-                        return operator.toUpperCase() + "("+field+")" + ' AS ' + field;
+                        return { operator: operator.toUpperCase() + "("+field+")" , alias: field};
                     } else {
                         throw new InvalidArgumentException("Operador Invalido");
                     }
