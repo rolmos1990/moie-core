@@ -64,7 +64,7 @@ export default (app: express.Application): void => {
         notificationRepository: asClass(NotificationRepository).scoped(),
         templateRepository: asClass(TemplateRepository).scoped(),
         commentRepository: asClass(CommentRepository).scoped(),
-        printRequestRepository:  asClass(BatchRequestRepository).scoped(),
+        batchRequestRepository:  asClass(BatchRequestRepository).scoped(),
         // services
         userService: asClass(UserService).scoped(),
         customerService: asClass(CustomerService).scoped(),
@@ -83,7 +83,7 @@ export default (app: express.Application): void => {
         notificationService: asClass(NotificationService).scoped(),
         templateService: asClass(TemplateService).scoped(),
         commentService: asClass(CommentService).scoped(),
-        printRequestService: asClass(BatchRequestService).scoped()
+        batchRequestService: asClass(BatchRequestService).scoped()
     });
 
     app.use(scopePerRequest(container));
