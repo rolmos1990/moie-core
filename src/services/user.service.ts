@@ -30,6 +30,26 @@ export class UserService extends BaseService<User> {
             }
     }
 
+    public async changePassword(usernameOrEmail: string, password: string){
+        try {
+            if (!password || !usernameOrEmail) {
+                throw new InvalidArgumentException();
+            }
+
+            const user = await this.userRepository.findByUsername(usernameOrEmail);
+
+            if(!user){
+                throw new InvalidArgumentException("Usuario indicado no se encuentra registrado");
+            }
+
+            await this.userRepository.changePassword(usernameOrEmail, password);
+
+            return {success: true};
+        }catch(e){
+            return {success: false};
+        }
+    }
+
     private validatePassword(requestPassword: string, accountPassword: string) {
         return Bcrypt.compareSync(requestPassword, accountPassword);
     }

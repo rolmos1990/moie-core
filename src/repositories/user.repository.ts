@@ -2,6 +2,7 @@ import {User} from '../models/User';
 import {EntityNotFoundError, getRepository, Repository} from "typeorm";
 import BaseRepository from '../common/repositories/base.repository';
 import {InvalidArgumentException, ApplicationException} from "../common/exceptions";
+import * as Bcrypt from "bcryptjs";
 
 export class UserRepository<T> extends BaseRepository<User>{
 
@@ -20,5 +21,17 @@ export class UserRepository<T> extends BaseRepository<User>{
     public async findByUsername(usernameOrEmail: string) : Promise<User> {
         let user = await this.repositoryManager.findOne({username: usernameOrEmail});
         return user || new User();
+    }
+
+    public async changePassword(usernameOrEmail: string, password: string) : Promise<User> {
+
+        const salt = Bcrypt.genSaltSync();
+
+        let user = await this.repositoryManager.findOne({username: usernameOrEmail});
+        user.password = Bcrypt.hashSync(password, salt);
+        user.salt = salt;
+
+        const result = await this.repositoryManager.save(user);
+        return result;
     }
 }

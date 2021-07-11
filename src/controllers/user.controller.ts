@@ -46,6 +46,18 @@ export class UserController extends BaseController<User> {
         }
     }
 
+    @route("/changePassword")
+    @POST()
+    public async changePassword(req: Request, res: Response) {
+        try {
+            const {username, password} = req.body;
+            const response = await this.userService.changePassword(username, password);
+            res.json(response);
+        }catch(e){
+            this.handleException(e, res);
+        }
+    }
+
     protected beforeCreate(item: User){}
     protected afterCreate(item: Object): void {}
     protected afterUpdate(item: Object): void {}
