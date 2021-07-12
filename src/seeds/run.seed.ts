@@ -43,7 +43,7 @@ const QUERY_IS_ACTIVE = {
     customer: false,
     user: false,
     fieldOption: false,
-    template: false
+    template: true
 };
 
 export class RunSeed {
