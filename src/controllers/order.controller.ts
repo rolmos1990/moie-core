@@ -3,7 +3,7 @@ import {EntityTarget} from "typeorm";
 import {Order} from "../models/Order";
 import {OrderService} from "../services/order.service";
 import {GET, POST, PUT, route} from "awilix-express";
-import {OrderCreateDTO, OrderListDTO, OrderShowDTO, OrderUpdateDTO} from "./parsers/order";
+import {OrderCreateDTO, OrderListDTO, OrderShortDTO, OrderShowDTO, OrderUpdateDTO} from "./parsers/order";
 import {Request, Response} from "express";
 import {InvalidArgumentException} from "../common/exceptions";
 import {DeliveryMethod} from "../models/DeliveryMethod";
@@ -134,26 +134,54 @@ export class OrderController extends BaseController<Order> {
     public async nextStatus(req: Request, res: Response) {
         try {
             const request = req.body;
-            if (!request.order) {
-                throw new InvalidArgumentException("La orden no ha sido indicada");
+
+            if(!request.batch && !request.order){
+                throw new InvalidArgumentException("No existe registro indicado para actualizar");
             }
 
             /** LLevar a un servicio que administre los estados */
             /** Entregar al servicio (sesión, orden) */
 
-            const entity = await this.orderService.find(parseInt(request.order));
-            if(entity.status === 1){
-                entity.status = 2;
-            } else if(entity.status === 2){
-                entity.status = 3;
+            let entity;
+            let orders = [];
+
+            if(request.order) {
+                entity = await this.orderService.find(parseInt(request.order));
+                orders.push(entity);
+            } else {
+                entity = await this.batchRequestService.find(parseInt(request.batch));
+                if(!entity || entity.status != BatchRequestTypesStatus.COMPLETED){
+                    throw new InvalidArgumentException("Lote no ha sido encontrado");
+                }
+                orders = entity.body.map(item => item.order);
+                orders = await this.orderService.findByIds(orders);
             }
 
-            const saved : Order = await this.orderService.createOrUpdate(entity);
-            const order: Order = await this.orderService.find(saved.id, this.getDefaultRelations(true));
-            const orderDetails: OrderDetail[] = await this.orderService.getDetails(order);
-            order.orderDetails = orderDetails;
+            if(request.batch) {
+                let updates = [];
+                await Promise.all(orders.map(async entity => {
+                    if (entity.status === 2) {
+                        entity.status = 3;
+                        updates.push(await this.orderService.createOrUpdate(entity));
+                    }
+                }));
+                entity.status = BatchRequestTypesStatus.EXECUTED;
+                await this.batchRequestService.createOrUpdate(entity);
+                return res.json({status: 200, updates: updates.map(item => OrderShortDTO(item))});
+            } else {
+                entity = orders[0];
+                if (entity.status === 1) {
+                    entity.status = 2;
+                } else if (entity.status === 2) {
+                    entity.status = 3;
+                }
 
-            return res.json({status: 200, order: OrderShowDTO(order)});
+                const saved: Order = await this.orderService.createOrUpdate(entity);
+                const order: Order = await this.orderService.find(saved.id, this.getDefaultRelations(true));
+                const orderDetails: OrderDetail[] = await this.orderService.getDetails(order);
+                order.orderDetails = orderDetails;
+                return res.json({status: 200, order: OrderShowDTO(order)});
+            }
 
         }catch(e){
             this.handleException(e, res);

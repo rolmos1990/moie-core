@@ -4,6 +4,7 @@ import {BatchRequestService} from "../services/batchRequest.service";
 import {route} from "awilix-express";
 import {UserRequiredController} from "../common/controllers/userRequired.controller";
 import {UserService} from "../services/user.service";
+import {BatchRequestTypesStatus} from "../common/enum/batchRequestTypes";
 
 @route('/batchRequest')
 export class BatchRequestController extends UserRequiredController<BatchRequest> {
@@ -16,7 +17,11 @@ export class BatchRequestController extends UserRequiredController<BatchRequest>
     protected afterCreate(item: Object): void {
     }
 
-    protected afterUpdate(item: Object): void {
+    protected afterUpdate(item: any): void {
+        if(item.status === BatchRequestTypesStatus.EXECUTED){
+          //TODO -- cambia todo el estado de las ordenes
+            console.log("ESTADO DE ORDENES CAMBIADAS", item.status);
+        }
     }
 
     protected beforeCreate(item: Object): void {

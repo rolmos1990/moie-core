@@ -288,4 +288,10 @@ export class OrderService extends BaseService<Order> {
         const deliveryTemplateName = `PRINT_${order.deliveryMethod.code}`;
         return deliveryTemplateName;
     }
+
+    async findByIds(orderIds: any) {
+        return await this.orderRepository.createQueryBuilder('o')
+            .where('o.id IN (:orderIds)', {orderIds: orderIds})
+            .getMany();
+    }
 }

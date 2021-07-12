@@ -226,6 +226,12 @@ export const OrderShowDTO = (order: OrderModel) => ({
     user: UserShortDTO(order.user)
 });
 
+export const OrderShortDTO = (order: OrderModel) => ({
+    id: order ? order.id : null,
+    createdAt: order.createdAt,
+    status: order.status
+});
+
 export const OrderDetailShowDTO = (orderDetail: OrderDetail | any) => ({
     id: orderDetail.id,
     color: orderDetail.color,
