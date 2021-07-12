@@ -1,34 +1,34 @@
 export const FieldOptionsSeed = [
     //Imagenes de productos
     {
-        group: "PRODUCT_IMAGE",
+        groups: "PRODUCT_IMAGE",
         name: 'IMAGEN 1',
         value: 0
     },
     {
-        group: "PRODUCT_IMAGE",
+        groups: "PRODUCT_IMAGE",
         name: 'IMAGEN 2',
         value: 1
     },
     {
-        group: "PRODUCT_IMAGE",
+        groups: "PRODUCT_IMAGE",
         name: 'IMAGEN 3',
         value: 2
     },
     //Proveedores
     {
-        group: "PROVIDER",
+        groups: "PROVIDER",
         name: 'SAIOU',
         value: 'SAIOU'
     },
     //MATERIAL
     {
-        group: "MATERIAL",
+        groups: "MATERIAL",
         name: 'ALGODON',
         value: 'ALGODON'
     },
     {
-        group: "MATERIAL",
+        groups: "MATERIAL",
         name: 'ALGODON/SPANDEX',
         value: 'ALGODON/SPANDEX'
     },

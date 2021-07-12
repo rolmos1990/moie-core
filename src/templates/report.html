@@ -170,8 +170,8 @@
             <span id="total_{{order.id}}"></span><br>
             {{#if order.isInternalDelivery}}
             <span style="font-size: 1.2em">{{order.paymentMode}}
-                <?php if($venta['piezasCambio'] > 0){ ?>
-                Piezas para cambio: {{order.piecesForChanges}}
+                <?php if($venta['PrendasCambio'] > 0){ ?>
+                Prendas para cambio: {{order.piecesForChanges}}
                 <?php } ?>
                 </span>
             {{/if}}
@@ -270,7 +270,7 @@
 
         </div>
         <div class="order_total">
-            <p>Cantidad de piezas: <strong><?=$cantidad;?></strong></p>
+            <p>Cantidad de Prendas: <strong><?=$cantidad;?></strong></p>
             <p>Subtotal: <strong><?=number_format($total,2);?></strong></p>
             <p>Envío: <strong><?=number_format($venta['montoEnvio'],2);?></strong></p>
             <p>Total: <strong><?=number_format(($total + $venta['montoEnvio']),2);?></strong></p>
