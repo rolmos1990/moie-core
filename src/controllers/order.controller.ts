@@ -21,6 +21,7 @@ import {OperationQuery} from "../common/controllers/operation.query";
 import {OrderStatus} from "../common/enum/orderStatus";
 import {BatchRequestService} from "../services/batchRequest.service";
 import {BatchRequestTypes, BatchRequestTypesStatus} from "../common/enum/batchRequestTypes";
+import {UserShortDTO} from "./parsers/user";
 
 @route('/order')
 export class OrderController extends BaseController<Order> {
@@ -296,7 +297,7 @@ export class OrderController extends BaseController<Order> {
      * @param req
      * @param res
      */
-    @route('/batch/printRequest')
+        @route('/batch/printRequest')
     @GET()
     public async printRequest(req: Request, res: Response) {
         try {
@@ -363,7 +364,7 @@ export class OrderController extends BaseController<Order> {
                     body: batchHtml,
                     type: BatchRequestTypes.IMPRESSION,
                     status: BatchRequestTypesStatus.COMPLETED,
-                    user: user
+                    user: UserShortDTO(user)
                 });
 
                 return res.json({status: 200, batch: {...save}});

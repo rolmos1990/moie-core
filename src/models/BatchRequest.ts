@@ -16,7 +16,7 @@ export class BatchRequest extends BaseModel {
     id: number;
 
     @Column("simple-json")
-    body: number;
+    body: string;
 
     @Column({name:'type', type: 'integer'})
     type: number;

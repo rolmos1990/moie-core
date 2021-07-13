@@ -25,6 +25,7 @@ export class TemplateService extends BaseService<Template> {
                 throw new ApplicationException("No se ha encontrado plantilla - " + templateName);
             }
         }catch(e){
+            console.log("error generado", e.message);
             throw new ApplicationException("Ha ocurrido un problema con la plantilla - " + templateName);
         }
     }
