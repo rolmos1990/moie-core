@@ -136,6 +136,8 @@ export class CategoryController extends BaseController<Category> {
 
                 const user = await this.userService.find(req["user"]);
 
+                /** TODO -- cambiar valor body a LONGTEXT */
+
                 const save = await this.batchRequestService.createOrUpdate({
                     body: batchHtml,
                     type: BatchRequestTypes.CATALOGS,
@@ -143,12 +145,7 @@ export class CategoryController extends BaseController<Category> {
                     user: UserShortDTO(user)
                 });
 
-                return res.json({status: 200, batch: {
-                        body: batchHtml,
-                        type: BatchRequestTypes.CATALOGS,
-                        status: BatchRequestTypesStatus.COMPLETED,
-                        user: UserShortDTO(user)
-                    }});
+                return res.json({status: 200, batch: {...save}});
 
             } else {
                 return res.json({status: 400, error: "No se han encontrado registros"});
