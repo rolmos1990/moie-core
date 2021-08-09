@@ -22,6 +22,7 @@ import {DeliveryMethod} from "./DeliveryMethod";
 import {OrderDetail} from "./OrderDetail";
 import {User} from "./User";
 import {OrderDelivery} from "./OrderDelivery";
+import {Office} from "./Office";
 
 /**
  * El isImpress -> o Impreso seria un Estatus más,
@@ -104,6 +105,10 @@ export class Order extends BaseModel{
     @ManyToOne(() => User)
     @JoinColumn({name: 'user_id'})
     user: User;
+
+    @ManyToOne(() => Office, { nullable: true })
+    @JoinColumn({name: 'office_id'})
+    office: Office;
 
     @Column({name:'status', type: 'integer'})
     @IsNumber()

@@ -10,6 +10,8 @@ import {PageDTO} from "../../controllers/parsers/page";
 import {ApplicationException, ConditionalException, InvalidArgumentException} from "../exceptions";
 import {OrderConditional} from "../enum/order.conditional";
 import {isEmpty} from "../helper/helpers";
+import {UserService} from "../../services/user.service";
+import {User} from "../../models/User";
 
 export const GROUPS = {
     POST: 'create',
@@ -22,7 +24,8 @@ export abstract class BaseController<Parse> {
         protected readonly serviceAux?: IService
     ){
     };
-
+    protected autoSaveUser?() : boolean; //save user in table
+    protected getUserService?() : IService; //required for autosave user
     public abstract getInstance() : Object;
     public abstract getEntityTarget() : EntityTarget<Parse>;
     public abstract getParseGET(entity: Parse, isDetail: boolean) : Object;
@@ -105,9 +108,17 @@ export abstract class BaseController<Parse> {
                     throw new InvalidArgumentException(errorMessage);
             }
 
+            /** Autoasignar usuario a la creación */
+            if(this.getUserService() && req && req['user'] && this.autoSaveUser) {
+                const userIdFromSession = req['user'].id;
+                const user = await this.getUserService().find(userIdFromSession);
+                entity.user = user;
+            }
+
             await this.beforeCreate(entity);
             const response = await this.service.createOrUpdate(entity);
             await this.afterCreate(response);
+
             const newEntity = await this.service.find(response.id, this.getDefaultRelations(true) || []);
             const name = this.getEntityTarget()['name'];
             return res.json({status: 200, [name.toString().toLowerCase()]: newEntity});
@@ -177,7 +188,7 @@ export abstract class BaseController<Parse> {
     protected abstract beforeCreate(item: Object): void;
 
     /* After create object in repository */
-    protected abstract afterCreate(item: Object): void;
+    protected abstract afterCreate(item: Object, user?: User): void;
 
     /* Before update object in repository */
     protected abstract beforeUpdate(item: Object): void;
