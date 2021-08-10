@@ -26,6 +26,10 @@ export abstract class BaseService<Entity> implements IService {
         return this.baseRepository.find(id, relations);
     }
 
+    public findByObject(object: Object, relations = []): Promise<Entity[]> {
+        return this.baseRepository.findByObject(object, relations);
+    }
+
     public delete(id: number): Promise<Entity> {
         return this.baseRepository.delete(id);
     }

@@ -9,4 +9,8 @@ export class OfficeRepository<T> extends BaseRepository<Office>{
         super();
         this.repositoryManager = getRepository(Office);
     }
+
+    getRepositoryManager(){
+        return this.repositoryManager;
+    }
 }

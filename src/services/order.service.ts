@@ -19,6 +19,7 @@ import {OrderDelivery} from "../models/OrderDelivery";
 import {OrderDeliveryRepository} from "../repositories/orderDelivery.repository";
 import {DeliveryTypes, getDeliveryType} from "../common/enum/deliveryTypes";
 import {DeliveryMethodService} from "./deliveryMethod.service";
+import {Office} from "../models/Office";
 
 export class OrderService extends BaseService<Order> {
     constructor(
@@ -293,5 +294,14 @@ export class OrderService extends BaseService<Order> {
         return await this.orderRepository.createQueryBuilder('o')
             .where('o.id IN (:orderIds)', {orderIds: orderIds})
             .getMany();
+    }
+
+    /** Update orders */
+    async updateOffices(office: Office, condition){
+        return await this.orderRepository.createQueryBuilder('o')
+            .update(Order)
+            .set({ office: office })
+            .where(condition)
+            .execute();
     }
 }

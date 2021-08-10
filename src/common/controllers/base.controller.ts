@@ -109,7 +109,7 @@ export abstract class BaseController<Parse> {
             }
 
             /** Autoasignar usuario a la creación */
-            if(this.getUserService() && req && req['user'] && this.autoSaveUser) {
+            if(this.getUserService && req && req['user'] && this.autoSaveUser) {
                 const userIdFromSession = req['user'].id;
                 const user = await this.getUserService().find(userIdFromSession);
                 entity.user = user;

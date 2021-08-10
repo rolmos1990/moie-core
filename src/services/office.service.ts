@@ -8,4 +8,8 @@ export class OfficeService extends BaseService<Office> {
     ){
         super(officeRepository);
     }
+
+    getRepository(){
+        return this.officeRepository;
+    }
 }
