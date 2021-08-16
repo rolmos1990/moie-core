@@ -39,6 +39,11 @@ export class OrderDelivery extends BaseModel{
     @IsOptional()
     tracking: string;
 
+    @Column({name:'delivery_status', type: 'varchar', length: 200, nullable: true})
+    @Length(0,200, {groups: ['create','update']})
+    @IsOptional()
+    deliveryStatus: string;
+
     @Column({name:'delivery_date', type: 'datetime', nullable: true})
     @Type(() => Date)
     @IsDate()
