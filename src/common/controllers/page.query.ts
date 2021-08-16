@@ -17,6 +17,7 @@ const DEFAULT_OFFSET = 0;
 export class PageQuery {
 
     private readonly where:any = [];
+    private readonly whereSubQuery: any = [];
     private readonly select: string | Array<string> | null;
     private readonly limit:number = DEFAULT_LIMIT;
     private readonly offset:number = DEFAULT_OFFSET;
@@ -50,6 +51,7 @@ export class PageQuery {
 
         if(where instanceof ConditionalQuery) {
             this.where = where.get();
+            this.whereSubQuery = where.getSubQuery();
         }
         else if(where instanceof Array){
             where.forEach(condition =>{
@@ -63,6 +65,10 @@ export class PageQuery {
         this.select = field;
         this.limit = limit;
         this.offset = offset;
+    }
+
+    hasSubQuery() {
+        return true;
     }
 
     /**
@@ -110,6 +116,30 @@ export class PageQuery {
      */
     getWhere(){
         return this.where;
+    }
+
+    /**
+     * Return the where query
+     * @get
+     */
+    getWhereSubQuery(){
+        return this.whereSubQuery || [];
+    }
+
+    getSubQueryInnerJoin(alias){
+
+        //{ orderDelivery: tableName + '.orderDelivery' }
+        const subQueryInnerJoin = this.getWhereSubQuery().map(item => {
+            //conditions.addSub(field[0] + " = :" + subfieldName, {[subfieldName] : subfieldValue });
+            const name = item.query.split(".");
+            return {[name[0]] : alias + '.' + name[0]};
+        });
+
+        return subQueryInnerJoin.reduce((result, item, index, array) => {
+            const key = Object.keys(item);
+            result[key[0]] = item[key[0]];
+            return result;
+        }, {});
     }
 
     /**

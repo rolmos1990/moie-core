@@ -93,6 +93,28 @@ export default abstract class BaseRepository<T> {
             }
             return sum.getMany();
         }
+        else if(page.hasSubQuery()){
+
+            const tableName = this.repositoryManager.metadata.tableName;
+
+            //const subQuery = ['orderDelivery.tracking = :tracking', { tracking: 123456 }];
+
+            const subQueries = page.getWhereSubQuery();
+            //{ orderDelivery: tableName + '.orderDelivery' }
+            return await this.repositoryManager.find({
+                ...page.get(),
+                join: { alias: tableName, innerJoin: page.getSubQueryInnerJoin(tableName) },
+                where: qb => {
+                    qb.where({});
+                    subQueries.forEach(item => {
+                       qb.andWhere(item.query, item.search); // Filter related field
+
+                    });
+                    //qb.andWhere();
+                    //.andWhere(page.getWhereSubQuery() 'orderDelivery.tracking = :tracking', { tracking: 123456 }); // Filter related field
+                }
+            });
+        }
         else {
             return await this.repositoryManager.find(page.get());
         }

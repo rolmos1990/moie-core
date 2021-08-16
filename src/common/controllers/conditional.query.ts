@@ -10,6 +10,7 @@ import {ConditionalException} from "../exceptions";
 export class ConditionalQuery {
 
     private condition: Object = {};
+    private conditionSubQuery: any = [];
 
     /**
      * Static Use - Convert your request params in ConditionalQuery Class
@@ -123,7 +124,16 @@ export class ConditionalQuery {
                 }  else if(query.includes("::")){
                     //compare is equal
                     field = query.split("::");
-                    conditions.add(field[0], Operator.EQUAL, field[1]);
+
+                    if(field[0].includes(".")){
+                        const fieldSubField = field[0].split(".");
+                        const subfieldName = fieldSubField[1];
+                        const subfieldValue = field[1];
+                        //conditions.add(fieldSubField[0], Operator.EQUAL, {[subfieldName] : subfieldValue });
+                        conditions.addSub(field[0] + " = :" + subfieldName, {[subfieldName] : subfieldValue });
+                    } else {
+                        conditions.add(field[0], Operator.EQUAL, field[1]);
+                    }
                 }
                 else{
                     throw new ConditionalException;
@@ -133,6 +143,15 @@ export class ConditionalQuery {
         }catch(e){
             throw new ConditionalException(e);
         }
+    }
+
+    /**
+     * Add new condition subquery in your ConditionalQuery
+     * @add
+     */
+
+    addSub(query: string, search: Object){
+        this.conditionSubQuery.push({ query , search });
     }
 
     /**
@@ -206,6 +225,15 @@ export class ConditionalQuery {
 
     get(){
         return this.condition;
+    }
+
+    /**
+     * Return the Object condition relations query
+     * @get
+     */
+
+    getSubQuery(){
+        return this.conditionSubQuery;
     }
 
 };

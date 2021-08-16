@@ -118,6 +118,7 @@ export class Order extends BaseModel{
     orderDetails: OrderDetail[];
 
     @OneToOne(() => OrderDelivery, orderDelivery => orderDelivery.order)
+    @JoinColumn({name: 'order_delivery_id'})
     orderDelivery: OrderDelivery;
 
     isEmpty(): boolean {
