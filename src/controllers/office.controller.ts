@@ -150,7 +150,7 @@ export class OfficeController extends BaseController<Office> {
     //exportReport ->
 
     /** Download Template for Interrapidisimo Delivery Service */
-    //@route('/:id/importTracking')
+    //@route('/importTracking')
     // -> un file (base64), deliveryMethod (metodo de envio), deliveryDate (fecha del envio)
     //success ->
 
