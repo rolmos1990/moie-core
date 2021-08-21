@@ -9,12 +9,12 @@ export const OrderDeliveryListDTO = (orderDelivery: OrderDelivery) => ({
 });
 
 export const OrderDeliveryShowDTO = (orderDelivery: OrderDelivery) => ({
-    deliveryCost: orderDelivery.deliveryCost,
-    deliveryState: orderDelivery.deliveryState,
-    deliveryMunicipality: orderDelivery.deliveryMunicipality,
-    tracking: orderDelivery.tracking,
-    deliveryDate: orderDelivery.deliveryDate,
-    chargeOnDelivery: orderDelivery.chargeOnDelivery,
-    deliveryType: orderDelivery.deliveryType,
+    deliveryCost: orderDelivery ? orderDelivery.deliveryCost : null,
+    deliveryState: orderDelivery ? orderDelivery.deliveryState : null,
+    deliveryMunicipality: orderDelivery ? orderDelivery.deliveryMunicipality : null,
+    tracking: orderDelivery ? orderDelivery.tracking : null,
+    deliveryDate: orderDelivery ? orderDelivery.deliveryDate : null,
+    chargeOnDelivery: orderDelivery ? orderDelivery.chargeOnDelivery : null,
+    deliveryType: orderDelivery ? orderDelivery.deliveryType : null,
     deliveryStatus: orderDelivery ? orderDelivery.deliveryStatus : null
 });

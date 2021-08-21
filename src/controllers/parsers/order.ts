@@ -199,7 +199,8 @@ export const OrderListDTO = (order: OrderModel) => ({
     status: order.status,
     quantity: order.quantity,
     customer: CustomerShortDTO(order.customer),
-    user: UserShortDTO(order.user)
+    user: UserShortDTO(order.user),
+    office: order.office
 });
 
 
@@ -223,7 +224,8 @@ export const OrderShowDTO = (order: OrderModel) => ({
     quantity: order.quantity,
     orderDetails: order.orderDetails && order.orderDetails.map(item => OrderDetailShowDTO(item)),
     customer: CustomerListDTO(order.customer),
-    user: UserShortDTO(order.user)
+    user: UserShortDTO(order.user),
+    office: order.office
 });
 
 export const OrderShortDTO = (order: OrderModel) => ({

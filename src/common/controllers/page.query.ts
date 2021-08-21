@@ -68,7 +68,7 @@ export class PageQuery {
     }
 
     hasSubQuery() {
-        return true;
+        return this.whereSubQuery && this.whereSubQuery.length > 0;
     }
 
     /**
