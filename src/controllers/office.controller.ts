@@ -18,6 +18,12 @@ import {ExportersInterrapidisimoCd} from "../templates/exporters";
 import {ImporterImpl} from "../templates/importers/importerImpl";
 import {LIMIT_SAVE_BATCH} from "../common/persistence/mysql.persistence";
 import {OrderDeliveryService} from "../services/orderDelivery.service";
+import {OrderStatus} from "../common/enum/orderStatus";
+import {getDeliveryShortType, QrBarImage} from "../common/helper/helpers";
+import {isCash, isPaymentMode} from "../common/enum/paymentModes";
+import {BatchRequestTypes, BatchRequestTypesStatus} from "../common/enum/batchRequestTypes";
+import {UserShortDTO} from "./parsers/user";
+import {TemplateService} from "../services/template.service";
 
 @route('/office')
 export class OfficeController extends BaseController<Office> {
@@ -26,7 +32,8 @@ export class OfficeController extends BaseController<Office> {
         private readonly userService: UserService,
         private readonly orderService: OrderService,
         private readonly mediaManagementService: MediaManagementService,
-        private readonly orderDeliveryService: OrderDeliveryService
+        private readonly orderDeliveryService: OrderDeliveryService,
+        private readonly templateService: TemplateService
     ){
         super(officeService);
     };
@@ -124,6 +131,63 @@ export class OfficeController extends BaseController<Office> {
                 this.handleException(new ApplicationException(), res);
 
             }
+        }
+    }
+
+    /**
+     * Obtener plantilla de impresión
+     * @param req
+     * @param res
+     */
+    @route('/batch/printRequest/:id')
+    @GET()
+    public async printRequest(req: Request, res: Response) {
+        try {
+            const {id} = req.query;
+
+            let orders: Array<Order> = await this.orderService.findByObject({office: id}, ['orderDelivery', 'customer','customer.state','customer.municipality']);
+
+            if(orders.length > 0){
+
+                let batchHtml : any = [];
+                const qrBar : any = [];
+
+                const result = orders.map(async order => {
+                    const templateName = this.orderService.getExportOfficeReport(order);
+                    qrBar[order.id] = await QrBarImage(order.id);
+                    const deliveryShortType = getDeliveryShortType(order.orderDelivery.deliveryType);
+                    const object = {
+                        order,
+                        deliveryShortType: deliveryShortType
+                    };
+
+                    const template = await this.templateService.getTemplate(templateName, object);
+                    if(!template){
+                        throw new InvalidArgumentException("No se ha encontrado una plantilla para esta orden");
+                    }
+
+                    return batchHtml.push({order: order.id, html: template});
+                });
+
+                await Promise.all(result);
+
+                const user = await this.userService.find(req["user"]);
+
+                const response = {
+                    body: batchHtml,
+                    type: BatchRequestTypes.IMPRESSION,
+                    status: BatchRequestTypesStatus.COMPLETED,
+                    user: UserShortDTO(user)
+                };
+
+                return res.json({status: 200, batch: {...response}});
+
+            } else {
+                return res.json({status: 400, error: "No se han encontrado registros"});
+            }
+        }catch(e){
+            this.handleException(e, res);
+            console.log("error", e);
         }
     }
 

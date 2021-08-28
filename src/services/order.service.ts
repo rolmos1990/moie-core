@@ -300,6 +300,15 @@ export class OrderService extends BaseService<Order> {
      * @param Order order
      * Obtener plantilla dependiendo de la orden
      */
+    getExportOfficeReport(order: Order) {
+        const deliveryTemplateName = `EXPORT_OFFICE_${order.deliveryMethod.code}`;
+        return deliveryTemplateName;
+    }
+
+    /**
+     * @param Order order
+     * Obtener plantilla dependiendo de la orden
+     */
     getPrintTemplate(order: Order) {
         const deliveryTemplateName = `PRINT_${order.deliveryMethod.code}`;
         return deliveryTemplateName;
