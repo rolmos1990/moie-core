@@ -1,4 +1,4 @@
-import {Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn} from "typeorm";
+import {Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn} from "typeorm";
 import BaseModel from "../common/repositories/base.model";
 import {IsBoolean, IsDate, IsDecimal, IsOptional, Length} from "class-validator";
 import {Order} from "./Order";
@@ -59,6 +59,12 @@ export class OrderDelivery extends BaseModel{
     @Column({name:'delivery_type', type: 'integer', nullable: true})
     @IsOptional()
     deliveryType : number;
+
+    @UpdateDateColumn({name:'updated_at', nullable: true})
+    @Type(() => Date)
+    @IsDate()
+    @IsOptional()
+    updatedAt: Date;
 
     isEmpty(): boolean {
         return (this.id == null);
