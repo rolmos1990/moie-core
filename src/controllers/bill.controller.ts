@@ -1,6 +1,6 @@
 import {GET, POST, PUT, route} from "awilix-express";
 import {BaseController} from "../common/controllers/base.controller";
-import {BillService} from "../services/Bill.service";
+import {BillService} from "../services/bill.service";
 import {Bill} from "../models/Bill";
 import {User} from "../models/User";
 import {EntityTarget} from "typeorm";
