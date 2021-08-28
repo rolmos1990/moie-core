@@ -24,7 +24,8 @@ export class ExportersInterrapidisimoCd extends BaseExporters {
            city: item.customer.municipality.name.toUpperCase(),
            description: 'PRENDAS DE VESTIR - ' + item.id,
            weight: item.totalWeight < 1000 ? 1000 : Math.floor(item.totalWeight / 1000) ,
-           price:item.totalAmount.toFixed(2)
+           price:item.totalAmount.toFixed(2),
+           number: item.id
         }));
 
         console.log("DEBUG -- TO SAVE", JSON.stringify(body));

@@ -11,7 +11,7 @@ export class OrderDelivery extends BaseModel{
     @PrimaryGeneratedColumn('increment')
     id: number;
 
-    @ManyToOne(() => Order)
+    @OneToOne(() => Order, order => order.id)
     @JoinColumn({name: 'order_id'})
     order: Order;
 

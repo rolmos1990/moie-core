@@ -20,6 +20,7 @@ import {OrderDeliveryRepository} from "../repositories/orderDelivery.repository"
 import {DeliveryTypes, getDeliveryType} from "../common/enum/deliveryTypes";
 import {DeliveryMethodService} from "./deliveryMethod.service";
 import {Office} from "../models/Office";
+import {DeliveryLocalityService} from "./deliveryLocality.service";
 
 export class OrderService extends BaseService<Order> {
     constructor(
@@ -28,7 +29,8 @@ export class OrderService extends BaseService<Order> {
         private readonly  orderDeliveryRepository: OrderDeliveryRepository<OrderDelivery>,
         private readonly productSizeService: ProductSizeService,
         private readonly customerService: CustomerService,
-        private readonly deliveryMethodService: DeliveryMethodService
+        private readonly deliveryMethodService: DeliveryMethodService,
+        private readonly deliveryLocalityService: DeliveryLocalityService
     ) {
         super(orderRepository);
     }
@@ -87,15 +89,22 @@ export class OrderService extends BaseService<Order> {
 
             order.customer = customer;
             order.origen = parse.origen || order.origen;
-            order.orderDelivery.chargeOnDelivery = [true, false].includes(parse.chargeOnDelivery) ? parse.chargeOnDelivery : order.orderDelivery.chargeOnDelivery;
-            order.orderDelivery.deliveryType = parse.deliveryType || order.orderDelivery.deliveryType;
-            order.orderDelivery.deliveryCost = deliveryCost;
-            order.deliveryMethod = deliveryMethod || order.deliveryMethod;
             order.expiredDate = new Date();
             order.status = order.status || 1;
-            order.orderDelivery.tracking = order.orderDelivery.tracking || "";
             order.remember = order.remember || false;
             order.createdAt = order.createdAt || new Date();
+
+            /** Delivery Information in Order */
+            order.orderDelivery.chargeOnDelivery = [true, false].includes(parse.chargeOnDelivery) ? parse.chargeOnDelivery : order.orderDelivery.chargeOnDelivery;
+            order.orderDelivery.deliveryType = parse.deliveryType || order.orderDelivery.deliveryType;
+            order.orderDelivery.deliveryCost = deliveryCost || 0;
+            order.deliveryMethod = deliveryMethod || order.deliveryMethod;
+            order.orderDelivery.tracking = order.orderDelivery.tracking || "";
+
+            if(parse.deliveryLocality) {
+                const deliveryLocality = await this.deliveryLocalityService.find(parse.deliveryLocality);
+                order.orderDelivery.deliveryLocality = deliveryLocality;
+            }
 
             let products;
 
@@ -116,10 +125,16 @@ export class OrderService extends BaseService<Order> {
             order.piecesForChanges = parse.piecesForChanges || order.piecesForChanges || null;
             order.paymentMode = parse.paymentMode || order.paymentMode || null;
             order.quantity = products.reduce((sum,product) => (sum.quantity + product.quantity, 0)).quantity;
+            console.log("ORDER TO SAVE", order);
 
             const orderRegister = await this.createOrUpdate(order);
             order.orderDelivery.order = orderRegister;
-            await this.orderDeliveryRepository.save(order.orderDelivery);
+
+            const orderDeliveryRegistered = await this.orderDeliveryRepository.save(order.orderDelivery);
+            orderRegister.orderDelivery = orderDeliveryRegistered;
+            await this.orderRepository.save(orderRegister);
+            //order.orderDelivery.order = orderRegister;
+            //await this.orderDeliveryRepository.save(order.orderDelivery);
 
             //Actualizar cliente como mayorista
             try {

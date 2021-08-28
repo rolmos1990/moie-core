@@ -10,6 +10,7 @@ import {OrderDetail} from "../../models/OrderDetail";
 import {ProductShortDTO} from "./product";
 import {ProductSizeShort} from "./productSize";
 import {OrderDeliveryListDTO, OrderDeliveryShowDTO} from "./orderDelivery";
+import {DeliveryLocalityListDTO} from "./deliveryLocality";
 
 
 export const OrderCreateDTO = async (order: any) => {
@@ -186,6 +187,7 @@ export const OrderListDTO = (order: OrderModel) => ({
     id: order ? order.id : null,
     deliveryMethod: DeliveryMethodListDTO(order.deliveryMethod),
     orderDelivery: OrderDeliveryListDTO(order.orderDelivery),
+    deliveryLocality: order.orderDelivery && order.orderDelivery.deliveryLocality ? DeliveryLocalityListDTO(order.orderDelivery.deliveryLocality) : null,
     origen: order.origen,
     totalAmount: order.totalAmount,
     subTotalAmount: order.subTotalAmount,
@@ -208,6 +210,7 @@ export const OrderShowDTO = (order: OrderModel) => ({
     id: order.id,
     deliveryMethod: DeliveryMethodListDTO(order.deliveryMethod),
     orderDelivery: OrderDeliveryShowDTO(order.orderDelivery),
+    deliveryLocality: order.orderDelivery && order.orderDelivery.deliveryLocality ? DeliveryLocalityListDTO(order.orderDelivery.deliveryLocality) : null,
     origen: order.origen,
     totalAmount: order.totalAmount,
     subTotalAmount: order.subTotalAmount,

@@ -1,11 +1,13 @@
 import {OrderDelivery} from "../../models/OrderDelivery";
+import {DeliveryLocalityListDTO} from "./deliveryLocality";
 
 export const OrderDeliveryListDTO = (orderDelivery: OrderDelivery) => ({
     tracking: orderDelivery ? orderDelivery.tracking : null,
     deliveryDate: orderDelivery ? orderDelivery.deliveryDate : null,
     chargeOnDelivery: orderDelivery ? orderDelivery.chargeOnDelivery : null,
     deliveryType:  orderDelivery ? orderDelivery.deliveryType : null,
-    deliveryStatus: orderDelivery ? orderDelivery.deliveryStatus : null
+    deliveryStatus: orderDelivery ? orderDelivery.deliveryStatus : null,
+    deliveryLocality: orderDelivery ? DeliveryLocalityListDTO(orderDelivery.deliveryLocality) : null
 });
 
 export const OrderDeliveryShowDTO = (orderDelivery: OrderDelivery) => ({
@@ -16,5 +18,6 @@ export const OrderDeliveryShowDTO = (orderDelivery: OrderDelivery) => ({
     deliveryDate: orderDelivery ? orderDelivery.deliveryDate : null,
     chargeOnDelivery: orderDelivery ? orderDelivery.chargeOnDelivery : null,
     deliveryType: orderDelivery ? orderDelivery.deliveryType : null,
-    deliveryStatus: orderDelivery ? orderDelivery.deliveryStatus : null
+    deliveryStatus: orderDelivery ? orderDelivery.deliveryStatus : null,
+    deliveryLocality: orderDelivery ? DeliveryLocalityListDTO(orderDelivery.deliveryLocality) : null
 });
