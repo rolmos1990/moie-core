@@ -52,7 +52,7 @@ export class BillService extends BaseService<Bill> {
             const bill = new Bill();
             bill.order = order;
             const getLastNumberInfo = await this.getLastNumber();
-            bill.legal_number = getLastNumberInfo.number;
+            bill.legalNumber = getLastNumberInfo.number;
             bill.tax = taxAmount;
             bill.billConfig = getLastNumberInfo.config;
             bill.status = BillStatus.PENDING;

@@ -7,6 +7,7 @@ import {EntityTarget} from "typeorm";
 import {Request, Response} from "express";
 import {OrderShowDTO} from "./parsers/order";
 import {OrderService} from "../services/order.service";
+import {BillListDTO} from "./parsers/bill";
 
 @route('/bill')
 export class BillController extends BaseController<Bill> {
@@ -52,11 +53,11 @@ export class BillController extends BaseController<Bill> {
     }
 
     protected getDefaultRelations(isDetail: boolean): Array<string> {
-        return undefined;
+        return ['order'];
     }
 
     getEntityTarget(): EntityTarget<Bill> {
-        return undefined;
+        return Bill;
     }
 
     getGroupRelations(): Array<string> {
@@ -68,15 +69,15 @@ export class BillController extends BaseController<Bill> {
     }
 
     getParseGET(entity: Bill, isDetail: boolean): Object {
-        return undefined;
+        return BillListDTO(entity);
     }
 
     getParsePOST(entity: Bill): Object {
-        return undefined;
+        return BillListDTO(entity);
     }
 
     getParsePUT(entity: Bill): Object {
-        return undefined;
+        return BillListDTO(entity);
     }
 
 }

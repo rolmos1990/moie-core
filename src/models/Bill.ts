@@ -35,7 +35,7 @@ export class Bill extends BaseModel{
 
     @Column({name:'legal_number', type: 'bigint'})
     @IsInt({groups: ['create','update']})
-    legal_number: number;
+    legalNumber: number;
 
     @ManyToOne(() => BillConfig)
     @JoinColumn({name: 'bill_config_id'})
