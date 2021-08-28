@@ -124,6 +124,7 @@ export class OrderService extends BaseService<Order> {
             order.user = order.user || user;
             order.piecesForChanges = parse.piecesForChanges || order.piecesForChanges || null;
             order.paymentMode = parse.paymentMode || order.paymentMode || null;
+            order.enablePostSale = parse.enablePostSale === undefined ? order.enablePostSale : parse.enablePostSale;
             order.quantity = products.reduce((sum,product) => (sum.quantity + product.quantity, 0)).quantity;
             console.log("ORDER TO SAVE", order);
 

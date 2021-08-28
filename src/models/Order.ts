@@ -67,6 +67,10 @@ export class Order extends BaseModel{
     @IsDecimal({ decimal_digits: '2'}, {groups: ['create','update']})
     totalWeight: number;
 
+    @Column({name:'enable_post_sale', type: 'boolean', default: true})
+    @IsBoolean({groups: ['create','update']})
+    enablePostSale: boolean;
+
     @Column({name:'remember', type: 'boolean', nullable: true})
     @IsBoolean({groups: ['create','update']})
     remember: boolean;
