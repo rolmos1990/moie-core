@@ -9,6 +9,7 @@ import * as path from "path";
 import {create} from 'handlebars-pdf';
 import {IColumn} from "../common/interfaces/IColumns";
 import {BaseExporters} from "../templates/exporters/base.exporters";
+import {Worksheet} from "exceljs";
 const createHTML = require('create-html');
 const Excel = require('exceljs')
 
@@ -185,6 +186,21 @@ export class MediaManagementService extends UtilService {
         }catch(e){
             console.log("error", e.message);
         }
+    }
+
+    /**
+     * Obtener la información de un archivo excel
+     * Entregar un Formato Base64 y Devolver un archivo Excel
+     * Retorna una Hoja de Calculo de Excel
+     */
+    async readExcel(b64string){
+
+        var buf = Buffer.from(b64string, 'base64'); // Ta-da
+        const workbook = new Excel.Workbook();
+        const _excel = await workbook.xlsx.load(buf);
+        const sheet : Worksheet = _excel.getWorksheet(1);
+
+        return sheet;
     }
 
     /**

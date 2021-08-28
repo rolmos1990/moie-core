@@ -6,7 +6,7 @@ import {GET, POST, route} from "awilix-express";
 import {OfficeCreateDTO, OfficeListDTO} from "./parsers/office";
 import {UserService} from "../services/user.service";
 import {Request, Response} from "express";
-import {ApplicationException, InvalidArgumentException} from "../common/exceptions";
+import {ApplicationException, InvalidArgumentException, InvalidFileException} from "../common/exceptions";
 import {ConditionalQuery} from "../common/controllers/conditional.query";
 import {OperationQuery} from "../common/controllers/operation.query";
 import {PageQuery} from "../common/controllers/page.query";
@@ -15,6 +15,9 @@ import {OrderService} from "../services/order.service";
 import {Order} from "../models/Order";
 import {MEDIA_FORMAT_OUTPUT, MediaManagementService} from "../services/mediaManagement.service";
 import {ExportersInterrapidisimoCd} from "../templates/exporters";
+import {ImporterImpl} from "../templates/importers/importerImpl";
+import {LIMIT_SAVE_BATCH} from "../common/persistence/mysql.persistence";
+import {OrderDeliveryService} from "../services/orderDelivery.service";
 
 @route('/office')
 export class OfficeController extends BaseController<Office> {
@@ -22,7 +25,8 @@ export class OfficeController extends BaseController<Office> {
         private readonly officeService: OfficeService,
         private readonly userService: UserService,
         private readonly orderService: OrderService,
-        private readonly mediaManagementService: MediaManagementService
+        private readonly mediaManagementService: MediaManagementService,
+        private readonly orderDeliveryService: OrderDeliveryService
     ){
         super(officeService);
     };
@@ -141,6 +145,44 @@ export class OfficeController extends BaseController<Office> {
                 this.handleException(new InvalidArgumentException("Despacho no ha sido encontrado"), res);
             }
             else{
+                this.handleException(new ApplicationException(), res);
+
+            }
+        }
+    }
+
+    /** Import File Delivery Information in System */
+    @route('/importFile')
+    @POST()
+    protected async importFile(req: Request, res: Response){
+        try {
+            const body = req.body;
+
+            const { file, deliveryDate, deliveryMethod } = body;
+
+            const excel = await this.mediaManagementService.readExcel(file);
+            const excelToSave = new ImporterImpl(deliveryMethod, excel);
+            const context = excelToSave.getContext();
+            const ids = context.map(item => item.id);
+
+            const orders = await this.orderService.findByIdsWithDeliveries(ids);
+            /** Actualizar todos los registros asociados */
+            const orderDeliveries = orders.filter(i => i.orderDelivery).map(item => {
+                const tracking = context.filter(i => item.id === parseInt(i.id));
+                if(tracking && tracking[0]) {
+                    item.orderDelivery.tracking = tracking[0].trackingNumber;
+                }
+                return {id: item.orderDelivery.id, tracking: item.orderDelivery.tracking};
+            });
+
+            const registers = await this.orderDeliveryService.createOrUpdate(orderDeliveries, {chunk: LIMIT_SAVE_BATCH});
+
+            return res.json({status: 200, data: {registers: registers} } );
+        }catch(e){
+            console.log("error -- ", e.message);
+            if (e.name === InvalidArgumentException.name || e.name === "EntityNotFound") {
+                this.handleException(new InvalidArgumentException("Despacho no ha sido encontrado"), res);
+            } else{
                 this.handleException(new ApplicationException(), res);
 
             }

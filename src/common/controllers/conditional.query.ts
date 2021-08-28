@@ -66,7 +66,12 @@ export class ConditionalQuery {
                 } else if (query.includes("$nempty")) {
                     //compare is not empty
                     field = query.split("$nempty");
-                    conditions.add(field[0], Operator.IS_NOT, "");
+                    if(field[0].includes(".")){
+                        conditions.addSub(field[0] + " <> ", {});
+                    } else {
+                        field = query.split("$nempty");
+                        conditions.add(field[0], Operator.IS_NOT, "");
+                    }
                 } else if (query.includes("$empty")) {
                     //compare is empty
                     field = query.split("$empty");

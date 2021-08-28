@@ -32,6 +32,7 @@ import {OrderDetailRepository} from "./repositories/orderDetail.repository";
 import {NotificationRepository} from "./repositories/notification.repository";
 import {NotificationService} from "./services/notification.service";
 import {OrderDeliveryRepository} from "./repositories/orderDelivery.repository";
+import {OrderDeliveryService} from './services/orderDelivery.service';
 import {TemplateService} from "./services/template.service";
 import {TemplateRepository} from "./repositories/template.repository";
 import {CommentService} from "./services/comment.service";
@@ -87,7 +88,8 @@ export default (app: express.Application): void => {
         templateService: asClass(TemplateService).scoped(),
         commentService: asClass(CommentService).scoped(),
         batchRequestService: asClass(BatchRequestService).scoped(),
-        officeService: asClass(OfficeService).scoped()
+        officeService: asClass(OfficeService).scoped(),
+        orderDeliveryService: asClass(OrderDeliveryService).scoped()
     });
 
     app.use(scopePerRequest(container));
