@@ -144,7 +144,7 @@ export class OfficeController extends BaseController<Office> {
     @GET()
     public async printRequest(req: Request, res: Response) {
         try {
-            const {id} = req.query;
+            const {id} = req.params;
 
             let orders: Array<Order> = await this.orderService.findByObject({office: id}, ['orderDelivery', 'customer','customer.state','customer.municipality']);
 
