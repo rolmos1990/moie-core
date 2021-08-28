@@ -1,16 +1,24 @@
-import {Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn} from "typeorm";
+import {
+    Column,
+    CreateDateColumn,
+    Entity,
+    JoinColumn,
+    OneToOne,
+    PrimaryGeneratedColumn
+} from "typeorm";
 import BaseModel from "../common/repositories/base.model";
-import {IsBoolean, IsDate, IsInt, Length} from "class-validator";
+import {IsBoolean, IsDate} from "class-validator";
 import {Type} from "class-transformer";
+import {Bill} from "./Bill";
 
-@Entity({name: 'Bill'})
-export class Bill extends BaseModel{
+@Entity({name: 'BillCreditMemo'})
+export class BillCreditMemo extends BaseModel{
     @PrimaryGeneratedColumn('increment')
     id: number;
 
-    @Column({name:'name', type: 'varchar', length: 100, unique: true})
-    @Length(3, 255, {groups: ['create','update']})
-    bill: string;
+    @OneToOne(() => Bill, bill => bill.creditMemo)
+    @JoinColumn({name: 'bill_id'})
+    bill: Bill;
 
     @Column({type: 'boolean'})
     @IsBoolean({groups: ['create','update']})

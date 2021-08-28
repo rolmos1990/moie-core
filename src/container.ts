@@ -41,6 +41,9 @@ import {BatchRequestService} from "./services/batchRequest.service";
 import {BatchRequestRepository} from "./repositories/batchRequest.repository";
 import {OfficeRepository} from "./repositories/office.repository";
 import {OfficeService} from "./services/office.service";
+import {BillService} from "./services/bill.service";
+import {BillRepository} from "./repositories/bill.repository";
+import {BillConfigRepository} from "./repositories/billConfig.repository";
 
 export default (app: express.Application): void => {
     const container = createContainer({
@@ -69,6 +72,8 @@ export default (app: express.Application): void => {
         commentRepository: asClass(CommentRepository).scoped(),
         batchRequestRepository:  asClass(BatchRequestRepository).scoped(),
         officeRepository:  asClass(OfficeRepository).scoped(),
+        billRepository: asClass(BillRepository).scoped(),
+        billConfigRepository: asClass(BillConfigRepository).scoped(),
         // services
         userService: asClass(UserService).scoped(),
         customerService: asClass(CustomerService).scoped(),
@@ -89,7 +94,9 @@ export default (app: express.Application): void => {
         commentService: asClass(CommentService).scoped(),
         batchRequestService: asClass(BatchRequestService).scoped(),
         officeService: asClass(OfficeService).scoped(),
-        orderDeliveryService: asClass(OrderDeliveryService).scoped()
+        orderDeliveryService: asClass(OrderDeliveryService).scoped(),
+        billService: asClass(BillService).scoped(),
+
     });
 
     app.use(scopePerRequest(container));

@@ -328,6 +328,15 @@ export class OrderService extends BaseService<Order> {
             .getMany();
     }
 
+    async findByIdsWithFullRelations(orderIds: any) {
+        return await this.orderRepository.createQueryBuilder('o')
+            .where('o.id IN (:orderIds)', {orderIds: orderIds})
+            .leftJoinAndSelect('o.orderDelivery', 'od')
+            .leftJoinAndSelect('o.customer', 'cu')
+            .leftJoinAndSelect('o.deliveryMethod', 'dm')
+            .getMany();
+    }
+
     /** Update orders */
     async updateOffices(office: Office, condition){
         return await this.orderRepository.createQueryBuilder('o')

@@ -3,12 +3,12 @@ import BaseModel from "../common/repositories/base.model";
 import {IsBoolean, IsDate, IsInt, Length} from "class-validator";
 import {Type} from "class-transformer";
 
-@Entity({name: 'Bill'})
-export class Bill extends BaseModel{
+@Entity({name: 'BillConfig'})
+export class BillConfig extends BaseModel{
     @PrimaryGeneratedColumn('increment')
     id: number;
 
-    @Column({name:'name', type: 'varchar', length: 100, unique: true})
+    @Column({name:'number', type: 'varchar', length: 100, unique: true})
     @Length(3, 255, {groups: ['create','update']})
     number: string;
 

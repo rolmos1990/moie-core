@@ -1,4 +1,4 @@
-export enum billStatus {
+export enum BillStatus {
     SEND = 'Enviada', //Enviada
     ERROR= 'Error DIAN', //Error de Factura
     NO_MUNICIPALITY= 'Sin Municipio', //No se ingreso municipio

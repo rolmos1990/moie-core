@@ -1,18 +1,28 @@
-import {Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn} from "typeorm";
+import {
+    Column,
+    CreateDateColumn,
+    Entity,
+    JoinColumn, ManyToOne, OneToMany,
+    OneToOne,
+    PrimaryGeneratedColumn
+} from "typeorm";
 import BaseModel from "../common/repositories/base.model";
 import {IsBoolean, IsDate, IsDecimal, IsInt, Length} from "class-validator";
 import {Type} from "class-transformer";
-import {Municipality} from "./Municipality";
-import {Product} from "./Product";
+import {Order} from "./Order";
+import {Customer} from "./Customer";
+import {BillConfig} from "./BillConfig";
+import {OrderDetail} from "./OrderDetail";
+import {BillCreditMemo} from "./BillCreditMemo";
 
 @Entity({name: 'Bill'})
 export class Bill extends BaseModel{
     @PrimaryGeneratedColumn('increment')
     id: number;
 
-    @Column({name:'name', type: 'varchar', length: 100, unique: true})
-    @Length(3, 255, {groups: ['create','update']})
-    order: string;
+    @OneToOne(() => Order, order => order.id)
+    @JoinColumn({name: 'order_id'})
+    order: Order;
 
     @CreateDateColumn({name:'created_at'})
     @Type(() => Date)
@@ -27,13 +37,16 @@ export class Bill extends BaseModel{
     @IsInt({groups: ['create','update']})
     legal_number: number;
 
-    @Column({name:'name', type: 'varchar', length: 100, unique: true})
-    @Length(3, 255, {groups: ['create','update']})
-    billConfig: string;
+    @ManyToOne(() => BillConfig)
+    @JoinColumn({name: 'bill_config_id'})
+    billConfig: BillConfig;
 
-    @Column({name:'name', type: 'varchar', length: 100})
+    @Column({name:'status', type: 'varchar', length: 100})
     @IsBoolean({groups: ['create','update']})
     status: string;
+
+    @OneToOne(() => BillCreditMemo, billCreditMemo => billCreditMemo.bill)
+    creditMemo: BillCreditMemo;
 
     isEmpty(): boolean {
         return false;
