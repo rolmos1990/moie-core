@@ -24,6 +24,7 @@ import {isCash, isPaymentMode} from "../common/enum/paymentModes";
 import {BatchRequestTypes, BatchRequestTypesStatus} from "../common/enum/batchRequestTypes";
 import {UserShortDTO} from "./parsers/user";
 import {TemplateService} from "../services/template.service";
+import {DeliveryStatus} from "../common/enum/deliveryStatus";
 
 @route('/office')
 export class OfficeController extends BaseController<Office> {
@@ -236,7 +237,7 @@ export class OfficeController extends BaseController<Office> {
                 if(tracking && tracking[0]) {
                     item.orderDelivery.tracking = tracking[0].trackingNumber;
                 }
-                return {id: item.orderDelivery.id, tracking: item.orderDelivery.tracking};
+                return {id: item.orderDelivery.id, tracking: item.orderDelivery.tracking, deliveryDate: new Date(), deliveryStatus: DeliveryStatus.PENDING};
             });
 
             const registers = await this.orderDeliveryService.createOrUpdate(orderDeliveries, {chunk: LIMIT_SAVE_BATCH});
