@@ -146,7 +146,7 @@ export class OfficeController extends BaseController<Office> {
         try {
             const {id} = req.params;
 
-            let orders: Array<Order> = await this.orderService.findByObject({office: id}, ['orderDelivery', 'customer','customer.state','customer.municipality']);
+            let orders: Array<Order> = await this.orderService.findByObject({office: id}, ['orderDelivery', 'customer','customer.state','customer.municipality', 'deliveryMethod']);
 
             if(orders.length > 0){
 
