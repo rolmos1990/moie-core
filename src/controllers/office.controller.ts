@@ -151,11 +151,9 @@ export class OfficeController extends BaseController<Office> {
             if(orders.length > 0){
 
                 let batchHtml : any = [];
-                const qrBar : any = [];
 
                 const result = orders.map(async order => {
                     const templateName = this.orderService.getExportOfficeReport(order);
-                    qrBar[order.id] = await QrBarImage(order.id);
                     const deliveryShortType = getDeliveryShortType(order.orderDelivery.deliveryType);
                     const object = {
                         order,
@@ -172,13 +170,13 @@ export class OfficeController extends BaseController<Office> {
 
                 await Promise.all(result);
 
-                const user = await this.userService.find(req["user"]);
+                //const user = await this.userService.find(req["user"]);
 
                 const response = {
                     body: batchHtml,
                     type: BatchRequestTypes.IMPRESSION,
                     status: BatchRequestTypesStatus.COMPLETED,
-                    user: UserShortDTO(user)
+                    //user: UserShortDTO(user)
                 };
 
                 return res.json({status: 200, batch: {...response}});
