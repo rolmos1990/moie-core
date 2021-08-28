@@ -100,12 +100,13 @@ export default abstract class BaseRepository<T> {
             //const subQuery = ['orderDelivery.tracking = :tracking', { tracking: 123456 }];
 
             const subQueries = page.getWhereSubQuery();
+            const where = page.getWhere();
             //{ orderDelivery: tableName + '.orderDelivery' }
             return await this.repositoryManager.find({
                 ...page.get(),
                 join: { alias: tableName, innerJoin: page.getSubQueryInnerJoin(tableName) },
                 where: qb => {
-                    qb.where({});
+                    qb.where(where);
                     subQueries.forEach(item => {
                        qb.andWhere(item.query, item.search); // Filter related field
 
