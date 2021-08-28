@@ -33,7 +33,7 @@ export const Authorization = (req: Request, res: Response, next: NextFunction) =
             }*/
         }
 
-        req['user'] = verified;
+        req['user'] = {id: verified.id, username: verified.username};
         next();
     }
     catch (err) {

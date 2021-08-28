@@ -53,7 +53,7 @@ export class BillController extends BaseController<Bill> {
     }
 
     protected getDefaultRelations(isDetail: boolean): Array<string> {
-        return ['order'];
+        return ['order', 'order.customer'];
     }
 
     getEntityTarget(): EntityTarget<Bill> {
