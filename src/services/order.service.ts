@@ -99,7 +99,7 @@ export class OrderService extends BaseService<Order> {
             order.orderDelivery.deliveryType = parse.deliveryType || order.orderDelivery.deliveryType;
             order.orderDelivery.deliveryCost = deliveryCost || 0;
             order.deliveryMethod = deliveryMethod || order.deliveryMethod;
-            order.orderDelivery.tracking = order.orderDelivery.tracking || "";
+            order.orderDelivery.tracking = order.orderDelivery.tracking || null;
 
             if(parse.deliveryLocality) {
                 const deliveryLocality = await this.deliveryLocalityService.find(parse.deliveryLocality);
