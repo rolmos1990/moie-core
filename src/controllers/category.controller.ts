@@ -85,6 +85,8 @@ export class CategoryController extends BaseController<Category> {
             const conditional = query.conditional ? query.conditional + "" : null;
 
             const queryCondition = ConditionalQuery.ConvertIntoConditionalParams(conditional);
+
+            /** Hacer aqui un arreglo para que obtenga por ids y mande los IDS */
             const operationQuery = new OperationQuery(null, null);
             let page = new PageQuery(limitForQueries,0,queryCondition, operationQuery);
 
@@ -113,7 +115,10 @@ export class CategoryController extends BaseController<Category> {
                             category: item.category,
                             productSize: item.productSize,
                             hasStarts: (item.price <= 800) && (item.category && item.category.id == 1),
-                            isTop: ((index % 4) >= 2)
+                            isTop: ((index % 4) >= 2),
+                            classTop: ((index % 4) >= 2) ? "top" : "bottom",
+                            price: item.price,
+                            sizes: []
                         }
                     );
                 });
