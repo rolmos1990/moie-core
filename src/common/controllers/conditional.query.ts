@@ -88,7 +88,7 @@ export class ConditionalQuery {
                         const fieldSubField = field[0].split(".");
                         const subfieldName = fieldSubField[1];
                         const subfieldValue = field[1];
-                        conditions.addSub(field[0] + " LIKE :" + subfieldName, {[subfieldName] : subfieldValue });
+                        conditions.addSub(field[0] + " LIKE :" + subfieldName, {[subfieldName] : "%" + subfieldValue + "%" });
                     } else {
                         conditions.add(field[0], Operator.LIKE, "%" + field[1] + "%");
                     }
