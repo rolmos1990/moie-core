@@ -85,14 +85,22 @@ export class BillController extends BaseController<Bill> {
         return res.json({status: 200});
     }
 
-    @route('/generate/bill/:id')
-    @GET()
-    public async test(req: Request, res: Response){
+    @route('/cancel/:id')
+    @POST()
+    public async cancelBill(req: Request, res: Response){
         const id = req.params.id;
+        const body = req.body;
+        const {type} : any = body;
+        const memotype : EBillType = type;
+        try {
         const bill = await this.billService.findBill(id);
 
-        //await this.billService.createMemo(bill)
-        await this.billService.sendElectronicBill(bill, EBillType.INVOICE, false);
+        const billMemo = await this.billService.createMemo(bill, memotype);
+            await this.billService.sendElectronicBill(bill, memotype, false, billMemo);
+        }catch(e){
+            this.handleException(e, res);
+            console.log("error", e);
+        }
         return res.json({status: 200});
     }
 

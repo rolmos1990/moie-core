@@ -3,6 +3,8 @@ import {Bill} from "../../../models/Bill";
 import {EBillType} from "../../../common/enum/eBill";
 import moment = require("moment");
 import {BillCreditMemo} from "../../../models/BillCreditMemo";
+import {urlencoded} from "express";
+const toXML = require("to-xml").toXML;
 
 export class CreateBillSoap extends BaseSoapTemplate {
 
@@ -168,7 +170,10 @@ export class CreateBillSoap extends BaseSoapTemplate {
             'PaymentMeansDescription' : 'Contado',
             'PaymentMeansCode_c' : 10,
             'PaymentDurationMeasure' : 0,
-            'PaymentDueDate' : moment(bill.createdAt).format('YYYY-MM-DD')
+            'PaymentDueDate' : moment(bill.createdAt).format('YYYY-MM-DD'),
+            'DspValueDebt': "", //CHECK
+            'CalculationRate_c': "", //CHECK
+            'DateCalculationRate_c': "" //CHECK
         };
 
         const Customer = {
@@ -177,7 +182,7 @@ export class CreateBillSoap extends BaseSoapTemplate {
             'CustNum': customer.document,
             'ResaleID': customer.document,
             'Name': customer.name,
-            'Address1': customer.address,
+            'Address1': customer.address || "test address",
             'EMailAddress': customer.email,
             'PhoneNum':customer.phone,
             'CurrencyCode': moneda,
@@ -207,14 +212,16 @@ export class CreateBillSoap extends BaseSoapTemplate {
             'Address1' : empresa['direccion'],
             'Country' : pais['nombre'],
             'PhoneNum' : empresa['telefono'],
-            'Email' : empresa['email']
+            'Email' : empresa['email'],
+            'FaxNum': ''
     };
         const COOneTime = {
             'Company' : empresa['nit'],
             'IdentificationType' : 13,
             'COOneTimeID' : customer.document,
             'Name' : customer.name,
-            'CountryCode' : pais['codigo']
+            'CountryCode' : pais['codigo'],
+            'CompanyName': empresa['nombre']
     };
         const SalesTRC = {
             'Company' : empresa['nit'],
@@ -236,6 +243,7 @@ export class CreateBillSoap extends BaseSoapTemplate {
             'Percentage' : 0,
             'MiscBaseAmt' : 0
     };
+        /** Agregar ns1:InvoiceType para tods .. */
         /** Nota de credito o nota de debito */
         if(([EBillType.CREDIT,EBillType.DEBIT].includes(this.type)) && this.note){
             if(this.type == EBillType.CREDIT){
@@ -260,6 +268,7 @@ export class CreateBillSoap extends BaseSoapTemplate {
 
 
         const data = {
+            "?": "xml version=\"1.0\" encoding=\"utf-8\"",
             'ARInvoiceDataSet' : {
             'InvcHead' : InvcHead,
             'InvcDtl' : InvcDtl,
@@ -282,7 +291,7 @@ export class CreateBillSoap extends BaseSoapTemplate {
         //format result for invoice
         const result = {
             prmInvoiceType: this.type,
-            prmXmlARInvoice: data
+            prmXmlARInvoice: toXML(data, null, false)
         };
 
         return result;

@@ -1,6 +1,9 @@
 import {UtilService} from "../common/controllers/util.service";
 import {BaseSoapTemplate} from "../templates/soap/BaseSoapTemplate";
-const soap = require('soap');
+import {WSSecurity} from "soap";
+//const soap = require('soap');
+const soap = require('strong-soap').soap;
+const WSDL = soap.WSDL;
 
 
 export type SoapOptions = {
@@ -17,18 +20,31 @@ export type SoapResult = {
 
 
 export class ClientsManagementService extends UtilService {
+    private headers : Object[] = [];
+
+    addHeaders(key,value){
+        this.headers.push({ key, value });
+    }
 
     async callSoapClient(options : SoapOptions) : Promise<SoapResult|any>{
+
+        const wsdlOptions = {
+            wsdl_headers: options.headerOptions,
+            envelopeKey: "SOAP-ENV"
+        };
+
         try {
             const args = options.body.getData();
-            await Promise.all(soap.createClient(options.url, {wsdl_headers: options.headerOptions, stream: true, namespaceArrayElements: true}, (err, client) => {
-                client[options.callMethod](args, function (err, result) {
-                    //if (err) throw new Error(err);
-                    console.log(args);
-                    console.log(soap);
-                    console.log("data error message");
-                    if(!err) {
+            await Promise.all(soap.createClient(options.url, wsdlOptions, (err, client) => {
 
+                this.headers.forEach(item => {
+                    client.addHttpHeader(item['key'], item['value']);
+                });
+
+                const method = client[options.callMethod];
+                method(args, function (err, result) {
+                    console.log(client.lastRequest);
+                    if(!err) {
                         return {result: result, error: null};
                     }
                     throw new Error(err);

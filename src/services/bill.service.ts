@@ -98,8 +98,9 @@ export class BillService extends BaseService<Bill> {
 
     async sendElectronicBill(bill: Bill, type : EBillType, async, creditMemo : BillCreditMemo = undefined){
 
-        const user = "c1ed3073-2c97-4fe5-9e62-65b168506de4";
-        const password = "daa23398-f3fe-4f9d-a476-029cf2779cac";
+        //-- DIAN USER / DIAN PASSWORD = 1CCC171F7911107313  --
+        const user = process.env.DIAN_USER;
+        const password = process.env.DIAN_PASSWORD;
 
         if(!bill.order.customer.municipality){
             throw new InvalidMunicipalityException;
@@ -108,11 +109,9 @@ export class BillService extends BaseService<Bill> {
             throw new InvalidDocumentException;
         }
 
-        var auth = new Buffer(`${user}:${password}`).toString("base64");
+        const auth = new Buffer(`${user}:${password}`).toString("base64");
 
         const soapBody = new CreateBillSoap(bill, type, creditMemo);
-
-        console.log(soapBody.getData());
 
         const options = {
             url: 'https://www.febtw.co:8087/ServiceBTW/FEServicesBTW.svc?wsdl',
@@ -121,7 +120,16 @@ export class BillService extends BaseService<Bill> {
             callMethod: "RecepcionXmlFromERP"
         };
 
+        this.clientManagementService.addHeaders("Authorization", auth);
         const result = await this.clientManagementService.callSoapClient(options);
-        console.log("result", result);
+        if(result["RecepcionXmlFromERPResult"]){
+            if(result["RecepcionXmlFromERPResult"]["success"]){
+                return true;
+            } else{
+                throw new InvalidArgumentException("No se pudo recibir la factura");
+            }
+        } else {
+            throw new InvalidArgumentException("No se pudo recibir la factura");
+        }
     }
 }
