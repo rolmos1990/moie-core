@@ -1,13 +1,16 @@
-import {GET, POST, PUT, route} from "awilix-express";
+import {GET, POST, route} from "awilix-express";
 import {BaseController} from "../common/controllers/base.controller";
 import {BillService} from "../services/bill.service";
 import {Bill} from "../models/Bill";
 import {User} from "../models/User";
 import {EntityTarget} from "typeorm";
 import {Request, Response} from "express";
-import {OrderShowDTO} from "./parsers/order";
 import {OrderService} from "../services/order.service";
 import {BillListDTO} from "./parsers/bill";
+import {EBillType} from "../common/enum/eBill";
+import {BillStatus} from "../common/enum/billStatus";
+import {InvalidMunicipalityException} from "../common/exceptions/invalidMunicipality.exception";
+import {InvalidDocumentException} from "../common/exceptions/invalidDocument.exception";
 
 @route('/bill')
 export class BillController extends BaseController<Bill> {
@@ -30,6 +33,7 @@ export class BillController extends BaseController<Bill> {
     protected beforeUpdate(item: Object): void {
     }
 
+    /** Generar las facturas de ordenes */
     @POST()
     public async create(req: Request, res: Response) {
         try {
@@ -50,6 +54,46 @@ export class BillController extends BaseController<Bill> {
             this.handleException(e, res);
             console.log("error", e);
         }
+    }
+
+    /** Recarga facturas pendientes */
+    @route('/reload/dian')
+    @GET()
+    public async reloadBills(req: Request, res: Response){
+        const bills = await this.billService.findByStatus(BillStatus.PENDING);
+        await Promise.all(bills.map(async bill => {
+            try {
+                await this.billService.sendElectronicBill(bill, EBillType.INVOICE, false);
+                bill.status = BillStatus.SEND;
+                await this.billService.createOrUpdate(bill);
+            }catch(e){
+                console.log("error to send: ", e.message);
+
+                if(e instanceof InvalidMunicipalityException){
+                    bill.status = BillStatus.NO_MUNICIPALITY
+                }
+                else if(e instanceof InvalidDocumentException){
+                    bill.status = BillStatus.NO_IDENTITY
+                } else {
+                    bill.status = BillStatus.ERROR
+                }
+
+                await this.billService.createOrUpdate(bill);
+            }
+        }));
+
+        return res.json({status: 200});
+    }
+
+    @route('/generate/bill/:id')
+    @GET()
+    public async test(req: Request, res: Response){
+        const id = req.params.id;
+        const bill = await this.billService.findBill(id);
+
+        //await this.billService.createMemo(bill)
+        await this.billService.sendElectronicBill(bill, EBillType.INVOICE, false);
+        return res.json({status: 200});
     }
 
     protected getDefaultRelations(isDetail: boolean): Array<string> {

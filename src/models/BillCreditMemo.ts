@@ -7,7 +7,7 @@ import {
     PrimaryGeneratedColumn
 } from "typeorm";
 import BaseModel from "../common/repositories/base.model";
-import {IsBoolean, IsDate} from "class-validator";
+import {IsBoolean, IsDate, Length} from "class-validator";
 import {Type} from "class-transformer";
 import {Bill} from "./Bill";
 
@@ -19,6 +19,10 @@ export class BillCreditMemo extends BaseModel{
     @OneToOne(() => Bill, bill => bill.creditMemo)
     @JoinColumn({name: 'bill_id'})
     bill: Bill;
+
+    @Column({name:'memoType', type: 'varchar', length: 100, unique: true})
+    @Length(3, 50, {groups: ['create','update']})
+    memoType: string;
 
     @Column({type: 'boolean'})
     @IsBoolean({groups: ['create','update']})

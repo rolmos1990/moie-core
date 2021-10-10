@@ -59,6 +59,11 @@ export class Customer extends BaseModel{
     @OneToMany(() => TemporalAddress, municipality => municipality.state)
     municipalities: Municipality[];
 
+    @Column({type: 'varchar', length: 300, nullable: true})
+    @Length(0, 300, {groups: ['create','update']})
+    address: string;
+
+
     @Column({type: 'boolean'})
     @IsBoolean({groups: ['create','update']})
     status: boolean;

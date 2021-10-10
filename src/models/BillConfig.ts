@@ -24,6 +24,10 @@ export class BillConfig extends BaseModel{
     @Length(1, 5, {groups: ['create','update']})
     prefix: string;
 
+    @Column({name:'resolution_date', type: 'varchar', length: 100, unique: true})
+    @Length(3, 50, {groups: ['create','update']})
+    resolutionDate: string;
+
     @CreateDateColumn({name:'created_at'})
     @Type(() => Date)
     @IsDate()

@@ -98,3 +98,11 @@ export function getDeliveryShortType(deliveryType){
             "";
     }
 }
+
+export function encodeToBase64(text){
+    try {
+        return Buffer.from(text).toString('base64');
+    }catch(e){
+        return text;
+    }
+}

@@ -9,12 +9,21 @@ import {BillConfig} from "../models/BillConfig";
 import {BillConfigRepository} from "../repositories/billConfig.repository";
 import {InvalidArgumentException} from "../common/exceptions";
 import {BillStatus} from "../common/enum/billStatus";
+import {ClientsManagementService} from "./clientsManagement.service";
+import {CreateBillSoap} from "../templates/soap/bills/CreateBillSoap";
+import {EBillType} from "../common/enum/eBill";
+import {BillCreditMemo} from "../models/BillCreditMemo";
+import {BillCreditMemoRepository} from "../repositories/billCreditMemo.repository";
+import {InvalidMunicipalityException} from "../common/exceptions/invalidMunicipality.exception";
+import {InvalidDocumentException} from "../common/exceptions/invalidDocument.exception";
 
 export class BillService extends BaseService<Bill> {
     constructor(
         private readonly billRepository: BillRepository<Bill>,
+        private readonly billCreditMemoRepository: BillCreditMemoRepository<BillCreditMemo>,
         private readonly billConfigRepository: BillConfigRepository<BillConfig>,
         private readonly orderService: OrderService,
+        private readonly clientManagementService: ClientsManagementService
     ){
         super(billRepository);
     }
@@ -61,5 +70,58 @@ export class BillService extends BaseService<Bill> {
         } else {
             throw new InvalidArgumentException("Orden: " + order.id + ", contiene una factura vigente");
         }
+    }
+
+    async findByStatus(status : BillStatus) : Promise<Bill[]>{
+        const bills = await this.billRepository.findByObject({
+            status: status
+        }, ['order', 'order.orderDetails', 'order.customer', 'order.orderDelivery', 'billConfig', 'order.customer.state', 'order.customer.municipality']);
+        return bills;
+    }
+
+    async findBill(billId) : Promise<Bill>{
+        const bill = await this.billRepository.find(billId, ['order', 'order.orderDetails', 'order.customer', 'order.orderDelivery', 'billConfig', 'order.customer.state', 'order.customer.municipality']);
+        return bill;
+    }
+
+    async createMemo(bill: Bill, type : EBillType) : Promise<BillCreditMemo> {
+        const creditMemo = new BillCreditMemo();
+        creditMemo.bill = bill;
+        creditMemo.memoType = type;
+        return await this.billCreditMemoRepository.save(creditMemo);
+    }
+
+    /** Enviar un Documento XML para enviar factura */
+    /** Genera un documento de facturación electronica */
+    /* Type -> Identifica si es un documento de Credito, Debito */
+    /* Async -> Tipo de respuesta del servicio */
+
+    async sendElectronicBill(bill: Bill, type : EBillType, async, creditMemo : BillCreditMemo = undefined){
+
+        const user = "c1ed3073-2c97-4fe5-9e62-65b168506de4";
+        const password = "daa23398-f3fe-4f9d-a476-029cf2779cac";
+
+        if(!bill.order.customer.municipality){
+            throw new InvalidMunicipalityException;
+        }
+        if(!bill.order.customer.document){
+            throw new InvalidDocumentException;
+        }
+
+        var auth = new Buffer(`${user}:${password}`).toString("base64");
+
+        const soapBody = new CreateBillSoap(bill, type, creditMemo);
+
+        console.log(soapBody.getData());
+
+        const options = {
+            url: 'https://www.febtw.co:8087/ServiceBTW/FEServicesBTW.svc?wsdl',
+            headerOptions: {Authorization: auth},
+            body: soapBody,
+            callMethod: "RecepcionXmlFromERP"
+        };
+
+        const result = await this.clientManagementService.callSoapClient(options);
+        console.log("result", result);
     }
 }
