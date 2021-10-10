@@ -292,6 +292,41 @@ export class OrderController extends BaseController<Order> {
         }
     }
 
+    /** Generar las facturas de ordenes */
+    @route('/ConfirmConciliation')
+    @POST()
+    public async closeOrder(req: Request, res: Response) {
+        const body = req.body;
+        const ids : any = body;
+        try {
+            if (ids.length === 0) {
+                throw new InvalidArgumentException("Debe ingresar registros a conciliar");
+            }
+
+            const orders = await this.orderService.findByIds(ids);
+
+            let itemSuccess = [];
+            let itemFailures = [];
+
+            await Promise.all(orders.map(async order => {
+                order.dateOfSale = new Date();
+                order.status = OrderStatus.RECONCILED;
+                try {
+                    await this.orderService.update(order);
+                    itemSuccess.push(order.id);
+                }catch(e){
+                    itemFailures.push(order.id);
+                }
+            }));
+
+            return res.json({status: 200, itemSuccess, itemFailures});
+
+        }catch(e){
+            this.handleException(e, res);
+            console.log("error", e);
+        }
+    }
+
     /**
      * Obtener plantilla de impresión
      * @param req

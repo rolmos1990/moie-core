@@ -95,6 +95,12 @@ export class Order extends BaseModel{
     @IsOptional()
     expiredDate: Date;
 
+    @CreateDateColumn({name:'date_of_sale', nullable: true})
+    @Type(() => Date)
+    @IsDate()
+    @IsOptional()
+    dateOfSale: Date;
+
     @CreateDateColumn({name:'created_at'})
     @Type(() => Date)
     @IsDate()

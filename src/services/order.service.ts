@@ -35,6 +35,11 @@ export class OrderService extends BaseService<Order> {
         super(orderRepository);
     }
 
+    async update(_order: Order) : Promise<Order>{
+        const order = await this.createOrUpdate(_order);
+        return order;
+    }
+
     async updateOrder(parse: OrderDetail[], oldProducts: OrderDetail[], order: Order): Promise<OrderDetail[]> {
         const pmanager = new OrderProductTrace(oldProducts, parse);
 
