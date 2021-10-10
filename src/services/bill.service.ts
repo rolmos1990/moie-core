@@ -80,7 +80,7 @@ export class BillService extends BaseService<Bill> {
     }
 
     async findBill(billId) : Promise<Bill>{
-        const bill = await this.billRepository.find(billId, ['order', 'order.orderDetails', 'order.customer', 'order.orderDelivery', 'billConfig', 'order.customer.state', 'order.customer.municipality']);
+        const bill = await this.billRepository.find(billId, ['order', 'order.orderDetails', 'order.customer', 'order.orderDelivery', 'billConfig', 'order.customer.state', 'order.customer.municipality', 'creditMemo']);
         return bill;
     }
 
@@ -88,7 +88,8 @@ export class BillService extends BaseService<Bill> {
         const creditMemo = new BillCreditMemo();
         creditMemo.bill = bill;
         creditMemo.memoType = type;
-        return await this.billCreditMemoRepository.save(creditMemo);
+        const memo = await this.billCreditMemoRepository.save(creditMemo);
+        return memo;
     }
 
     /** Enviar un Documento XML para enviar factura */

@@ -11,6 +11,7 @@ import {EBillType} from "../common/enum/eBill";
 import {BillStatus} from "../common/enum/billStatus";
 import {InvalidMunicipalityException} from "../common/exceptions/invalidMunicipality.exception";
 import {InvalidDocumentException} from "../common/exceptions/invalidDocument.exception";
+import {InvalidArgumentException} from "../common/exceptions";
 
 @route('/bill')
 export class BillController extends BaseController<Bill> {
@@ -85,15 +86,21 @@ export class BillController extends BaseController<Bill> {
         return res.json({status: 200});
     }
 
-    @route('/cancel/:id')
+    @route('/creditMemo/:id')
     @POST()
     public async cancelBill(req: Request, res: Response){
         const id = req.params.id;
         const body = req.body;
         const {type} : any = body;
-        const memotype : EBillType = type;
         try {
         const bill = await this.billService.findBill(id);
+        const hasSomeMemo = bill.creditMemo;
+
+        if(bill.status !== BillStatus.SEND || hasSomeMemo){
+            throw new InvalidArgumentException("La solicitud no puede ser generada");
+        }
+
+        const memotype : EBillType = type;
 
         const billMemo = await this.billService.createMemo(bill, memotype);
             await this.billService.sendElectronicBill(bill, memotype, false, billMemo);
