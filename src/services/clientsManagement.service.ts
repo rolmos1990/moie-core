@@ -35,22 +35,31 @@ export class ClientsManagementService extends UtilService {
 
         try {
             const args = options.body.getData();
-            await Promise.all(soap.createClient(options.url, wsdlOptions, (err, client) => {
 
-                this.headers.forEach(item => {
-                    client.addHttpHeader(item['key'], item['value']);
+            const request = new Promise((resolve, reject) => {
+                soap.createClient(options.url, wsdlOptions, async (err, client) => {
+
+                    this.headers.forEach(item => {
+                        client.addHttpHeader(item['key'], item['value']);
+                    });
+
+                    const method = client[options.callMethod];
+
+                    method(args, async (err, result) => {
+                        if (!err) {
+                            resolve(result);
+                        } else {
+                            reject("No se ha podido generar la solicitud");
+                        }
+                    });
+
                 });
+            });
+            console.log("request",request);
+            return request;
 
-                const method = client[options.callMethod];
-                method(args, function (err, result) {
-                    console.log(client.lastRequest);
-                    if(!err) {
-                        return {result: result, error: null};
-                    }
-                    throw new Error(err);
-                })
-            }));
         }catch(e){
+            console.log(e);
             throw new Error(e.message);
         }
     }

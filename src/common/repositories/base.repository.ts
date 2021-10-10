@@ -130,6 +130,14 @@ export default abstract class BaseRepository<T> {
         });
     }
 
+    async findByObjectWithLimit(field: Object, relations = [], limit){
+        return await this.repositoryManager.find({
+            where: field,
+            relations,
+            take:limit
+        });
+    }
+
     async findByObject(field: Object, relations = []){
         return await this.repositoryManager.find({
             where: field,

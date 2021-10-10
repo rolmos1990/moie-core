@@ -73,9 +73,11 @@ export class BillService extends BaseService<Bill> {
     }
 
     async findByStatus(status : BillStatus) : Promise<Bill[]>{
-        const bills = await this.billRepository.findByObject({
+        const bills = await this.billRepository.findByObjectWithLimit({
             status: status
-        }, ['order', 'order.orderDetails', 'order.customer', 'order.orderDelivery', 'billConfig', 'order.customer.state', 'order.customer.municipality']);
+        }, ['order', 'order.orderDetails', 'order.customer', 'order.orderDelivery', 'billConfig', 'order.customer.state', 'order.customer.municipality'],
+            20
+            );
         return bills;
     }
 
@@ -88,7 +90,13 @@ export class BillService extends BaseService<Bill> {
         const creditMemo = new BillCreditMemo();
         creditMemo.bill = bill;
         creditMemo.memoType = type;
+        creditMemo.status = false;
         const memo = await this.billCreditMemoRepository.save(creditMemo);
+        return memo;
+    }
+
+    async updateMemo(billMemo: BillCreditMemo) : Promise<BillCreditMemo> {
+        const memo = await this.billCreditMemoRepository.save(billMemo);
         return memo;
     }
 
@@ -122,9 +130,10 @@ export class BillService extends BaseService<Bill> {
         };
 
         this.clientManagementService.addHeaders("Authorization", auth);
-        const result = await this.clientManagementService.callSoapClient(options);
-        if(result["RecepcionXmlFromERPResult"]){
-            if(result["RecepcionXmlFromERPResult"]["success"]){
+        const res = await this.clientManagementService.callSoapClient(options);
+
+        if(res["RecepcionXmlFromERPResult"]){
+            if(res["RecepcionXmlFromERPResult"]["success"]){
                 return true;
             } else{
                 throw new InvalidArgumentException("No se pudo recibir la factura");

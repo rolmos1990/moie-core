@@ -194,6 +194,7 @@ export class OfficeController extends BaseController<Office> {
     @route('/:id/getTemplate')
     @GET()
     protected async getTemplate(req: Request, res: Response){
+        return res.json({status: 400 } );
         try {
             const id = req.params.id;
             const office: Office = await this.officeService.find(parseInt(id));

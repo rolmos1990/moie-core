@@ -12,6 +12,7 @@ import {BillStatus} from "../common/enum/billStatus";
 import {InvalidMunicipalityException} from "../common/exceptions/invalidMunicipality.exception";
 import {InvalidDocumentException} from "../common/exceptions/invalidDocument.exception";
 import {InvalidArgumentException} from "../common/exceptions";
+const moment = require("moment");
 
 @route('/bill')
 export class BillController extends BaseController<Bill> {
@@ -82,7 +83,6 @@ export class BillController extends BaseController<Bill> {
                 await this.billService.createOrUpdate(bill);
             }
         }));
-
         return res.json({status: 200});
     }
 
@@ -92,6 +92,8 @@ export class BillController extends BaseController<Bill> {
         const id = req.params.id;
         const body = req.body;
         const {type} : any = body;
+        let billMemo = null;
+
         try {
         const bill = await this.billService.findBill(id);
         const hasSomeMemo = bill.creditMemo;
@@ -102,13 +104,15 @@ export class BillController extends BaseController<Bill> {
 
         const memotype : EBillType = type;
 
-        const billMemo = await this.billService.createMemo(bill, memotype);
+        billMemo = await this.billService.createMemo(bill, memotype);
             await this.billService.sendElectronicBill(bill, memotype, false, billMemo);
+            billMemo.status = true;
+            await this.billService.updateMemo(billMemo);
         }catch(e){
             this.handleException(e, res);
             console.log("error", e);
         }
-        return res.json({status: 200});
+        return res.json({status: 200, billCreditMemo: billMemo});
     }
 
     protected getDefaultRelations(isDetail: boolean): Array<string> {
