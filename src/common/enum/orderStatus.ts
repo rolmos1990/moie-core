@@ -7,6 +7,15 @@ export enum OrderStatus {
     CANCELED = 6, //ANULADA
 };
 
+export const OrderStatusNames = {
+    [OrderStatus.PENDING] : "PENDIENTE",
+    [OrderStatus.CONFIRMED] : "CONFIRMADA",
+    [OrderStatus.PRINTED] : "IMPRESA",
+    [OrderStatus.SENT] : "ENVIADA",
+    [OrderStatus.RECONCILED] : "CONCILIADA",
+    [OrderStatus.CANCELED] : "CANCELADA"
+};
+
 /** Todos los estados de las ordenes */
 export function getAllStatus(){
     return [OrderStatus.PENDING, OrderStatus.CONFIRMED, OrderStatus.PRINTED, OrderStatus.SENT, OrderStatus.RECONCILED];

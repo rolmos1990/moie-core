@@ -16,6 +16,8 @@ import {BillCreditMemo} from "../models/BillCreditMemo";
 import {BillCreditMemoRepository} from "../repositories/billCreditMemo.repository";
 import {InvalidMunicipalityException} from "../common/exceptions/invalidMunicipality.exception";
 import {InvalidDocumentException} from "../common/exceptions/invalidDocument.exception";
+import {Between} from "typeorm";
+import moment = require("moment");
 
 export class BillService extends BaseService<Bill> {
     constructor(
@@ -141,5 +143,30 @@ export class BillService extends BaseService<Bill> {
         } else {
             throw new InvalidArgumentException("No se pudo recibir la factura");
         }
+    }
+
+    /** Reporte basado en Facturación */
+    async getDataForReport(dateFrom, dateTo){
+
+        const bills = await this.billRepository.createQueryBuilder('b')
+            .leftJoinAndSelect('b.order', 'o')
+            .leftJoinAndSelect('b.billConfig', 's')
+            .leftJoinAndSelect('o.customer', 'c')
+            .leftJoinAndSelect('c.municipality', 'm')
+            .where({
+                createdAt: Between(dateFrom, dateTo)
+            })
+            .getMany();
+
+        if(bills){
+            //Asignar productos a las ordenes
+            await Promise.all(bills.map(async bill => {
+               bill['order']['orderDetails'] = await this.orderService.getDetails(bill.order);
+            }));
+
+        }
+
+        return bills;
+
     }
 }

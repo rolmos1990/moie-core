@@ -21,6 +21,7 @@ import {DeliveryTypes, getDeliveryType} from "../common/enum/deliveryTypes";
 import {DeliveryMethodService} from "./deliveryMethod.service";
 import {Office} from "../models/Office";
 import {DeliveryLocalityService} from "./deliveryLocality.service";
+import {Between, IsNull, Not} from "typeorm";
 
 export class OrderService extends BaseService<Order> {
     constructor(
@@ -350,4 +351,21 @@ export class OrderService extends BaseService<Order> {
             .where(condition)
             .execute();
     }
+
+    /** Reporte basado en envio de Ordenes */
+    async findByDelivery(dateFrom, dateTo, deliveryMethod, status){
+
+        return await this.orderRepository.createQueryBuilder('o')
+            .leftJoinAndSelect('o.customer', 'c')
+            .leftJoinAndSelect('c.municipality', 'm')
+            .leftJoinAndSelect('c.state', 's')
+            .leftJoinAndSelect('o.orderDelivery', 'd')
+            .leftJoinAndSelect('o.deliveryMethod', 'i')
+            .where("o.orderDelivery", Not(IsNull()))
+            .andWhere("d.deliveryDate", Between(dateFrom, dateTo))
+            .andWhere("o.deliveryMethod", deliveryMethod)
+            .andWhere("o.status", status)
+            .getMany();
+    }
+
 }

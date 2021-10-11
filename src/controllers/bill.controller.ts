@@ -12,13 +12,19 @@ import {BillStatus} from "../common/enum/billStatus";
 import {InvalidMunicipalityException} from "../common/exceptions/invalidMunicipality.exception";
 import {InvalidDocumentException} from "../common/exceptions/invalidDocument.exception";
 import {InvalidArgumentException} from "../common/exceptions";
+import {Order} from "../models/Order";
+import {ExpotersPostventa} from "../templates/exporters/expoters-postventa";
+import {MEDIA_FORMAT_OUTPUT, MediaManagementService} from "../services/mediaManagement.service";
+import {ElectronicBillAdaptor} from "../templates/adaptors/ElectronicBillAdaptor";
+import {ExpotersEletronicBill} from "../templates/exporters/electronic-bill";
 const moment = require("moment");
 
 @route('/bill')
 export class BillController extends BaseController<Bill> {
     constructor(
         private readonly billService: BillService,
-        private readonly orderService: OrderService
+        private readonly orderService: OrderService,
+        private readonly mediaManagementService: MediaManagementService
     ){
         super(billService);
     };
@@ -90,8 +96,7 @@ export class BillController extends BaseController<Bill> {
     @POST()
     public async cancelBill(req: Request, res: Response){
         const id = req.params.id;
-        const body = req.body;
-        const {type} : any = body;
+        const {type} = req.body;
         let billMemo = null;
 
         try {
@@ -108,15 +113,37 @@ export class BillController extends BaseController<Bill> {
             await this.billService.sendElectronicBill(bill, memotype, false, billMemo);
             billMemo.status = true;
             await this.billService.updateMemo(billMemo);
+            return res.json({status: 200, billCreditMemo: billMemo});
         }catch(e){
             this.handleException(e, res);
             console.log("error", e);
         }
-        return res.json({status: 200, billCreditMemo: billMemo});
+    }
+
+    @route('/gen/billReport')
+    @GET()
+    public async billReport(req: Request, res: Response){
+        const {dateFrom, dateTo, type} = req.query;
+        try {
+            //const typeBill: EBillType = type;
+            const bills: Bill[] = await this.billService.getDataForReport(dateFrom, dateTo);
+
+            const exportable = new ExpotersEletronicBill();
+            const billsAdaptor = new ElectronicBillAdaptor(bills);
+
+            const base64File = await this.mediaManagementService.createExcel(exportable, billsAdaptor, res, MEDIA_FORMAT_OUTPUT.b64);
+            return res.json({status: 200, data: base64File, name: exportable.getFileName() } );
+
+            console.log("asd");
+            return res.json({status: 200});
+        }catch(e){
+            this.handleException(e, res);
+            console.log("error", e);
+        }
     }
 
     protected getDefaultRelations(isDetail: boolean): Array<string> {
-        return ['order', 'order.customer'];
+        return ['order', 'order.customer','billConfig', 'creditMemo'];
     }
 
     getEntityTarget(): EntityTarget<Bill> {

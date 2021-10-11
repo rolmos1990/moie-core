@@ -5,7 +5,7 @@ import {OrderService} from "../services/order.service";
 import {GET, POST, PUT, route} from "awilix-express";
 import {OrderCreateDTO, OrderListDTO, OrderShortDTO, OrderShowDTO, OrderUpdateDTO} from "./parsers/order";
 import {Request, Response} from "express";
-import {InvalidArgumentException} from "../common/exceptions";
+import {ApplicationException, InvalidArgumentException} from "../common/exceptions";
 import {DeliveryMethod} from "../models/DeliveryMethod";
 import {DeliveryMethodService} from "../services/deliveryMethod.service";
 import {UserService} from "../services/user.service";
@@ -22,6 +22,12 @@ import {OrderStatus} from "../common/enum/orderStatus";
 import {BatchRequestService} from "../services/batchRequest.service";
 import {BatchRequestTypes, BatchRequestTypesStatus} from "../common/enum/batchRequestTypes";
 import {UserShortDTO} from "./parsers/user";
+import {Office} from "../models/Office";
+import {ExportersInterrapidisimoCd} from "../templates/exporters";
+import {MEDIA_FORMAT_OUTPUT} from "../services/mediaManagement.service";
+import {ExpotersPostventa} from "../templates/exporters/expoters-postventa";
+import {MediaManagementService} from "../services/mediaManagement.service";
+
 
 @route('/order')
 export class OrderController extends BaseController<Order> {
@@ -31,7 +37,8 @@ export class OrderController extends BaseController<Order> {
         private readonly userService: UserService,
         private readonly customerService: CustomerService,
         private readonly templateService: TemplateService,
-        private readonly batchRequestService: BatchRequestService
+        private readonly batchRequestService: BatchRequestService,
+        private readonly mediaManagementService: MediaManagementService
     ){
         super(orderService);
     };
@@ -324,6 +331,31 @@ export class OrderController extends BaseController<Order> {
         }catch(e){
             this.handleException(e, res);
             console.log("error", e);
+        }
+    }
+
+    /** Download Report - Post Venta */
+    @route('/gen/postSaleReport')
+    @GET()
+    protected async postSaleReport(req: Request, res: Response){
+        try {
+            const {dateFrom, dateTo, deliveryMethod, status} = req.query;
+
+            const orders: Order[] = await this.orderService.findByDelivery(dateFrom, dateTo, deliveryMethod, status);
+
+            const exportable = new ExpotersPostventa();
+
+            const base64File = await this.mediaManagementService.createExcel(exportable, orders, res, MEDIA_FORMAT_OUTPUT.b64);
+            return res.json({status: 200, data: base64File, name: exportable.getFileName() } );
+        }catch(e){
+            console.log("error -- ", e.message);
+            if (e.name === InvalidArgumentException.name || e.name === "EntityNotFound") {
+                this.handleException(new InvalidArgumentException("Orden no ha sido encontrada"), res);
+            }
+            else{
+                this.handleException(new ApplicationException(), res);
+
+            }
         }
     }
 
