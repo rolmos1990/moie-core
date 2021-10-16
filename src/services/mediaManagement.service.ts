@@ -1,5 +1,5 @@
 import {decodeBase64Image} from "../common/helper/helpers";
-import {readFileSync, writeFile, writeFileSync} from "fs";
+import {readFileSync, writeFile, writeFileSync, existsSync, mkdirSync} from "fs";
 import {UtilService} from "../common/controllers/util.service";
 import {extension} from 'mime-types';
 import ResizeImg = require("resize-img");
@@ -37,6 +37,15 @@ type ImageResource = {
  */
 export class MediaManagementService extends UtilService {
 
+    ensureDirectoryExistence(filePath) {
+        const dirname = path.dirname(filePath);
+        if (existsSync(dirname)) {
+            return true;
+        }
+        this.ensureDirectoryExistence(dirname);
+        mkdirSync(dirname);
+    }
+
     createImageFile(folder = "", name, _file) : ImageResource {
 
         const file = decodeBase64Image(_file);
@@ -51,6 +60,7 @@ export class MediaManagementService extends UtilService {
         const readFilePath = `${CONFIG_MEDIA.IMAGE_PATH}${folder ? folder + '/' : ''}${fileName}`;
         const imageBuffer = file.data;
 
+        this.ensureDirectoryExistence(writeFilePath);
         writeFileSync(writeFilePath, imageBuffer, 'utf8');
 
         return {
