@@ -1,0 +1,54 @@
+ROLES:
+
+
+/role (POST)
+
+{
+name: "RoleName"
+permissions: [
+"user.create",
+"user.list",
+"user.edit"
+]
+}
+
+/role (GET)
+-----
+[{
+id,
+name,
+permissions
+}]
+-----
+
+/role/{id} (GET)
+-----
+{
+id,
+name,
+permissions
+}
+
+/role/{id} (PUT)
+
+{
+name: "RoleName"
+permissions: ["user.create","user.list","user.edit"]
+}
+
+-----
+/permission
+[
+  {
+  name: "Usuarios",
+  group: "user",
+  permissions:
+  [{name: "create", description: "Permite crear usuario" },
+   {name: "list", description: "Permite listar usuario" }
+  ]
+  }
+  }
+]
+
+-----
+
