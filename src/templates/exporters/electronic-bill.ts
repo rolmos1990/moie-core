@@ -3,8 +3,11 @@ import {ElectronicBillAdaptor} from "../adaptors/ElectronicBillAdaptor";
 import {MultisheetBaseExporters} from "./multisheet.base.exporters";
 import moment = require("moment");
 import {IColumn} from "../../common/interfaces/IColumns";
+import {EBillType} from "../../common/enum/eBill";
 
 export class ExpotersEletronicBill extends MultisheetBaseExporters {
+
+    private type: EBillType;
 
     defineHeaders() : IColumn[][] {
 
@@ -55,8 +58,18 @@ export class ExpotersEletronicBill extends MultisheetBaseExporters {
         return ["Facturas", "Nit"];
     }
 
+    setType(type: EBillType){
+        this.type = type;
+    }
+
     getFileName(){
-        return 'facturas_electronicas_'+ moment().format("YYYY-MM-DD-H-mm") +'.xlsx';
+
+        let name = 'facturas_electronicas_';
+
+        if(this.type === EBillType.CREDIT){
+            name = 'notas_credito_';
+        }
+        return name + moment().format("YYYY-MM-DD-H-mm") +'.xlsx';
     }
 
     getBody(billAdaptor: ElectronicBillAdaptor) {

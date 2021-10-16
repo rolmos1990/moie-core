@@ -12,11 +12,10 @@ import {BillStatus} from "../common/enum/billStatus";
 import {InvalidMunicipalityException} from "../common/exceptions/invalidMunicipality.exception";
 import {InvalidDocumentException} from "../common/exceptions/invalidDocument.exception";
 import {InvalidArgumentException} from "../common/exceptions";
-import {Order} from "../models/Order";
-import {ExpotersPostventa} from "../templates/exporters/expoters-postventa";
 import {MEDIA_FORMAT_OUTPUT, MediaManagementService} from "../services/mediaManagement.service";
 import {ElectronicBillAdaptor} from "../templates/adaptors/ElectronicBillAdaptor";
 import {ExpotersEletronicBill} from "../templates/exporters/electronic-bill";
+
 const moment = require("moment");
 
 @route('/bill')
@@ -125,10 +124,16 @@ export class BillController extends BaseController<Bill> {
     public async billReport(req: Request, res: Response){
         const {dateFrom, dateTo, type} = req.query;
         try {
-            //const typeBill: EBillType = type;
-            const bills: Bill[] = await this.billService.getDataForReport(dateFrom, dateTo);
+
+            if(!(type === EBillType.CREDIT || type === EBillType.INVOICE)){
+                throw new InvalidArgumentException("Tipo no valido");
+            }
+
+            const bills: Bill[] = await this.billService.getDataForReport(dateFrom, dateTo, type === EBillType.CREDIT);
 
             const exportable = new ExpotersEletronicBill();
+            exportable.setType(type);
+
             const billsAdaptor = new ElectronicBillAdaptor(bills);
 
             const base64File = await this.mediaManagementService.createExcel(exportable, billsAdaptor, res, MEDIA_FORMAT_OUTPUT.b64);

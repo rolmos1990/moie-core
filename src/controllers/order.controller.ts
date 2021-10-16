@@ -27,6 +27,7 @@ import {ExportersInterrapidisimoCd} from "../templates/exporters";
 import {MEDIA_FORMAT_OUTPUT} from "../services/mediaManagement.service";
 import {ExpotersPostventa} from "../templates/exporters/expoters-postventa";
 import {MediaManagementService} from "../services/mediaManagement.service";
+import {ExportersConciliates} from "../templates/exporters/exporters-conciliates";
 
 
 @route('/order')
@@ -351,6 +352,31 @@ export class OrderController extends BaseController<Order> {
             console.log("error -- ", e.message);
             if (e.name === InvalidArgumentException.name || e.name === "EntityNotFound") {
                 this.handleException(new InvalidArgumentException("Orden no ha sido encontrada"), res);
+            }
+            else{
+                this.handleException(new ApplicationException(), res);
+
+            }
+        }
+    }
+
+    /** Download - Conciliation Report */
+    @route('/gen/conciliationReport')
+    @GET()
+    protected async ConciliationReport(req: Request, res: Response){
+        try {
+            const {dateFrom, dateTo, deliveryMethod} = req.query;
+
+            const orders: Order[] = await this.orderService.findOrderConciliates(dateFrom, dateTo, deliveryMethod);
+
+            const exportable = new ExportersConciliates();
+
+            const base64File = await this.mediaManagementService.createExcel(exportable, orders, res, MEDIA_FORMAT_OUTPUT.b64);
+            return res.json({status: 200, data: base64File, name: exportable.getFileName() } );
+        }catch(e){
+            console.log("error -- ", e.message);
+            if (e.name === InvalidArgumentException.name || e.name === "EntityNotFound") {
+                this.handleException(new InvalidArgumentException("No ha sido encontrado el reporte"), res);
             }
             else{
                 this.handleException(new ApplicationException(), res);

@@ -368,4 +368,18 @@ export class OrderService extends BaseService<Order> {
             .getMany();
     }
 
+    /** Reporte Conciliados */
+    async findOrderConciliates(dateFrom, dateTo, deliveryMethod){
+
+        return await this.orderRepository.createQueryBuilder('o')
+            .leftJoinAndSelect('o.customer', 'c')
+            .leftJoinAndSelect('o.orderDelivery', 'd')
+            .leftJoinAndSelect('o.deliveryMethod', 'i')
+            .where("o.orderDelivery", Not(IsNull()))
+            .andWhere("d.chargeOnDelivery = :chargeOnDelivery", { chargeOnDelivery : true })
+            .andWhere("o.dateOfSale", Between(dateFrom, dateTo))
+            .andWhere("o.deliveryMethod", deliveryMethod)
+            .getMany();
+    }
+
 }

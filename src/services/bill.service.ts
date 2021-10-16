@@ -146,17 +146,30 @@ export class BillService extends BaseService<Bill> {
     }
 
     /** Reporte basado en Facturación */
-    async getDataForReport(dateFrom, dateTo){
-
-        const bills = await this.billRepository.createQueryBuilder('b')
-            .leftJoinAndSelect('b.order', 'o')
-            .leftJoinAndSelect('b.billConfig', 's')
-            .leftJoinAndSelect('o.customer', 'c')
-            .leftJoinAndSelect('c.municipality', 'm')
-            .where({
-                createdAt: Between(dateFrom, dateTo)
-            })
-            .getMany();
+    async getDataForReport(dateFrom, dateTo, fromCreditMemo = false){
+        let bills;
+        if(fromCreditMemo){
+            bills = await this.billRepository.createQueryBuilder('b')
+                .leftJoinAndSelect('b.order', 'o')
+                .leftJoinAndSelect('b.billConfig', 's')
+                .leftJoinAndSelect('o.customer', 'c')
+                .leftJoinAndSelect('c.municipality', 'm')
+                .leftJoinAndSelect('b.creditMemo', 'cm')
+                .where("cm.createdAt >= :dateFrom", { dateFrom: dateFrom })
+                .andWhere("cm.createdAt <= :dateTo", { dateTo: dateTo })
+                .getMany();
+        } else {
+            bills = await this.billRepository.createQueryBuilder('b')
+                .leftJoinAndSelect('b.order', 'o')
+                .leftJoinAndSelect('b.billConfig', 's')
+                .leftJoinAndSelect('o.customer', 'c')
+                .leftJoinAndSelect('c.municipality', 'm')
+                .leftJoinAndSelect('b.creditMemo', 'cm')
+                .where({
+                    createdAt: Between(dateFrom, dateTo)
+                })
+                .getMany();
+        }
 
         if(bills){
             //Asignar productos a las ordenes
