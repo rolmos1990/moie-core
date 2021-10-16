@@ -23,6 +23,7 @@ import {OrderDetail} from "./OrderDetail";
 import {User} from "./User";
 import {OrderDelivery} from "./OrderDelivery";
 import {Office} from "./Office";
+import {Payment} from "./Payment";
 
 /**
  * El isImpress -> o Impreso seria un Estatus más,
@@ -130,6 +131,10 @@ export class Order extends BaseModel{
     @OneToOne(() => OrderDelivery, orderDelivery => orderDelivery.order)
     @JoinColumn({name: 'order_delivery_id'})
     orderDelivery: OrderDelivery;
+
+    @OneToOne(() => Payment, payment => payment.order)
+    @JoinColumn({name: 'payment_id'})
+    payment: Payment;
 
     isEmpty(): boolean {
         return (this.id == null);
