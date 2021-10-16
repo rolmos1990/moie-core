@@ -5,11 +5,13 @@ import {BaseController} from "../common/controllers/base.controller";
 import {User} from "../models/User";
 import {EntityTarget} from "typeorm";
 import {UserCreateDTO, UserListDTO, UserUpdateDTO} from './parsers/user';
+import {CONFIG_MEDIA, MediaManagementService} from "../services/mediaManagement.service";
 
 @route('/user')
 export class UserController extends BaseController<User> {
     constructor(
-        private readonly userService: UserService
+        private readonly userService: UserService,
+        private readonly mediaManagementService: MediaManagementService
     ){
         super(userService);
     };
@@ -53,6 +55,24 @@ export class UserController extends BaseController<User> {
             const {username, password} = req.body;
             const response = await this.userService.changePassword(username, password);
             res.json(response);
+        }catch(e){
+            this.handleException(e, res);
+        }
+    }
+
+    @route("/changeProfilePicture")
+    @POST()
+    public async changeProfilePicture(req: Request, res: Response) {
+        try {
+
+            const {photo} = req.body;
+            const user : User = await this.userService.find(1);
+            const imageResource = this.mediaManagementService.createImageFile(CONFIG_MEDIA.PICTURES_FOLDERS, user.id, photo);
+            user.photo = imageResource.fullepath_v;
+            await this.userService.createOrUpdate(user);
+
+            res.json({ user: { photo: user.photo }});
+
         }catch(e){
             this.handleException(e, res);
         }

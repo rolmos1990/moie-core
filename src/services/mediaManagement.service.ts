@@ -1,25 +1,22 @@
-import {decodeBase64Image, isEmpty} from "../common/helper/helpers";
+import {decodeBase64Image} from "../common/helper/helpers";
 import {readFileSync, writeFile, writeFileSync} from "fs";
 import {UtilService} from "../common/controllers/util.service";
 import {extension} from 'mime-types';
 import ResizeImg = require("resize-img");
-import {launch} from 'puppeteer';
 import {compile, Exception} from 'handlebars';
 import * as path from "path";
 import {create} from 'handlebars-pdf';
-import {IColumn} from "../common/interfaces/IColumns";
-import {BaseExporters} from "../templates/exporters/base.exporters";
 import {Worksheet} from "exceljs";
-import {MultisheetBaseExporters} from "../templates/exporters/multisheet.base.exporters";
-import {SingleBaseExporters} from "../templates/exporters/single.base.exporters";
-import {isInstance} from "class-validator";
+import {InvalidFileException} from "../common/exceptions";
 const createHTML = require('create-html');
 const Excel = require('exceljs')
+import moment = require("moment");
 
 
-const CONFIG_MEDIA = {
-    IMAGE_PATH: './uploads',
+export const CONFIG_MEDIA = {
+    IMAGE_PATH: '/uploads',
     STORAGE_PATH: './public/uploads',
+    PICTURES_FOLDERS: '/users',
     RESOLUTIONS: [67,238,400,800]
 };
 
@@ -28,10 +25,40 @@ export const MEDIA_FORMAT_OUTPUT = {
     binary: 'binary'
 };
 
+type ImageResource = {
+    filename: string,
+    data: string,
+    fullpath: string,
+    fullepath_v: string
+};
+
 /**
  * Servicio para administración de contenido, imagenes, adjuntos etc.
  */
 export class MediaManagementService extends UtilService {
+
+    createImageFile(folder = "", name, _file) : ImageResource {
+
+        const file = decodeBase64Image(_file);
+
+        if(file instanceof Error){
+            throw  new InvalidFileException("No es posible realizar el guardado de la imagen");
+        }
+
+        const ext = extension(file.type);
+        const fileName =  `${name}.${ext}`;
+        const writeFilePath = `${CONFIG_MEDIA.STORAGE_PATH}/${folder ? folder + '/' : ''}${fileName}`;
+        const readFilePath = `${CONFIG_MEDIA.IMAGE_PATH}${folder ? folder + '/' : ''}${fileName}`;
+        const imageBuffer = file.data;
+
+        writeFileSync(writeFilePath, imageBuffer, 'utf8');
+
+        return {
+            fullpath: readFilePath,
+            fullepath_v: readFilePath + "?v=" + moment().format("x"),
+            filename: fileName,
+            data: imageBuffer};
+    }
 
     getImagePaths(folder = "", name, _file){
 

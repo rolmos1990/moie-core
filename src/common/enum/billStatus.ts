@@ -3,5 +3,5 @@ export enum BillStatus {
     ERROR= 'Error DIAN', //Error de Factura
     NO_MUNICIPALITY= 'Sin Municipio', //No se ingreso municipio
     NO_IDENTITY= 'Sin Cédula', //No se ingreso cedula
-    PENDING='PENDING' //Esta pendiente por envio
+    PENDING='Pendiente' //Esta pendiente por envio
 };

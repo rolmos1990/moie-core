@@ -6,7 +6,7 @@ import {
     UpdateDateColumn
 } from "typeorm";
 import BaseModel from "../common/repositories/base.model";
-import {IsDate, IsEmail, Length, IsBoolean, IsDateString} from "class-validator";
+import {IsDate, IsEmail, Length, IsBoolean, IsDateString, IsMimeType} from "class-validator";
 import { Type } from 'class-transformer';
 import {OrderDetail} from "./OrderDetail";
 import { Notification } from "./Notification";
@@ -23,6 +23,10 @@ export class User extends BaseModel{
     @Column({type: 'varchar', length: 30})
     @Length(3, 30, {groups: ['create','update']})
     lastname: string;
+
+    @Column({name:'photo', type: 'text' })
+    @Length(1, 100, {groups: ['create','update']})
+    photo: string;
 
     @Column({type: 'varchar', length: 300, nullable: true})
     @Length(0, 300, {groups: ['create','update']})
