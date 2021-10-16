@@ -10,6 +10,9 @@ import {create} from 'handlebars-pdf';
 import {IColumn} from "../common/interfaces/IColumns";
 import {BaseExporters} from "../templates/exporters/base.exporters";
 import {Worksheet} from "exceljs";
+import {MultisheetBaseExporters} from "../templates/exporters/multisheet.base.exporters";
+import {SingleBaseExporters} from "../templates/exporters/single.base.exporters";
+import {isInstance} from "class-validator";
 const createHTML = require('create-html');
 const Excel = require('exceljs')
 
@@ -203,52 +206,70 @@ export class MediaManagementService extends UtilService {
         return sheet;
     }
 
+    createWorkSheet(exportable: any, workbook: any, data) : void{
+        workbook.creator = 'Lucy Modas - APP';
+        workbook.lastModifiedBy = 'Lucy Modas - APP';
+        workbook.created = new Date();
+        workbook.modified = new Date();
+        workbook.properties.date1904 = true;
+
+        workbook.views = [
+            {
+                x: 0, y: 0, width: 10000, height: 20000,
+                firstSheet: 0, activeTab: 1, visibility: 'visible'
+            }
+        ];
+
+        const worksheet = workbook.addWorksheet(exportable.getSheetName());
+
+        const body = exportable.getBody(data);
+
+        /** Headers */
+        worksheet.columns = exportable.getHeader();
+        worksheet.addRows(body);
+
+        //auto-ajust cell
+        worksheet.columns.forEach(function (column, i) {
+            if (i !== 0) {
+                var maxLength = 0;
+                column["eachCell"]({includeEmpty: true}, function (cell) {
+                    var columnLength = cell.value ? cell.value.toString().length : 10;
+                    if (columnLength > maxLength) {
+                        maxLength = columnLength;
+                    }
+                });
+                column.width = maxLength < 10 ? 10 : maxLength;
+            }
+        });
+    }
+
     /**
      * Crear un fichero Excel
      * Genera un fichero PDF indicando la plantilla y el objeto de entrada
      */
-    async createExcel(exportable: BaseExporters, data, res, format = MEDIA_FORMAT_OUTPUT.binary){
+    async createExcel(exportable: any, data, res, format = MEDIA_FORMAT_OUTPUT.binary){
         try {
-            const body = exportable.getBody(data);
-            if(isEmpty(exportable.getHeader()) || isEmpty(exportable.getFileName()) || !body || !res){
-                throw new Exception("Formato de archivo invalido");
-            }
 
             const workbook = new Excel.Workbook();
 
-            workbook.creator = 'Lucy Modas - APP';
-            workbook.lastModifiedBy = 'Lucy Modas - APP';
-            workbook.created = new Date();
-            workbook.modified = new Date();
-            workbook.properties.date1904 = true;
+            if(exportable.isMultiple()) {
+                while (exportable.hasNextIterator()) {
+                    exportable.getNextIterator();
 
-            workbook.views = [
-                {
-                    x: 0, y: 0, width: 10000, height: 20000,
-                    firstSheet: 0, activeTab: 1, visibility: 'visible'
+                    if(exportable.invalidFormat()){
+                        throw new Exception("Formato de archivo invalido");
+                    }
+
+                    this.createWorkSheet(exportable, workbook, data);
                 }
-            ];
+            } else {
 
-            const worksheet = workbook.addWorksheet(exportable.getSheetName());
-
-            /** Headers */
-            worksheet.columns = exportable.getHeader();
-            worksheet.addRows(body);
-
-            //auto-ajust cell
-            worksheet.columns.forEach(function (column, i) {
-                if(i!==0)
-                {
-                    var maxLength = 0;
-                    column["eachCell"]({ includeEmpty: true }, function (cell) {
-                        var columnLength = cell.value ? cell.value.toString().length : 10;
-                        if (columnLength > maxLength ) {
-                            maxLength = columnLength;
-                        }
-                    });
-                    column.width = maxLength < 10 ? 10 : maxLength;
+                if(exportable.invalidFormat()){
+                    throw new Exception("Formato de archivo invalido");
                 }
-            });
+
+                this.createWorkSheet(exportable, workbook, data);
+            }
 
             if(format === MEDIA_FORMAT_OUTPUT.binary) {
                 res.setHeader('Content-Type', 'Content-Type: application/vnd.ms-excel');
@@ -270,74 +291,4 @@ export class MediaManagementService extends UtilService {
             console.log("error", e.message);
         }
     }
-
-    /**
-     * Crear un fichero Excel
-     * Genera un fichero PDF indicando la plantilla y el objeto de entrada
-     */
-    async createCustomExcel(exportable: BaseExporters, data, res, format = MEDIA_FORMAT_OUTPUT.binary){
-        try {
-            const body = exportable.getBody(data);
-            if(isEmpty(exportable.getHeader()) || isEmpty(exportable.getFileName()) || !body || !res){
-                throw new Exception("Formato de archivo invalido");
-            }
-
-            const workbook = new Excel.Workbook();
-
-            workbook.creator = 'Lucy Modas - APP';
-            workbook.lastModifiedBy = 'Lucy Modas - APP';
-            workbook.created = new Date();
-            workbook.modified = new Date();
-            workbook.properties.date1904 = true;
-
-            workbook.views = [
-                {
-                    x: 0, y: 0, width: 10000, height: 20000,
-                    firstSheet: 0, activeTab: 1, visibility: 'visible'
-                }
-            ];
-
-            const worksheet = workbook.addWorksheet(exportable.getSheetName());
-
-            /** Headers */
-            worksheet.columns = exportable.getHeader();
-            worksheet.addRows(body);
-
-            //auto-ajust cell
-            worksheet.columns.forEach(function (column, i) {
-                if(i!==0)
-                {
-                    var maxLength = 0;
-                    column["eachCell"]({ includeEmpty: true }, function (cell) {
-                        var columnLength = cell.value ? cell.value.toString().length : 10;
-                        if (columnLength > maxLength ) {
-                            maxLength = columnLength;
-                        }
-                    });
-                    column.width = maxLength < 10 ? 10 : maxLength;
-                }
-            });
-
-            if(format === MEDIA_FORMAT_OUTPUT.binary) {
-                res.setHeader('Content-Type', 'Content-Type: application/vnd.ms-excel');
-                res.setHeader("Content-Disposition", "attachment; filename=" + exportable.getFileName());
-                res.setHeader('Cache-Control', 'max-age=0');
-
-                return await workbook.xlsx.write(res)
-                    .then(function (data) {
-                        res.end();
-                        console.log('File write done........');
-                    });
-            }
-            if(format === MEDIA_FORMAT_OUTPUT.b64){
-                const fileBuffer = await workbook.xlsx.writeBuffer();
-                return fileBuffer.toString('base64');
-            }
-
-        }catch(e){
-            console.log("error", e.message);
-        }
-    }
-
-
 }

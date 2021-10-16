@@ -6,3 +6,7 @@ export interface IColumn {
     type?: string,
     formulae?: any
 };
+
+export interface IColumnObj {
+    columns: IColumn[]
+}

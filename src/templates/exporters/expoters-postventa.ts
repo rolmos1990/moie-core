@@ -3,8 +3,9 @@ import {Order} from "../../models/Order";
 import {EXPORTER_POSTVENTA} from "./constants";
 import {OrderStatusNames} from '../../common/enum/orderStatus';
 import moment = require("moment");
+import {SingleBaseExporters} from "./single.base.exporters";
 
-export class ExpotersPostventa extends BaseExporters {
+export class ExpotersPostventa extends SingleBaseExporters {
 
     getSheetName(): String {
         return "Worksheet";

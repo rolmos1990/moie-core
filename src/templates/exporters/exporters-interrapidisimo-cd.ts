@@ -1,8 +1,9 @@
 import {BaseExporters} from "./base.exporters";
 import {Order} from "../../models/Order";
 import {EXPORTER_INTERRAPIDISIMO_CD} from "./constants";
+import {SingleBaseExporters} from "./single.base.exporters";
 
-export class ExportersInterrapidisimoCd extends BaseExporters {
+export class ExportersInterrapidisimoCd extends SingleBaseExporters {
 
     getSheetName(): String {
         return "Worksheet";
