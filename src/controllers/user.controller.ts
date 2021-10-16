@@ -66,7 +66,9 @@ export class UserController extends BaseController<User> {
         try {
 
             const {photo} = req.body;
-            const user : User = await this.userService.find(1);
+            const userIdFromSession = req['user'].id;
+            const user = await this.userService.find(userIdFromSession);
+
             const imageResource = this.mediaManagementService.createImageFile(CONFIG_MEDIA.PICTURES_FOLDERS, user.id, photo);
             user.photo = imageResource.fullepath_v;
             await this.userService.createOrUpdate(user);
