@@ -5,10 +5,12 @@ const state1 = new State();
 state1.id = 1;
 
 const municipality1 = new Municipality();
-municipality1.id = 1;
+municipality1.id = 3;
 
 export const CustomerSeed = [
     {
+        document: 1234567981,
+        cellphone: 64739851,
         name: "Test Customer",
         email: "test1_customer@gmail.com",
         phone: "+647899221",
@@ -20,6 +22,8 @@ export const CustomerSeed = [
         municipality: municipality1
     },
     {
+        document: 1234567982,
+        cellphone: 64739851,
         name: "Test Customer2",
         email: "test1_customer@gmail.com",
         phone: "+647899221",
@@ -31,6 +35,8 @@ export const CustomerSeed = [
         municipality: municipality1
     },
     {
+        document: 1234567983,
+        cellphone: 64739851,
         name: "Test Customer3",
         email: "test1_customer3@gmail.com",
         phone: "+647899221",
@@ -42,6 +48,8 @@ export const CustomerSeed = [
         municipality: municipality1
     },
     {
+        document: 1234567984,
+        cellphone: 64739851,
         name: "Test Customer4",
         email: "test1_customer4@gmail.com",
         phone: "+647899222",
@@ -53,6 +61,8 @@ export const CustomerSeed = [
         municipality: municipality1
     },
     {
+        document: 1234567985,
+        cellphone: 64739851,
         name: "Test Customer5",
         email: "test1_customer5@gmail.com",
         phone: "+647899222",
@@ -64,6 +74,8 @@ export const CustomerSeed = [
         municipality: municipality1
     },
     {
+        document: 1234567986,
+        cellphone: 64739851,
         name: "Test Customer6",
         email: "test1_customer6@gmail.com",
         phone: "+647899222",
@@ -75,6 +87,8 @@ export const CustomerSeed = [
         municipality: municipality1
     },
     {
+        document: 1234567987,
+        cellphone: 64739851,
         name: "Test Customer7",
         email: "test1_customer7@gmail.com",
         phone: "+647899222",
@@ -86,6 +100,8 @@ export const CustomerSeed = [
         municipality: municipality1
     },
     {
+        document: 1234567988,
+        cellphone: 64739851,
         name: "Test Customer8",
         email: "test1_customer8@gmail.com",
         phone: "+647899222",
@@ -97,6 +113,8 @@ export const CustomerSeed = [
         municipality: municipality1
     },
     {
+        document: 1234567989,
+        cellphone: 64739851,
         name: "Test Customer9",
         email: "test1_customer9@gmail.com",
         phone: "+647899222",
@@ -106,7 +124,10 @@ export const CustomerSeed = [
         status: true,
         state: state1,
         municipality: municipality1
-    },    {
+    },
+    {
+        document: 1234567919,
+        cellphone: 64739851,
         name: "Test Customer10",
         email: "test1_customer10@gmail.com",
         phone: "+647899222",
@@ -118,6 +139,8 @@ export const CustomerSeed = [
         municipality: municipality1
     },
     {
+        document: 1234567929,
+        cellphone: 64739851,
         name: "Test Customer11",
         email: "test1_customer11@gmail.com",
         phone: "+647899222",
@@ -129,6 +152,8 @@ export const CustomerSeed = [
         municipality: municipality1
     },
     {
+        document: 1234567939,
+        cellphone: 64739851,
         name: "Test Customer12",
         email: "test1_customer12@gmail.com",
         phone: "+647899222",
@@ -140,6 +165,8 @@ export const CustomerSeed = [
         municipality: municipality1
     },
     {
+        document: 1234567949,
+        cellphone: 64739851,
         name: "Test Customer13",
         email: "test1_customer13@gmail.com",
         phone: "+647899222",
@@ -152,6 +179,8 @@ export const CustomerSeed = [
         municipality: municipality1
     },
     {
+        document: 1234567959,
+        cellphone: 64739851,
         name: "Test Customer14",
         email: "test1_customer14@gmail.com",
         phone: "+647899222",
@@ -163,6 +192,8 @@ export const CustomerSeed = [
         municipality: municipality1
     },
     {
+        document: 1234567969,
+        cellphone: 64739851,
         name: "Test Customer15",
         email: "test1_customer15@gmail.com",
         phone: "+647899222",
@@ -174,6 +205,8 @@ export const CustomerSeed = [
         municipality: municipality1
     },
     {
+        document: 1234561979,
+        cellphone: 64739851,
         name: "Test Customer16",
         email: "test1_customer16@gmail.com",
         phone: "+647899222",
@@ -185,6 +218,8 @@ export const CustomerSeed = [
         municipality: municipality1
     },
     {
+        document: 1234567189,
+        cellphone: 64739851,
         name: "Test Customer17",
         email: "test1_customer17@gmail.com",
         phone: "+647899222",
@@ -196,6 +231,8 @@ export const CustomerSeed = [
         municipality: municipality1
     },
     {
+        document: 1234561999,
+        cellphone: 64739851,
         name: "Test Customer18",
         email: "test1_customer18@gmail.com",
         phone: "+647899222",
@@ -207,6 +244,8 @@ export const CustomerSeed = [
         municipality: municipality1
     },
     {
+        document: 1234511989,
+        cellphone: 64739851,
         name: "Test Customer19",
         email: "test1_customer19@gmail.com",
         phone: "+647899222",
@@ -218,6 +257,8 @@ export const CustomerSeed = [
         municipality: municipality1
     },
     {
+        document: 1232367989,
+        cellphone: 64739851,
         name: "Test Customer20",
         email: "test1_customer20@gmail.com",
         phone: "+647899222",

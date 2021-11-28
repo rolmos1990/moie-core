@@ -24,17 +24,21 @@ export class Payment extends BaseModel{
     @Length(3, 100, {groups: ['create','update']})
     type: string;
 
-    @Column({name:'bank', type: 'varchar', length: 255})
+    @Column({name:'targetBank', type: 'varchar', length: 255})
     @Length(3, 100, {groups: ['create','update']})
-    bank: string;
+    targetBank: string;
 
-    @Column({name:'number', type: 'varchar', length: 255})
+    @Column({name:'originBank', type: 'varchar', length: 255, nullable: true})
     @Length(3, 100, {groups: ['create','update']})
-    number: string;
+    originBank: string;
 
-    @Column({name:'amount', type: 'decimal'})
+    @Column({name:'consignmentNumber', type: 'varchar', length: 255})
+    @Length(3, 100, {groups: ['create','update']})
+    consignmentNumber: string;
+
+    @Column({name:'consignmentAmount', type: 'decimal'})
     @IsDecimal({ decimal_digits: '2'}, {groups: ['create','update']})
-    amount: number;
+    consignmentAmount: number;
 
     @Column({name:'email', type: 'varchar', length: 255})
     @Length(3, 100, {groups: ['create','update']})

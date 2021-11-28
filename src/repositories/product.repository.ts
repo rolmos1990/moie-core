@@ -4,6 +4,7 @@ import {Product} from "../models/Product";
 import {Size} from "../models/Size";
 import {InvalidArgumentException} from "../common/exceptions";
 import {FieldOption} from "../models/FieldOption";
+import {FIELD_OPTIONS} from "../common/enum/fieldOptions";
 
 export class ProductRepository<T> extends BaseRepository<Product>{
     protected readonly repositoryManager : Repository<Product>;
@@ -21,7 +22,7 @@ export class ProductRepository<T> extends BaseRepository<Product>{
     async getNextReferenceCode(referenceKey: string){
 
         const fieldOptions = await this.fieldOptionsRepositoryManager.findOne({where: {
-                group: 'REFERENCE_KEY',
+                groups: FIELD_OPTIONS.REFERENCE_KEY,
                 name: referenceKey
             }});
 

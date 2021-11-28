@@ -4,9 +4,10 @@ export const PaymentCreateDTO = (payment: Payment) => ({
     name: payment.name,
     phone: payment.phone,
     type: payment.type,
-    bank: payment.bank,
-    number: payment.number,
-    amount: payment.amount,
+    targetBank: payment.targetBank,
+    originBank: payment.originBank || null,
+    consignmentNumber: payment.consignmentNumber,
+    consignmentAmount: payment.consignmentAmount,
     email: payment.email,
     origen: payment.origen
 });

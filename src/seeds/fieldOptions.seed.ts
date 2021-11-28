@@ -33,293 +33,293 @@ export const FieldOptionsSeed = [
         value: 'ALGODON/SPANDEX'
     },
     {
-        group: "MATERIAL",
+        groups: "MATERIAL",
         name: 'BLONDA',
         value: 'BLONDA'
     },
     {
-        group: "MATERIAL",
+        groups: "MATERIAL",
         name: 'COTTON/LYCRA',
         value: 'COTTON/LYCRA'
     },
     {
-        group: "MATERIAL",
+        groups: "MATERIAL",
         name: 'CUERINA',
         value: 'CUERINA'
     },
     {
-        group: "MATERIAL",
+        groups: "MATERIAL",
         name: 'CUERO',
         value: 'CUERO'
     },
     {
-        group: "MATERIAL",
+        groups: "MATERIAL",
         name: 'JEAN',
         value: 'JEAN'
     },
     {
-        group: "MATERIAL",
+        groups: "MATERIAL",
         name: 'LINO',
         value: 'LINO'
     },
     {
-        group: "MATERIAL",
+        groups: "MATERIAL",
         name: 'LONA',
         value: 'LONA'
     },
     {
-        group: "MATERIAL",
+        groups: "MATERIAL",
         name: 'NYLON',
         value: 'NYLON'
     },
     {
-        group: "MATERIAL",
+        groups: "MATERIAL",
         name: 'OTRO',
         value: 'OTRO'
     },
     {
-        group: "MATERIAL",
+        groups: "MATERIAL",
         name: 'PLASTICO',
         value: 'PLASTICO'
     },
     {
-        group: "MATERIAL",
+        groups: "MATERIAL",
         name: 'POLYESTER',
         value: 'POLYESTER'
     },
     {
-        group: "MATERIAL",
+        groups: "MATERIAL",
         name: 'POLYESTER/SPANDEX',
         value: 'POLYESTER/SPANDEX'
     },
     {
-        group: "MATERIAL",
+        groups: "MATERIAL",
         name: 'RAYON',
         value: 'RAYON'
     },
     {
-        group: "MATERIAL",
+        groups: "MATERIAL",
         name: 'SEDA',
         value: 'SEDA'
     },
     {
-        group: "MATERIAL",
+        groups: "MATERIAL",
         name: 'SHIFFON',
         value: 'SHIFFON'
     },
     {
-        group: "MATERIAL",
+        groups: "MATERIAL",
         name: 'BISUTERIA',
         value: 'BISUTERIA'
     },
     {
-        group: "MATERIAL",
+        groups: "MATERIAL",
         name: 'BLUSA',
         value: 'BLUSA'
     },
     {
-        group: "MATERIAL",
+        groups: "MATERIAL",
         name: 'BOLSO',
         value: 'BOLSO'
     },
     {
-        group: "MATERIAL",
+        groups: "MATERIAL",
         name: 'BRAGA',
         value: 'BRAGA'
     },
     {
-        group: "MATERIAL",
+        groups: "MATERIAL",
         name: 'CARTERA',
         value: 'CARTERA'
     },
     {
-        group: "MATERIAL",
+        groups: "MATERIAL",
         name: 'CONJUNTO',
         value: 'CONJUNTO'
     },
     {
-        group: "MATERIAL",
+        groups: "MATERIAL",
         name: 'FALDA',
         value: 'FALDA'
     },
     {
-        group: "MATERIAL",
+        groups: "MATERIAL",
         name: 'ÍNTIMA',
         value: 'ÍNTIMA'
     },
     {
-        group: "MATERIAL",
+        groups: "MATERIAL",
         name: 'JEANS',
         value: 'JEANS'
     },
     {
-        group: "MATERIAL",
+        groups: "MATERIAL",
         name: 'LEGGINS',
         value: 'LEGGINS'
     },
     {
-        group: "MATERIAL",
+        groups: "MATERIAL",
         name: 'LENTES',
         value: 'LENTES'
     },
     {
-        group: "MATERIAL",
+        groups: "MATERIAL",
         name: 'OTRO',
         value: 'OTRO'
     },
     {
-        group: "MATERIAL",
+        groups: "MATERIAL",
         name: 'PAÑAL',
         value: 'PAÑAL'
     },
     {
-        group: "MATERIAL",
+        groups: "MATERIAL",
         name: 'PIJAMA',
         value: 'PIJAMA'
     },
     {
-        group: "MATERIAL",
+        groups: "MATERIAL",
         name: 'RELOJ',
         value: 'RELOJ'
     },
     {
-        group: "MATERIAL",
+        groups: "MATERIAL",
         name: 'SHORT',
         value: 'SHORT'
     },
     {
-        group: "MATERIAL",
+        groups: "MATERIAL",
         name: 'TOP',
         value: 'TOP'
     },
     {
-        group: "MATERIAL",
+        groups: "MATERIAL",
         name: 'VESTIDO',
         value: 'VESTIDO'
     },
     //REFERENCE_KEY (Referencias para productos)
     {
-        group: "REFERENCE_KEY",
+        groups: "REFERENCE_KEY",
         name: 'A',
         value: JSON.stringify({'starFrom': 0})
     },
     {
-        group: "REFERENCE_KEY",
+        groups: "REFERENCE_KEY",
         name: 'B',
         value: JSON.stringify({'starFrom': 0})
     },
     {
-        group: "REFERENCE_KEY",
+        groups: "REFERENCE_KEY",
         name: 'BF',
         value: JSON.stringify({'starFrom': 0})
     },
     {
-        group: "REFERENCE_KEY",
+        groups: "REFERENCE_KEY",
         name: 'BO',
         value: JSON.stringify({'starFrom': 0})
     },
     {
-        group: "REFERENCE_KEY",
+        groups: "REFERENCE_KEY",
         name: 'BP',
         value: JSON.stringify({'starFrom': 0})
     },
     {
-        group: "REFERENCE_KEY",
+        groups: "REFERENCE_KEY",
         name: 'BR',
         value: JSON.stringify({'starFrom': 0})
     },
     {
-        group: "REFERENCE_KEY",
+        groups: "REFERENCE_KEY",
         name: 'C',
         value: JSON.stringify({'starFrom': 0})
     },
     {
-        group: "REFERENCE_KEY",
+        groups: "REFERENCE_KEY",
         name: 'CH',
         value: JSON.stringify({'starFrom': 0})
     },
     {
-        group: "REFERENCE_KEY",
+        groups: "REFERENCE_KEY",
         name: 'CJ',
         value: JSON.stringify({'starFrom': 0})
     },
     {
-        group: "REFERENCE_KEY",
+        groups: "REFERENCE_KEY",
         name: 'CN',
         value: JSON.stringify({'starFrom': 0})
     },
     {
-        group: "REFERENCE_KEY",
+        groups: "REFERENCE_KEY",
         name: 'D',
         value: JSON.stringify({'starFrom': 0})
     },
     {
-        group: "REFERENCE_KEY",
+        groups: "REFERENCE_KEY",
         name: 'F',
         value: JSON.stringify({'starFrom': 0})
     },
     {
-        group: "REFERENCE_KEY",
+        groups: "REFERENCE_KEY",
         name: 'J',
         value: JSON.stringify({'starFrom': 0})
     },
     {
-        group: "REFERENCE_KEY",
+        groups: "REFERENCE_KEY",
         name: 'L',
         value: JSON.stringify({'starFrom': 0})
     },
     {
-        group: "REFERENCE_KEY",
+        groups: "REFERENCE_KEY",
         name: 'LP',
         value: JSON.stringify({'starFrom': 0})
     },
     {
-        group: "REFERENCE_KEY",
+        groups: "REFERENCE_KEY",
         name: 'M',
         value: JSON.stringify({'starFrom': 0})
     },
     {
-        group: "REFERENCE_KEY",
+        groups: "REFERENCE_KEY",
         name: 'O',
         value: JSON.stringify({'starFrom': 0})
     },
     {
-        group: "REFERENCE_KEY",
+        groups: "REFERENCE_KEY",
         name: 'P',
         value: JSON.stringify({'starFrom': 0})
     },
     {
-        group: "REFERENCE_KEY",
+        groups: "REFERENCE_KEY",
         name: 'PJ',
         value: JSON.stringify({'starFrom': 0})
     },
     {
-        group: "REFERENCE_KEY",
+        groups: "REFERENCE_KEY",
         name: 'R',
         value: JSON.stringify({'starFrom': 0})
     },
     {
-        group: "REFERENCE_KEY",
+        groups: "REFERENCE_KEY",
         name: 'RE',
         value: JSON.stringify({'starFrom': 0})
     },
     {
-        group: "REFERENCE_KEY",
+        groups: "REFERENCE_KEY",
         name: 'T',
         value: JSON.stringify({'starFrom': 0})
     },
     {
-        group: "REFERENCE_KEY",
+        groups: "REFERENCE_KEY",
         name: 'TB',
         value: JSON.stringify({'starFrom': 0})
     },
     {
-        group: "REFERENCE_KEY",
+        groups: "REFERENCE_KEY",
         name: 'V',
         value: JSON.stringify({'starFrom': 0})
     },
     {
-        group: "REFERENCE_KEY",
+        groups: "REFERENCE_KEY",
         name: 'VP',
         value: JSON.stringify({'starFrom': 0})
     },

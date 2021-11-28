@@ -127,7 +127,6 @@ export class OrderController extends BaseController<Order> {
             const userIdFromSession = req['user'].id;
             const user = await this.userService.find(userIdFromSession);
 
-
             const order: Order = await this.orderService.addOrUpdateOrder(parse, deliveryMethod, user, null, false);
             const orderDetails: OrderDetail[] = await this.orderService.getDetails(order);
             order.orderDetails = orderDetails;
