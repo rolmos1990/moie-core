@@ -123,6 +123,7 @@ export class BillService extends BaseService<Bill> {
         const auth = new Buffer(`${user}:${password}`).toString("base64");
 
         const soapBody = new CreateBillSoap(bill, type, creditMemo);
+        console.log(soapBody);
 
         const options = {
             url: 'https://www.febtw.co:8087/ServiceBTW/FEServicesBTW.svc?wsdl',
@@ -135,6 +136,10 @@ export class BillService extends BaseService<Bill> {
         const res = await this.clientManagementService.callSoapClient(options);
 
         if(res["RecepcionXmlFromERPResult"]){
+
+            //save log
+            await this.saveLog(bill, res);
+
             if(res["RecepcionXmlFromERPResult"]["success"]){
                 return true;
             } else{
@@ -142,6 +147,14 @@ export class BillService extends BaseService<Bill> {
             }
         } else {
             throw new InvalidArgumentException("No se pudo recibir la factura");
+        }
+    }
+
+    async saveLog(bill: Bill, res: any){
+        if(res && res["RecepcionXmlFromERPResult"] && res["RecepcionXmlFromERPResult"]["Tracer"]) {
+            const log = res["RecepcionXmlFromERPResult"]["Tracer"];
+            bill.dianLog = log;
+            await this.billRepository.save(bill);
         }
     }
 

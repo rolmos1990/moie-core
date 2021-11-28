@@ -20,7 +20,7 @@ export class BillCreditMemo extends BaseModel{
     @JoinColumn({name: 'bill_id'})
     bill: Bill;
 
-    @Column({name:'memoType', type: 'varchar', length: 100, unique: true})
+    @Column({name:'memoType', type: 'varchar', length: 100})
     @Length(3, 50, {groups: ['create','update']})
     memoType: string;
 

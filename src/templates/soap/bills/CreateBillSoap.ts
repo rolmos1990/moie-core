@@ -100,8 +100,8 @@ export class CreateBillSoap extends BaseSoapTemplate {
             }
 
             // al 100 se le sumaba el iva pero en todos es 0.. / (100 + factura['iva'], 2)
-            producto['valor_unitario'] = (producto['precio_venta'] * 100 / 100,2).toFixed(2);
-            producto['valor_total'] = producto.quantity * producto['valor_unitario'];
+            producto['valor_unitario'] = Math.round(producto['precio_venta'] * 100) / 100;
+            producto['valor_total'] = producto.quantity * parseFloat(producto['valor_unitario']);
             producto['valor_iva'] = (producto['valor_total'] * 0 / 100,2).toFixed(2);
             subtotal += producto['valor_total'];
             impuestos += producto['valor_iva'];
@@ -115,10 +115,10 @@ export class CreateBillSoap extends BaseSoapTemplate {
                 'PartNumPartDescription' : producto.id + ' - ' + producto.size + ' - ' + producto.color,
                 'SellingShipQty' : producto.quantity,
                 'SalesUM' : 94,
-                'UnitPrice' : producto['valor_unitario'],
-                'DocUnitPrice' : producto['valor_unitario'],
-                'DocExtPrice' : producto['valor_total'],
-                'DspDocExtPrice' : producto['valor_total'],
+                'UnitPrice' : parseFloat(producto['valor_unitario']),
+                'DocUnitPrice' : parseFloat(producto['valor_unitario']),
+                'DocExtPrice' : parseFloat(producto['valor_total']),
+                'DspDocExtPrice' : parseFloat(producto['valor_total']),
                 'DiscountPercent' : 0,
                 'Discount' : 0,
                 'DocDiscount' : 0,
@@ -133,7 +133,7 @@ export class CreateBillSoap extends BaseSoapTemplate {
                     'InvoiceLine' : (index + 1),
                     'CurrencyCode' : moneda,
                     'RateCode' : 'IVA 19',
-                    'DocTaxableAmt' : producto['valor_total'],
+                    'DocTaxableAmt' : parseFloat(producto['valor_total']),
                     'TaxAmt' : producto['valor_iva'],
                     'DocTaxAmt' : producto['valor_iva'],
                     'Percent' : bill.tax,
@@ -141,6 +141,11 @@ export class CreateBillSoap extends BaseSoapTemplate {
             });
 
         });
+
+        //total
+        subtotal = subtotal ? parseFloat(subtotal.toString()) : 0;
+        impuestos = impuestos ? parseFloat(impuestos.toString()) : 0;
+        orderDelivery.deliveryCost = orderDelivery.deliveryCost ? parseFloat(orderDelivery.deliveryCost.toString()) : 0;
 
         total = subtotal + impuestos + orderDelivery.deliveryCost;
 

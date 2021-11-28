@@ -9,5 +9,6 @@ export const BillListDTO = (bill: Bill) => ({
     legalNumber: bill.billConfig && bill.billConfig.prefix ? bill.billConfig.prefix + bill.legalNumber : "",
     status: bill.status,
     creditNote: bill.creditMemo,
-    order: OrderListDTO(bill.order)
+    order: OrderListDTO(bill.order),
+    dianLog:  bill.dianLog
 });

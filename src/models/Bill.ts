@@ -45,6 +45,10 @@ export class Bill extends BaseModel{
     @IsBoolean({groups: ['create','update']})
     status: string;
 
+    @Column({name:'dianLog', type: 'text', nullable: true})
+    @IsBoolean({groups: ['create','update']})
+    dianLog: string;
+
     @OneToOne(() => BillCreditMemo, billCreditMemo => billCreditMemo.bill)
     creditMemo: BillCreditMemo;
 
