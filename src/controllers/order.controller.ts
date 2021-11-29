@@ -12,7 +12,7 @@ import {UserService} from "../services/user.service";
 import {OrderDetail} from "../models/OrderDetail";
 import {isCash, isPaymentMode} from "../common/enum/paymentModes";
 import {OrderProduct} from "./parsers/orderProduct";
-import { CustomerService } from "../services/customer.service";
+import {CustomerService} from "../services/customer.service";
 import {TemplateService} from "../services/template.service";
 import {getDeliveryShortType, QrBarImage} from "../common/helper/helpers";
 import {ConditionalQuery} from "../common/controllers/conditional.query";
@@ -22,11 +22,8 @@ import {OrderStatus} from "../common/enum/orderStatus";
 import {BatchRequestService} from "../services/batchRequest.service";
 import {BatchRequestTypes, BatchRequestTypesStatus} from "../common/enum/batchRequestTypes";
 import {UserShortDTO} from "./parsers/user";
-import {Office} from "../models/Office";
-import {ExportersInterrapidisimoCd} from "../templates/exporters";
-import {MEDIA_FORMAT_OUTPUT} from "../services/mediaManagement.service";
+import {MEDIA_FORMAT_OUTPUT, MediaManagementService} from "../services/mediaManagement.service";
 import {ExpotersPostventa} from "../templates/exporters/expoters-postventa";
-import {MediaManagementService} from "../services/mediaManagement.service";
 import {ExportersConciliates} from "../templates/exporters/exporters-conciliates";
 
 
@@ -500,7 +497,7 @@ export class OrderController extends BaseController<Order> {
         if(isDetail) {
             return ['customer', 'deliveryMethod', 'user', 'customer.municipality', 'customer.state', 'orderDelivery', 'orderDelivery.deliveryLocality'];
         } else {
-            return ['customer', 'deliveryMethod', 'orderDetails', 'user', 'customer.municipality', 'customer.state', 'orderDelivery'];
+            return ['payment', 'customer', 'deliveryMethod', 'orderDetails', 'user', 'customer.municipality', 'customer.state', 'orderDelivery'];
         }
     }
 
