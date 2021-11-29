@@ -2,16 +2,18 @@ import {route} from "awilix-express";
 import {BaseController} from "../common/controllers/base.controller";
 import {User} from "../models/User";
 import {EntityTarget} from "typeorm";
-import {BillConfigListDTO} from "./parsers/billConfig";
+import {BillConfigCreateDTO, BillConfigListDTO} from "./parsers/billConfig";
 import {BillConfig} from "../models/BillConfig";
 import {BillConfigService} from "../services/billConfig.service";
+import {UserService} from "../services/user.service";
 
 @route('/billConfig')
 export class BillController extends BaseController<BillConfig> {
     constructor(
-        private readonly billConfigService: BillConfigService
+        private readonly billConfigService: BillConfigService,
+        private readonly userService: UserService,
     ){
-        super(billConfigService);
+        super(billConfigService, userService );
     };
 
     protected afterCreate(item: Object, user: User | undefined): void {
@@ -35,11 +37,11 @@ export class BillController extends BaseController<BillConfig> {
     }
 
     getGroupRelations(): Array<string> {
-        return undefined;
+        return [];
     }
 
-    getInstance(): Object {
-        return undefined;
+    getInstance(): BillConfig {
+        return new BillConfig();
     }
 
     getParseGET(entity: BillConfig, isDetail: boolean): Object {
@@ -47,7 +49,7 @@ export class BillController extends BaseController<BillConfig> {
     }
 
     getParsePOST(entity: BillConfig): Object {
-        return BillConfigListDTO(entity);
+        return BillConfigCreateDTO(entity);
     }
 
     getParsePUT(entity: BillConfig): Object {
