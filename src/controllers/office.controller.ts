@@ -215,6 +215,13 @@ export class OfficeController extends BaseController<Office> {
         }
     }
 
+    @route('/gen/officeReport')
+    @GET()
+    public async officeReport(req: Request, res: Response){
+        const {dateFrom, date} = req.query;
+        return res.json({status: 200, data: {} } );
+    }
+
     /** Import File Delivery Information in System */
     @route('/importFile')
     @POST()
