@@ -25,6 +25,12 @@ import {BatchRequestTypes, BatchRequestTypesStatus} from "../common/enum/batchRe
 import {UserShortDTO} from "./parsers/user";
 import {TemplateService} from "../services/template.service";
 import {DeliveryStatus} from "../common/enum/deliveryStatus";
+import {EBillType} from "../common/enum/eBill";
+import {OfficeReportTypes} from "../common/enum/officeReportTypes";
+import {Bill} from "../models/Bill";
+import {ExpotersEletronicBill} from "../templates/exporters/electronic-bill";
+import {ElectronicBillAdaptor} from "../templates/adaptors/ElectronicBillAdaptor";
+import {ExportersOfficeCd} from "../templates/exporters/office-orders.exporters";
 
 @route('/office')
 export class OfficeController extends BaseController<Office> {
@@ -218,8 +224,23 @@ export class OfficeController extends BaseController<Office> {
     @route('/gen/officeReport')
     @GET()
     public async officeReport(req: Request, res: Response){
-        const {dateFrom, date} = req.query;
-        return res.json({status: 200, data: {} } );
+        try {
+            const {type, date} = req.query;
+
+            if (!(type === OfficeReportTypes.PREVIOUS_PAYMENT || type === OfficeReportTypes.MENSAJERO)) {
+                throw new InvalidArgumentException("Tipo no valido");
+            }
+
+
+            const orders: Order[] = await this.officeService.getDataForReport(date, type);
+
+            const exportable = new ExportersOfficeCd();
+
+            const base64File = await this.mediaManagementService.createExcel(exportable, orders, res, MEDIA_FORMAT_OUTPUT.b64);
+            return res.json({status: 200, data: base64File, name: exportable.getFileName()});
+        }catch(e){
+            this.handleException(new ApplicationException(), res);
+        }
     }
 
     /** Import File Delivery Information in System */
