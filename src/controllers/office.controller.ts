@@ -239,6 +239,7 @@ export class OfficeController extends BaseController<Office> {
             const base64File = await this.mediaManagementService.createExcel(exportable, orders, res, MEDIA_FORMAT_OUTPUT.b64);
             return res.json({status: 200, data: base64File, name: exportable.getFileName()});
         }catch(e){
+            console.log("error: ", e.message);
             this.handleException(new ApplicationException(), res);
         }
     }
