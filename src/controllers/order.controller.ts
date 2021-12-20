@@ -504,4 +504,23 @@ export class OrderController extends BaseController<Order> {
     getGroupRelations(): Array<string> {
         return ['user'];
     }
+
+
+
+    // Reportes
+    /**
+     * Obtener resumen de una orden
+     * @param req
+     * @param res
+     */
+    @route('/:id/boardResume')
+    @GET()
+    public async getDailySaleStats(req: Request, res: Response) {
+        try{
+            const {dateFrom, dateTo, user} = req.query;
+        }catch(e){
+
+        }
+    }
+
 }

@@ -22,6 +22,7 @@ import {DeliveryMethodService} from "./deliveryMethod.service";
 import {Office} from "../models/Office";
 import {DeliveryLocalityService} from "./deliveryLocality.service";
 import {Between, IsNull, Not} from "typeorm";
+import {OfficeReportTypes} from "../common/enum/officeReportTypes";
 
 export class OrderService extends BaseService<Order> {
     constructor(
@@ -380,6 +381,11 @@ export class OrderService extends BaseService<Order> {
             .andWhere("o.dateOfSale", Between(dateFrom, dateTo))
             .andWhere("o.deliveryMethod", deliveryMethod)
             .getMany();
+    }
+
+    /** Reporte Ventas */
+
+    async getStatsSalesDateRange(dateFrom, DateTo, user){
     }
 
 }
