@@ -1,0 +1,21 @@
+version: '3.3'
+services:
+  moie-lucy-api:
+    ports:
+      - '18210:8888'
+    restart: always
+    logging:
+      options:
+        max-size: 1g
+    environment:
+      - PORT=8888
+      - 'HOST=http://localhost'
+      - DB_HOST=localhost
+      - DB_PORT=3306
+      - DB_USERNAME=root
+      - DB_PASSWORD=root
+      - DB_DATABASE=moie-lucy-v2
+      - SEED_DB=true
+      - DIAN_USER=1CCC171F7911107313
+      - DIAN_PASSWORD=1CCC171F7911107313
+    image: 'rolmos/moie-lucy-api:latest'
