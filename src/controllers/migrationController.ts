@@ -50,20 +50,20 @@ export class MigrationController {
         const migrationManagerSize = new MigrationManager(this.sizeService);
         await migrationManagerSize.run();
 
-        console.log("########################");
-        console.log("3. Migrando Productos");
-        const migrationManagerProduct = new MigrationManager(this.productService);
-        await migrationManagerProduct.run();
+        // console.log("########################");
+        // console.log("3. Migrando Productos");
+        // const migrationManagerProduct = new MigrationManager(this.productService);
+        // await migrationManagerProduct.run();
 
-        console.log("########################");
-        console.log("4. Migrando Existencia (ProductSize)");
-        const migrationManagerProductSize = new MigrationManager(this.productSizeService);
-        await migrationManagerProductSize.run();
+        // console.log("########################");
+        // console.log("4. Migrando Existencia (ProductSize)");
+        // const migrationManagerProductSize = new MigrationManager(this.productSizeService);
+        // await migrationManagerProductSize.run();
 
-        console.log("########################");
-        console.log("3. Migrando Imagenes de Productos");
-        const migrationManagerImages = new MigrationManager(this.productImageService);
-        await migrationManagerImages.run(false);
+        // console.log("########################");
+        // console.log("3. Migrando Imagenes de Productos");
+        // const migrationManagerImages = new MigrationManager(this.productImageService);
+        // await migrationManagerImages.run(false);
 
         console.log("########################");
         console.log("5. Migrando Localidades (Envios)");
@@ -80,15 +80,15 @@ export class MigrationController {
         const migrationMunicipality = new MigrationManager(this.municipalityService);
         await migrationMunicipality.run();
 
-        console.log("########################");
-        console.log("8. Migrando Clientes");
-        const migrationClient = new MigrationManager(this.clientService);
-        await migrationClient.run();
+        // console.log("########################");
+        // console.log("8. Migrando Clientes");
+        // const migrationClient = new MigrationManager(this.clientService);
+        // await migrationClient.run();
 
-        console.log("########################");
-        console.log("8. Migrando Direcciones temporales Clientes");
-        const migrationTemporalAddress = new MigrationManager(this.temporalAddressService);
-        await migrationTemporalAddress.run();
+        // console.log("########################");
+        // console.log("8. Migrando Direcciones temporales Clientes");
+        // const migrationTemporalAddress = new MigrationManager(this.temporalAddressService);
+        // await migrationTemporalAddress.run();
 
         return;
     }
