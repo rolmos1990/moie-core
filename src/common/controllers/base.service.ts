@@ -30,6 +30,10 @@ export abstract class BaseService<Entity> implements IService {
         return this.baseRepository.findByObject(object, relations);
     }
 
+    public findByObjectWithLimit(object: Object, relations = [], limit): Promise<Entity[]> {
+        return this.baseRepository.findByObjectWithLimit(object, relations, limit);
+    }
+
     public delete(id: number): Promise<Entity> {
         return this.baseRepository.delete(id);
     }

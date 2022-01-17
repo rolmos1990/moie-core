@@ -49,6 +49,8 @@ import {ClientsManagementService} from "./services/clientsManagement.service";
 import {PaymentRepository} from "./repositories/payment.repository";
 import {PaymentService} from "./services/payment.service";
 import {BillConfigService} from "./services/billConfig.service";
+import {OrderHistoricRepository} from "./repositories/orderHistoric.repository";
+import {OrderHistoricService} from "./services/orderHistoric.service";
 
 export default (app: express.Application): void => {
     const container = createContainer({
@@ -81,6 +83,7 @@ export default (app: express.Application): void => {
         billConfigRepository: asClass(BillConfigRepository).scoped(),
         billCreditMemoRepository: asClass(BillCreditMemoRepository).scoped(),
         paymentRepository: asClass(PaymentRepository).scoped(),
+        orderHistoricRepository: asClass(OrderHistoricRepository).scoped(),
         // services
         userService: asClass(UserService).scoped(),
         customerService: asClass(CustomerService).scoped(),
@@ -105,7 +108,8 @@ export default (app: express.Application): void => {
         billService: asClass(BillService).scoped(),
         clientManagementService: asClass(ClientsManagementService).scoped(),
         paymentService: asClass(PaymentService).scoped(),
-        billConfigService: asClass(BillConfigService).scoped()
+        billConfigService: asClass(BillConfigService).scoped(),
+        orderHistoricService: asClass(OrderHistoricService).scoped(),
     });
 
     app.use(scopePerRequest(container));

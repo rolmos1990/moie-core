@@ -25,6 +25,9 @@ import {UserShortDTO} from "./parsers/user";
 import {MEDIA_FORMAT_OUTPUT, MediaManagementService} from "../services/mediaManagement.service";
 import {ExpotersPostventa} from "../templates/exporters/expoters-postventa";
 import {ExportersConciliates} from "../templates/exporters/exporters-conciliates";
+import {CommentService} from "../services/comment.service";
+import {OrderHistoricService} from "../services/orderHistoric.service";
+import {OrderHistoricDTO, OrderHistoricListDTO} from "./parsers/orderHistoric";
 
 
 @route('/order')
@@ -36,7 +39,9 @@ export class OrderController extends BaseController<Order> {
         private readonly customerService: CustomerService,
         private readonly templateService: TemplateService,
         private readonly batchRequestService: BatchRequestService,
-        private readonly mediaManagementService: MediaManagementService
+        private readonly mediaManagementService: MediaManagementService,
+        private readonly commentService: CommentService,
+        private readonly orderHistoricService: OrderHistoricService,
     ){
         super(orderService);
     };
@@ -268,12 +273,14 @@ export class OrderController extends BaseController<Order> {
     @GET()
     public async print(req: Request, res: Response) {
         try {
-            const order = await this.orderService.find(parseInt(req.params.id), ['orderDelivery', 'customer','customer.state','customer.municipality', 'user', 'deliveryMethod', 'orderDetails']);
+            const order = await this.orderService.find(parseInt(req.params.id), ['orderDelivery', 'customer','customer.state','customer.municipality', 'user', 'deliveryMethod', 'orderDetails', 'orderDetails.product']);
             if (order) {
                 const templateName = this.orderService.getPrintTemplate(order);
                 console.log("-- find templateName: ", templateName);
                 const qrBar = await QrBarImage(order.id);
                 const deliveryShortType = getDeliveryShortType(order.orderDelivery.deliveryType);
+
+                let comments = await this.commentService.getByOrder(order);
                 const object = {
                     order,
                     qrBar,
@@ -281,7 +288,9 @@ export class OrderController extends BaseController<Order> {
                     hasPayment: isPaymentMode(order.paymentMode),
                     isCash: isCash(order.paymentMode),
                     hasPiecesForChanges: (order.piecesForChanges && order.piecesForChanges > 0),
-                    deliveryShortType: deliveryShortType
+                    deliveryShortType: deliveryShortType,
+                    hasComments: comments.length > 0,
+                    comments: comments
                 };
                 const template = await this.templateService.getTemplate(templateName, object);
                 if(!template){
@@ -291,6 +300,28 @@ export class OrderController extends BaseController<Order> {
                 return res.json({status: 200, html: template});
             }
         }catch(e){
+            this.handleException(e, res);
+            console.log("error", e);
+        }
+    }
+
+    /**
+     * Obtener Historial de Orden
+     * @param req
+     * @param res
+     */
+    @route('/:id/historic')
+    @GET()
+    public async historic(req: Request, res: Response) {
+        try {
+            const order = await this.orderService.find(parseInt(req.params.id));
+            const historic = await this.orderHistoricService.findByObject({"order": order}, ["user"]);
+
+            if (order) {
+                return res.json({status: 200, orderHistoric: OrderHistoricListDTO(historic)});
+            }
+
+        } catch (e) {
             this.handleException(e, res);
             console.log("error", e);
         }
@@ -425,9 +456,13 @@ export class OrderController extends BaseController<Order> {
                 const qrBar : any = [];
 
                 const result = orders.map(async order => {
+
                     const templateName = this.orderService.getPrintTemplate(order);
                     qrBar[order.id] = await QrBarImage(order.id);
                     const deliveryShortType = getDeliveryShortType(order.orderDelivery.deliveryType);
+
+                    let comments = await this.commentService.getByOrder(order);
+                    console.log("COMMENTS: ", comments);
                     const object = {
                         order,
                         qrBar: qrBar[order.id],
@@ -435,8 +470,10 @@ export class OrderController extends BaseController<Order> {
                         hasPayment: isPaymentMode(order.paymentMode),
                         isCash: isCash(order.paymentMode),
                         hasPiecesForChanges: (order.piecesForChanges && order.piecesForChanges > 0),
-                        deliveryShortType: deliveryShortType
+                        deliveryShortType: deliveryShortType,
+                        comments: comments
                     };
+                    console.log("TEMPLATE", templateName);
                     const template = await this.templateService.getTemplate(templateName, object);
                     if(!template){
                         throw new InvalidArgumentException("No se ha encontrado un resumen para esta orden");
