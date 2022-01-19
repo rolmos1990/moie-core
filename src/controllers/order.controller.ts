@@ -180,16 +180,33 @@ export class OrderController extends BaseController<Order> {
                 return res.json({status: 200, updates: updates.map(item => OrderShortDTO(item))});
             } else {
                 entity = orders[0];
+                let changeStatus = false;
                 if (entity.status === 1) {
+                    //PENDIENTE -> CONFIRMADO
                     entity.status = 2;
+                    changeStatus = true;
                 } else if (entity.status === 2) {
+                    //CONFIRMADO -> IMPRESO
                     entity.status = 3;
+                    changeStatus = true;
+                } else if(entity.status === 3) {
+                    //IMPRESO -> ENVIADO
+                    entity.status = 4;
+                    changeStatus = true;
                 }
 
                 const saved: Order = await this.orderService.createOrUpdate(entity);
                 const order: Order = await this.orderService.find(saved.id, this.getDefaultRelations(true));
                 const orderDetails: OrderDetail[] = await this.orderService.getDetails(order);
                 order.orderDetails = orderDetails;
+
+                //save historic (if change status)
+                if(changeStatus) {
+                    const userIdFromSession = req['user'].id;
+                    const user = await this.userService.find(userIdFromSession);
+                    await this.orderHistoricService.registerEvent(order, user);
+                }
+
                 return res.json({status: 200, order: OrderShowDTO(order)});
             }
 
