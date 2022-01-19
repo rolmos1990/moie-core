@@ -139,6 +139,71 @@ export class OrderController extends BaseController<Order> {
         }
     }
 
+    @route('/canceledStatus')
+    @POST()
+    public async canceledStatus(req: Request, res: Response) {
+        try {
+            const request = req.body;
+
+            if(!request.batch && !request.order){
+                throw new InvalidArgumentException("No existe registro indicado para actualizar");
+            }
+
+            /** LLevar a un servicio que administre los estados */
+            /** Entregar al servicio (sesión, orden) */
+
+            let entity;
+            let orders = [];
+
+            if(request.order) {
+                entity = await this.orderService.find(parseInt(request.order));
+                orders.push(entity);
+            } else {
+                entity = await this.batchRequestService.find(parseInt(request.batch));
+                if(!entity || entity.status != BatchRequestTypesStatus.COMPLETED){
+                    throw new InvalidArgumentException("Lote no ha sido encontrado");
+                }
+                orders = entity.body.map(item => item.order);
+                orders = await this.orderService.findByIds(orders);
+            }
+
+            if(request.batch) {
+                let updates = [];
+                await Promise.all(orders.map(async entity => {
+                    if (entity.status === OrderStatus.PENDING) {
+                        entity.status = OrderStatus.CANCELED;
+                        updates.push(await this.orderService.createOrUpdate(entity));
+                    }
+                }));
+                entity.status = BatchRequestTypesStatus.EXECUTED;
+                await this.batchRequestService.createOrUpdate(entity);
+                return res.json({status: 200, updates: updates.map(item => OrderShortDTO(item))});
+            } else {
+                if (OrderStatus.PENDING === 1) {
+                    //PENDIENTE -> CONFIRMADO
+                    entity.status = OrderStatus.CANCELED;
+
+                    const saved: Order = await this.orderService.createOrUpdate(entity);
+                    const order: Order = await this.orderService.find(saved.id, this.getDefaultRelations(true));
+                    const orderDetails: OrderDetail[] = await this.orderService.getDetails(order);
+                    order.orderDetails = orderDetails;
+                    //save historic
+                    const userIdFromSession = req['user'].id;
+                    const user = await this.userService.find(userIdFromSession);
+                    await this.orderHistoricService.registerEvent(order, user);
+
+                    return res.json({status: 200, order: OrderShowDTO(order)});
+                } else {
+                    throw new InvalidArgumentException("No existe registro indicado para actualizar");
+                }
+            }
+
+        }catch(e){
+            this.handleException(e, res);
+            console.log("error", e);
+        }
+    }
+
     @route('/nextStatus')
     @POST()
     public async nextStatus(req: Request, res: Response) {
