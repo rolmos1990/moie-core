@@ -10,7 +10,6 @@ import {PageDTO} from "../../controllers/parsers/page";
 import {ApplicationException, ConditionalException, InvalidArgumentException} from "../exceptions";
 import {OrderConditional} from "../enum/order.conditional";
 import {isEmpty} from "../helper/helpers";
-import {UserService} from "../../services/user.service";
 import {User} from "../../models/User";
 
 export const GROUPS = {
@@ -38,6 +37,10 @@ export abstract class BaseController<Parse> {
             const query = req.query;
             const conditional = query.conditional ? query.conditional + "" : null;
             const offset = query.offset ? query.offset + "" : "0";
+
+            const order = query.order ? query.order + "" : false;
+            const orderType = query.orderType ? query.orderType + "" : false;
+
             const pageNumber = parseInt(offset);
             const limit = query.limit ? parseInt(query.limit + "") : 100;
             const operation = query.operation ? query.operation + "" : null;
@@ -47,8 +50,11 @@ export abstract class BaseController<Parse> {
             const operationQuery = new OperationQuery(operation, group);
             let page = new PageQuery(limit,pageNumber,queryCondition, operationQuery);
 
-            if(!query.operation){
+            if(!query.operation && !(order && orderType)){
                 page.addOrder('id', OrderConditional.DESC);
+            } else if(order && orderType){
+                const _type = query.orderType === "asc" ? OrderConditional.ASC : OrderConditional.DESC;
+                //page.addOrder(order, _type);
             }
             const countRegisters = await this.service.count(page);
 

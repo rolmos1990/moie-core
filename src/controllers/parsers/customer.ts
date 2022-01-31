@@ -21,6 +21,7 @@ export const CustomerCreateDTO = (customer: Customer) => ({
     createdAt: new Date(),
     municipality: customer.municipality || null,
     state: customer.state || null,
+    address: customer.address || null,
     updatedAt: null
 });
 
@@ -38,6 +39,7 @@ export const CustomerShowDTO = (customer: Customer) => ({
     state: StateShortDTO(customer.state) || null,
     municipality: MunicipalityShortDTO(customer.municipality) || null,
     temporalAddress: converterFirstArrayObject(customer.temporalAddress),
+    address: customer.address || null,
     updatedAt: customer.updatedAt
 });
 

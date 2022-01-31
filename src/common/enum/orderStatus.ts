@@ -5,6 +5,7 @@ export enum OrderStatus {
     SENT= 4, //ENVIADA
     RECONCILED= 5, //CONCILIADA
     CANCELED = 6, //ANULADA
+    FINISHED = 7 //FINALIZADA
 };
 
 export const OrderStatusNames = {

@@ -28,6 +28,7 @@ import {ExportersConciliates} from "../templates/exporters/exporters-conciliates
 import {CommentService} from "../services/comment.service";
 import {OrderHistoricService} from "../services/orderHistoric.service";
 import {OrderHistoricDTO, OrderHistoricListDTO} from "./parsers/orderHistoric";
+import {EventStatus} from "../common/enum/eventStatus";
 
 
 @route('/order')
@@ -129,9 +130,16 @@ export class OrderController extends BaseController<Order> {
             const userIdFromSession = req['user'].id;
             const user = await this.userService.find(userIdFromSession);
 
+            if(!user){
+                throw new InvalidArgumentException("Usuario para generar orden es requerido");
+            }
+
             const order: Order = await this.orderService.addOrUpdateOrder(parse, deliveryMethod, user, null, false);
             const orderDetails: OrderDetail[] = await this.orderService.getDetails(order);
             order.orderDetails = orderDetails;
+
+            //save historic (if change status)
+            await this.orderHistoricService.registerEvent(order, user);
 
             return res.json({status: 200 , order: OrderShowDTO(order)});
         }catch(e){
@@ -221,7 +229,7 @@ export class OrderController extends BaseController<Order> {
             let orders = [];
 
             if(request.order) {
-                entity = await this.orderService.find(parseInt(request.order));
+                entity = await this.orderService.find(parseInt(request.order), ['orderDelivery']);
                 orders.push(entity);
             } else {
                 entity = await this.batchRequestService.find(parseInt(request.batch));
@@ -258,6 +266,10 @@ export class OrderController extends BaseController<Order> {
                     //IMPRESO -> ENVIADO
                     entity.status = 4;
                     changeStatus = true;
+                } else if(entity.status === 5 && entity.orderDelivery.deliveryType === 1) {
+                    //CONCILIADO (PREVIOPAGO) -> ENVIADO
+                    entity.status = 3;
+                    changeStatus = true;
                 }
 
                 const saved: Order = await this.orderService.createOrUpdate(entity);
@@ -287,7 +299,8 @@ export class OrderController extends BaseController<Order> {
         try {
             /** TODO -- Estructurar mejor dentro del servicio */
             /** TODO -- agregar refreshAddress -> si recibo esto refrescar la dirección */
-            const oldEntity = await this.orderService.find(parseInt(req.params.id), ['orderDelivery', 'deliveryMethod', 'customer']);
+            //['orderDetails', 'customer', 'deliveryMethod', 'user', 'customer.municipality', 'customer.state', 'orderDelivery']
+            const oldEntity = await this.orderService.find(parseInt(req.params.id), ['orderDetails','orderDelivery', 'deliveryMethod', 'customer', 'user']);
             if(oldEntity) {
                 let orderDetails = await this.orderService.getDetails(oldEntity);
                 oldEntity.orderDetails = orderDetails;
@@ -334,9 +347,14 @@ export class OrderController extends BaseController<Order> {
                     }
                     oldEntity.paymentMode = parse.paymentMode;
                 }
-                console.log("refresh order", parse.refreshAddress);
+
                 const order: Order = await this.orderService.addOrUpdateOrder(parse, deliveryMethod, null, oldEntity, parse.refreshAddress);
                 order.orderDetails = orderDetails;
+
+                /** TODO -- Asociar usuario a la orden */
+                const userIdFromSession = req['user'].id;
+                const user = await this.userService.find(userIdFromSession);
+                await this.orderHistoricService.registerEvent(order, user, EventStatus.UPDATED);
 
                 return res.json({status: 200, order: OrderShowDTO(order)});
             }
@@ -430,6 +448,7 @@ export class OrderController extends BaseController<Order> {
                 order.status = OrderStatus.RECONCILED;
                 try {
                     await this.orderService.update(order);
+                    await this.orderHistoricService.registerEvent(order, null);
                     itemSuccess.push(order.id);
                 }catch(e){
                     itemFailures.push(order.id);
@@ -514,7 +533,7 @@ export class OrderController extends BaseController<Order> {
 
             const countRegisters = await this.orderService.count(page);
 
-            page.setRelations(['orderDelivery', 'customer','customer.state','customer.municipality', 'user', 'deliveryMethod', 'orderDetails']);
+            page.setRelations(['orderDelivery', 'customer','customer.state','customer.municipality', 'user', 'deliveryMethod', 'orderDetails', 'orderDetails.product']);
 
             let orders: Array<Order> = await this.orderService.all(page);
 
@@ -545,16 +564,19 @@ export class OrderController extends BaseController<Order> {
 
                     let comments = await this.commentService.getByOrder(order);
                     console.log("COMMENTS: ", comments);
+
                     const object = {
                         order,
-                        qrBar: qrBar[order.id],
+                        qrBar,
                         orderDetails: order.orderDetails,
                         hasPayment: isPaymentMode(order.paymentMode),
                         isCash: isCash(order.paymentMode),
                         hasPiecesForChanges: (order.piecesForChanges && order.piecesForChanges > 0),
                         deliveryShortType: deliveryShortType,
+                        hasComments: comments.length > 0,
                         comments: comments
                     };
+
                     console.log("TEMPLATE", templateName);
                     const template = await this.templateService.getTemplate(templateName, object);
                     if(!template){

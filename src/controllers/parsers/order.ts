@@ -103,7 +103,6 @@ export const OrderUpdateDTO = async (orderRequest: any) => {
     try {
         orderRequest = new OrderUpdate(orderRequest);
         const orderErrors = await validate(orderRequest);
-        console.log(orderErrors);
         if(orderErrors.length > 0){
             return orderErrors[0].value;
         }
@@ -256,4 +255,15 @@ export const OrderDetailShowDTO = (orderDetail: OrderDetail | any) => ({
     discountPercent: orderDetail.discountPercent,
     product: ProductShortDTO(orderDetail.product),
     productSize: ProductSizeShort(orderDetail.productSize, orderDetail.quantity)
+});
+
+
+export const OrderPaymentShowDTO = (orderDetail: OrderDetail | any) => ({
+    id: orderDetail.id,
+    status: orderDetail.status,
+    customer: CustomerListDTO(orderDetail.customer),
+    createdAt: orderDetail.createdAt,
+    quantity: orderDetail.quantity,
+    totalAmount: orderDetail.totalAmount,
+    subTotalAmount: orderDetail.subTotalAmount,
 });

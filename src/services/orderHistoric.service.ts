@@ -13,10 +13,10 @@ export class OrderHistoricService extends BaseService<OrderHistoric> {
     }
 
     /** Agrega una traza o historico a la orden */
-    async registerEvent(newOrder: Order, user: User){
+    async registerEvent(newOrder: Order, user: User, customStatus : any = false){
         const orderHistoric = new OrderHistoric();
         orderHistoric.order = newOrder;
-        orderHistoric.status = newOrder.status;
+        orderHistoric.status = !customStatus ? newOrder.status : customStatus;
         orderHistoric.user = user;
         orderHistoric.createdAt = new Date();
         await this.orderHistoricRepository.save(orderHistoric);

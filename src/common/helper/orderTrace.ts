@@ -40,6 +40,7 @@ export class OrderProductTrace {
             if(!newProduct.exists){
                 //se elimina
                 this.deleted.push(item_old);
+
             }
         });
 

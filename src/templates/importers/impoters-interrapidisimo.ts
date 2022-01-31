@@ -15,7 +15,7 @@ export class ImportersInterrapidisimo extends BaseImporters {
         if(this.hasFiles()){
             //reading all files and add to array
             /** Replace for Order Id And Tracking Id Position */
-            const positionOrderId = 16;
+            const positionOrderId = 10;
             const positionTrackingId = 1;
 
             const rows = this.ws.getRows(this.startBy, this.ws.actualRowCount);

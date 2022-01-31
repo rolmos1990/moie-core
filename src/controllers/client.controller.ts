@@ -15,6 +15,7 @@ import { PageQuery } from "../common/controllers/page.query";
 import {Request, Response} from "express";
 import {InvalidArgumentException} from "../common/exceptions";
 import {getAllStatus} from "../common/enum/orderStatus";
+import moment = require("moment");
 
 @route('/customer')
 export class CustomerController extends BaseController<Customer> {
@@ -84,6 +85,21 @@ export class CustomerController extends BaseController<Customer> {
             const stats = await this.customerService.getOrdersStats(customer, getAllStatus(), beforeDate, afterDate);
             const statsFormat = OrderStats(stats) || [];
             res.json(statsFormat);
+        }catch(e){
+            console.log("error generado...", e);
+            this.handleException(e, res);
+        }
+    }
+
+    /** Obtener clientes registrados {today, week} */
+    @GET()
+    @route('/stats/registereds')
+    async getCustomerRegisters(req: Request, res: Response){
+        try {
+            const statsToday = await this.customerService.getRegisteredsByRange(moment().startOf('day'), moment().endOf('day'));
+            const statsLastWeeks = await this.customerService.getRegisteredsByRange(moment().subtract(1, 'weeks'), moment());
+            res.json({"today": statsToday, 'lastWeek': statsLastWeeks});
+
         }catch(e){
             console.log("error generado...", e);
             this.handleException(e, res);

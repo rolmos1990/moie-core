@@ -82,7 +82,7 @@ export class ProductSizeService extends BaseService<ProductSize> {
         try {
             if(quantity < 0){
                 await this.productSizeRepository.decrement(ProductSize, {color: orderDetail.color, name: orderDetail.size, product: orderDetail.product}, 'quantity', Math.abs(quantity));
-            } else {
+            } else if(quantity > 0){
                 await this.productSizeRepository.increment(ProductSize, {color: orderDetail.color, name: orderDetail.size, product: orderDetail.product}, 'quantity', Math.abs(quantity));
             }
         }catch(e){
