@@ -2,11 +2,9 @@ import {Customer} from "../../models/Customer";
 import {converterFirstArrayObject, converterPhoneInColombianFormat} from "../../common/helper/converters";
 import {StateShortDTO} from "./state";
 import {MunicipalityShortDTO} from "./municipality";
-import {DeliveryEnum} from "../../models/DeliveryMethod";
-import {IsBoolean, IsDate, IsDateString, IsNumber, IsOptional, validate} from "class-validator";
+import {IsBoolean, IsDateString, IsOptional, validate} from "class-validator";
 import {InvalidArgumentException} from "../../common/exceptions";
-import {OrderProduct} from "./orderProduct";
-import {Order} from "./order";
+
 const moment = require("moment");
 
 export const CustomerCreateDTO = (customer: Customer) => ({
@@ -21,6 +19,7 @@ export const CustomerCreateDTO = (customer: Customer) => ({
     createdAt: new Date(),
     municipality: customer.municipality || null,
     state: customer.state || null,
+    address: customer.address || null,
     updatedAt: null
 });
 
@@ -29,12 +28,13 @@ export const CustomerShowDTO = (customer: Customer) => ({
     name: customer.name,
     email: customer.email,
     document: customer.document,
-    phone:converterPhoneInColombianFormat(customer.phone),
+    phone: converterPhoneInColombianFormat(customer.phone),
     cellphone: converterPhoneInColombianFormat(customer.cellphone),
     isMayorist: customer.isMayorist ? true : false,
     hasNotification: customer.hasNotification ? true : false,
     status: customer.status ? true : false,
     createdAt: customer.createdAt,
+    address: customer.address,
     state: StateShortDTO(customer.state) || null,
     municipality: MunicipalityShortDTO(customer.municipality) || null,
     temporalAddress: converterFirstArrayObject(customer.temporalAddress),
@@ -67,6 +67,7 @@ export const CustomerUpdateDTO = (customer: Customer) => ({
     status: customer.status,
     municipality: customer.municipality || null,
     state: customer.state || null,
+    address: customer.address || null,
     updatedAt: new Date(),
 });
 
