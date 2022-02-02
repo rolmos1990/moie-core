@@ -34,11 +34,10 @@ export const CustomerShowDTO = (customer: Customer) => ({
     hasNotification: customer.hasNotification ? true : false,
     status: customer.status ? true : false,
     createdAt: customer.createdAt,
-    address: customer.address,
+    address: customer.address || null,
     state: StateShortDTO(customer.state) || null,
     municipality: MunicipalityShortDTO(customer.municipality) || null,
     temporalAddress: converterFirstArrayObject(customer.temporalAddress),
-    address: customer.address || null,
     updatedAt: customer.updatedAt
 });
 
