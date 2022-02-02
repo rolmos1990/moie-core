@@ -60,12 +60,12 @@ export class DeliveryMethodController extends BaseController<DeliveryMethod> {
 
                 if (quoteRequest.deliveryMethodCode === "INTERRAPIDISIMO") {
                     quote = {
-                        amount: 10.00,
+                        amount: 0.00,
                         hasCharge: true
                     };
                 } else if (quoteRequest.deliveryMethodCode === "MENSAJERO") {
                     quote = {
-                        amount: 10.00,
+                        amount: 0.00,
                         hasCharge: false
                     };
                 }

@@ -35,7 +35,7 @@
       "jsonwebtoken": "^8.5.1",
       "mime-types": "^2.1.29",
       "moment": "^2.29.1",
-      "mysql": "^2.14.1",
+      "mysql2": "^2.3.3",
       "puppeteer": "^9.1.1",
       "reflect-metadata": "^0.1.10",
       "resize-img": "^2.0.0",

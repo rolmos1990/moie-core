@@ -86,7 +86,7 @@ export async function QrBarImage(text, height = 400, width = 100){
 export function getDeliveryShortType(deliveryType){
     switch(deliveryType){
         case DeliveryTypes.PREVIOUS_PAYMENT:
-            return "CC";
+            return "PP";
         break;
         case DeliveryTypes.PAY_ONLY_DELIVERY:
             return "PP COD";

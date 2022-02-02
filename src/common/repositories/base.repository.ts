@@ -75,9 +75,10 @@ export default abstract class BaseRepository<T> {
                 rawRelationCountResults,
                 queryRunner,
             );
-
+            console.log(rawResults);
+            console.log("mainAlias", sum.expressionMap.mainAlias);
             const result = transformer.transform(rawResults, sum.expressionMap.mainAlias);
-
+            console.log(result);
             return result;
         }
         else if(operators.isGroup()){

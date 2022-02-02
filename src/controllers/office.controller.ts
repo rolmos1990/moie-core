@@ -31,6 +31,8 @@ import {Bill} from "../models/Bill";
 import {ExpotersEletronicBill} from "../templates/exporters/electronic-bill";
 import {ElectronicBillAdaptor} from "../templates/adaptors/ElectronicBillAdaptor";
 import {ExportersOfficeCd} from "../templates/exporters/office-orders.exporters";
+import {OrderHistoricService} from "../services/orderHistoric.service";
+import {EventStatus} from "../common/enum/eventStatus";
 
 @route('/office')
 export class OfficeController extends BaseController<Office> {
@@ -40,7 +42,8 @@ export class OfficeController extends BaseController<Office> {
         private readonly orderService: OrderService,
         private readonly mediaManagementService: MediaManagementService,
         private readonly orderDeliveryService: OrderDeliveryService,
-        private readonly templateService: TemplateService
+        private readonly templateService: TemplateService,
+        private readonly orderHistoricService: OrderHistoricService,
     ){
         super(officeService);
     };
@@ -125,6 +128,32 @@ export class OfficeController extends BaseController<Office> {
 
                 const office : Office = await this.officeService.find(parseInt(id));
                 await this.orderService.updateOffices(office, queryCondition.get());
+                return res.json({status: 200, office: OfficeListDTO(office) } );
+
+            } else {
+                throw new InvalidArgumentException();
+            }
+        }catch(e){
+            if (e.name === InvalidArgumentException.name || e.name === "EntityNotFound") {
+                this.handleException(new InvalidArgumentException("Despacho no ha sido encontrado"), res);
+            }
+            else{
+                this.handleException(new ApplicationException(), res);
+
+            }
+        }
+    }
+
+    @route('/:id/deleteOrder')
+    @POST()
+    protected async deleteOrder(req: Request, res: Response){
+        const id = req.params.id;
+        const idOrder = req.body.order;
+
+        try {
+            if (id && idOrder) {
+                await this.orderService.removeOffice(idOrder);
+                const office : Office = await this.officeService.find(parseInt(id));
                 return res.json({status: 200, office: OfficeListDTO(office) } );
 
             } else {
@@ -244,7 +273,7 @@ export class OfficeController extends BaseController<Office> {
         }
     }
 
-    /** Import File Delivery Information in System */
+    /** Import File Delivery Information in System (POST VENTA) */
     @route('/importFile')
     @POST()
     protected async importFile(req: Request, res: Response){
@@ -253,22 +282,37 @@ export class OfficeController extends BaseController<Office> {
 
             const { file, deliveryDate, deliveryMethod } = body;
 
+            const userIdFromSession = req['user'].id;
+            const user = await this.userService.find(userIdFromSession);
+
             const excel = await this.mediaManagementService.readExcel(file);
             const excelToSave = new ImporterImpl(deliveryMethod, excel);
             const context = excelToSave.getContext();
             const ids = context.map(item => item.id);
 
             const orders = await this.orderService.findByIdsWithDeliveries(ids);
+            const ordersToUpdate = [];
+
             /** Actualizar todos los registros asociados */
             const orderDeliveries = orders.filter(i => i.orderDelivery).map(item => {
                 const tracking = context.filter(i => item.id === parseInt(i.id));
                 if(tracking && tracking[0]) {
                     item.orderDelivery.tracking = tracking[0].trackingNumber;
+                    ordersToUpdate.push(item);
                 }
                 return {id: item.orderDelivery.id, tracking: item.orderDelivery.tracking, deliveryDate: new Date(), deliveryStatus: DeliveryStatus.PENDING};
             });
 
             const registers = await this.orderDeliveryService.createOrUpdate(orderDeliveries, {chunk: LIMIT_SAVE_BATCH});
+
+            //update status
+            await Promise.all(ordersToUpdate.map(async item => {
+                if(item.orderDelivery.deliveryType === 1){
+                    item.status = OrderStatus.SENT;
+                    await this.orderService.createOrUpdate(item, {chunk: LIMIT_SAVE_BATCH});
+                    await this.orderHistoricService.registerEvent(item, user, EventStatus.FINISHED);
+                }
+            }));
 
             return res.json({status: 200, data: {registers: registers} } );
         }catch(e){

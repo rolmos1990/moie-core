@@ -22,6 +22,7 @@ import {DeliveryMethodService} from "./deliveryMethod.service";
 import {Office} from "../models/Office";
 import {DeliveryLocalityService} from "./deliveryLocality.service";
 import {Between, IsNull, Not} from "typeorm";
+import {OfficeReportTypes} from "../common/enum/officeReportTypes";
 
 export class OrderService extends BaseService<Order> {
     constructor(
@@ -47,19 +48,31 @@ export class OrderService extends BaseService<Order> {
         pmanager.process();
         const diferentialProducts = pmanager.getBatches();
 
+        /** Eliminar */
+        if (diferentialProducts.deleted.length > 0) {
+            try {
+                await this.removeDetail(diferentialProducts.deleted);
+            }catch(e){
+                console.log("ERROR REMOVED ORDER", e.message);
+            }
+        }
+
         /** Actualizar */
         if (diferentialProducts.updated.length > 0) {
+            try {
             await this.updateProductDetail(diferentialProducts.updated);
+            }catch(e){
+                console.log("ERROR UPDATED ORDER");
+            }
         }
 
         /** Agregar */
         if (diferentialProducts.added.length > 0) {
+            try {
             await this.addDetail(diferentialProducts.added);
-        }
-
-        /** Eliminar */
-        if (diferentialProducts.deleted.length > 0) {
-            await this.removeDetail(diferentialProducts.deleted);
+            }catch(e){
+                console.log("ERROR ADDED ORDER");
+            }
         }
 
         return await this.getDetails(order);
@@ -76,22 +89,17 @@ export class OrderService extends BaseService<Order> {
             const order = new Order();
 
             let orderDelivery = new OrderDelivery();
-            if(updateAddress) {
-                const method = deliveryMethod || oldOrder.deliveryMethod;
-                orderDelivery = await this.deliveryMethodService.deliveryMethodAddress(method, customer, parse.deliveryLocality, parse.tracking);
+            if(oldOrder && oldOrder.id) {
+                orderDelivery = await this.orderDeliveryRepository.findOneByObject({order: oldOrder});
             }
 
             order.orderDelivery = orderDelivery;
-
-            console.log("ORDER DELIVERY", order.orderDelivery);
-            console.log("ORDER DELIVERY COST", order.orderDelivery.deliveryCost);
 
             if (oldOrder) {
                 order.id = oldOrder.id;
             }
 
             const deliveryCost = parse.deliveryCost || order.orderDelivery.deliveryCost || 0;
-            console.log("deliveryCost", deliveryCost);
 
             order.customer = customer;
             order.origen = parse.origen || order.origen;
@@ -122,17 +130,16 @@ export class OrderService extends BaseService<Order> {
 
             const costs = await this.getCalculateCosts(products);
 
-            order.totalAmount = (costs.totalAmount - costs.totalDiscount) + deliveryCost;
+            order.totalAmount = (costs.totalAmount - costs.totalDiscount) + Number(deliveryCost);
             order.subTotalAmount = costs.totalAmount;
             order.totalDiscount = costs.totalDiscount;
             order.totalRevenue = costs.totalRevenue;
             order.totalWeight = costs.totalWeight;
-            order.user = order.user || user;
+            order.user = (oldOrder && oldOrder.user) || order.user || user;
             order.piecesForChanges = parse.piecesForChanges || order.piecesForChanges || null;
             order.paymentMode = parse.paymentMode || order.paymentMode || null;
             order.enablePostSale = parse.enablePostSale === undefined ? order.enablePostSale : parse.enablePostSale;
-            order.quantity = products.reduce((sum,product) => (sum.quantity + product.quantity, 0)).quantity;
-            console.log("ORDER TO SAVE", order);
+            order.quantity = products.reduce((s,p) => p.quantity + s, 0);
 
             const orderRegister = await this.createOrUpdate(order);
             order.orderDelivery.order = orderRegister;
@@ -166,19 +173,19 @@ export class OrderService extends BaseService<Order> {
      * @param order
      */
     async getCalculateCosts(orderDetails: OrderDetail[]) {
-        let totalAmount = 0;
-        let totalWeight = 0;
+        let totalAmount : number = 0;
+        let totalWeight : number = 0;
         let totalDiscount = 0;
         let totalRevenue = 0;
         orderDetails.map(item => {
-            totalWeight = totalAmount + item.weight;
+            totalWeight += Number(item.weight) * Number(item.quantity);
             if (item.discountPercent > 0) {
-                totalDiscount = totalDiscount + ((item.price * item.discountPercent) / 100);
+                totalDiscount += ((Number(item.price) * Number(item.discountPercent)) / 100);
             } else {
                 totalDiscount = 0;
             }
-            totalAmount = totalAmount + item.price;
-            totalRevenue = totalRevenue + item.revenue;
+            totalAmount += Number(item.price) * Number(item.quantity);
+            totalRevenue += Number(item.revenue);
         });
 
         return {
@@ -214,6 +221,7 @@ export class OrderService extends BaseService<Order> {
             orderDetail.weight = productSize.product.weight;
             orderDetail.size = productSize.name;
             orderDetail.product = productSize.product;
+            orderDetail.productSize = productSize;
 
             const beforeOrder = existsInEntity(order.orderDetails, orderDetail);
 
@@ -248,6 +256,7 @@ export class OrderService extends BaseService<Order> {
 
     async removeDetail(orderDetails: OrderDetail[]) {
         for (let i = 0; i < orderDetails.length; i++) {
+            delete orderDetails[i].productSize;
             await this.orderDetailRepository.delete(orderDetails[i]);
         }
     }
@@ -283,7 +292,7 @@ export class OrderService extends BaseService<Order> {
                     size: orderDetail.size,
                     product: orderDetail.product
                 }, 'quantity', Math.abs(item.diff));
-            } else {
+            } else if(item.diff > 0){
                 await this.orderDetailRepository.decrement(OrderDetail, {
                     color: orderDetail.color,
                     size: orderDetail.size,
@@ -352,6 +361,15 @@ export class OrderService extends BaseService<Order> {
             .execute();
     }
 
+    /** Remove office */
+    async removeOffice(orderId){
+        return await this.orderRepository.createQueryBuilder('o')
+            .update(Order)
+            .set({ office: null })
+            .where({id: orderId})
+            .execute();
+    }
+
     /** Reporte basado en envio de Ordenes */
     async findByDelivery(dateFrom, dateTo, deliveryMethod, status){
 
@@ -380,6 +398,11 @@ export class OrderService extends BaseService<Order> {
             .andWhere("o.dateOfSale", Between(dateFrom, dateTo))
             .andWhere("o.deliveryMethod", deliveryMethod)
             .getMany();
+    }
+
+    /** Reporte Ventas */
+
+    async getStatsSalesDateRange(dateFrom, DateTo, user){
     }
 
 }

@@ -20,7 +20,8 @@ export const ProductListDTO = (product: Product) => ({
     updatedAt: product.updatedAt,
     status: product.status,
     productImage: product.productImage,
-    productAvailable: product.productAvailable && ProductAvailableDTO(product.productAvailable)
+    productAvailable: product.productAvailable && ProductAvailableDTO(product.productAvailable),
+    cost: product.cost
 });
 
 export const ProductDetailDTO = (product: Product) => ({

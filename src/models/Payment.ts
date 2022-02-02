@@ -1,6 +1,6 @@
 import {Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn} from "typeorm";
 import BaseModel from "../common/repositories/base.model";
-import {IsDate, IsDecimal, IsOptional, Length} from "class-validator";
+import {IsDate, IsDecimal, IsNumber, IsOptional, Length} from "class-validator";
 import {Type} from "class-transformer";
 import {Order} from "./Order";
 import {User} from "./User";
@@ -60,6 +60,10 @@ export class Payment extends BaseModel{
     @Type(() => Date)
     @IsDate()
     createdAt: Date;
+
+    @Column({name:'status', type: 'integer'})
+    @IsNumber()
+    status: number;
 
     isEmpty(): boolean {
         return (this.id == null);

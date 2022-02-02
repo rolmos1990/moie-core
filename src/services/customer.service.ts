@@ -146,4 +146,19 @@ export class CustomerService extends BaseService<Customer> {
 
         return mayoristHistory > 0;
     }
+
+    /** Obtener el historico de ultimas ordenes de un cliente */
+    async getRegisteredsByRange(startDate, endDate){
+
+        let parameters = [];
+        parameters['before'] = startDate.toDate();
+        parameters['after'] = endDate.toDate();
+
+        const result = await this.customerRepository.createQueryBuilder("c")
+            .where("DATE(c.createdAt) >= :before")
+            .andWhere("DATE(c.createdAt) <= :after")
+            .setParameters(parameters)
+            .orderBy('createdAt', OrderConditional.DESC).getCount();
+        return result;
+    }
 }

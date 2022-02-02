@@ -25,6 +25,10 @@ import {UserShortDTO} from "./parsers/user";
 import {MEDIA_FORMAT_OUTPUT, MediaManagementService} from "../services/mediaManagement.service";
 import {ExpotersPostventa} from "../templates/exporters/expoters-postventa";
 import {ExportersConciliates} from "../templates/exporters/exporters-conciliates";
+import {CommentService} from "../services/comment.service";
+import {OrderHistoricService} from "../services/orderHistoric.service";
+import {OrderHistoricDTO, OrderHistoricListDTO} from "./parsers/orderHistoric";
+import {EventStatus} from "../common/enum/eventStatus";
 
 
 @route('/order')
@@ -36,7 +40,9 @@ export class OrderController extends BaseController<Order> {
         private readonly customerService: CustomerService,
         private readonly templateService: TemplateService,
         private readonly batchRequestService: BatchRequestService,
-        private readonly mediaManagementService: MediaManagementService
+        private readonly mediaManagementService: MediaManagementService,
+        private readonly commentService: CommentService,
+        private readonly orderHistoricService: OrderHistoricService,
     ){
         super(orderService);
     };
@@ -124,9 +130,16 @@ export class OrderController extends BaseController<Order> {
             const userIdFromSession = req['user'].id;
             const user = await this.userService.find(userIdFromSession);
 
+            if(!user){
+                throw new InvalidArgumentException("Usuario para generar orden es requerido");
+            }
+
             const order: Order = await this.orderService.addOrUpdateOrder(parse, deliveryMethod, user, null, false);
             const orderDetails: OrderDetail[] = await this.orderService.getDetails(order);
             order.orderDetails = orderDetails;
+
+            //save historic (if change status)
+            await this.orderHistoricService.registerEvent(order, user);
 
             return res.json({status: 200 , order: OrderShowDTO(order)});
         }catch(e){
@@ -134,9 +147,9 @@ export class OrderController extends BaseController<Order> {
         }
     }
 
-    @route('/nextStatus')
+    @route('/canceledStatus')
     @POST()
-    public async nextStatus(req: Request, res: Response) {
+    public async canceledStatus(req: Request, res: Response) {
         try {
             const request = req.body;
 
@@ -165,6 +178,71 @@ export class OrderController extends BaseController<Order> {
             if(request.batch) {
                 let updates = [];
                 await Promise.all(orders.map(async entity => {
+                    if (entity.status === OrderStatus.PENDING) {
+                        entity.status = OrderStatus.CANCELED;
+                        updates.push(await this.orderService.createOrUpdate(entity));
+                    }
+                }));
+                entity.status = BatchRequestTypesStatus.EXECUTED;
+                await this.batchRequestService.createOrUpdate(entity);
+                return res.json({status: 200, updates: updates.map(item => OrderShortDTO(item))});
+            } else {
+                if (OrderStatus.PENDING === 1) {
+                    //PENDIENTE -> CONFIRMADO
+                    entity.status = OrderStatus.CANCELED;
+
+                    const saved: Order = await this.orderService.createOrUpdate(entity);
+                    const order: Order = await this.orderService.find(saved.id, this.getDefaultRelations(true));
+                    const orderDetails: OrderDetail[] = await this.orderService.getDetails(order);
+                    order.orderDetails = orderDetails;
+                    //save historic
+                    const userIdFromSession = req['user'].id;
+                    const user = await this.userService.find(userIdFromSession);
+                    await this.orderHistoricService.registerEvent(order, user);
+
+                    return res.json({status: 200, order: OrderShowDTO(order)});
+                } else {
+                    throw new InvalidArgumentException("No existe registro indicado para actualizar");
+                }
+            }
+
+        }catch(e){
+            this.handleException(e, res);
+            console.log("error", e);
+        }
+    }
+
+    @route('/nextStatus')
+    @POST()
+    public async nextStatus(req: Request, res: Response) {
+        try {
+            const request = req.body;
+
+            if(!request.batch && !request.order){
+                throw new InvalidArgumentException("No existe registro indicado para actualizar");
+            }
+
+            /** LLevar a un servicio que administre los estados */
+            /** Entregar al servicio (sesión, orden) */
+
+            let entity;
+            let orders = [];
+
+            if(request.order) {
+                entity = await this.orderService.find(parseInt(request.order), ['orderDelivery']);
+                orders.push(entity);
+            } else {
+                entity = await this.batchRequestService.find(parseInt(request.batch));
+                if(!entity || entity.status != BatchRequestTypesStatus.COMPLETED){
+                    throw new InvalidArgumentException("Lote no ha sido encontrado");
+                }
+                orders = entity.body.map(item => item.order);
+                orders = await this.orderService.findByIds(orders);
+            }
+
+            if(request.batch) {
+                let updates = [];
+                await Promise.all(orders.map(async entity => {
                     if (entity.status === 2) {
                         entity.status = 3;
                         updates.push(await this.orderService.createOrUpdate(entity));
@@ -175,16 +253,37 @@ export class OrderController extends BaseController<Order> {
                 return res.json({status: 200, updates: updates.map(item => OrderShortDTO(item))});
             } else {
                 entity = orders[0];
+                let changeStatus = false;
                 if (entity.status === 1) {
+                    //PENDIENTE -> CONFIRMADO
                     entity.status = 2;
+                    changeStatus = true;
                 } else if (entity.status === 2) {
+                    //CONFIRMADO -> IMPRESO
                     entity.status = 3;
+                    changeStatus = true;
+                } else if(entity.status === 3) {
+                    //IMPRESO -> ENVIADO
+                    entity.status = 4;
+                    changeStatus = true;
+                } else if(entity.status === 5 && entity.orderDelivery.deliveryType === 1) {
+                    //CONCILIADO (PREVIOPAGO) -> ENVIADO
+                    entity.status = 3;
+                    changeStatus = true;
                 }
 
                 const saved: Order = await this.orderService.createOrUpdate(entity);
                 const order: Order = await this.orderService.find(saved.id, this.getDefaultRelations(true));
                 const orderDetails: OrderDetail[] = await this.orderService.getDetails(order);
                 order.orderDetails = orderDetails;
+
+                //save historic (if change status)
+                if(changeStatus) {
+                    const userIdFromSession = req['user'].id;
+                    const user = await this.userService.find(userIdFromSession);
+                    await this.orderHistoricService.registerEvent(order, user);
+                }
+
                 return res.json({status: 200, order: OrderShowDTO(order)});
             }
 
@@ -200,7 +299,8 @@ export class OrderController extends BaseController<Order> {
         try {
             /** TODO -- Estructurar mejor dentro del servicio */
             /** TODO -- agregar refreshAddress -> si recibo esto refrescar la dirección */
-            const oldEntity = await this.orderService.find(parseInt(req.params.id), ['orderDelivery', 'deliveryMethod', 'customer']);
+            //['orderDetails', 'customer', 'deliveryMethod', 'user', 'customer.municipality', 'customer.state', 'orderDelivery']
+            const oldEntity = await this.orderService.find(parseInt(req.params.id), ['orderDetails','orderDelivery', 'deliveryMethod', 'customer', 'user']);
             if(oldEntity) {
                 let orderDetails = await this.orderService.getDetails(oldEntity);
                 oldEntity.orderDetails = orderDetails;
@@ -247,9 +347,14 @@ export class OrderController extends BaseController<Order> {
                     }
                     oldEntity.paymentMode = parse.paymentMode;
                 }
-                console.log("refresh order", parse.refreshAddress);
+
                 const order: Order = await this.orderService.addOrUpdateOrder(parse, deliveryMethod, null, oldEntity, parse.refreshAddress);
                 order.orderDetails = orderDetails;
+
+                /** TODO -- Asociar usuario a la orden */
+                const userIdFromSession = req['user'].id;
+                const user = await this.userService.find(userIdFromSession);
+                await this.orderHistoricService.registerEvent(order, user, EventStatus.UPDATED);
 
                 return res.json({status: 200, order: OrderShowDTO(order)});
             }
@@ -268,12 +373,14 @@ export class OrderController extends BaseController<Order> {
     @GET()
     public async print(req: Request, res: Response) {
         try {
-            const order = await this.orderService.find(parseInt(req.params.id), ['orderDelivery', 'customer','customer.state','customer.municipality', 'user', 'deliveryMethod', 'orderDetails']);
+            const order = await this.orderService.find(parseInt(req.params.id), ['orderDelivery', 'customer','customer.state','customer.municipality', 'user', 'deliveryMethod', 'orderDetails', 'orderDetails.product']);
             if (order) {
                 const templateName = this.orderService.getPrintTemplate(order);
                 console.log("-- find templateName: ", templateName);
                 const qrBar = await QrBarImage(order.id);
                 const deliveryShortType = getDeliveryShortType(order.orderDelivery.deliveryType);
+
+                let comments = await this.commentService.getByOrder(order);
                 const object = {
                     order,
                     qrBar,
@@ -281,7 +388,9 @@ export class OrderController extends BaseController<Order> {
                     hasPayment: isPaymentMode(order.paymentMode),
                     isCash: isCash(order.paymentMode),
                     hasPiecesForChanges: (order.piecesForChanges && order.piecesForChanges > 0),
-                    deliveryShortType: deliveryShortType
+                    deliveryShortType: deliveryShortType,
+                    hasComments: comments.length > 0,
+                    comments: comments
                 };
                 const template = await this.templateService.getTemplate(templateName, object);
                 if(!template){
@@ -291,6 +400,28 @@ export class OrderController extends BaseController<Order> {
                 return res.json({status: 200, html: template});
             }
         }catch(e){
+            this.handleException(e, res);
+            console.log("error", e);
+        }
+    }
+
+    /**
+     * Obtener Historial de Orden
+     * @param req
+     * @param res
+     */
+    @route('/:id/historic')
+    @GET()
+    public async historic(req: Request, res: Response) {
+        try {
+            const order = await this.orderService.find(parseInt(req.params.id));
+            const historic = await this.orderHistoricService.findByObject({"order": order}, ["user"]);
+
+            if (order) {
+                return res.json({status: 200, orderHistoric: OrderHistoricListDTO(historic)});
+            }
+
+        } catch (e) {
             this.handleException(e, res);
             console.log("error", e);
         }
@@ -317,6 +448,7 @@ export class OrderController extends BaseController<Order> {
                 order.status = OrderStatus.RECONCILED;
                 try {
                     await this.orderService.update(order);
+                    await this.orderHistoricService.registerEvent(order, null);
                     itemSuccess.push(order.id);
                 }catch(e){
                     itemFailures.push(order.id);
@@ -401,7 +533,7 @@ export class OrderController extends BaseController<Order> {
 
             const countRegisters = await this.orderService.count(page);
 
-            page.setRelations(['orderDelivery', 'customer','customer.state','customer.municipality', 'user', 'deliveryMethod', 'orderDetails']);
+            page.setRelations(['orderDelivery', 'customer','customer.state','customer.municipality', 'user', 'deliveryMethod', 'orderDetails', 'orderDetails.product']);
 
             let orders: Array<Order> = await this.orderService.all(page);
 
@@ -425,18 +557,27 @@ export class OrderController extends BaseController<Order> {
                 const qrBar : any = [];
 
                 const result = orders.map(async order => {
+
                     const templateName = this.orderService.getPrintTemplate(order);
                     qrBar[order.id] = await QrBarImage(order.id);
                     const deliveryShortType = getDeliveryShortType(order.orderDelivery.deliveryType);
+
+                    let comments = await this.commentService.getByOrder(order);
+                    console.log("COMMENTS: ", comments);
+
                     const object = {
                         order,
-                        qrBar: qrBar[order.id],
+                        qrBar,
                         orderDetails: order.orderDetails,
                         hasPayment: isPaymentMode(order.paymentMode),
                         isCash: isCash(order.paymentMode),
                         hasPiecesForChanges: (order.piecesForChanges && order.piecesForChanges > 0),
-                        deliveryShortType: deliveryShortType
+                        deliveryShortType: deliveryShortType,
+                        hasComments: comments.length > 0,
+                        comments: comments
                     };
+
+                    console.log("TEMPLATE", templateName);
                     const template = await this.templateService.getTemplate(templateName, object);
                     if(!template){
                         throw new InvalidArgumentException("No se ha encontrado un resumen para esta orden");
@@ -504,4 +645,23 @@ export class OrderController extends BaseController<Order> {
     getGroupRelations(): Array<string> {
         return ['user'];
     }
+
+
+
+    // Reportes
+    /**
+     * Obtener resumen de una orden
+     * @param req
+     * @param res
+     */
+    @route('/:id/boardResume')
+    @GET()
+    public async getDailySaleStats(req: Request, res: Response) {
+        try{
+            const {dateFrom, dateTo, user} = req.query;
+        }catch(e){
+
+        }
+    }
+
 }

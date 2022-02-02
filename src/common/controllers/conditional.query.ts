@@ -1,5 +1,5 @@
 import {Operator} from "../enum/operators";
-import {Equal, In, IsNull, LessThan, LessThanOrEqual, Like, MoreThan, MoreThanOrEqual, Not, Between} from "typeorm";
+import {Between, Equal, In, IsNull, LessThan, LessThanOrEqual, Like, MoreThan, MoreThanOrEqual, Not} from "typeorm";
 import {ConditionalException} from "../exceptions";
 
 /**
@@ -75,7 +75,8 @@ export class ConditionalQuery {
                 } else if (query.includes("$empty")) {
                     //compare is empty
                     field = query.split("$empty");
-                    conditions.add(field[0], Operator.EQUAL, "");
+                    this.addConditionalQuery(field[0],  conditions, Operator.EQUAL, "");
+
                 } else if (query.includes("$nlk")) {
                     //compare not like
                     field = query.split("$nlk");
@@ -97,11 +98,14 @@ export class ConditionalQuery {
                     //compare not between
                     field = query.split("$nbt")
                     const subField = field[1].split("::");
-                    conditions.add(field[0], Operator.NOT_BETWEEN, subField[0], subField[1]);
+                    //conditions.add(field[0], Operator.NOT_BETWEEN, subField);
+                    this.addConditionalQuery(field[0],  conditions, Operator.NOT_BETWEEN, subField);
+
                 } else if (query.includes("$bt")) {
                     field = query.split("$bt")
                     const subField = field[1].split("::");
-                    conditions.add(field[0], Operator.BETWEEN, subField[0], subField[1]);
+                    this.addConditionalQuery(field[0],  conditions, Operator.BETWEEN, subField);
+
                 } else if (query.includes("$lte")) {
                     //compare less or equal than
                     field = query.split("$lte");
@@ -128,7 +132,7 @@ export class ConditionalQuery {
                     if (!(subQuery.length > 0)) {
                         throw new ConditionalException;
                     }
-                    conditions.add(field[0], Operator.NOT_IN, subQuery);
+                    this.addConditionalQuery(field[0],  conditions, Operator.NOT_IN, subQuery);
                 } else if (query.includes("$in")) {
                     //compare (in)
                     field = query.split("$in");
@@ -137,25 +141,17 @@ export class ConditionalQuery {
                     if (!(subQuery.length > 0)) {
                         throw new ConditionalException;
                     }
-                    conditions.add(field[0], Operator.IN, subQuery);
+                    this.addConditionalQuery(field[0],  conditions, Operator.IN, subQuery);
 
                 } else if (query.includes("$ne")) {
                     //compare not equal
                     field = query.split("$ne");
-                    conditions.add(field[0], Operator.NOT_EQUAL, field[1]);
+                    this.addConditionalQuery(field[0],  conditions, Operator.NOT_EQUAL, field[1]);
+
                 }  else if(query.includes("::")){
                     //compare is equal
                     field = query.split("::");
-
-                    if(field[0].includes(".")){
-                        const fieldSubField = field[0].split(".");
-                        const subfieldName = fieldSubField[1];
-                        const subfieldValue = field[1];
-                        //conditions.add(fieldSubField[0], Operator.EQUAL, {[subfieldName] : subfieldValue });
-                        conditions.addSub(field[0] + " = :" + subfieldName, {[subfieldName] : subfieldValue });
-                    } else {
-                        conditions.add(field[0], Operator.EQUAL, field[1]);
-                    }
+                    this.addConditionalQuery(field[0],  conditions, Operator.EQUAL, field[1]);
                 }
                 else{
                     throw new ConditionalException;
@@ -167,6 +163,26 @@ export class ConditionalQuery {
         }
     }
 
+    static addConditionalQuery(name, conditions : any, operator : Operator = Operator.EQUAL, value : any =  []) : void{
+
+        if(name.includes(".")){
+            const fieldSubField = name.split(".");
+            const subfieldName = fieldSubField[1];
+            const subfieldValue = value[0];
+
+            if([Operator.BETWEEN, Operator.NOT_BETWEEN].includes(operator)){
+                conditions.addSub(name + " BETWEEN :first" + " AND :second", {"first" : value[0], "second": value[1] });
+            } else if([Operator.IN, Operator.NOT_IN].includes(operator)){
+                conditions.addSub(name + " IN (:valueIN)", { "valueIN" : value });
+            } else {
+                conditions.addSub(name + " = :" + subfieldName, {[subfieldName] : subfieldValue });
+            }
+
+        } else {
+            conditions.add(name, operator, value);
+        }
+
+    }
     /**
      * Add new condition subquery in your ConditionalQuery
      * @add
@@ -229,10 +245,10 @@ export class ConditionalQuery {
                 value = Not(In(value));
             break;
             case Operator.BETWEEN:
-                value = Between(value, moreValues);
+                value = Between(value[0], value[1]);
             break;
             case Operator.NOT_BETWEEN:
-                value = Not(Between(value, moreValues));
+                value = Not(Between(value[0], value[1]));
             break;
         }
 
