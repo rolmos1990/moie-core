@@ -181,6 +181,14 @@ export class OrderController extends BaseController<Order> {
                     if (entity.status === OrderStatus.PENDING) {
                         entity.status = OrderStatus.CANCELED;
                         updates.push(await this.orderService.createOrUpdate(entity));
+
+                        const orderDetails: OrderDetail[] = await this.orderService.getDetails(entity);
+                        //save historic
+                        const userIdFromSession = req['user'].id;
+                        const user = await this.userService.find(userIdFromSession);
+
+                        await this.orderService.updateInventaryForOrderDetail(orderDetails, true);
+                        await this.orderHistoricService.registerEvent(entity, user);
                     }
                 }));
                 entity.status = BatchRequestTypesStatus.EXECUTED;
@@ -198,6 +206,8 @@ export class OrderController extends BaseController<Order> {
                     //save historic
                     const userIdFromSession = req['user'].id;
                     const user = await this.userService.find(userIdFromSession);
+
+                    await this.orderService.updateInventaryForOrderDetail(orderDetails, true);
                     await this.orderHistoricService.registerEvent(order, user);
 
                     return res.json({status: 200, order: OrderShowDTO(order)});

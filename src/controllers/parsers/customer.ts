@@ -53,6 +53,7 @@ export const CustomerListDTO = (customer: Customer) => ({
     state: StateShortDTO(customer.state) || null,
     municipality: MunicipalityShortDTO(customer.municipality) || null,
     temporalAddress: converterFirstArrayObject(customer.temporalAddress),
+    address: customer.address,
     createdAt: customer.createdAt
 });
 

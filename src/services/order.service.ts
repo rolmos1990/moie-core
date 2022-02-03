@@ -142,6 +142,7 @@ export class OrderService extends BaseService<Order> {
             order.quantity = products.reduce((s,p) => p.quantity + s, 0);
 
             const orderRegister = await this.createOrUpdate(order);
+
             order.orderDelivery.order = orderRegister;
 
             const orderDeliveryRegistered = await this.orderDeliveryRepository.save(order.orderDelivery);
@@ -159,6 +160,7 @@ export class OrderService extends BaseService<Order> {
 
             if (!oldOrder) {
                 await this.addDetail(products);
+                await this.updateInventaryForOrderDetail(products, false);
             }
 
             return await this.find(orderRegister.id, ['orderDetails', 'customer', 'deliveryMethod', 'user', 'customer.municipality', 'customer.state', 'orderDelivery']);
@@ -180,7 +182,7 @@ export class OrderService extends BaseService<Order> {
         orderDetails.map(item => {
             totalWeight += Number(item.weight) * Number(item.quantity);
             if (item.discountPercent > 0) {
-                totalDiscount += ((Number(item.price) * Number(item.discountPercent)) / 100);
+                totalDiscount += ((Number(item.price) * Number(item.discountPercent)) / 100) * Number(item.quantity);
             } else {
                 totalDiscount = 0;
             }
@@ -280,25 +282,27 @@ export class OrderService extends BaseService<Order> {
             .getMany();
     }
 
+    /** Descontar de inventario (Creacion de producto) */
+    async updateInventaryForOrderDetail(orderDetails: OrderDetail[], increment = false) {
+        await Promise.all(orderDetails.map(async item => {
+            const orderDetail: OrderDetail = item;
+            await this.productSizeService.updateInventary(orderDetail, increment ? orderDetail.quantity : orderDetail.quantity * -1);
+        }));
+    }
+
     /** Actualizar el detalle de productos */
     async updateProductDetail(updates: any) {
         await Promise.all(updates.map(async item => {
             const orderDetail: OrderDetail = item.orderDetail;
             await this.productSizeService.updateInventary(orderDetail, item.diff);
-            /** < 1 Aumente 1 en cantidad de lo anterior */
-            if (item.diff < 0) {
-                await this.orderDetailRepository.increment(OrderDetail, {
-                    color: orderDetail.color,
-                    size: orderDetail.size,
-                    product: orderDetail.product
-                }, 'quantity', Math.abs(item.diff));
-            } else if(item.diff > 0){
-                await this.orderDetailRepository.decrement(OrderDetail, {
-                    color: orderDetail.color,
-                    size: orderDetail.size,
-                    product: orderDetail.product
-                }, 'quantity', item.diff);
-            }
+
+            await this.orderDetailRepository.update(orderDetail.id, {
+                color: orderDetail.color,
+                discountPercent: orderDetail.discountPercent,
+                quantity: orderDetail.quantity,
+                revenue: orderDetail.revenue,
+                size: orderDetail.size
+            });
         }));
     }
 

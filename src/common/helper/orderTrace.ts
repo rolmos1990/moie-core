@@ -29,6 +29,7 @@ export class OrderProductTrace {
             } else {
                 //actualizados
                 const orderDetail : OrderDetail = item_new;
+                orderDetail.id = oldProduct.value.id;
                 orderDetail.product = oldProduct.value.product;
                 this.updated.push({diff: oldProduct.value.quantity - item_new.quantity, orderDetail: orderDetail});
             }

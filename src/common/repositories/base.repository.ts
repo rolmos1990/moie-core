@@ -166,6 +166,10 @@ export default abstract class BaseRepository<T> {
         return data;
     }
 
+    async update(id, options){
+        return await this.repositoryManager.update(id, options);
+    }
+
     async save(entity: T){
         return await this.repositoryManager.save(entity);
     }
