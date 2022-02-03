@@ -44,6 +44,10 @@ export class MunicipalityController extends BaseController<Municipality> {
         return entity;
     }
 
+    /** Start - Configuration for Disabled Order by default list */
+    protected customDefaultOrder?() {
+    }
+
     protected getDefaultRelations(): Array<string> {
         return ['state'];
     }

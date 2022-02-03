@@ -107,6 +107,7 @@ export class OrderService extends BaseService<Order> {
             order.status = order.status || 1;
             order.remember = order.remember || false;
             order.createdAt = order.createdAt || new Date();
+            order.office = null;
 
             /** Delivery Information in Order */
             order.orderDelivery.chargeOnDelivery = [true, false].includes(parse.chargeOnDelivery) ? parse.chargeOnDelivery : order.orderDelivery.chargeOnDelivery;
@@ -114,6 +115,10 @@ export class OrderService extends BaseService<Order> {
             order.orderDelivery.deliveryCost = deliveryCost || 0;
             order.deliveryMethod = deliveryMethod || order.deliveryMethod;
             order.orderDelivery.tracking = order.orderDelivery.tracking || null;
+
+            if(order.status === 1){
+                order.priority = 1;
+            }
 
             if(parse.deliveryLocality) {
                 const deliveryLocality = await this.deliveryLocalityService.find(parse.deliveryLocality);

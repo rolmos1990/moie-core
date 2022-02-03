@@ -24,6 +24,7 @@ export abstract class BaseController<Parse> {
     ){
     };
     protected autoSaveUser?() : boolean; //save user in table
+    protected customDefaultOrder?(page: PageQuery): void;
     protected getUserService?() : IService; //required for autosave user
     public abstract getInstance() : Object;
     public abstract getEntityTarget() : EntityTarget<Parse>;
@@ -50,7 +51,10 @@ export abstract class BaseController<Parse> {
             const operationQuery = new OperationQuery(operation, group);
             let page = new PageQuery(limit,pageNumber,queryCondition, operationQuery);
 
-            if(!query.operation && !(order && orderType)){
+            if(this.customDefaultOrder){
+                this.customDefaultOrder(page);
+            }
+            else if(!query.operation && !(order && orderType)){
                 page.addOrder('id', OrderConditional.DESC);
             } else if(order && orderType){
                 const _type = query.orderType === "asc" ? OrderConditional.ASC : OrderConditional.DESC;

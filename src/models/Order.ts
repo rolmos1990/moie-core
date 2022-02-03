@@ -125,6 +125,10 @@ export class Order extends BaseModel{
     @IsNumber()
     status: number;
 
+    @Column({name:'priority', type: 'integer'})
+    @IsNumber()
+    priority: number;
+
     @OneToMany(() => OrderDetail, orderDetail => orderDetail.order)
     orderDetails: OrderDetail[];
 

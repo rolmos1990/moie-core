@@ -29,6 +29,7 @@ import {CommentService} from "../services/comment.service";
 import {OrderHistoricService} from "../services/orderHistoric.service";
 import {OrderHistoricDTO, OrderHistoricListDTO} from "./parsers/orderHistoric";
 import {EventStatus} from "../common/enum/eventStatus";
+import {OrderConditional} from "../common/enum/order.conditional";
 
 
 @route('/order')
@@ -46,6 +47,12 @@ export class OrderController extends BaseController<Order> {
     ){
         super(orderService);
     };
+
+    protected customDefaultOrder(page: PageQuery) {
+        page.addOrder('priority', OrderConditional.DESC);
+        page.addOrder('updatedAt', OrderConditional.DESC);
+    }
+
     protected afterCreate(item: Object): void {
     }
 
@@ -253,10 +260,33 @@ export class OrderController extends BaseController<Order> {
             if(request.batch) {
                 let updates = [];
                 await Promise.all(orders.map(async entity => {
-                    if (entity.status === 2) {
+
+                    if(entity.status > 1){
+                        entity.priority = 0;
+                    }
+
+                    let changeStatus = false;
+                    if (entity.status === 1) {
+                        //PENDIENTE -> CONFIRMADO
+                        entity.status = 2;
+                        changeStatus = true;
+                    } else if (entity.status === 2) {
+                        //CONFIRMADO -> IMPRESO
                         entity.status = 3;
+                        changeStatus = true;
+                    } else if(entity.status === 3) {
+                        //IMPRESO -> ENVIADO
+                        entity.status = 4;
+                        changeStatus = true;
+                    } else if(entity.status === 5 && entity.orderDelivery.deliveryType === 1) {
+                        //CONCILIADO (PREVIOPAGO) -> ENVIADO
+                        entity.status = 3;
+                        changeStatus = true;
+                    }
+                    if(changeStatus) {
                         updates.push(await this.orderService.createOrUpdate(entity));
                     }
+
                 }));
                 entity.status = BatchRequestTypesStatus.EXECUTED;
                 await this.batchRequestService.createOrUpdate(entity);
@@ -282,6 +312,9 @@ export class OrderController extends BaseController<Order> {
                     changeStatus = true;
                 }
 
+                if(entity.status > 1){
+                    entity.priority = 0;
+                }
                 const saved: Order = await this.orderService.createOrUpdate(entity);
                 const order: Order = await this.orderService.find(saved.id, this.getDefaultRelations(true));
                 const orderDetails: OrderDetail[] = await this.orderService.getDetails(order);
