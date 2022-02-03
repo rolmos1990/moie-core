@@ -80,6 +80,7 @@ export class ProductSizeService extends BaseService<ProductSize> {
     /** Quantity - si quantity es positive se incrementa en el inventario, si es negative se resta */
     public async updateInventary(orderDetail: OrderDetail, quantity){
         try {
+            delete orderDetail.product.productImage;
             if(quantity < 0){
                 await this.productSizeRepository.decrement(ProductSize, {color: orderDetail.color, name: orderDetail.size, product: orderDetail.product}, 'quantity', Math.abs(quantity));
             } else if(quantity > 0){
