@@ -21,6 +21,7 @@ export const ProductListDTO = (product: Product) => ({
     status: product.status,
     productImage: product.productImage,
     productAvailable: product.productAvailable && ProductAvailableDTO(product.productAvailable),
+    productSize: product.productSize,
     cost: product.cost
 });
 
