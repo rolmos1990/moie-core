@@ -142,18 +142,20 @@ export class OrderService extends BaseService<Order> {
             order.enablePostSale = parse.enablePostSale === undefined ? order.enablePostSale : parse.enablePostSale;
             order.quantity = products.reduce((s,p) => p.quantity + s, 0);
 
+            //Incremento prioridad de la orden cada vez que la actualizo
+            if(order && order.status === 1){
+                order.priority = Number(oldOrder.priority || 0) + 1;
+                order.modifiedDate = new Date();
+            }
+
             const orderRegister = await this.createOrUpdate(order);
 
             order.orderDelivery.order = orderRegister;
 
             const orderDeliveryRegistered = await this.orderDeliveryRepository.save(order.orderDelivery);
             orderRegister.orderDelivery = orderDeliveryRegistered;
-            await this.orderRepository.save(orderRegister);
 
-            //Incremento prioridad de la orden cada vez que la actualizo
-            if(order.status === 1){
-                order.priority = Number(order.priority) + 1;
-            }
+            await this.orderRepository.save(orderRegister);
 
             //Actualizar cliente como mayorista
             try {

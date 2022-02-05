@@ -67,6 +67,11 @@ export class Product extends BaseModel{
     @MaxLength(4, {groups: ['create','update']})
     referenceKey: string;
 
+    @Column({name:'provider_reference', type: 'varchar', length: 12, nullable: true})
+    @MaxLength(12, {groups: ['create','update']})
+    @IsOptional()
+    providerReference: string;
+
     @ManyToOne(() => Category, category => category.products)
     @JoinColumn({name:'category_id'})
     category: Category;

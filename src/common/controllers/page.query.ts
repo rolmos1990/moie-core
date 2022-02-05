@@ -1,6 +1,7 @@
 import {ConditionalQuery} from "./conditional.query";
 import {OrderConditional} from "../enum/order.conditional";
 import {OperationQuery} from "./operation.query";
+import {ArrayToObject} from "../helper/helpers";
 
 /**
  * You can use the default Limit and Default Offset for change in the Global Paginator Used.
@@ -22,7 +23,7 @@ export class PageQuery {
     private readonly limit:number = DEFAULT_LIMIT;
     private readonly offset:number = DEFAULT_OFFSET;
 
-    private order:Object = {};
+    private orders:Array<Object> = [];
 
     private condition:Object = {};
 
@@ -95,7 +96,32 @@ export class PageQuery {
      */
 
     addOrder(field: string, value: OrderConditional){
-        Reflect.set(this.order,field, value);
+        if(!this.orders.includes({field,value})) {
+            this.orders.push({field, value});
+        }
+    }
+
+    /**
+     * You can specific an order by default in your pagination (many orders are allowed)
+     * @getOrder
+     */
+
+    getOrder(){
+        if(!(this.orders.length > 0)){
+            return [];
+        }
+        const object = ArrayToObject(this.orders, 'field','value');
+        console.log("getOrder:: ", object);
+        return object;
+    }
+
+    /**
+     * You can specific an order by default in your pagination (many orders are allowed)
+     * @hasOrder
+     */
+
+    hasOrder(){
+        return this.orders.length > 0;
     }
 
     /**
@@ -221,8 +247,8 @@ export class PageQuery {
         if(this.relations.length > 0) {
             Reflect.set(this.condition, 'relations', this.getRelations());
         }
-        if(this.order){
-            Reflect.set(this.condition, 'order', this.order);
+        if(this.hasOrder()){
+            Reflect.set(this.condition, 'order', this.getOrder());
         }
 
         return this.condition;

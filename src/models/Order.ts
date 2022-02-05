@@ -90,7 +90,7 @@ export class Order extends BaseModel{
     @IsNumber()
     quantity: number;
 
-    @CreateDateColumn({name:'expired_date', nullable: true})
+    @Column({name:'expired_date', nullable: true})
     @Type(() => Date)
     @IsDate()
     @IsOptional()
@@ -101,6 +101,13 @@ export class Order extends BaseModel{
     @IsDate()
     @IsOptional()
     dateOfSale: Date;
+
+    //Inicialmente serie la fecha de actualizacion
+    @Column({name:'modified_date', nullable: true})
+    @Type(() => Date)
+    @IsDate()
+    @IsOptional()
+    modifiedDate: Date;
 
     @CreateDateColumn({name:'created_at'})
     @Type(() => Date)

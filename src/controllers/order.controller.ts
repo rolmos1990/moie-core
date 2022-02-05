@@ -50,7 +50,8 @@ export class OrderController extends BaseController<Order> {
 
     protected customDefaultOrder(page: PageQuery) {
         page.addOrder('priority', OrderConditional.DESC);
-        page.addOrder('updatedAt', OrderConditional.DESC);
+        page.addOrder('modifiedDate', OrderConditional.DESC);
+        page.addOrder('id', OrderConditional.ASC);
     }
 
     protected afterCreate(item: Object): void {

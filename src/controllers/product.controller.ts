@@ -15,6 +15,8 @@ import {ApplicationException, InvalidArgumentException} from "../common/exceptio
 import {ProductSizeService} from "../services/productSize.service";
 import {Request, Response} from "express";
 import {OrderService} from "../services/order.service";
+import {PageQuery} from "../common/controllers/page.query";
+import {OrderConditional} from "../common/enum/order.conditional";
 
 @route('/product')
 export class ProductController extends BaseController<Product> {
@@ -120,6 +122,10 @@ export class ProductController extends BaseController<Product> {
     }
     getGroupRelations(): Array<string> {
         return [];
+    }
+
+    protected customDefaultOrder(page: PageQuery) {
+        page.addOrder('reference', OrderConditional.ASC);
     }
 
 }

@@ -51,15 +51,16 @@ export abstract class BaseController<Parse> {
             const operationQuery = new OperationQuery(operation, group);
             let page = new PageQuery(limit,pageNumber,queryCondition, operationQuery);
 
-            if(this.customDefaultOrder){
-                this.customDefaultOrder(page);
-            }
-            else if(!query.operation && !(order && orderType)){
-                page.addOrder('id', OrderConditional.DESC);
-            } else if(order && orderType){
+            //Ordenamiento por defecto
+            if(order && orderType){
                 const _type = query.orderType === "asc" ? OrderConditional.ASC : OrderConditional.DESC;
-                //page.addOrder(order, _type);
+                page.addOrder(order, _type);
+            } else if(this.customDefaultOrder){
+                this.customDefaultOrder(page);
+            } else if(!query.operation && !(order && orderType)){
+                page.addOrder('id', OrderConditional.DESC);
             }
+
             const countRegisters = await this.service.count(page);
 
             /** Relations by Default */

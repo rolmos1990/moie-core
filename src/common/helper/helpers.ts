@@ -106,3 +106,10 @@ export function encodeToBase64(text){
         return text;
     }
 }
+
+export function ArrayToObject(arr, fieldName, fieldValue) {
+    let rv = {};
+    for (let i = 0; i < arr.length; ++i)
+        rv[arr[i][fieldName]] = arr[i][fieldValue];
+    return rv;
+}
