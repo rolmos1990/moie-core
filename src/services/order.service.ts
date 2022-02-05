@@ -116,10 +116,6 @@ export class OrderService extends BaseService<Order> {
             order.deliveryMethod = deliveryMethod || order.deliveryMethod;
             order.orderDelivery.tracking = order.orderDelivery.tracking || null;
 
-            if(order.status === 1){
-                order.priority = 1;
-            }
-
             if(parse.deliveryLocality) {
                 const deliveryLocality = await this.deliveryLocalityService.find(parse.deliveryLocality);
                 order.orderDelivery.deliveryLocality = deliveryLocality;
@@ -153,8 +149,11 @@ export class OrderService extends BaseService<Order> {
             const orderDeliveryRegistered = await this.orderDeliveryRepository.save(order.orderDelivery);
             orderRegister.orderDelivery = orderDeliveryRegistered;
             await this.orderRepository.save(orderRegister);
-            //order.orderDelivery.order = orderRegister;
-            //await this.orderDeliveryRepository.save(order.orderDelivery);
+
+            //Incremento prioridad de la orden cada vez que la actualizo
+            if(order.status === 1){
+                order.priority = Number(order.priority) + 1;
+            }
 
             //Actualizar cliente como mayorista
             try {

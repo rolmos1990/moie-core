@@ -261,10 +261,6 @@ export class OrderController extends BaseController<Order> {
                 let updates = [];
                 await Promise.all(orders.map(async entity => {
 
-                    if(entity.status > 1){
-                        entity.priority = 0;
-                    }
-
                     let changeStatus = false;
                     if (entity.status === 1) {
                         //PENDIENTE -> CONFIRMADO
@@ -312,9 +308,6 @@ export class OrderController extends BaseController<Order> {
                     changeStatus = true;
                 }
 
-                if(entity.status > 1){
-                    entity.priority = 0;
-                }
                 const saved: Order = await this.orderService.createOrUpdate(entity);
                 const order: Order = await this.orderService.find(saved.id, this.getDefaultRelations(true));
                 const orderDetails: OrderDetail[] = await this.orderService.getDetails(order);
