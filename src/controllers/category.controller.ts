@@ -19,6 +19,8 @@ import {TemplateService} from "../services/template.service";
 import {UserService} from "../services/user.service";
 import {BatchRequestService} from "../services/batchRequest.service";
 import {UserShortDTO} from "./parsers/user";
+import {TemplatesRegisters} from "../common/enum/templatesTypes";
+import {MediaManagementService} from "../services/mediaManagement.service";
 
 @route('/category')
 export class CategoryController extends BaseController<Category> {
@@ -27,7 +29,8 @@ export class CategoryController extends BaseController<Category> {
         private readonly productService: ProductService,
         private readonly templateService: TemplateService,
         private readonly userService: UserService,
-        private readonly batchRequestService: BatchRequestService
+        private readonly batchRequestService: BatchRequestService,
+        private readonly mediaManagementService: MediaManagementService
     ){
         super(categoryService);
     };
@@ -92,65 +95,40 @@ export class CategoryController extends BaseController<Category> {
 
             page.setRelations(['productSize', 'category']);
 
-            let products: Array<Product> = await this.productService.all(page);
+            //let products: Array<Product> = await this.productService.all(page);
+            let products = await this.productService.findByObject({}, ['productSize', 'category']);
 
             if(products.length > 0){
 
                 let batchHtml : any = [];
 
-                const productsGroups : any = [];
+                const object = {
+                    products: products
+                };
 
-                let groupIndex = 1;
+                const template = await this.templateService.getTemplate(TemplatesRegisters.EXPORT_CATALOG_LIST, object);
 
-                 products.map((item, index) => {
-                    if(index % 4){
-                        groupIndex++;
-                    }
-                    if(!productsGroups[groupIndex]){
-                        productsGroups[groupIndex] = [];
-                    }
-
-                    productsGroups[groupIndex].push({
-                            product: item,
-                            category: item.category,
-                            productSize: item.productSize,
-                            hasStarts: (item.price <= 800) && (item.category && item.category.id == 1),
-                            isTop: ((index % 4) >= 2),
-                            classTop: ((index % 4) >= 2) ? "top" : "bottom",
-                            price: item.price,
-                            sizes: []
-                        }
-                    );
-                });
-
-                let increment = 1;
-                const result = productsGroups.map(async products => {
-                    const templateName = this.categoryService.getCatalogTemplate();
-                    const object = {
-                        products
-                    };
-                    const template = await this.templateService.getTemplate(templateName, object);
-                    if(!template){
-                        throw new InvalidArgumentException("No se ha encontrado una plantilla asociada");
-                    }
-
-                    return batchHtml.push({groupProducts: increment++, html: template});
-                });
-
-                await Promise.all(result);
+                if(!template){
+                    throw new InvalidArgumentException("No se ha encontrado una plantilla asociada");
+                }
 
                 const user = await this.userService.find(req["user"]);
 
-                /** TODO -- cambiar valor body a LONGTEXT */
+                const response = await this.mediaManagementService.createPDF(template);
 
-                const save = await this.batchRequestService.createOrUpdate({
-                    body: batchHtml,
+                /*const save = await this.batchRequestService.createOrUpdate({
+                    body: response,
                     type: BatchRequestTypes.CATALOGS,
                     status: BatchRequestTypesStatus.COMPLETED,
                     user: UserShortDTO(user)
-                });
+                });*/
 
-                return res.json({status: 200, batch: {...save}});
+                return res.json({status: 200, batch: {
+                        body: response,
+                        type: BatchRequestTypes.CATALOGS,
+                        status: BatchRequestTypesStatus.COMPLETED,
+                        user: UserShortDTO(user)
+                    }});
 
             } else {
                 return res.json({status: 400, error: "No se han encontrado registros"});

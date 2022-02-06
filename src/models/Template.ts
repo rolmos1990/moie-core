@@ -1,6 +1,6 @@
 import {
     Column, CreateDateColumn,
-    Entity,
+    Entity, JoinColumn,
     PrimaryGeneratedColumn,
 } from "typeorm";
 import BaseModel from "../common/repositories/base.model";
@@ -27,6 +27,10 @@ export class Template extends BaseModel{
     @Column({type: 'boolean'})
     @IsBoolean({groups: ['create','update']})
     status: boolean;
+
+    @Column({name:'has_editor', type: 'boolean'})
+    @IsBoolean({groups: ['create','update']})
+    hasEditor: boolean;
 
     @CreateDateColumn({name:'created_at'})
     @Type(() => Date)

@@ -113,3 +113,8 @@ export function ArrayToObject(arr, fieldName, fieldValue) {
         rv[arr[i][fieldName]] = arr[i][fieldValue];
     return rv;
 }
+
+/** Define custom format for value */
+export function currencyFormat(number, currency = "COP", locale = 'es-CO'){
+    return new Intl.NumberFormat('es-CO', { style: 'currency', currency: currency }).format(number)
+}

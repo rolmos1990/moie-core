@@ -10,11 +10,11 @@ import {DeliveryMethod} from "../models/DeliveryMethod";
 import {DeliveryMethodService} from "../services/deliveryMethod.service";
 import {UserService} from "../services/user.service";
 import {OrderDetail} from "../models/OrderDetail";
-import {isCash, isPaymentMode} from "../common/enum/paymentModes";
+import {isCash, isChargeOnDelivery, isPaymentMode} from "../common/enum/paymentModes";
 import {OrderProduct} from "./parsers/orderProduct";
 import {CustomerService} from "../services/customer.service";
 import {TemplateService} from "../services/template.service";
-import {getDeliveryShortType, QrBarImage} from "../common/helper/helpers";
+import {currencyFormat, getDeliveryShortType, QrBarImage} from "../common/helper/helpers";
 import {ConditionalQuery} from "../common/controllers/conditional.query";
 import {PageQuery} from "../common/controllers/page.query";
 import {OperationQuery} from "../common/controllers/operation.query";
@@ -30,6 +30,7 @@ import {OrderHistoricService} from "../services/orderHistoric.service";
 import {OrderHistoricDTO, OrderHistoricListDTO} from "./parsers/orderHistoric";
 import {EventStatus} from "../common/enum/eventStatus";
 import {OrderConditional} from "../common/enum/order.conditional";
+import {TemplatesRegisters} from "../common/enum/templatesTypes";
 
 
 @route('/order')
@@ -49,7 +50,6 @@ export class OrderController extends BaseController<Order> {
     };
 
     protected customDefaultOrder(page: PageQuery) {
-        page.addOrder('priority', OrderConditional.DESC);
         page.addOrder('modifiedDate', OrderConditional.DESC);
         page.addOrder('id', OrderConditional.ASC);
     }
@@ -410,29 +410,28 @@ export class OrderController extends BaseController<Order> {
     @GET()
     public async print(req: Request, res: Response) {
         try {
-            const order = await this.orderService.find(parseInt(req.params.id), ['orderDelivery', 'customer','customer.state','customer.municipality', 'user', 'deliveryMethod', 'orderDetails', 'orderDetails.product']);
+            let order = await this.orderService.find(parseInt(req.params.id), ['orderDelivery', 'customer','customer.state','customer.municipality', 'user', 'deliveryMethod', 'orderDetails', 'orderDetails.product']);
             if (order) {
-                const templateName = this.orderService.getPrintTemplate(order);
-                console.log("-- find templateName: ", templateName);
                 const qrBar = await QrBarImage(order.id);
                 const deliveryShortType = getDeliveryShortType(order.orderDelivery.deliveryType);
 
                 let comments = await this.commentService.getByOrder(order);
+
                 const object = {
                     order,
                     qrBar,
                     orderDetails: order.orderDetails,
                     hasPayment: isPaymentMode(order.paymentMode),
                     isCash: isCash(order.paymentMode),
+                    isChargeOnDelivery: isChargeOnDelivery(order.orderDelivery),
                     hasPiecesForChanges: (order.piecesForChanges && order.piecesForChanges > 0),
                     deliveryShortType: deliveryShortType,
                     hasComments: comments.length > 0,
                     comments: comments
                 };
-                const template = await this.templateService.getTemplate(templateName, object);
+                const template = await this.templateService.getTemplate(TemplatesRegisters.PRINT_ORDER, object);
                 if(!template){
-                    console.error("-- template name not found", templateName);
-                    throw new InvalidArgumentException("No se ha encontrado un resumen para esta orden");
+                    throw new InvalidArgumentException("No se ha podido generar el reporte");
                 }
                 return res.json({status: 200, html: template});
             }
@@ -595,18 +594,17 @@ export class OrderController extends BaseController<Order> {
 
                 const result = orders.map(async order => {
 
-                    const templateName = this.orderService.getPrintTemplate(order);
                     qrBar[order.id] = await QrBarImage(order.id);
                     const deliveryShortType = getDeliveryShortType(order.orderDelivery.deliveryType);
 
                     let comments = await this.commentService.getByOrder(order);
-                    console.log("COMMENTS: ", comments);
 
                     const object = {
                         order,
                         qrBar,
                         orderDetails: order.orderDetails,
                         hasPayment: isPaymentMode(order.paymentMode),
+                        isChargeOnDelivery: isChargeOnDelivery(order.orderDelivery),
                         isCash: isCash(order.paymentMode),
                         hasPiecesForChanges: (order.piecesForChanges && order.piecesForChanges > 0),
                         deliveryShortType: deliveryShortType,
@@ -614,8 +612,7 @@ export class OrderController extends BaseController<Order> {
                         comments: comments
                     };
 
-                    console.log("TEMPLATE", templateName);
-                    const template = await this.templateService.getTemplate(templateName, object);
+                    const template = await this.templateService.getTemplate(TemplatesRegisters.PRINT_ORDER, object);
                     if(!template){
                         throw new InvalidArgumentException("No se ha encontrado un resumen para esta orden");
                     }

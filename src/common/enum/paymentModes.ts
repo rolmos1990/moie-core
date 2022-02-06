@@ -1,3 +1,6 @@
+import {DeliveryTypes} from "./deliveryTypes";
+import {OrderDelivery} from "../../models/OrderDelivery";
+
 export enum PaymentModes {
     CASH = 1, //PAGO EN EFECTIVO
     WIRETRANSFER= 2, //TRANSFERENCIA BANCARIA
@@ -15,4 +18,8 @@ export const isCash = (paymentMode) => {
         return true;
     }
     return false;
+}
+
+export const isChargeOnDelivery = (orderDelivery: OrderDelivery) => {
+    return (orderDelivery.deliveryType === DeliveryTypes.CHARGE_ON_DELIVERY) ? true : false;
 }

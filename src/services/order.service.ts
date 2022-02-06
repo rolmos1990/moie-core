@@ -23,6 +23,7 @@ import {Office} from "../models/Office";
 import {DeliveryLocalityService} from "./deliveryLocality.service";
 import {Between, IsNull, Not} from "typeorm";
 import {OfficeReportTypes} from "../common/enum/officeReportTypes";
+import {TemplatesRegisters} from "../common/enum/templatesTypes";
 
 export class OrderService extends BaseService<Order> {
     constructor(
@@ -142,12 +143,12 @@ export class OrderService extends BaseService<Order> {
             order.enablePostSale = parse.enablePostSale === undefined ? order.enablePostSale : parse.enablePostSale;
             order.quantity = products.reduce((s,p) => p.quantity + s, 0);
 
-            //Incremento prioridad de la orden cada vez que la actualizo
-            if(order && order.status === 1){
-                order.priority = Number(oldOrder.priority || 0) + 1;
+            //Incremento prioridad de la orden cada vez que la actualizo (solo si la orden es pendiente obtiene prioridad)
+            if((order && order.status === 1) && oldOrder){
+                order.modifiedDate = new Date();
+            } else if(!oldOrder){
                 order.modifiedDate = new Date();
             }
-
             const orderRegister = await this.createOrUpdate(order);
 
             order.orderDelivery.order = orderRegister;
@@ -328,15 +329,6 @@ export class OrderService extends BaseService<Order> {
      */
     getExportOfficeReport(order: Order) {
         const deliveryTemplateName = `EXPORT_OFFICE_${order.deliveryMethod.code}`;
-        return deliveryTemplateName;
-    }
-
-    /**
-     * @param Order order
-     * Obtener plantilla dependiendo de la orden
-     */
-    getPrintTemplate(order: Order) {
-        const deliveryTemplateName = `PRINT_${order.deliveryMethod.code}`;
         return deliveryTemplateName;
     }
 

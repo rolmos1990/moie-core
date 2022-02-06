@@ -2,6 +2,7 @@ import {BaseService} from "../common/controllers/base.service";
 import {Category} from "../models/Category";
 import {CategoryRepository} from "../repositories/category.repository";
 import {Order} from "../models/Order";
+import {TemplatesRegisters} from "../common/enum/templatesTypes";
 
 export class CategoryService extends BaseService<Category> {
     constructor(
@@ -9,18 +10,10 @@ export class CategoryService extends BaseService<Category> {
     ){
         super(categoryRepository);
     }
-
-    /**
-     * Obtener plantilla de catalogos
-     */
-    getCatalogTemplate() {
-        return `PRINT_CATALOG_LIST`;
-    }
-
     /**
      * Obtener plantilla de catalogos con referencias
      */
     getCatalogReferencesTemplate() {
-        return `PRINT_CATALOG_LIST_REFERENCES`;
+        return TemplatesRegisters.EXPORT_CATALOG_REFERENCES;
     }
 }

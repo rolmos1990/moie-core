@@ -12,6 +12,8 @@ const createHTML = require('create-html');
 const Excel = require('exceljs')
 import moment = require("moment");
 
+const html_to_pdf = require('html-pdf-node');
+
 
 export const CONFIG_MEDIA = {
     IMAGE_PATH: '/uploads',
@@ -195,33 +197,17 @@ export class MediaManagementService extends UtilService {
      * Generar un fichero PDF
      * Genera un fichero PDF indicando la plantilla y el objeto de entrada
      */
-    async createPDF(){
-        console.log("ENTRANDO..");
+    async createPDF(html, format = MEDIA_FORMAT_OUTPUT.b64, options = { format: 'Legal', margin: {top: '80px'} }){
         try {
+            let file = { content: html };
 
-            const data = {
-                name: "Ramon",
-                lastname: "Olmos",
-                order:{
-                    id: 123
-                }
-            };
-
-            var templateHtml = readFileSync(path.join(process.cwd(), '/src/templates/report.html'), 'utf8');
-            var template = compile(templateHtml)(data);
-
-            let document = {
-                template:  template,
-                context: {
-                    name: "Hello",
-                    order:{
-                        id: 123
-                    }
-                },
-                path: "./src/storage/tmp/test-"+Math.random()+".pdf"
+            if(format === MEDIA_FORMAT_OUTPUT.binary){
+                const pdfBuffer = await html_to_pdf.generatePdf(file, options);
+                return pdfBuffer;
+            } else {
+                const pdfBuffer = await html_to_pdf.generatePdf(file, options);
+                return pdfBuffer.toString('base64');
             }
-
-            await create(document);
 
         }catch(e){
             console.log("error", e.message);
