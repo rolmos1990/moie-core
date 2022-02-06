@@ -24,6 +24,19 @@ export class TemplateService extends BaseService<Template> {
             return numberFormat.format(number)
         });
 
+        registerHelper('incrementDiscount', function (product, discount){
+            if(!product){
+                return "";
+            } else if(discount <= 0){
+                const numberFormat = new Intl.NumberFormat('es-CO', {minimumFractionDigits: 2});
+                return numberFormat.format(Number(product.price));
+            } else {
+                const newPrice = (Number(product.price) * (discount || 0) / 100) + Number(product.price);
+                const numberFormat = new Intl.NumberFormat('es-CO', {minimumFractionDigits: 2});
+                return numberFormat.format(newPrice);
+            }
+        });
+
         registerHelper('scurrency', function currencyFormat(number){
             if(!number){
                 return "";

@@ -35,7 +35,8 @@ const app: express.Application = express();
 //use cors middleware
 app.use(cors(options));
 app.use(express.json({limit: '50mb'}));
-app.use(express.static('public'))
+
+//Blocked use for this directories
 
 // JSON Support
 app.use(express.json());
@@ -63,6 +64,7 @@ createConnection(MySQLPersistence).then(async connection => {
         'controllers/*.ts',
         { cwd: __dirname }
     ));
+    app.use(Authorization, express.static('storage'));
     if(process.env.SEED_DB) {
         new RunSeed();
     }

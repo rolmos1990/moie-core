@@ -17,14 +17,17 @@ const html_to_pdf = require('html-pdf-node');
 
 export const CONFIG_MEDIA = {
     IMAGE_PATH: '/uploads',
-    STORAGE_PATH: './public/uploads',
+    PDF_PATH: '/pdf',
+    STORAGE_PATH: './storage/uploads',
+    STORAGE_PDF_PATH: './storage/pdf',
     PICTURES_FOLDERS: '/users',
     RESOLUTIONS: [67,238,400,800]
 };
 
 export const MEDIA_FORMAT_OUTPUT = {
     b64: 'b64',
-    binary: 'binary'
+    binary: 'binary',
+    b64storage: 'b64storage'
 };
 
 type ImageResource = {
@@ -204,9 +207,15 @@ export class MediaManagementService extends UtilService {
             if(format === MEDIA_FORMAT_OUTPUT.binary){
                 const pdfBuffer = await html_to_pdf.generatePdf(file, options);
                 return pdfBuffer;
-            } else {
+            } else if(format === MEDIA_FORMAT_OUTPUT.b64){
                 const pdfBuffer = await html_to_pdf.generatePdf(file, options);
                 return pdfBuffer.toString('base64');
+            } else if(format === MEDIA_FORMAT_OUTPUT.b64storage){
+                const pdfBuffer = await html_to_pdf.generatePdf(file, options);
+                const filename = "CATALOG_"+moment().unix()+".pdf";
+                const url = `${CONFIG_MEDIA.PDF_PATH}/${filename}`;
+                writeFile(`${CONFIG_MEDIA.STORAGE_PDF_PATH}/${filename}`, pdfBuffer, () => {});
+                return {data: pdfBuffer.toString('base64'), url: url };
             }
 
         }catch(e){

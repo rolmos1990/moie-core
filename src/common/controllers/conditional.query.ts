@@ -257,6 +257,24 @@ export class ConditionalQuery {
     }
 
     /**
+     * Add some field to the Object condition
+     * @get
+     */
+
+    removeField(field){
+        Reflect.deleteProperty(this.condition, field);
+    }
+
+    /**
+     * Return Boolean if the Object has some condition
+     * @get
+     */
+
+    hasField(field){
+        return Reflect.has(this.condition, field);
+    }
+
+    /**
      * Return the Object condition
      * @get
      */

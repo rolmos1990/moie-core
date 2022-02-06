@@ -1,30 +1,15 @@
 import {
     Column,
-    CreateDateColumn,
     Entity, JoinColumn,
     ManyToOne,
-    OneToMany,
     PrimaryGeneratedColumn,
-    UpdateDateColumn
 } from "typeorm";
 import BaseModel from "../common/repositories/base.model";
 import {
-    isBoolean,
-    IsBoolean,
-    IsDate,
     IsDecimal,
-    isNumber,
     IsNumber,
-    IsOptional,
-    Length,
-    MaxLength
 } from "class-validator";
-import {Type} from "class-transformer";
 import {ProductSize} from "./ProductSize";
-import {Size} from "./Size";
-import {Category} from "./Category";
-import {ProductImage} from "./ProductImage";
-import {Customer} from "./Customer";
 import {Order} from "./Order";
 import {Product} from "./Product";
 

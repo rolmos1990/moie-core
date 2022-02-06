@@ -1,6 +1,7 @@
 export enum BatchRequestTypes {
     IMPRESSION = 1, //IMPRESIONES
     CATALOGS= 2, //LISTA DE CATALOGOS
+    CATALOGS_REF= 3, //LISTA DE CATALOGOS SIN PRECIO (SOLO REFERENCIAS)
 };
 
 export enum BatchRequestTypesStatus {

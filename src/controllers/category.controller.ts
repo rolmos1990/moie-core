@@ -7,20 +7,16 @@ import {Request, Response} from "express";
 import {ConditionalQuery} from "../common/controllers/conditional.query";
 import {OperationQuery} from "../common/controllers/operation.query";
 import {PageQuery} from "../common/controllers/page.query";
-import {Order} from "../models/Order";
-import {OrderStatus} from "../common/enum/orderStatus";
 import {InvalidArgumentException} from "../common/exceptions";
-import {getDeliveryShortType, QrBarImage} from "../common/helper/helpers";
-import {isCash, isPaymentMode} from "../common/enum/paymentModes";
 import {BatchRequestTypes, BatchRequestTypesStatus} from "../common/enum/batchRequestTypes";
 import {ProductService} from "../services/product.service";
-import {Product} from "../models/Product";
 import {TemplateService} from "../services/template.service";
 import {UserService} from "../services/user.service";
 import {BatchRequestService} from "../services/batchRequest.service";
 import {UserShortDTO} from "./parsers/user";
 import {TemplatesRegisters} from "../common/enum/templatesTypes";
-import {MediaManagementService} from "../services/mediaManagement.service";
+import {MEDIA_FORMAT_OUTPUT, MediaManagementService} from "../services/mediaManagement.service";
+import {ProductCatalogViewService} from "../services/productCatalogView.service";
 
 @route('/category')
 export class CategoryController extends BaseController<Category> {
@@ -30,7 +26,8 @@ export class CategoryController extends BaseController<Category> {
         private readonly templateService: TemplateService,
         private readonly userService: UserService,
         private readonly batchRequestService: BatchRequestService,
-        private readonly mediaManagementService: MediaManagementService
+        private readonly mediaManagementService: MediaManagementService,
+        private readonly productCatalogViewService: ProductCatalogViewService
     ){
         super(categoryService);
     };
@@ -89,21 +86,23 @@ export class CategoryController extends BaseController<Category> {
 
             const queryCondition = ConditionalQuery.ConvertIntoConditionalParams(conditional);
 
+            const onlyReference = queryCondition.hasField('references');
+            queryCondition.removeField('references');
+
             /** Hacer aqui un arreglo para que obtenga por ids y mande los IDS */
             const operationQuery = new OperationQuery(null, null);
             let page = new PageQuery(limitForQueries,0,queryCondition, operationQuery);
 
             page.setRelations(['productSize', 'category']);
 
-            //let products: Array<Product> = await this.productService.all(page);
-            let products = await this.productService.findByObject({}, ['productSize', 'category']);
+            let products = await this.productCatalogViewService.all(page);
 
             if(products.length > 0){
 
-                let batchHtml : any = [];
-
                 const object = {
-                    products: products
+                    products: products,
+                    hasPrice : !onlyReference,
+                    category: products[0].category
                 };
 
                 const template = await this.templateService.getTemplate(TemplatesRegisters.EXPORT_CATALOG_LIST, object);
@@ -114,18 +113,18 @@ export class CategoryController extends BaseController<Category> {
 
                 const user = await this.userService.find(req["user"]);
 
-                const response = await this.mediaManagementService.createPDF(template);
+                const response = await this.mediaManagementService.createPDF(template, MEDIA_FORMAT_OUTPUT.b64storage);
 
-                /*const save = await this.batchRequestService.createOrUpdate({
-                    body: response,
-                    type: BatchRequestTypes.CATALOGS,
+                const save = await this.batchRequestService.createOrUpdate({
+                    body: response.url,
+                    type: !onlyReference ? BatchRequestTypes.CATALOGS : BatchRequestTypes.CATALOGS_REF,
                     status: BatchRequestTypesStatus.COMPLETED,
                     user: UserShortDTO(user)
-                });*/
+                });
 
                 return res.json({status: 200, batch: {
-                        body: response,
-                        type: BatchRequestTypes.CATALOGS,
+                        body: response.data,
+                        type: !onlyReference ? BatchRequestTypes.CATALOGS : BatchRequestTypes.CATALOGS_REF,
                         status: BatchRequestTypesStatus.COMPLETED,
                         user: UserShortDTO(user)
                     }});

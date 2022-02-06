@@ -10,10 +10,4 @@ export class CategoryService extends BaseService<Category> {
     ){
         super(categoryRepository);
     }
-    /**
-     * Obtener plantilla de catalogos con referencias
-     */
-    getCatalogReferencesTemplate() {
-        return TemplatesRegisters.EXPORT_CATALOG_REFERENCES;
-    }
 }
