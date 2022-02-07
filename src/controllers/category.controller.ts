@@ -114,20 +114,16 @@ export class CategoryController extends BaseController<Category> {
                 const user = await this.userService.find(req["user"]);
 
                 const response = await this.mediaManagementService.createPDF(template, MEDIA_FORMAT_OUTPUT.b64storage);
-
-                const save = await this.batchRequestService.createOrUpdate({
-                    body: response.url,
+                let batch = {
+                    body: {url: response.url, name: products[0].category.name },
                     type: !onlyReference ? BatchRequestTypes.CATALOGS : BatchRequestTypes.CATALOGS_REF,
                     status: BatchRequestTypesStatus.COMPLETED,
                     user: UserShortDTO(user)
-                });
+                };
+                await this.batchRequestService.createOrUpdate(batch);
+                batch.body = response.data;
 
-                return res.json({status: 200, batch: {
-                        body: response.data,
-                        type: !onlyReference ? BatchRequestTypes.CATALOGS : BatchRequestTypes.CATALOGS_REF,
-                        status: BatchRequestTypesStatus.COMPLETED,
-                        user: UserShortDTO(user)
-                    }});
+                return res.json({status: 200, batch });
 
             } else {
                 return res.json({status: 400, error: "No se han encontrado registros"});
