@@ -256,7 +256,7 @@ export class OfficeController extends BaseController<Office> {
         try {
         const id = req.params.id;
         const office: Office = await this.officeService.find(parseInt(id));
-        const orders: Order[] = await this.orderService.findByObject({office: office}, ['customer', 'customer.municipality', 'customer.state', 'orderDelivery']);
+        const orders: Order[] = await this.orderService.findByObject({office: office}, ['customer', 'customer.municipality', 'customer.state', 'orderDelivery','deliveryMethod']);
 
             const object = {
                 orders: orders,
