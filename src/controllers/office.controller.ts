@@ -33,6 +33,7 @@ import {ElectronicBillAdaptor} from "../templates/adaptors/ElectronicBillAdaptor
 import {ExportersOfficeCd} from "../templates/exporters/office-orders.exporters";
 import {OrderHistoricService} from "../services/orderHistoric.service";
 import {EventStatus} from "../common/enum/eventStatus";
+import {TemplatesRegisters} from "../common/enum/templatesTypes";
 
 @route('/office')
 export class OfficeController extends BaseController<Office> {
@@ -229,7 +230,6 @@ export class OfficeController extends BaseController<Office> {
     @route('/:id/getTemplate')
     @GET()
     protected async getTemplate(req: Request, res: Response){
-        return res.json({status: 400 } );
         try {
             const id = req.params.id;
             const office: Office = await this.officeService.find(parseInt(id));
@@ -246,6 +246,36 @@ export class OfficeController extends BaseController<Office> {
             else{
                 this.handleException(new ApplicationException(), res);
 
+            }
+        }
+    }
+
+    @route('/gen/officePdfReport/:id')
+    @GET()
+    public async officePdfReport(req: Request, res: Response){
+        try {
+        const id = req.params.id;
+        const office: Office = await this.officeService.find(parseInt(id));
+        const orders: Order[] = await this.orderService.findByObject({office: office}, ['customer', 'customer.municipality', 'customer.state', 'orderDelivery']);
+
+            const object = {
+                orders: orders,
+                office : office
+            };
+
+            const template = await this.templateService.getTemplate(TemplatesRegisters.OFFICE_PDF, object);
+
+            if(!template){
+                throw new InvalidArgumentException("No se ha podido generar el reporte");
+            }
+            return res.json({status: 200, html: template});
+
+        }catch(e){
+            if (e.name === InvalidArgumentException.name || e.name === "EntityNotFound") {
+                this.handleException(new InvalidArgumentException("Despacho no ha sido encontrado"), res);
+            }
+            else{
+                this.handleException(new ApplicationException(), res);
             }
         }
     }

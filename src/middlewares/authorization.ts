@@ -7,7 +7,8 @@ const PublicServices = [
     "/user/logout",
     "/default",
     "/bill/generate/test",
-    "/bill/reload/dian"
+    "/bill/reload/dian",
+    "/office/gen/officePdfReport/12"
 ];;
 
 export const Authorization = (req: Request, res: Response, next: NextFunction) => {
