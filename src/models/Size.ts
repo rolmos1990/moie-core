@@ -14,6 +14,11 @@ export class Size extends BaseModel{
     @Length(3, 100, {groups: ['create','update']})
     name: string;
 
+    //9-> Unica -> Description: S M L XL
+    @Column({name:'description', type: 'varchar', length: 20})
+    @Length(3, 100, {groups: ['create','update']})
+    description: string;
+
     @Column("simple-array")
     sizes: string[];
 
