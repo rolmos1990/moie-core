@@ -51,7 +51,11 @@ export class PageQuery {
         }
 
         if(where instanceof ConditionalQuery) {
-            this.where = where.get();
+            if(where.hasOr()) {
+                this.where = where.getOr();
+            } else {
+                this.where = where.get();
+            }
             this.whereSubQuery = where.getSubQuery();
         }
         else if(where instanceof Array){
