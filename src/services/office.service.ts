@@ -5,6 +5,7 @@ import {Order} from "../models/Order";
 import {OrderRepository} from "../repositories/order.repository";
 import {OfficeReportTypes} from "../common/enum/officeReportTypes";
 import {DeliveryTypes} from "../common/enum/deliveryTypes";
+import moment = require("moment");
 
 export class OfficeService extends BaseService<Office> {
     constructor(
@@ -20,21 +21,31 @@ export class OfficeService extends BaseService<Office> {
 
     /** Reporte basado en Facturación */
     async getDataForReport(date, type){
+        const MENSAJERO = 2;
         let orders;
+        const PreviusPaymentAndChargeOnDelivery = [DeliveryTypes.PREVIOUS_PAYMENT, DeliveryTypes.CHARGE_ON_DELIVERY];
+        const previusPayments = [DeliveryTypes.PREVIOUS_PAYMENT, DeliveryTypes.PAY_ONLY_DELIVERY];
+        //Mensajero previo pago y mensajero contrapago
+        orders = await this.orderRepository.createQueryBuilder('o')
+            .leftJoinAndSelect('o.office', 'b')
+            .leftJoinAndSelect('o.orderDelivery', 'od')
+            .andWhere("o.office IS NOT NULL")
+            .andWhere("DATE(o.dateOfSale) = DATE(:dateFrom)")
+            .andWhere("od.deliveryType IN (:deliveryTypes)")
+            .andWhere("o.deliveryMethod = :deliveryMethod")
+            .setParameters({deliveryMethod: MENSAJERO, deliveryTypes: PreviusPaymentAndChargeOnDelivery, dateFrom: date})
+            .getMany();
         if(type == OfficeReportTypes.MENSAJERO){
-            orders = await this.orderRepository.createQueryBuilder('o')
-                .leftJoinAndSelect('o.office', 'b')
-                .leftJoinAndSelect('o.orderDelivery', 'od')
-                .where("o.dateOfSale = :dateFrom", { dateFrom: date })
-                .andWhere("o.deliveryMethod != :deliveryMethod", {deliveryMethod: "MENSAJERO"})
-                .andWhere("od.deliveryType = :deliveryType", {deliveryType: DeliveryTypes.PREVIOUS_PAYMENT})
-                .getMany();
         } else {
+            //Previo Pago y Previo Pago COD que no tenga mensajero
             orders = await this.orderRepository.createQueryBuilder('o')
                 .leftJoinAndSelect('o.office', 'b')
                 .leftJoinAndSelect('o.orderDelivery', 'od')
-                .where("o.dateOfSale = :dateFrom", { dateFrom: date })
-                .andWhere("o.deliveryMethod = :deliveryMethod", {deliveryMethod: "MENSAJERO"})
+                .andWhere("o.office IS NOT NULL")
+                .andWhere("DATE(o.createdAt) = DATE(:dateFrom)")
+                .andWhere('od.deliveryType IN (:deliveryTypes)')
+                .andWhere("o.deliveryMethod != :deliveryMethod")
+                .setParameters({deliveryMethod: MENSAJERO, deliveryTypes: previusPayments, dateFrom: date})
                 .getMany();
         }
 

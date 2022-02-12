@@ -34,6 +34,8 @@ import {ExportersOfficeCd} from "../templates/exporters/office-orders.exporters"
 import {OrderHistoricService} from "../services/orderHistoric.service";
 import {EventStatus} from "../common/enum/eventStatus";
 import {TemplatesRegisters} from "../common/enum/templatesTypes";
+import moment = require("moment");
+import {ExportersOfficeMensajeroCd} from "../templates/exporters/office-orders-mensajero.exporters";
 
 @route('/office')
 export class OfficeController extends BaseController<Office> {
@@ -289,11 +291,13 @@ export class OfficeController extends BaseController<Office> {
             if (!(type === OfficeReportTypes.PREVIOUS_PAYMENT || type === OfficeReportTypes.MENSAJERO)) {
                 throw new InvalidArgumentException("Tipo no valido");
             }
-
-
             const orders: Order[] = await this.officeService.getDataForReport(date, type);
 
-            const exportable = new ExportersOfficeCd();
+            const exportableInterrapidisimo = new ExportersOfficeCd();
+            const exportableMensajero = new ExportersOfficeMensajeroCd();
+
+            const exportable = type === OfficeReportTypes.MENSAJERO ? exportableMensajero : exportableInterrapidisimo;
+
 
             const base64File = await this.mediaManagementService.createExcel(exportable, orders, res, MEDIA_FORMAT_OUTPUT.b64);
             return res.json({status: 200, data: base64File, name: exportable.getFileName()});

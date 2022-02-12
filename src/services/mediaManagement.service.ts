@@ -7,7 +7,7 @@ import {compile, Exception} from 'handlebars';
 import * as path from "path";
 import {create} from 'handlebars-pdf';
 import {Worksheet} from "exceljs";
-import {InvalidFileException} from "../common/exceptions";
+import {InvalidArgumentException, InvalidFileException} from "../common/exceptions";
 const createHTML = require('create-html');
 const Excel = require('exceljs')
 import moment = require("moment");
@@ -321,6 +321,7 @@ export class MediaManagementService extends UtilService {
 
         }catch(e){
             console.log("error", e.message);
+            return e;
         }
     }
 }

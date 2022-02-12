@@ -15,15 +15,19 @@ export class ImportersInterrapidisimo extends BaseImporters {
         if(this.hasFiles()){
             //reading all files and add to array
             /** Replace for Order Id And Tracking Id Position */
-            const positionOrderId = 10;
+            const positionOrderId = 11;
             const positionTrackingId = 1;
 
             const rows = this.ws.getRows(this.startBy, this.ws.actualRowCount);
             try {
                 rows.map(item => {
                     const trackingNumber = item.getCell(positionTrackingId).toString();
-                    const id = item.getCell(positionOrderId).toString();
-                    this.collection.push({id, trackingNumber});
+                    let id : any = item.getCell(positionOrderId).toString();
+                    id = id.split("-");
+                    if(id && id[1]) {
+                        id = id[1].replace(/ /g, '');
+                        this.collection.push({id, trackingNumber});
+                    }
                 });
             }catch(e){
                 console.log("error", e.message);

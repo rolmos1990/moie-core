@@ -10,11 +10,12 @@ export enum OrderStatus {
 
 export const OrderStatusNames = {
     [OrderStatus.PENDING] : "PENDIENTE",
-    [OrderStatus.CONFIRMED] : "CONFIRMADA",
-    [OrderStatus.PRINTED] : "IMPRESA",
-    [OrderStatus.SENT] : "ENVIADA",
-    [OrderStatus.RECONCILED] : "CONCILIADA",
-    [OrderStatus.CANCELED] : "CANCELADA"
+    [OrderStatus.CONFIRMED] : "CONFIRMADO",
+    [OrderStatus.PRINTED] : "IMPRESO",
+    [OrderStatus.SENT] : "ENVIADO",
+    [OrderStatus.RECONCILED] : "CONCILIADO",
+    [OrderStatus.CANCELED] : "CANCELADO",
+    [OrderStatus.FINISHED] : "FINALIZADO"
 };
 
 /** Todos los estados de las ordenes */

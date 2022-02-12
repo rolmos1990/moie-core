@@ -266,6 +266,7 @@ export class OrderController extends BaseController<Order> {
                     if (entity.status === 1) {
                         //PENDIENTE -> CONFIRMADO
                         entity.status = 2;
+                        entity.dateOfSale = new Date();
                         changeStatus = true;
                     } else if (entity.status === 2) {
                         //CONFIRMADO -> IMPRESO
@@ -293,6 +294,7 @@ export class OrderController extends BaseController<Order> {
                 let changeStatus = false;
                 if (entity.status === 1) {
                     //PENDIENTE -> CONFIRMADO
+                    entity.dateOfSale = new Date();
                     entity.status = 2;
                     changeStatus = true;
                 } else if (entity.status === 2) {
@@ -480,7 +482,6 @@ export class OrderController extends BaseController<Order> {
             let itemFailures = [];
 
             await Promise.all(orders.map(async order => {
-                order.dateOfSale = new Date();
                 order.status = OrderStatus.RECONCILED;
                 try {
                     await this.orderService.update(order);

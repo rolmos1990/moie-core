@@ -63,6 +63,7 @@ export class PaymentController extends BaseController<Payment> {
                 payment.status = PaymentStatus.CONCILIED;
 
                 order.status = OrderStatus.RECONCILED;
+                order.dateOfSale = new Date();
                 order.payment = payment;
                 await this.orderService.update(order);
                 await this.paymentService.createOrUpdate(payment);

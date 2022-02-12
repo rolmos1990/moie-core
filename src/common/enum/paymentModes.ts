@@ -23,3 +23,13 @@ export const isCash = (paymentMode) => {
 export const isChargeOnDelivery = (orderDelivery: OrderDelivery) => {
     return (orderDelivery.deliveryType === DeliveryTypes.CHARGE_ON_DELIVERY) ? true : false;
 }
+
+export const getPaymentModeLabel = (paymentId) => {
+    if(paymentId === PaymentModes.CASH){
+        return "EFECTIVO";
+    }
+    if(paymentId === PaymentModes.WIRETRANSFER){
+        return "TRANSFERENCIA";
+    }
+     return "";
+}

@@ -381,9 +381,8 @@ export class OrderService extends BaseService<Order> {
             .leftJoinAndSelect('c.state', 's')
             .leftJoinAndSelect('o.orderDelivery', 'd')
             .leftJoinAndSelect('o.deliveryMethod', 'i')
-            .where("o.orderDelivery", Not(IsNull()))
             .andWhere("d.deliveryDate", Between(dateFrom, dateTo))
-            .andWhere("o.deliveryMethod", deliveryMethod)
+            .andWhere("o.deliveryMethod = :deliveryMethod", {deliveryMethod: 1})
             .andWhere("o.status", status)
             .getMany();
     }
