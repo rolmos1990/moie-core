@@ -24,6 +24,7 @@ import {DeliveryLocalityService} from "./deliveryLocality.service";
 import {Between, IsNull, Not} from "typeorm";
 import {OfficeReportTypes} from "../common/enum/officeReportTypes";
 import {TemplatesRegisters} from "../common/enum/templatesTypes";
+import {DeliveryStatus} from "../common/enum/deliveryStatus";
 
 export class OrderService extends BaseService<Order> {
     constructor(
@@ -140,7 +141,6 @@ export class OrderService extends BaseService<Order> {
             order.user = (oldOrder && oldOrder.user) || order.user || user;
             order.piecesForChanges = parse.piecesForChanges || order.piecesForChanges || null;
             order.paymentMode = parse.paymentMode || order.paymentMode || null;
-            order.enablePostSale = parse.enablePostSale === undefined ? order.enablePostSale : parse.enablePostSale;
             order.quantity = products.reduce((s,p) => p.quantity + s, 0);
 
             //Incremento prioridad de la orden cada vez que la actualizo (solo si la orden es pendiente obtiene prioridad)
@@ -398,6 +398,20 @@ export class OrderService extends BaseService<Order> {
             .andWhere("d.chargeOnDelivery = :chargeOnDelivery", { chargeOnDelivery : true })
             .andWhere("o.dateOfSale", Between(dateFrom, dateTo))
             .andWhere("o.deliveryMethod", deliveryMethod)
+            .getMany();
+    }
+
+
+    /** find order pending for update delivery status */
+    /** Return Order */
+    async findPendingForDelivery() : Promise<Order[]>{
+
+        return await this.orderRepository.createQueryBuilder('o')
+            .leftJoinAndSelect('o.orderDelivery', 'd')
+            .leftJoinAndSelect('o.deliveryMethod', 'i')
+            .where("o.orderDelivery", Not(IsNull()))
+            .andWhere("d.sync = :sync", {sync: true})
+            .andWhere("d.tracking", Not(IsNull()))
             .getMany();
     }
 

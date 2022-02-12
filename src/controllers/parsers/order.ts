@@ -128,7 +128,6 @@ export class OrderUpdate {
         /** Only for Update */
         this.refreshAddress = props.refreshAddress;
         this.tracking = props.tracking;
-        this.enablePostSale = props.enablePostSale;
     }
 
     hasChargeOnDelivery(props) : boolean{
@@ -182,7 +181,6 @@ export class OrderUpdate {
 
     @IsBoolean()
     @IsOptional()
-    enablePostSale: boolean;
 
     products: OrderProduct[]
 }
@@ -199,7 +197,6 @@ export const OrderListDTO = (order: OrderModel) => ({
     totalRevenue: order.totalRevenue,
     totalWeight: order.totalWeight,
     remember: order.remember,
-    enablePostSale: order.enablePostSale,
     expiredDate: order.expiredDate,
     createdAt: order.createdAt,
     updatedAt: order.updatedAt,
@@ -224,7 +221,6 @@ export const OrderShowDTO = (order: OrderModel) => ({
     totalRevenue: order.totalRevenue,
     totalWeight: order.totalWeight,
     remember: order.remember,
-    enablePostSale: order.enablePostSale,
     piecesForChanges: order.piecesForChanges,
     paymentMode: order.paymentMode,
     expiredDate: order.expiredDate,

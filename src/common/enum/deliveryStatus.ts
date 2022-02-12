@@ -1,3 +1,3 @@
 export enum DeliveryStatus {
-    PENDING = 'Pending', //Define estado principal del delivery
+    PENDING = 'PENDIENTE', //Define estado principal del delivery
 }

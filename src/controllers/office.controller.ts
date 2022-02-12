@@ -6,7 +6,7 @@ import {GET, POST, route} from "awilix-express";
 import {OfficeCreateDTO, OfficeListDTO} from "./parsers/office";
 import {UserService} from "../services/user.service";
 import {Request, Response} from "express";
-import {ApplicationException, InvalidArgumentException, InvalidFileException} from "../common/exceptions";
+import {ApplicationException, InvalidArgumentException} from "../common/exceptions";
 import {ConditionalQuery} from "../common/controllers/conditional.query";
 import {OperationQuery} from "../common/controllers/operation.query";
 import {PageQuery} from "../common/controllers/page.query";
@@ -19,23 +19,17 @@ import {ImporterImpl} from "../templates/importers/importerImpl";
 import {LIMIT_SAVE_BATCH} from "../common/persistence/mysql.persistence";
 import {OrderDeliveryService} from "../services/orderDelivery.service";
 import {OrderStatus} from "../common/enum/orderStatus";
-import {getDeliveryShortType, QrBarImage} from "../common/helper/helpers";
-import {isCash, isPaymentMode} from "../common/enum/paymentModes";
+import {getDeliveryShortType} from "../common/helper/helpers";
 import {BatchRequestTypes, BatchRequestTypesStatus} from "../common/enum/batchRequestTypes";
-import {UserShortDTO} from "./parsers/user";
 import {TemplateService} from "../services/template.service";
 import {DeliveryStatus} from "../common/enum/deliveryStatus";
-import {EBillType} from "../common/enum/eBill";
 import {OfficeReportTypes} from "../common/enum/officeReportTypes";
-import {Bill} from "../models/Bill";
-import {ExpotersEletronicBill} from "../templates/exporters/electronic-bill";
-import {ElectronicBillAdaptor} from "../templates/adaptors/ElectronicBillAdaptor";
 import {ExportersOfficeCd} from "../templates/exporters/office-orders.exporters";
 import {OrderHistoricService} from "../services/orderHistoric.service";
 import {EventStatus} from "../common/enum/eventStatus";
 import {TemplatesRegisters} from "../common/enum/templatesTypes";
-import moment = require("moment");
 import {ExportersOfficeMensajeroCd} from "../templates/exporters/office-orders-mensajero.exporters";
+import {DeliveryMethodService} from "../services/deliveryMethod.service";
 
 @route('/office')
 export class OfficeController extends BaseController<Office> {
@@ -47,6 +41,7 @@ export class OfficeController extends BaseController<Office> {
         private readonly orderDeliveryService: OrderDeliveryService,
         private readonly templateService: TemplateService,
         private readonly orderHistoricService: OrderHistoricService,
+        private readonly deliveryMethodService: DeliveryMethodService
     ){
         super(officeService);
     };
@@ -334,7 +329,7 @@ export class OfficeController extends BaseController<Office> {
                     item.orderDelivery.tracking = tracking[0].trackingNumber;
                     ordersToUpdate.push(item);
                 }
-                return {id: item.orderDelivery.id, tracking: item.orderDelivery.tracking, deliveryDate: new Date(), deliveryStatus: DeliveryStatus.PENDING};
+                return {id: item.orderDelivery.id, tracking: item.orderDelivery.tracking, deliveryDate: new Date(), deliveryStatus: DeliveryStatus.PENDING, sync: true};
             });
 
             const registers = await this.orderDeliveryService.createOrUpdate(orderDeliveries, {chunk: LIMIT_SAVE_BATCH});
@@ -359,14 +354,6 @@ export class OfficeController extends BaseController<Office> {
             }
         }
     }
-
-    //exportReport ->
-
-    /** Download Template for Interrapidisimo Delivery Service */
-    //@route('/importTracking')
-    // -> un file (base64), deliveryMethod (metodo de envio), deliveryDate (fecha del envio)
-    //success ->
-
 
     protected getDefaultRelations(): Array<string> {
         return ['deliveryMethod', 'user'];

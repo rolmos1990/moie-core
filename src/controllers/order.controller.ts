@@ -31,6 +31,7 @@ import {OrderHistoricDTO, OrderHistoricListDTO} from "./parsers/orderHistoric";
 import {EventStatus} from "../common/enum/eventStatus";
 import {OrderConditional} from "../common/enum/order.conditional";
 import {TemplatesRegisters} from "../common/enum/templatesTypes";
+import {OrderDeliveryService} from "../services/orderDelivery.service";
 
 
 @route('/order')
@@ -45,6 +46,7 @@ export class OrderController extends BaseController<Order> {
         private readonly mediaManagementService: MediaManagementService,
         private readonly commentService: CommentService,
         private readonly orderHistoricService: OrderHistoricService,
+        private readonly orderDeliveryService: OrderDeliveryService
     ){
         super(orderService);
     };
@@ -679,6 +681,43 @@ export class OrderController extends BaseController<Order> {
 
     getGroupRelations(): Array<string> {
         return ['user'];
+    }
+
+    @route('/:id/sync/orderDelivery')
+    @POST()
+    public async syncOrderDelivery(req: Request, res: Response){
+        try {
+            const id = req.params.id;
+            const body = req.body;
+            const order : Order = await this.orderService.find(parseInt(id), ['orderDelivery',  'deliveryMethod']);
+            order.orderDelivery.sync = body.sync;
+            await this.orderDeliveryService.createOrUpdate(order.orderDelivery);
+            return res.json({status: 200}).status(200);
+
+        }catch(e){
+            console.log("error: ", e.message);
+            this.handleException(new ApplicationException(), res);
+        }
+    }
+
+
+    @route('/:id/refresh/orderDelivery')
+    @GET()
+    public async refreshOrderDelivery(req: Request, res: Response){
+
+        try {
+            const id = req.params.id;
+            const order : Order = await this.orderService.find(parseInt(id), ['orderDelivery',  'deliveryMethod']);
+            const orders = [];
+            orders.push(order);
+            const update = await this.deliveryMethodService.syncDeliveries(orders);
+            return res.json({...update, status: 200}).status(200);
+
+        }catch(e){
+            console.log("error: ", e.message);
+            this.handleException(new ApplicationException(), res);
+        }
+
     }
 
 

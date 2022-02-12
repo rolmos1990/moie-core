@@ -19,5 +19,8 @@ export const OrderDeliveryShowDTO = (orderDelivery: OrderDelivery) => ({
     chargeOnDelivery: orderDelivery ? orderDelivery.chargeOnDelivery : null,
     deliveryType: orderDelivery ? orderDelivery.deliveryType : null,
     deliveryStatus: orderDelivery ? orderDelivery.deliveryStatus : null,
-    deliveryLocality: orderDelivery ? DeliveryLocalityListDTO(orderDelivery.deliveryLocality) : null
+    deliveryLocality: orderDelivery ? DeliveryLocalityListDTO(orderDelivery.deliveryLocality) : null,
+    deliveryCurrentLocality: orderDelivery ? orderDelivery.deliveryCurrentLocality : null,
+    deliveryStatusDate: orderDelivery ? orderDelivery.deliveryStatusDate : null,
+    sync: orderDelivery ? orderDelivery.sync : false
 });

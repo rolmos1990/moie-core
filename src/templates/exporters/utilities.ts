@@ -1,10 +1,13 @@
 import moment = require("moment");
+import {Customer} from "../../models/Customer";
+import {isEmpty} from "../../common/helper/helpers";
 
 export function toDateFormat(date, format = "YYYY-MM-DD") {
-    if(!date){
+    if(date === null){
         return "";
     }
-    return moment(date).format(format)
+    const _date  = moment(date, 'YYYY-MM-DD').format(format);
+    return _date;
 }
 
 export function toFixed (item) {
@@ -24,9 +27,23 @@ export function toFloat(item) {
 }
 
 export function toUpper(item) {
-    const value = item && item.toString();
-    if(!value){
-        return value;
+    try {
+        const value = item && item.toString();
+        if (!value) {
+            return value;
+        }
+        return value.toUpperCase();
+    }catch(e){
+        console.log("error reportado", e.message);
+        return "";
     }
-    return value.toUpperCase();
+}
+
+
+export function customerLocality(customer: Customer) {
+    try {
+        return customer.state.name + " - " + customer.municipality.name;
+    }catch(e){
+        return "";
+    }
 }

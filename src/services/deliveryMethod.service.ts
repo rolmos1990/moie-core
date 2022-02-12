@@ -9,11 +9,15 @@ import {Customer} from "../models/Customer";
 import {InvalidArgumentException} from "../common/exceptions";
 import {OrderDelivery} from "../models/OrderDelivery";
 import {DeliveryLocalityService} from "./deliveryLocality.service";
+import {Order} from "../models/Order";
+import {DeliveryStatusImpl, TrackingDelivery} from "../common/requesters/deliveries/DeliveryStatusImpl";
+import {OrderDeliveryService} from "./orderDelivery.service";
 
 export class DeliveryMethodService extends BaseService<DeliveryMethod> {
     constructor(
         private readonly deliveryMethodRepository: DeliveryMethodRepository<DeliveryMethod>,
-        private readonly deliveryLocalityService: DeliveryLocalityService
+        private readonly deliveryLocalityService: DeliveryLocalityService,
+        private readonly orderDeliveryService: OrderDeliveryService
     ){
         super(deliveryMethodRepository);
     }
@@ -77,5 +81,30 @@ export class DeliveryMethodService extends BaseService<DeliveryMethod> {
     async findByCode(code){
         const delivery = await this.deliveryMethodRepository.findByObject({code: code});
         return delivery[0];
+    }
+
+    /** Allow to update the delivery status from a order list */
+    async syncDeliveries(orders: Order[]){
+
+        let updates = 0;
+        let failed = 0;
+
+        await Promise.all(orders.map(async item => {
+            const requested = new DeliveryStatusImpl(item);
+            try {
+                const tracking: TrackingDelivery = await requested.call();
+                item.orderDelivery.deliveryStatusDate = tracking.date;
+                item.orderDelivery.deliveryStatus = tracking.status;
+                item.orderDelivery.sync = tracking.sync;
+                item.orderDelivery.deliveryCurrentLocality = tracking.locality;
+                await this.orderDeliveryService.createOrUpdate(item.orderDelivery);
+                updates++;
+            }catch(e){
+                failed++;
+                console.log("no se ha podido actualizar la orden");
+            }
+        }));
+
+        return {failed, updates};
     }
 }

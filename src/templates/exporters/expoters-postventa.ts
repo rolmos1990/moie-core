@@ -4,7 +4,7 @@ import {EXPORTER_POSTVENTA} from "./constants";
 import {OrderStatusNames} from '../../common/enum/orderStatus';
 import moment = require("moment");
 import {SingleBaseExporters} from "./single.base.exporters";
-import {toDateFormat, toFixed, toFloat, toUpper} from "./utilities";
+import {customerLocality, toDateFormat, toFixed, toFloat, toUpper} from "./utilities";
 
 export class ExpotersPostventa extends SingleBaseExporters {
 
@@ -19,15 +19,15 @@ export class ExpotersPostventa extends SingleBaseExporters {
     getBody(data: Order[]) {
         const body = data.map(item => ({
             deliveryDate: toDateFormat(item.orderDelivery.deliveryDate),
-            customerName: item.customer.name.toUpperCase(),
+            customerName: toUpper(item.customer.name),
             orderId: item.id,
             status: OrderStatusNames[item.status].toUpperCase(),
             deliveryMethod: toUpper(item.deliveryMethod.name),
             tracking: item.orderDelivery.tracking,
             deliveryStatus: toUpper(item.orderDelivery.deliveryStatus),
-            deliveryDateStatus: moment(item.orderDelivery.updatedAt).format("YYYY-MM-DD HH:mm:ss"),
-            deliveryState: item.orderDelivery.deliveryState,
-            deliveryDestiny: item.customer.state.name + " - " + item.customer.municipality.name,
+            deliveryDateStatus: toDateFormat(item.orderDelivery.deliveryStatusDate),
+            deliveryState: item.orderDelivery.deliveryCurrentLocality,
+            deliveryDestiny: customerLocality(item.customer),
             amount: toFixed(toFloat(item.totalAmount) + toFloat(item.orderDelivery.deliveryCost)),
             observation: ""
         }));

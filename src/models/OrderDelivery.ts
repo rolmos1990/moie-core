@@ -44,16 +44,32 @@ export class OrderDelivery extends BaseModel{
     @IsOptional()
     deliveryStatus: string;
 
+    @Column({name:'delivery_current_locality', type: 'varchar', length: 200, nullable: true})
+    @Length(0,200, {groups: ['create','update']})
+    @IsOptional()
+    deliveryCurrentLocality: string;
+
     @Column({name:'delivery_date', type: 'datetime', nullable: true})
     @Type(() => Date)
     @IsDate()
     @IsOptional()
     deliveryDate: Date;
 
+    @Column({name:'delivery_status_date', type: 'datetime', nullable: true})
+    @Type(() => Date)
+    @IsDate()
+    @IsOptional()
+    deliveryStatusDate: Date;
+
     /** Se aplica cargo en la entrega */
     @Column({name:'charge_on_delivery', type: 'boolean'})
     @IsBoolean({groups: ['create','update']})
     chargeOnDelivery: boolean;
+
+    /** Permite sincronizar con algun servicio de envios */
+    @Column({name:'sync', type: 'boolean'})
+    @IsBoolean({groups: ['create','update']})
+    sync: boolean;
 
     /** Tipo de entrega */
     @Column({name:'delivery_type', type: 'integer', nullable: true})

@@ -6,11 +6,13 @@ import {DeliveryMethodService} from "../services/deliveryMethod.service";
 import {Request, Response} from "express";
 import {RequestQuoteDTO} from "./parsers/quote";
 import {FieldOptionService} from "../services/fieldOption.service";
+import {OrderService} from "../services/order.service";
 
 @route('/deliveryMethod')
 export class DeliveryMethodController extends BaseController<DeliveryMethod> {
     constructor(
-        private readonly deliveryMethodService: DeliveryMethodService
+        private readonly deliveryMethodService: DeliveryMethodService,
+        private readonly orderService: OrderService
     ){
         super(deliveryMethodService);
     };
@@ -77,6 +79,14 @@ export class DeliveryMethodController extends BaseController<DeliveryMethod> {
     }
     getGroupRelations(): Array<string> {
         return [];
+    }
+
+    @route('/cron/updateDeliveryStatus')
+    @GET()
+    public async updateDeliveryStatus(req: Request, res: Response) {
+        const orders = await this.orderService.findPendingForDelivery();
+        const update = await this.deliveryMethodService.syncDeliveries(orders);
+        return res.json(update).status(200);
     }
 
 }
