@@ -2,8 +2,6 @@ import {BaseRequester} from "../BaseRequester";
 import {Order} from "../../../models/Order";
 import {DeliveryStatusInterrapidisimo} from "./DeliveryStatusInterrapidisimo";
 import {InvalidFileException} from "../../exceptions";
-import {converterXMLInJson} from "../../helper/converters";
-import {InvalidDocumentException} from "../../exceptions/invalidDocument.exception";
 const axios = require('axios');
 
 
