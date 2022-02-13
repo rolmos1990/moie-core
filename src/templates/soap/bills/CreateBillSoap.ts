@@ -4,6 +4,7 @@ import {EBillType} from "../../../common/enum/eBill";
 import moment = require("moment");
 import {BillCreditMemo} from "../../../models/BillCreditMemo";
 import {urlencoded} from "express";
+import {roundDecimals} from "../../../common/helper/helpers";
 const toXML = require("to-xml").toXML;
 
 export class CreateBillSoap extends BaseSoapTemplate {
@@ -24,6 +25,7 @@ export class CreateBillSoap extends BaseSoapTemplate {
     getData() {
 
         const bill : Bill = this.bill;
+        const billNumber = 33; //bill.id;
 
         const order = bill.order;
 
@@ -41,16 +43,16 @@ export class CreateBillSoap extends BaseSoapTemplate {
         const CustomerMunicipality = customer.municipality;
 
         const departamento = {
-            'codigo' : '05',
-            'nombre' : 'ANTIOQUIA'
+            codigo : "05",
+            nombre : "ANTIOQUIA"
         };
         const ciudad = {
-            'codigo' : '05380',
-            'nombre' : 'LA ESTRELLA'
+            codigo : "05380",
+            nombre : "LA ESTRELLA"
         };
         const pais = {
-            'nombre' : 'Colombia',
-            'codigo' : 'CO'
+            nombre : "Colombia",
+            codigo : "CO"
         };
         const moneda = 'COP';
         const empresa = {
@@ -89,9 +91,9 @@ export class CreateBillSoap extends BaseSoapTemplate {
             producto['valor_unitario'] = 0;
             producto['valor_total'] = 0;
 
-            producto['precio_venta'] = producto.price / 100 * (100 - producto.discountPercent);
+            producto['precio_venta'] = parseFloat(producto.price.toString()) / 100 * (100 - parseFloat(producto.discountPercent.toString()));
 
-            monto_venta += (producto.price / 100 * (100 - producto.discountPercent)) * producto.quantity;
+            monto_venta += producto['precio_venta'] * producto.quantity;
             monto_venta_sin_iva = monto_venta / iva;
             restante = monto_venta_sin_iva - subtotal;
 
@@ -99,26 +101,27 @@ export class CreateBillSoap extends BaseSoapTemplate {
                 producto['precio_venta'] = restante * 1.19 / producto.quantity;
             }
 
-            // al 100 se le sumaba el iva pero en todos es 0.. / (100 + factura['iva'], 2)
-            producto['valor_unitario'] = Math.round(producto['precio_venta'] * 100) / 100;
+            producto['valor_unitario'] = (parseFloat(producto['precio_venta']) * 100) / (100 + parseFloat(bill.tax.toString()));
+            producto['valor_unitario'] = roundDecimals(producto['valor_unitario']);
             producto['valor_total'] = producto.quantity * parseFloat(producto['valor_unitario']);
-            producto['valor_iva'] = (producto['valor_total'] * 0 / 100,2).toFixed(2);
-            subtotal += producto['valor_total'];
-            impuestos += producto['valor_iva'];
+            producto['valor_iva'] =  (producto['valor_total'] * parseFloat(bill.tax.toString())) / 100;
+            producto['valor_iva'] = roundDecimals(producto['valor_iva']);
+            subtotal += parseFloat(producto['valor_total']);
+            impuestos += parseFloat(producto['valor_iva']);
 
             InvcDtl.push({
-                'Company' : empresa['nit'],
-                'InvoiceNum' : bill.id,
+                'Company' : empresa.nit,
+                'InvoiceNum' : billNumber,
                 'InvoiceLine' : (index + 1),
                 'PartNum' : producto['id'],
                 'LineDesc' : producto['id'] + ' - ' + producto.size + ' - ' + producto.color,
                 'PartNumPartDescription' : producto.id + ' - ' + producto.size + ' - ' + producto.color,
                 'SellingShipQty' : producto.quantity,
                 'SalesUM' : 94,
-                'UnitPrice' : parseFloat(producto['valor_unitario']),
-                'DocUnitPrice' : parseFloat(producto['valor_unitario']),
-                'DocExtPrice' : parseFloat(producto['valor_total']),
-                'DspDocExtPrice' : parseFloat(producto['valor_total']),
+                'UnitPrice' : roundDecimals(producto['valor_unitario'], false),
+                'DocUnitPrice' : roundDecimals(producto['valor_unitario'], false),
+                'DocExtPrice' : roundDecimals(producto['valor_total'], false),
+                'DspDocExtPrice' : roundDecimals(producto['valor_total'], false),
                 'DiscountPercent' : 0,
                 'Discount' : 0,
                 'DocDiscount' : 0,
@@ -133,26 +136,24 @@ export class CreateBillSoap extends BaseSoapTemplate {
                     'InvoiceLine' : (index + 1),
                     'CurrencyCode' : moneda,
                     'RateCode' : 'IVA 19',
-                    'DocTaxableAmt' : parseFloat(producto['valor_total']),
-                    'TaxAmt' : producto['valor_iva'],
-                    'DocTaxAmt' : producto['valor_iva'],
-                    'Percent' : bill.tax,
+                    'DocTaxableAmt' : roundDecimals(producto['valor_total'], false),
+                    'TaxAmt' : roundDecimals(producto['valor_iva'], false),
+                    'DocTaxAmt' : roundDecimals(producto['valor_iva'], false),
+                    'Percent' : parseFloat(bill.tax.toString()),
                     'WithholdingTax_c' : false
             });
 
         });
 
         //total
-        subtotal = subtotal ? parseFloat(subtotal.toString()) : 0;
-        impuestos = impuestos ? parseFloat(impuestos.toString()) : 0;
         orderDelivery.deliveryCost = orderDelivery.deliveryCost ? parseFloat(orderDelivery.deliveryCost.toString()) : 0;
 
-        total = subtotal + impuestos + orderDelivery.deliveryCost;
+        total = parseFloat(subtotal.toString()) + parseFloat(impuestos.toString()) + orderDelivery.deliveryCost;
 
         const InvcHead = {
             'Company' : empresa['nit'],
             'InvoiceType' : 'InvoiceType',
-            'InvoiceNum' : bill.id,
+            'InvoiceNum' : billNumber,
             'LegalNumber' : billConfig.prefix + bill.legalNumber,
             'InvoiceRef' : '',
             'CustNum' : customer.document,
@@ -160,25 +161,22 @@ export class CreateBillSoap extends BaseSoapTemplate {
             'CustomerName' : customer.name,
             'InvoiceDate' :  moment(bill.createdAt).format('MM/DD/YYYY HH:mm:ss'),
             'DueDate' : moment(bill.createdAt).format('MM/DD/YYYY HH:mm:ss'),
-            'DspDocSubTotal' : subtotal,
-            'DocTaxAmt' : impuestos,
+            'DspDocSubTotal' : roundDecimals(subtotal, false),
+            'DocTaxAmt' : roundDecimals(impuestos, false),
             'DocWHTaxAmt' : '0',
-            'DspDocInvoiceAmt' : total,
+            'DspDocInvoiceAmt' : roundDecimals(total, false),
             'InvoiceComment' : '',
             'CurrencyCodeCurrencyID' : moneda,
             'CurrencyCode' : moneda,
             'NumResol' : billConfig.number,
-            'OrderNum' : bill.id,
+            'OrderNum' : billNumber,
             'Resolution1' : 'Numeración de facturación electrónica según resolución DIAN No. ' + billConfig.number + ' del ' + billConfig.resolutionDate + ' de ' + billConfig.prefix + billConfig.startNumber + ' a ' + billConfig.prefix + billConfig.finalNumber,
             'Discount' : 0,
             'PaymentMeansID_c' : 1,
             'PaymentMeansDescription' : 'Contado',
             'PaymentMeansCode_c' : 10,
             'PaymentDurationMeasure' : 0,
-            'PaymentDueDate' : moment(bill.createdAt).format('YYYY-MM-DD'),
-            'DspValueDebt': "", //CHECK
-            'CalculationRate_c': "", //CHECK
-            'DateCalculationRate_c': "" //CHECK
+            'PaymentDueDate' : moment(bill.createdAt).format('YYYY-MM-DD')
         };
 
         const Customer = {
@@ -187,11 +185,11 @@ export class CreateBillSoap extends BaseSoapTemplate {
             'CustNum': customer.document,
             'ResaleID': customer.document,
             'Name': customer.name,
-            'Address1': customer.address || "test address",
+            'Address1': customer.address || "no registrada",
             'EMailAddress': customer.email,
             'PhoneNum':customer.phone,
             'CurrencyCode': moneda,
-            'Country': pais['nombre'],
+            'Country': pais.nombre,
             'RegimeType_c': empresa['tipo_regimen'],
             'FiscalResposability_c': empresa['responsabilidad_fiscal'],
             'IdentificationType': 13,
@@ -202,34 +200,32 @@ export class CreateBillSoap extends BaseSoapTemplate {
         };
 
         const Company = {
-            'Company' : empresa['nit'],
-            'StateTaxID' : empresa['nit'],
-            'Name' : empresa['nombre_completo'],
-            'FiscalResposability_c' : empresa['responsabilidad_fiscal'],
-            'OperationType_c' : empresa['tipo_operacion'],
-            'CompanyType_c' : empresa['tipo_empresa'],
-            'RegimeType_c' : empresa['tipo_regimen'],
-            'State' : departamento['nombre'],
-            'StateNum' : departamento['codigo'],
-            'City' : ciudad['nombre'],
-            'CityNum' : ciudad['codigo'],
-            'IdentificationType' : empresa['tipo_id'],
-            'Address1' : empresa['direccion'],
-            'Country' : pais['nombre'],
-            'PhoneNum' : empresa['telefono'],
-            'Email' : empresa['email'],
-            'FaxNum': ''
-    };
+            'Company' : empresa.nit,
+            'StateTaxID' : empresa.nit,
+            'Name' : empresa.nombre_completo,
+            'FiscalResposability_c' : empresa.responsabilidad_fiscal,
+            'OperationType_c' : empresa.tipo_operacion,
+            'CompanyType_c' : empresa.tipo_empresa,
+            'RegimeType_c' : empresa.tipo_regimen,
+            'State' : departamento.nombre,
+            'StateNum' : departamento.codigo,
+            'City' : ciudad.nombre,
+            'CityNum' : ciudad.codigo,
+            'IdentificationType' : empresa.tipo_id,
+            'Address1' : empresa.direccion,
+            'Country' : pais.nombre,
+            'PhoneNum' : empresa.telefono,
+            'Email' : empresa.email
+        };
         const COOneTime = {
-            'Company' : empresa['nit'],
+            'Company' : empresa.nit,
             'IdentificationType' : 13,
             'COOneTimeID' : customer.document,
             'Name' : customer.name,
-            'CountryCode' : pais['codigo'],
-            'CompanyName': empresa['nombre']
+            'CountryCode' : pais.codigo,
     };
         const SalesTRC = {
-            'Company' : empresa['nit'],
+            'Company' : empresa.nit,
             'RateCode' : 'IVA 19',
             'TaxCode' : 'IVA',
             'Description' : 'IVA 19',
@@ -237,13 +233,13 @@ export class CreateBillSoap extends BaseSoapTemplate {
     };
         //flete
         const InvcMisc = {
-            'Company' : empresa['nit'],
-            'InvoiceNum' : bill.id,
+            'Company' : empresa.nit,
+            'InvoiceNum' : billNumber,
             'InvoiceLine' : 0,
             'MiscCode' : 'Flete',
             'Description' : 'Flete',
-            'MiscAmt' : orderDelivery.deliveryCost,
-            'DocMiscAmt' : orderDelivery.deliveryCost,
+            'MiscAmt' : roundDecimals(orderDelivery.deliveryCost, false),
+            'DocMiscAmt' : roundDecimals(orderDelivery.deliveryCost, false),
             'MiscCodeDescription' : 'Flete',
             'Percentage' : 0,
             'MiscBaseAmt' : 0

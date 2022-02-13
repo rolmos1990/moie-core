@@ -118,3 +118,12 @@ export function ArrayToObject(arr, fieldName, fieldValue) {
 export function currencyFormat(number, currency = "COP", locale = 'es-CO'){
     return new Intl.NumberFormat('es-CO', { style: 'currency', currency: currency }).format(number)
 }
+
+export function roundDecimals(number, outputString = false){
+    //return number;
+    const _round = number.toFixed(2);
+    if(outputString){
+        return _round;
+    }
+    return parseFloat(_round);
+}
