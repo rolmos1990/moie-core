@@ -5,6 +5,7 @@ import {compile, registerHelper, registerPartial} from 'handlebars';
 import {TemplateRepository} from "../repositories/template.repository";
 import {OfficePDFCss, PrintHeaderCss} from "../templates/styles/catalogHeader";
 import {CatalogHeaderCss} from "../templates/styles/catalogHeaderCss";
+import {ProductImage} from "../models/ProductImage";
 const moment = require("moment");
 
 export class TemplateService extends BaseService<Template> {
@@ -72,7 +73,8 @@ export class TemplateService extends BaseService<Template> {
         });
 
         registerHelper('normalizeWeight', function (weight) {
-            if(weight < 1000){
+
+            if(parseFloat(weight) < 1000){
                 return Number(weight);
             } else {
                 return Math.floor(Number(weight));
@@ -107,6 +109,29 @@ export class TemplateService extends BaseService<Template> {
                     return options.inverse(this);
             }
         });
+
+        /* registerHelper('getImage', function (productImages: ProductImage[], imageNumber, quality) {
+                if(!productImages) return null;
+
+                const image = productImages[imageNumber];
+                if(!image) return null;
+
+                const path = process.env.HOST + "/uploads";
+
+                let result = imgData.path;
+                if (!imgData.thumbs) {
+                    return `${path}${result}`;
+                }
+                try {
+                    const thumbs = JSON.parse(imgData.thumbs);
+                    if (thumbs[quality]) {
+                        result = thumbs[quality];
+                    }
+                } catch (e) {
+                    console.error('Error: ' + imgData.thumbs, e);
+                }
+                return `${path}${result}`;
+        });   */
 
         /** ############################ */
         /** Puede registrar aqui parciales que son plantillas usadas en el templates */

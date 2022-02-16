@@ -131,7 +131,7 @@ export class CategoryController extends BaseController<Category> {
             const operationQuery = new OperationQuery(null, null);
             let page = new PageQuery(limitForQueries,0,queryCondition, operationQuery);
 
-            page.setRelations(['productSize', 'category']);
+            page.setRelations(['productSize', 'category', 'productImage']);
 
             let products = await this.productCatalogViewService.all(page);
 
