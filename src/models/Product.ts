@@ -112,6 +112,11 @@ export class Product extends BaseModel{
     @IsBoolean({groups: ['create','update']})
     status: boolean;
 
+    @Column({name:'size_description', type: 'varchar', length: 30, nullable: true})
+    @MaxLength(12, {groups: ['create','update']})
+    @IsOptional()
+    sizeDescription: string;
+
     isEmpty(): boolean {
         return (this.id == null);
     }

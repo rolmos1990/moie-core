@@ -1,5 +1,5 @@
 import {decodeBase64Image} from "../common/helper/helpers";
-import {readFileSync, writeFile, writeFileSync, existsSync, mkdirSync} from "fs";
+import {readFileSync, writeFile, createWriteStream, writeFileSync, existsSync, mkdirSync} from "fs";
 import {UtilService} from "../common/controllers/util.service";
 import {extension} from 'mime-types';
 import ResizeImg = require("resize-img");
@@ -12,7 +12,9 @@ const createHTML = require('create-html');
 const Excel = require('exceljs')
 import moment = require("moment");
 
-const html_to_pdf = require('html-pdf-node');
+const html_to_pdf = require('html-pdf-node');//disabled
+const pdf = require('html-pdf');//disabled
+const wkhtmltopdf = require('wkhtmltopdf');
 
 
 export const CONFIG_MEDIA = {
@@ -211,11 +213,11 @@ export class MediaManagementService extends UtilService {
                 const pdfBuffer = await html_to_pdf.generatePdf(file, options);
                 return pdfBuffer.toString('base64');
             } else if(format === MEDIA_FORMAT_OUTPUT.b64storage){
-                const pdfBuffer = await html_to_pdf.generatePdf(file, options);
+                //const pdfBuffer = await html_to_pdf.generatePdf(file, options);
                 const filename = "CATALOG_"+moment().unix()+".pdf";
                 const url = `${CONFIG_MEDIA.PDF_PATH}/${filename}`;
-                writeFile(`${CONFIG_MEDIA.STORAGE_PDF_PATH}/${filename}`, pdfBuffer, () => {});
-                return {data: pdfBuffer.toString('base64'), url: url };
+                wkhtmltopdf(html, { output: `${CONFIG_MEDIA.STORAGE_PDF_PATH}/${filename}` });
+                return {data: "", url: url };
             }
 
         }catch(e){

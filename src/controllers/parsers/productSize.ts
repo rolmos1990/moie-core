@@ -1,4 +1,3 @@
-import {ProductImage} from "../../models/ProductImage";
 import {ProductSize} from "../../models/ProductSize";
 
 export const ProductSizeCreateDTO = (productSize: ProductSize) => ({

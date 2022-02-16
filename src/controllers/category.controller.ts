@@ -68,6 +68,44 @@ export class CategoryController extends BaseController<Category> {
         return entity;
     }
 
+    /** Test templates */
+
+    /**
+     * Obtener plantilla de impresión
+     * @param req
+     * @param res
+     */
+    @route('/:id/test/printTestRequest')
+    @GET()
+    public async printTestRequest(req: Request, res: Response) {
+        try {
+            const id = req.params.id;
+
+            let products = await this.productCatalogViewService.findByObject({"category": id}, ['productSize', 'category']);
+
+            if(products.length > 0){
+
+                const onlyReference = false;
+
+                const object = {
+                    products: products,
+                    hasPrice : !onlyReference,
+                    category: products[0].category
+                };
+
+                const template = await this.templateService.getTemplate(TemplatesRegisters.EXPORT_CATALOG_LIST, object);
+
+                return res.send(template);
+
+            } else {
+                return res.json({status: 400, error: "No se han encontrado registros"});
+            }
+        }catch(e){
+            this.handleException(e, res);
+            console.log("error", e);
+        }
+    }
+
     /** Servicios */
 
     /**

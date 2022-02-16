@@ -25,7 +25,7 @@ export class CreateBillSoap extends BaseSoapTemplate {
     getData() {
 
         const bill : Bill = this.bill;
-        const billNumber = 33; //bill.id;
+        const billNumber = 36; //bill.id;
 
         const order = bill.order;
 
@@ -170,7 +170,7 @@ export class CreateBillSoap extends BaseSoapTemplate {
             'CurrencyCode' : moneda,
             'NumResol' : billConfig.number,
             'OrderNum' : billNumber,
-            'Resolution1' : 'Numeración de facturación electrónica según resolución DIAN No. ' + billConfig.number + ' del ' + billConfig.resolutionDate + ' de ' + billConfig.prefix + billConfig.startNumber + ' a ' + billConfig.prefix + billConfig.finalNumber,
+            'Resolution1' : 'Numeración de facturación electrónica según resolución DIAN No. ' + billConfig.number + ' del ' + moment(billConfig.resolutionDate).format('YYYY-MM-DD') + ' de ' + billConfig.prefix + billConfig.startNumber + ' a ' + billConfig.prefix + billConfig.finalNumber,
             'Discount' : 0,
             'PaymentMeansID_c' : 1,
             'PaymentMeansDescription' : 'Contado',
@@ -189,10 +189,10 @@ export class CreateBillSoap extends BaseSoapTemplate {
             'EMailAddress': customer.email,
             'PhoneNum':customer.phone,
             'CurrencyCode': moneda,
-            'Country': pais.nombre,
             'RegimeType_c': empresa['tipo_regimen'],
             'FiscalResposability_c': empresa['responsabilidad_fiscal'],
             'IdentificationType': 13,
+            'Country': pais.nombre,
             'State': CustomerState.name,
             'StateNum': CustomerState.dianCode,
             'City': CustomerMunicipality.name,
@@ -223,7 +223,8 @@ export class CreateBillSoap extends BaseSoapTemplate {
             'COOneTimeID' : customer.document,
             'Name' : customer.name,
             'CountryCode' : pais.codigo,
-    };
+            'CompanyName': empresa.nombre
+        };
         const SalesTRC = {
             'Company' : empresa.nit,
             'RateCode' : 'IVA 19',

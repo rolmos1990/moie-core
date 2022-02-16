@@ -47,7 +47,8 @@ export const ProductDetailDTO = (product: Product) => ({
     productImage: product.productImage,
     size: product.size,
     productSize: product.productSize,
-    productAvailable: product.productAvailable && ProductAvailableDTO(product.productAvailable)
+    productAvailable: product.productAvailable && ProductAvailableDTO(product.productAvailable),
+    sizeDescription: product.sizeDescription || null
 });
 
 export const ProductCreateDTO = (product: Product) => ({
@@ -66,7 +67,8 @@ export const ProductCreateDTO = (product: Product) => ({
     published: product.published,
     status: product.status,
     tags: product.tags || null,
-    referenceKey: product.referenceKey
+    referenceKey: product.referenceKey,
+    sizeDescription: product.sizeDescription || null
 });
 
 export const ProductUpdateDTO = (product: Product) => ({
@@ -86,6 +88,7 @@ export const ProductUpdateDTO = (product: Product) => ({
     published: product.published,
     status: product.status,
     tags: product.tags || null,
+    sizeDescription: product.sizeDescription || null
 });
 
 export const ProductQuoteDTO = (products) => products.map(product => ({

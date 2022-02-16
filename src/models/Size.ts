@@ -1,6 +1,6 @@
 import {Column, Entity, PrimaryGeneratedColumn} from "typeorm";
 import BaseModel from "../common/repositories/base.model";
-import {IsNumber, Length} from "class-validator";
+import {IsBoolean, IsNumber, Length} from "class-validator";
 
 //Equivalente a (talla)
 @Entity({name: 'Size'})
@@ -14,10 +14,9 @@ export class Size extends BaseModel{
     @Length(3, 100, {groups: ['create','update']})
     name: string;
 
-    //9-> Unica -> Description: S M L XL
-    @Column({name:'description', type: 'varchar', length: 20})
-    @Length(3, 100, {groups: ['create','update']})
-    description: string;
+    @Column({name:'has_description', type: 'boolean', default: 0})
+    @IsBoolean({groups: ['create','update']})
+    hasDescription: boolean;
 
     @Column("simple-array")
     sizes: string[];
