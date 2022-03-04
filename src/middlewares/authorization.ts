@@ -10,7 +10,8 @@ const PublicServices = [
     "/bill/reload/dian",
     "/office/gen/officePdfReport/12",
     "/category/39/test/printTestRequest",
-    "/category/38/test/printTestRequest"
+    "/category/38/test/printTestRequest",
+    "/deliveryMethod/cron/updateDeliveryStatus"
 ];;
 
 export const Authorization = (req: Request, res: Response, next: NextFunction) => {

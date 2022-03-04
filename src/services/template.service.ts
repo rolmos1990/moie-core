@@ -75,9 +75,9 @@ export class TemplateService extends BaseService<Template> {
         registerHelper('normalizeWeight', function (weight) {
 
             if(parseFloat(weight) < 1000){
-                return Number(weight);
+                return "1KG";
             } else {
-                return Math.floor(Number(weight));
+                return (Math.floor(Number(weight) / 1000)) + " KG";
             }
         });
 

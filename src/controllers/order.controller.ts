@@ -265,27 +265,32 @@ export class OrderController extends BaseController<Order> {
                 await Promise.all(orders.map(async entity => {
 
                     let changeStatus = false;
-                    if (entity.status === 1) {
+                    if (entity.status === OrderStatus.PENDING) {
                         //PENDIENTE -> CONFIRMADO
-                        entity.status = 2;
+                        entity.status = OrderStatus.CONFIRMED;
                         entity.dateOfSale = new Date();
                         changeStatus = true;
-                    } else if (entity.status === 2) {
+                    } else if (entity.status === OrderStatus.CONFIRMED) {
                         //CONFIRMADO -> IMPRESO
-                        entity.status = 3;
+                        entity.status = OrderStatus.PRINTED;
                         changeStatus = true;
-                    } else if(entity.status === 3) {
+                    } else if(entity.status === OrderStatus.PRINTED) {
                         //IMPRESO -> ENVIADO
-                        entity.status = 4;
+                        entity.status = OrderStatus.SENT;
                         changeStatus = true;
-                    } else if(entity.status === 5 && entity.orderDelivery.deliveryType === 1) {
-                        //CONCILIADO (PREVIOPAGO) -> ENVIADO
-                        entity.status = 3;
+                    } else if(entity.status === OrderStatus.RECONCILED && entity.orderDelivery.deliveryType === 1) {
+                        //CONCILIADO (PREVIOPAGO) -> IMPRESO
+                        entity.status = OrderStatus.PRINTED;
                         changeStatus = true;
                     }
+
                     if(changeStatus) {
+                        const userIdFromSession = req['user'].id;
+                        const user = await this.userService.find(userIdFromSession);
                         updates.push(await this.orderService.createOrUpdate(entity));
+                        await this.orderHistoricService.registerEvent(entity, user);
                     }
+
 
                 }));
                 entity.status = BatchRequestTypesStatus.EXECUTED;
@@ -294,22 +299,22 @@ export class OrderController extends BaseController<Order> {
             } else {
                 entity = orders[0];
                 let changeStatus = false;
-                if (entity.status === 1) {
+                if (entity.status === OrderStatus.PENDING) {
                     //PENDIENTE -> CONFIRMADO
                     entity.dateOfSale = new Date();
-                    entity.status = 2;
+                    entity.status = OrderStatus.CONFIRMED;
                     changeStatus = true;
-                } else if (entity.status === 2) {
+                } else if (entity.status === OrderStatus.CONFIRMED) {
                     //CONFIRMADO -> IMPRESO
-                    entity.status = 3;
+                    entity.status = OrderStatus.PRINTED;
                     changeStatus = true;
-                } else if(entity.status === 3) {
+                } else if(entity.status === OrderStatus.PRINTED) {
                     //IMPRESO -> ENVIADO
-                    entity.status = 4;
+                    entity.status = OrderStatus.SENT;
                     changeStatus = true;
-                } else if(entity.status === 5 && entity.orderDelivery.deliveryType === 1) {
+                } else if(entity.status === OrderStatus.RECONCILED && entity.orderDelivery.deliveryType === 1) {
                     //CONCILIADO (PREVIOPAGO) -> ENVIADO
-                    entity.status = 3;
+                    entity.status = OrderStatus.PRINTED;
                     changeStatus = true;
                 }
 
