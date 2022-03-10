@@ -128,6 +128,14 @@ export class Order extends BaseModel{
     @IsNumber()
     status: number;
 
+    @Column({name:'prints', type: 'integer', default: 0})
+    @IsNumber()
+    prints: number;
+
+    @Column({name:'photos', type: 'integer', default: 0})
+    @IsNumber()
+    photos: number;
+
     @OneToMany(() => OrderDetail, orderDetail => orderDetail.order)
     orderDetails: OrderDetail[];
 

@@ -141,6 +141,8 @@ export class OrderService extends BaseService<Order> {
             order.user = (oldOrder && oldOrder.user) || order.user || user;
             order.piecesForChanges = parse.piecesForChanges || order.piecesForChanges || null;
             order.paymentMode = parse.paymentMode || order.paymentMode || null;
+            order.photos = parse.photos || order.photos || 0;
+            order.prints = parse.prints || order.prints || 0;
             order.quantity = products.reduce((s,p) => p.quantity + s, 0);
 
             //Incremento prioridad de la orden cada vez que la actualizo (solo si la orden es pendiente obtiene prioridad)

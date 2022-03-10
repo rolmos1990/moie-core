@@ -128,6 +128,8 @@ export class OrderUpdate {
         /** Only for Update */
         this.refreshAddress = props.refreshAddress;
         this.tracking = props.tracking;
+        this.prints = props.prints;
+        this.photos = props.photos;
     }
 
     hasChargeOnDelivery(props) : boolean{
@@ -181,8 +183,15 @@ export class OrderUpdate {
 
     @IsBoolean()
     @IsOptional()
-
     products: OrderProduct[]
+
+    @IsNumber()
+    @IsOptional()
+    prints: number;
+
+    @IsNumber()
+    @IsOptional()
+    photos: number;
 }
 
 export const OrderListDTO = (order: OrderModel) => ({
@@ -232,7 +241,9 @@ export const OrderShowDTO = (order: OrderModel) => ({
     customer: CustomerListDTO(order.customer),
     user: UserShortDTO(order.user),
     office: order.office,
-    payment: order.payment
+    payment: order.payment,
+    prints: order.prints || 0,
+    photos: order.photos  || 0
 });
 
 export const OrderShortDTO = (order: OrderModel) => ({
