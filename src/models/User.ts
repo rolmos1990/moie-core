@@ -1,7 +1,7 @@
 import {
     Column,
     CreateDateColumn,
-    Entity, OneToMany,
+    Entity, JoinColumn, ManyToOne, OneToMany,
     PrimaryGeneratedColumn,
     UpdateDateColumn
 } from "typeorm";
@@ -10,6 +10,8 @@ import {IsDate, IsEmail, Length, IsBoolean, IsDateString, IsMimeType} from "clas
 import { Type } from 'class-transformer';
 import {OrderDetail} from "./OrderDetail";
 import { Notification } from "./Notification";
+import {SecurityRol} from "./SecurityRol";
+import {Office} from "./Office";
 
 @Entity({name: 'User'})
 export class User extends BaseModel{
@@ -63,6 +65,10 @@ export class User extends BaseModel{
     @Type(() => Date)
     @IsDate()
     updatedAt: Date;
+
+    @ManyToOne(() => SecurityRol, { nullable: true })
+    @JoinColumn({name: 'security_role_id'})
+    securityRol: SecurityRol;
 
     @OneToMany(() => Notification, notifications => notifications.user)
     notifications: Notification[];

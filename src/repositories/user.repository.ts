@@ -19,7 +19,7 @@ export class UserRepository<T> extends BaseRepository<User>{
     }
 
     public async findByUsername(usernameOrEmail: string) : Promise<User> {
-        let user = await this.repositoryManager.findOne({username: usernameOrEmail});
+        let user = await this.repositoryManager.findOne({username: usernameOrEmail}, {relations: ['securityRol', 'securityRol.permissions']});
         return user || new User();
     }
 

@@ -10,7 +10,8 @@ export const UserListDTO = (user: User) => ({
     status: user.status,
     lastLogin: user.lastLogin,
     createdAt: user.createdAt,
-    updatedAt: user.updatedAt
+    updatedAt: user.updatedAt,
+    securityRol: user.securityRol
 });
 
 export const UserCreateDTO = (user: User, salt = Bcrypt.genSaltSync()) => ({
