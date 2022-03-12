@@ -422,4 +422,187 @@ export class OrderService extends BaseService<Order> {
     async getStatsSalesDateRange(dateFrom, DateTo, user){
     }
 
+
+    /** Obtener estadisticas de Ventas por Dia/Mes/Semana */
+    async getStatsDay(dateFrom, dateTo, group, user){
+
+        const orderRepository = this.orderRepository.createQueryBuilder('o');
+
+        switch(group) {
+            case 'dia':
+                orderRepository.select('SUM(o.totalAmount) as monto, SUM(o.totalRevenue) as ganancia, SUM(o.quantity) as piezas, concat_ws("-",day(o.dateOfSale),month(o.dateOfSale),year(o.dateOfSale)) as fecha');
+                orderRepository.addGroupBy("year(o.dateOfSale)")
+                orderRepository.addGroupBy("month(o.dateOfSale)")
+                orderRepository.addGroupBy("day(o.dateOfSale)");
+                break;
+            case 'semana':
+                orderRepository.select('SUM(o.totalAmount) as monto, SUM(o.totalRevenue) as ganancia, SUM(o.quantity) as piezas, concat_ws("-",week(o.dateOfSale,1),year(o.dateOfSale)) as fecha');
+                orderRepository.addGroupBy("year(o.dateOfSale)")
+                orderRepository.addGroupBy("week(o.dateOfSale,1)");
+                break;
+            case 'mes':
+                orderRepository.select('SUM(o.totalAmount) as monto, SUM(o.totalRevenue) as ganancia, SUM(o.quantity) as piezas, concat_ws("-",month(o.dateOfSale,1),year(o.dateOfSale)) as fecha');
+                orderRepository.addGroupBy("year(o.dateOfSale)")
+                orderRepository.addGroupBy("month(o.dateOfSale)");
+                break;
+            case 'ano':
+                orderRepository.select('SUM(o.totalAmount) as monto, SUM(o.totalRevenue) as ganancia, SUM(o.quantity) as piezas, year(o.dateOfSale) as fecha');
+                orderRepository.addGroupBy("year(o.dateOfSale)");
+                break;
+        }
+
+        if(user !== null){
+            orderRepository.where("o.user", user);
+        }
+
+        orderRepository.andWhere("DATE(o.dateOfSale) >= :before");
+        orderRepository.andWhere("DATE(o.dateOfSale) <= :after");
+
+        orderRepository.setParameters({before: dateFrom, after: dateTo});
+
+        const rows = await orderRepository.getRawMany();
+
+        let results = [];
+
+        rows.map(item => {
+           results.push({
+               fecha: item["fecha"],
+               monto: parseFloat(item["monto"]),
+               ganancia: parseFloat(item["ganancia"]),
+               piezas: parseFloat(item["piezas"])
+           });
+        });
+
+        return results;
+    }
+
+    /** Obtener estadisticas de Ventas por Estados */
+
+    async getStatsOrigen(dateFrom, dateTo, group){
+
+        const orderRepository = this.orderRepository.createQueryBuilder('o');
+
+        orderRepository.addSelect("o.totalAmount");
+        orderRepository.addSelect("SUM(IF(o.origen='FACEBOOK FAN PAGE' or o.origen='FACEBOOK PERFILES', o.totalAmount,0)) as facebook");
+        orderRepository.addSelect("SUM(IF(o.origen='PAGINA WEB ESCRITORIO', o.totalAmount,0))", "web");
+        orderRepository.addSelect("SUM(IF(o.origen='PAGINA WEB MOVIL', o.totalAmount,0))", "webMovil");
+        orderRepository.addSelect("SUM(IF(o.origen like 'BB PIN%', o.totalAmount,0))", "blackberry");
+        orderRepository.addSelect("SUM(IF(o.origen like 'WHATSAPP%', o.totalAmount,0))", "whatsapp");
+        orderRepository.addSelect("SUM(IF(o.origen='APLICACION MOVIL', o.totalAmount,0))", "app");
+        orderRepository.addSelect("SUM(IF(o.origen='OTRO', o.totalAmount,0))", "otros");
+
+        switch(group) {
+            case 'dia':
+                orderRepository.addSelect("CONCAT_WS('-',day(o.dateOfSale),month(o.dateOfSale),year(o.dateOfSale))", 'fecha');
+                orderRepository.addGroupBy("YEAR(o.dateOfSale)")
+                orderRepository.addGroupBy("MONTH(o.dateOfSale)")
+                orderRepository.addGroupBy("DAY(o.dateOfSale)");
+                break;
+            case 'semana':
+                orderRepository.addSelect("WEEK(o.dateOfSale,1) as semana, year(o.dateOfSale) as ano, CONCAT_WS('-',week(o.dateOfSale,1),year(o.dateOfSale))", 'fecha');
+                orderRepository.addGroupBy("YEAR(o.dateOfSale)")
+                orderRepository.addGroupBy("WEEK(o.dateOfSale,1)");
+                orderRepository.addOrderBy("ano");
+                orderRepository.addOrderBy("semana");
+                break;
+            case 'mes':
+                orderRepository.addSelect("CONCAT_WS('-',month(o.dateOfSale),year(o.dateOfSale))", 'fecha');
+                orderRepository.addGroupBy("YEAR(o.dateOfSale)")
+                orderRepository.addGroupBy("MONTH(o.dateOfSale)");
+                orderRepository.addOrderBy("YEAR(o.dateOfSale)");
+                orderRepository.addOrderBy("MONTH(o.dateOfSale)");
+                break;
+            case 'ano':
+                orderRepository.addSelect("YEAR(o.dateOfSale)", 'fecha');
+                orderRepository.groupBy("YEAR(o.dateOfSale)")
+                orderRepository.orderBy("YEAR(o.dateOfSale)");
+                break;
+        }
+
+        orderRepository.andWhere("DATE(o.dateOfSale) >= :before");
+        orderRepository.andWhere("DATE(o.dateOfSale) <= :after");
+
+        orderRepository.setParameters({before: dateFrom, after: dateTo});
+
+        const rows = await orderRepository.getRawMany();
+
+        let results = [];
+
+        rows.map(item => {
+            results.push({
+                fecha: item['fecha'],
+                facebook: parseFloat(item['facebook']),
+                web: parseFloat(item['web']),
+                webMovil: parseFloat(item['webMovil']),
+                blackberry: parseFloat(item['blackberry']),
+                whatsapp: parseFloat(item['whatsapp']),
+                app: parseFloat(item['app']),
+                otros: parseFloat(item['otros'])
+            });
+        });
+
+        return results;
+
+    }
+
+    async getStatsWhatsapp(dateFrom, dateTo) {
+        const orderRepository = this.orderRepository.createQueryBuilder('o');
+        orderRepository.addSelect("o.origen");
+        orderRepository.addSelect("SUM(o.totalAmount) as monto");
+        orderRepository.where("o.origen LIKE :origen");
+        orderRepository.andWhere("DATE(o.dateOfSale) >= :before");
+        orderRepository.andWhere("DATE(o.dateOfSale) <= :after");
+
+        orderRepository.setParameters({origen: "%WHATSAPP%", before: dateFrom, after: dateTo});
+        orderRepository.groupBy("o.origen");
+        //TODO -- Agregar aqui esto $this->db->order_by('numeros(venta.origen)');
+
+        const rows = await orderRepository.getRawMany();
+
+        let results = [];
+
+        rows.map(item => {
+            results.push({
+                origen: item["origen"],
+                monto: parseFloat(item["monto"])
+            });
+        });
+
+        return results;
+
+    }
+
+    /** Obtener estadisticas de Ventas por Estados */
+
+    async getStatsStates(dateFrom, dateTo){
+
+            const orderRepository = this.orderRepository.createQueryBuilder('o');
+
+            orderRepository.leftJoin('o.customer', 'c');
+            orderRepository.leftJoin('c.state', 's');
+            orderRepository.select('SUM(o.totalAmount) as monto')
+            orderRepository.addSelect('s.name', 'estado')
+
+            orderRepository.andWhere("DATE(o.dateOfSale) >= :before");
+            orderRepository.andWhere("DATE(o.dateOfSale) <= :after");
+
+            orderRepository.groupBy("c.state");
+
+            orderRepository.setParameters({before: dateFrom + ' 00:00:00', after: dateTo + ' 23:59:59'});
+
+            const rows = await orderRepository.getRawMany();
+
+            let results = [];
+
+            rows.map(item => {
+                results.push({
+                    estado: item["estado"],
+                    monto: parseFloat(item["monto"])
+                });
+            });
+
+            return results;
+
+    }
+
 }
