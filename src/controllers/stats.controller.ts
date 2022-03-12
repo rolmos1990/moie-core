@@ -99,6 +99,24 @@ export class StatsController extends BaseController<Size> {
         }
     }
 
+    @route("/estadistica_ventas_tipo/:startDate/:endDate/:group")
+    @GET()
+    public async estadistica_ventas_tipo(req: Request, res: Response) {
+        try {
+            const fi = req.params.startDate;
+            const ff = req.params.endDate;
+            const group = req.params.group;
+
+            const stats = await this.orderService.getStatsTipo(fi, ff, group);
+
+            return res.json({...stats});
+
+
+        }catch(e){
+            this.handleException(e, res);
+        }
+    }
+
     protected getDefaultRelations(): Array<string> {
         return [];
     }

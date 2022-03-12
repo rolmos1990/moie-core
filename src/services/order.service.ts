@@ -545,6 +545,74 @@ export class OrderService extends BaseService<Order> {
 
     }
 
+    /** Obtener estadisticas de Ventas por Estados */
+
+    async getStatsTipo(dateFrom, dateTo, group){
+
+        const orderRepository = this.orderRepository.createQueryBuilder('o');
+
+        orderRepository.addSelect("o.totalAmount");
+        orderRepository.addSelect("SUM(IF(d.deliveryType=1, 1,0))", "cantidadPrevioPago");
+        orderRepository.addSelect("SUM(IF(d.deliveryType=1, o.totalAmount,0))", "montoPrevioPago");
+        orderRepository.addSelect("SUM(IF(d.deliveryType=3, 1,0))", "cantidadContraEntrega");
+        orderRepository.addSelect("SUM(IF(d.deliveryType=3, o.totalAmount,0))", "montoContraEntrega");
+        orderRepository.leftJoin("o.orderDelivery", "d")
+
+
+        switch(group) {
+            case 'dia':
+                orderRepository.addSelect("CONCAT_WS('-',day(o.dateOfSale),month(o.dateOfSale),year(o.dateOfSale))", 'fecha');
+                orderRepository.addGroupBy("YEAR(o.dateOfSale)")
+                orderRepository.addGroupBy("MONTH(o.dateOfSale)")
+                orderRepository.addGroupBy("DAY(o.dateOfSale)");
+                orderRepository.addOrderBy("year(o.dateOfSale)");
+                orderRepository.addOrderBy("month(o.dateOfSale)");
+                orderRepository.addOrderBy("day(o.dateOfSale)");
+                break;
+            case 'semana':
+                orderRepository.addSelect("WEEK(o.dateOfSale,1) as semana, year(o.dateOfSale) as ano, CONCAT_WS('-',week(o.dateOfSale,1),year(o.dateOfSale))", 'fecha');
+                orderRepository.addGroupBy("YEAR(o.dateOfSale)")
+                orderRepository.addGroupBy("WEEK(o.dateOfSale,1)");
+                orderRepository.addOrderBy("ano");
+                orderRepository.addOrderBy("semana");
+                break;
+            case 'mes':
+                orderRepository.addSelect("CONCAT_WS('-',month(o.dateOfSale),year(o.dateOfSale))", 'fecha');
+                orderRepository.addGroupBy("YEAR(o.dateOfSale)")
+                orderRepository.addGroupBy("MONTH(o.dateOfSale)");
+                orderRepository.addOrderBy("YEAR(o.dateOfSale)");
+                orderRepository.addOrderBy("MONTH(o.dateOfSale)");
+                break;
+            case 'ano':
+                orderRepository.addSelect("YEAR(o.dateOfSale)", 'fecha');
+                orderRepository.groupBy("YEAR(o.dateOfSale)")
+                orderRepository.orderBy("YEAR(o.dateOfSale)");
+                break;
+        }
+
+        orderRepository.andWhere("DATE(o.dateOfSale) >= :before");
+        orderRepository.andWhere("DATE(o.dateOfSale) <= :after");
+
+        orderRepository.setParameters({before: dateFrom + " 00:00:00", after: dateTo + " 23:59:59"});
+
+        const rows = await orderRepository.getRawMany();
+
+        let results = [];
+
+        rows.map(item => {
+            results.push({
+                fecha: item['fecha'],
+                cantidadPrevioPago: item['cantidadPrevioPago'],
+                montoPrevioPago: item['montoPrevioPago'],
+                cantidadContraEntrega: item['cantidadContraEntrega'],
+                montoContraEntrega: item['montoContraEntrega']
+            });
+        });
+
+        return results;
+
+    }
+
     async getStatsWhatsapp(dateFrom, dateTo) {
         const orderRepository = this.orderRepository.createQueryBuilder('o');
         orderRepository.addSelect("o.origen");
