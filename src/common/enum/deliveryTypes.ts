@@ -18,10 +18,10 @@ export function getDeliveryType(deliveryType){
             return "PREVIO_PAGO";
         break;
         case DeliveryTypes.PAY_ONLY_DELIVERY:
-            return "CONTRAPAGO_COD";
+            return "PAY_ONLY_DELIVERY"; //PREVIOPAGO_COD
         break;
         case DeliveryTypes.CHARGE_ON_DELIVERY:
-            return "CONTRAPAGO";
+            return "CHARGE_ON_DELIVERY"; //CONTRAPAGO
         break;
     }
 }

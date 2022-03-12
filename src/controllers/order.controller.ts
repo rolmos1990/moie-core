@@ -725,6 +725,22 @@ export class OrderController extends BaseController<Order> {
 
     }
 
+    @route('/refresh/all/orderDelivery')
+    @GET()
+    public async refreshAllOrderDelivery(req: Request, res: Response){
+
+        try {
+            const orders : Order[] = await this.orderService.findPendingForDelivery();
+            const update = await this.deliveryMethodService.syncDeliveries(orders);
+            return res.json({...update, status: 200}).status(200);
+
+        }catch(e){
+            console.log("error: ", e.message);
+            this.handleException(new ApplicationException(), res);
+        }
+
+    }
+
 
 
     // Reportes

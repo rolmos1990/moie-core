@@ -90,8 +90,8 @@ export class DeliveryMethodService extends BaseService<DeliveryMethod> {
         let failed = 0;
 
         await Promise.all(orders.map(async item => {
-            const requested = new DeliveryStatusImpl(item);
             try {
+            const requested = new DeliveryStatusImpl(item);
                 const tracking: TrackingDelivery = await requested.call();
                 item.orderDelivery.deliveryStatusDate = tracking.date;
                 item.orderDelivery.deliveryStatus = tracking.status;
