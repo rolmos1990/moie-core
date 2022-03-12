@@ -272,13 +272,14 @@ export class OrderController extends BaseController<Order> {
                         changeStatus = true;
                     } else if (entity.status === OrderStatus.CONFIRMED) {
                         //CONFIRMADO -> IMPRESO
+                        entity.prints = (entity.prints || 0) + 1;
                         entity.status = OrderStatus.PRINTED;
                         changeStatus = true;
                     } else if(entity.status === OrderStatus.PRINTED) {
                         //IMPRESO -> ENVIADO
                         entity.status = OrderStatus.SENT;
                         changeStatus = true;
-                    } else if(entity.status === OrderStatus.RECONCILED && entity.orderDelivery.deliveryType === 1) {
+                    } else if(entity.status === OrderStatus.RECONCILED && [1,2].includes(entity.orderDelivery.deliveryType)) {
                         //CONCILIADO (PREVIOPAGO) -> IMPRESO
                         entity.status = OrderStatus.PRINTED;
                         changeStatus = true;
@@ -310,6 +311,7 @@ export class OrderController extends BaseController<Order> {
                     changeStatus = true;
                 } else if(entity.status === OrderStatus.PRINTED) {
                     //IMPRESO -> ENVIADO
+                    entity.prints = (entity.prints || 0) + 1;
                     entity.status = OrderStatus.SENT;
                     changeStatus = true;
                 } else if(entity.status === OrderStatus.RECONCILED && entity.orderDelivery.deliveryType === 1) {

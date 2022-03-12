@@ -337,6 +337,7 @@ export class OrderService extends BaseService<Order> {
 
     async findByIds(orderIds: any) {
         return await this.orderRepository.createQueryBuilder('o')
+            .leftJoinAndSelect('o.orderDelivery', 'od')
             .where('o.id IN (:orderIds)', {orderIds: orderIds})
             .getMany();
     }

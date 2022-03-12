@@ -25,7 +25,7 @@ export class DeliveryStatusInterrapidisimo extends BaseRequester {
         const ubicacion = movimiento['Ciudad'];
         const estatus = movimiento['DescripcionEstadoGuia'].replace(/\s+/g, ' ');
 
-        const stopStatus = ['reportado entregado', 'entrega verificada', 'entrega exitosa', 'devuelto al remitente'];
+        const stopStatus = ['entrega exitosa', 'devuelto al remitente'];
         const shouldStop = stopStatus.includes(estatus.toLowerCase());
 
         const tracking : TrackingDelivery = {
