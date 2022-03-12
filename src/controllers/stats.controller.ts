@@ -41,7 +41,7 @@ export class StatsController extends BaseController<Size> {
 
             const stats = await this.orderService.getStatsDay(fi, ff, grupo, user);
 
-            return res.json({...stats});
+            return res.json(stats);
 
         }catch(e){
             this.handleException(e, res);
@@ -57,7 +57,7 @@ export class StatsController extends BaseController<Size> {
 
             const stats = await this.orderService.getStatsStates(fi, ff);
 
-            return res.json({...stats});
+            return res.json(stats);
 
         }catch(e){
             this.handleException(e, res);
@@ -74,7 +74,7 @@ export class StatsController extends BaseController<Size> {
 
             const stats = await this.orderService.getStatsOrigen(fi, ff, grupo);
 
-            return res.json({...stats});
+            return res.json(stats);
 
 
         }catch(e){
@@ -109,7 +109,7 @@ export class StatsController extends BaseController<Size> {
 
             const stats = await this.orderService.getStatsTipo(fi, ff, group);
 
-            return res.json({...stats});
+            return res.json(stats);
 
 
         }catch(e){
@@ -126,7 +126,7 @@ export class StatsController extends BaseController<Size> {
 
             const stats = await this.orderService.getStatsMasVendidos(fi, ff);
 
-            return res.json({...stats});
+            return res.json(stats);
 
 
         }catch(e){
@@ -143,7 +143,7 @@ export class StatsController extends BaseController<Size> {
 
             const stats = await this.orderService.getStatsHoras(fi, ff);
 
-            return res.json({...stats});
+            return res.json(stats);
 
 
         }catch(e){
@@ -160,7 +160,7 @@ export class StatsController extends BaseController<Size> {
 
             const stats = await this.orderService.getStatsReincidencias(fi, ff);
 
-            return res.json({...stats});
+            return res.json(stats);
 
 
         }catch(e){
