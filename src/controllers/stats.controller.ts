@@ -117,6 +117,59 @@ export class StatsController extends BaseController<Size> {
         }
     }
 
+    @route("/estadistica_mas_vendidos/:startDate/:endDate")
+    @GET()
+    public async estadistica_mas_vendidos(req: Request, res: Response) {
+        try {
+            const fi = req.params.startDate;
+            const ff = req.params.endDate;
+
+            const stats = await this.orderService.getStatsMasVendidos(fi, ff);
+
+            return res.json({...stats});
+
+
+        }catch(e){
+            this.handleException(e, res);
+        }
+    }
+
+    @route("/estadistica_horas/:startDate/:endDate")
+    @GET()
+    public async estadistica_horas(req: Request, res: Response) {
+        try {
+            const fi = req.params.startDate;
+            const ff = req.params.endDate;
+
+            const stats = await this.orderService.getStatsHoras(fi, ff);
+
+            return res.json({...stats});
+
+
+        }catch(e){
+            this.handleException(e, res);
+        }
+    }
+
+    @route("/estadistica_reincidencias/:startDate/:endDate")
+    @GET()
+    public async estadistica_reincidencias(req: Request, res: Response) {
+        try {
+            const fi = req.params.startDate;
+            const ff = req.params.endDate;
+
+            const stats = await this.orderService.getStatsReincidencias(fi, ff);
+
+            return res.json({...stats});
+
+
+        }catch(e){
+            this.handleException(e, res);
+        }
+    }
+
+
+
     protected getDefaultRelations(): Array<string> {
         return [];
     }

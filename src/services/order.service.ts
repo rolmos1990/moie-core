@@ -25,6 +25,7 @@ import {Between, IsNull, Not} from "typeorm";
 import {OfficeReportTypes} from "../common/enum/officeReportTypes";
 import {TemplatesRegisters} from "../common/enum/templatesTypes";
 import {DeliveryStatus} from "../common/enum/deliveryStatus";
+import {OrderStatus} from "../common/enum/orderStatus";
 
 export class OrderService extends BaseService<Order> {
     constructor(
@@ -610,6 +611,104 @@ export class OrderService extends BaseService<Order> {
         });
 
         return results;
+
+    }
+
+    async getStatsMasVendidos(dateFrom, dateTo) {
+        const orderRepository = this.orderDetailRepository.createQueryBuilder('od');
+
+        orderRepository.addSelect("p.reference", "id");
+        orderRepository.addSelect("od.quantity", "cantidad");
+        orderRepository.addSelect("pa.available", "existencia");
+
+        orderRepository.leftJoin("od.product", "p");
+        orderRepository.leftJoin("p.productAvailable", "pa");
+        orderRepository.leftJoin("od.order", "o");
+
+        orderRepository.andWhere("DATE(o.dateOfSale) >= :before");
+        orderRepository.andWhere("DATE(o.dateOfSale) <= :after");
+
+        orderRepository.setParameters({before: dateFrom, after: dateTo});
+
+        orderRepository.groupBy("p.id")
+        orderRepository.orderBy("cantidad", "DESC");
+        orderRepository.limit(20);
+
+        const rows = await orderRepository.getRawMany();
+
+        return rows;
+
+    }
+
+    async getStatsHoras(dateFrom, dateTo) {
+
+        const orderRepository = this.orderRepository.createQueryBuilder('o');
+
+        orderRepository.addSelect("hour(o.createdAt)", "hora");
+        orderRepository.addSelect("COUNT(*)", "cantidad");
+        orderRepository.addSelect("SUM(o.totalAmount)", "monto");
+
+        orderRepository.where("DATE(o.dateOfSale) >= :before");
+        orderRepository.andWhere("DATE(o.dateOfSale) <= :after");
+
+        orderRepository.setParameters({before: dateFrom + " 00:00:00", after: dateTo + " 23:59:59"});
+
+        orderRepository.groupBy("hora");
+
+        const rows = await orderRepository.getRawMany();
+
+        let results = [];
+
+        for(let i=0; i<=23; i++){
+            results.push({
+                hora: i,
+                monto: 0,
+                cantidad: 0
+            });
+        }
+
+        rows.map(item => {
+            results[item["hora"]]['monto'] = item["monto"];
+            results[item["hora"]]['cantidad'] = item["cantidad"];
+        });
+
+        return results;
+
+    }
+
+    async getStatsReincidencias(dateFrom, dateTo) {
+
+        const orderRepository = this.orderRepository.createQueryBuilder('o');
+
+        orderRepository.addSelect("COUNT(c.id)", "cantidad");
+
+
+        orderRepository.where("DATE(o.dateOfSale) >= :before");
+        orderRepository.andWhere("DATE(o.dateOfSale) <= :after");
+        orderRepository.andWhere("o.status != :status");
+
+        orderRepository.leftJoin("o.customer", "c");
+
+        orderRepository.setParameters({before: dateFrom + " 00:00:00", after: dateTo + " 23:59:59", status: OrderStatus.CANCELED});
+
+        orderRepository.groupBy("c.id");
+
+        const rows = await orderRepository.getRawMany();
+
+        let clientes = 0;
+        let reincidentes = 0;
+
+        rows.map(item => {
+            clientes++;
+            if(parseInt(item['cantidad']) > 1){
+                reincidentes += parseInt(item['cantidad']);
+            }
+        });
+
+        return {
+            clientes,
+            reincidentes
+        };
 
     }
 
