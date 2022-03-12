@@ -13,8 +13,10 @@ const Excel = require('exceljs')
 import moment = require("moment");
 
 const html_to_pdf = require('html-pdf-node');//disabled
-const pdf = require('html-pdf');//disabled
+var binPath  = require('wkhtmltopdf-installer').path;
+console.log("BIN PATH: ", binPath);
 const wkhtmltopdf = require('wkhtmltopdf');
+wkhtmltopdf.command = binPath;
 
 
 export const CONFIG_MEDIA = {
@@ -213,7 +215,6 @@ export class MediaManagementService extends UtilService {
                 const pdfBuffer = await html_to_pdf.generatePdf(file, options);
                 return pdfBuffer.toString('base64');
             } else if(format === MEDIA_FORMAT_OUTPUT.b64storage){
-                //const pdfBuffer = await html_to_pdf.generatePdf(file, options);
                 const filename = "CATALOG_"+moment().unix()+".pdf";
                 const url = `${CONFIG_MEDIA.PDF_PATH}/${filename}`;
                 wkhtmltopdf(html, { output: `${CONFIG_MEDIA.STORAGE_PDF_PATH}/${filename}` });

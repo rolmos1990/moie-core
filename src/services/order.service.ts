@@ -12,7 +12,7 @@ import {CustomerService} from "./customer.service";
 import {DeliveryMethod} from "../models/DeliveryMethod";
 import {User} from "../models/User";
 import {OrderProductTrace} from "../common/helper/orderTrace";
-import {existsInEntity} from "../common/helper/helpers";
+import {existsInEntity, string_to_slug} from "../common/helper/helpers";
 import {ProductSize} from "../models/ProductSize";
 import {Product} from "../models/Product";
 import {OrderDelivery} from "../models/OrderDelivery";
@@ -26,6 +26,7 @@ import {OfficeReportTypes} from "../common/enum/officeReportTypes";
 import {TemplatesRegisters} from "../common/enum/templatesTypes";
 import {DeliveryStatus} from "../common/enum/deliveryStatus";
 import {OrderStatus} from "../common/enum/orderStatus";
+import {FieldOptionService} from "./fieldOption.service";
 
 export class OrderService extends BaseService<Order> {
     constructor(
@@ -35,7 +36,8 @@ export class OrderService extends BaseService<Order> {
         private readonly productSizeService: ProductSizeService,
         private readonly customerService: CustomerService,
         private readonly deliveryMethodService: DeliveryMethodService,
-        private readonly deliveryLocalityService: DeliveryLocalityService
+        private readonly deliveryLocalityService: DeliveryLocalityService,
+        private readonly fieldOptionService: FieldOptionService
     ) {
         super(orderRepository);
     }
@@ -483,15 +485,20 @@ export class OrderService extends BaseService<Order> {
     async getStatsOrigen(dateFrom, dateTo, group){
 
         const orderRepository = this.orderRepository.createQueryBuilder('o');
+        const options = await this.fieldOptionService.findByGroup('ORDERS_ORIGIN');
 
         orderRepository.addSelect("o.totalAmount");
         orderRepository.addSelect("SUM(IF(o.origen='FACEBOOK FAN PAGE' or o.origen='FACEBOOK PERFILES', o.totalAmount,0)) as facebook");
-        orderRepository.addSelect("SUM(IF(o.origen='PAGINA WEB ESCRITORIO', o.totalAmount,0))", "web");
-        orderRepository.addSelect("SUM(IF(o.origen='PAGINA WEB MOVIL', o.totalAmount,0))", "webMovil");
-        orderRepository.addSelect("SUM(IF(o.origen like 'BB PIN%', o.totalAmount,0))", "blackberry");
-        orderRepository.addSelect("SUM(IF(o.origen like 'WHATSAPP%', o.totalAmount,0))", "whatsapp");
-        orderRepository.addSelect("SUM(IF(o.origen='APLICACION MOVIL', o.totalAmount,0))", "app");
-        orderRepository.addSelect("SUM(IF(o.origen='OTRO', o.totalAmount,0))", "otros");
+        options.map(item => {
+            console.log("origen: ", string_to_slug(item.value));
+            orderRepository.addSelect("SUM(IF(o.origen='"+item.value+"', o.totalAmount,0))", string_to_slug(item.value));
+        });
+        //orderRepository.addSelect("SUM(IF(o.origen='PAGINA WEB ESCRITORIO', o.totalAmount,0))", "web");
+        //orderRepository.addSelect("SUM(IF(o.origen='PAGINA WEB MOVIL', o.totalAmount,0))", "webMovil");
+        //orderRepository.addSelect("SUM(IF(o.origen like 'BB PIN%', o.totalAmount,0))", "blackberry");
+        //orderRepository.addSelect("SUM(IF(o.origen like 'WHATSAPP%', o.totalAmount,0))", "whatsapp");
+        //orderRepository.addSelect("SUM(IF(o.origen='APLICACION MOVIL', o.totalAmount,0))", "app");
+        //orderRepository.addSelect("SUM(IF(o.origen='OTRO', o.totalAmount,0))", "otros");
 
         switch(group) {
             case 'dia':
@@ -528,19 +535,36 @@ export class OrderService extends BaseService<Order> {
 
         const rows = await orderRepository.getRawMany();
 
+
+
         let results = [];
 
         rows.map(item => {
+
+            let origens = [];
+
+            options.map(origenItem => {
+                origens.push({
+                    name: origenItem.name,
+                    data: parseFloat(item[string_to_slug(origenItem.value)])
+                })
+            });
+
             results.push({
                 fecha: item['fecha'],
-                facebook: parseFloat(item['facebook']),
-                web: parseFloat(item['web']),
-                webMovil: parseFloat(item['webMovil']),
-                blackberry: parseFloat(item['blackberry']),
+                data: origens
+            })
+
+            /*return
+
+            results.push({
+                name: item.name,
+                data:
+                //fecha: item['fecha'],
                 whatsapp: parseFloat(item['whatsapp']),
-                app: parseFloat(item['app']),
-                otros: parseFloat(item['otros'])
-            });
+                ...dataOptions
+            });*/
+
         });
 
         return results;

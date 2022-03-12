@@ -13,7 +13,7 @@ export class FieldOptionService extends BaseService<FieldOption> {
         return await this.fieldOptionRepository.findByObject({ name: name})[0];
     }
     async findByGroup(group): Promise<FieldOption[]>{
-        return await this.fieldOptionRepository.findByObject({ group: group});
+        return await this.fieldOptionRepository.findByObject({ groups: group});
     }
 }
 
