@@ -546,7 +546,7 @@ export class OrderService extends BaseService<Order> {
             options.map(origenItem => {
                 origens.push({
                     name: origenItem.name,
-                    data: parseFloat(item[string_to_slug(origenItem.value)])
+                    data: [parseFloat(item[string_to_slug(origenItem.value)])]
                 })
             });
 
