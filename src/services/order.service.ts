@@ -719,8 +719,8 @@ export class OrderService extends BaseService<Order> {
         });
 
         return {
-            clientes,
-            reincidentes
+            clientes: [clientes],
+            reincidentes: [reincidentes]
         };
 
     }
@@ -735,7 +735,7 @@ export class OrderService extends BaseService<Order> {
 
         orderRepository.setParameters({origen: "%WHATSAPP%", before: dateFrom, after: dateTo});
         orderRepository.groupBy("o.origen");
-        //TODO -- Agregar aqui esto $this->db->order_by('numeros(venta.origen)');
+        orderRepository.orderBy('o.origen');
 
         const rows = await orderRepository.getRawMany();
 
