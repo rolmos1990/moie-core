@@ -27,6 +27,7 @@ import {TemplatesRegisters} from "../common/enum/templatesTypes";
 import {DeliveryStatus} from "../common/enum/deliveryStatus";
 import {OrderStatus} from "../common/enum/orderStatus";
 import {FieldOptionService} from "./fieldOption.service";
+import {StatTimeTypes} from "../common/enum/statsTimeTypes";
 
 export class OrderService extends BaseService<Order> {
     constructor(
@@ -433,23 +434,23 @@ export class OrderService extends BaseService<Order> {
         const orderRepository = this.orderRepository.createQueryBuilder('o');
 
         switch(group) {
-            case 'dia':
+            case StatTimeTypes.DAILY:
                 orderRepository.select('SUM(o.totalAmount) as monto, SUM(o.totalRevenue) as ganancia, SUM(o.quantity) as piezas, concat_ws("-",day(o.dateOfSale),month(o.dateOfSale),year(o.dateOfSale)) as fecha');
                 orderRepository.addGroupBy("year(o.dateOfSale)")
                 orderRepository.addGroupBy("month(o.dateOfSale)")
                 orderRepository.addGroupBy("day(o.dateOfSale)");
                 break;
-            case 'semana':
+            case StatTimeTypes.WEEKLY:
                 orderRepository.select('SUM(o.totalAmount) as monto, SUM(o.totalRevenue) as ganancia, SUM(o.quantity) as piezas, concat_ws("-",week(o.dateOfSale,1),year(o.dateOfSale)) as fecha');
                 orderRepository.addGroupBy("year(o.dateOfSale)")
                 orderRepository.addGroupBy("week(o.dateOfSale,1)");
                 break;
-            case 'mes':
+            case StatTimeTypes.MONTHLY:
                 orderRepository.select('SUM(o.totalAmount) as monto, SUM(o.totalRevenue) as ganancia, SUM(o.quantity) as piezas, concat_ws("-",month(o.dateOfSale,1),year(o.dateOfSale)) as fecha');
                 orderRepository.addGroupBy("year(o.dateOfSale)")
                 orderRepository.addGroupBy("month(o.dateOfSale)");
                 break;
-            case 'ano':
+            case StatTimeTypes.YEARLY:
                 orderRepository.select('SUM(o.totalAmount) as monto, SUM(o.totalRevenue) as ganancia, SUM(o.quantity) as piezas, year(o.dateOfSale) as fecha');
                 orderRepository.addGroupBy("year(o.dateOfSale)");
                 break;
@@ -496,27 +497,27 @@ export class OrderService extends BaseService<Order> {
         });
 
         switch(group) {
-            case 'dia':
+            case StatTimeTypes.DAILY:
                 orderRepository.addSelect("CONCAT_WS('-',day(o.dateOfSale),month(o.dateOfSale),year(o.dateOfSale))", 'fecha');
                 orderRepository.addGroupBy("YEAR(o.dateOfSale)")
                 orderRepository.addGroupBy("MONTH(o.dateOfSale)")
                 orderRepository.addGroupBy("DAY(o.dateOfSale)");
                 break;
-            case 'semana':
+            case StatTimeTypes.WEEKLY:
                 orderRepository.addSelect("WEEK(o.dateOfSale,1) as semana, year(o.dateOfSale) as ano, CONCAT_WS('-',week(o.dateOfSale,1),year(o.dateOfSale))", 'fecha');
                 orderRepository.addGroupBy("YEAR(o.dateOfSale)")
                 orderRepository.addGroupBy("WEEK(o.dateOfSale,1)");
-                orderRepository.addOrderBy("ano");
-                orderRepository.addOrderBy("semana");
+                orderRepository.addOrderBy("YEAR(o.dateOfSale)");
+                orderRepository.addOrderBy("WEEK(o.dateOfSale,1)");
                 break;
-            case 'mes':
+            case StatTimeTypes.MONTHLY:
                 orderRepository.addSelect("CONCAT_WS('-',month(o.dateOfSale),year(o.dateOfSale))", 'fecha');
                 orderRepository.addGroupBy("YEAR(o.dateOfSale)")
                 orderRepository.addGroupBy("MONTH(o.dateOfSale)");
                 orderRepository.addOrderBy("YEAR(o.dateOfSale)");
                 orderRepository.addOrderBy("MONTH(o.dateOfSale)");
                 break;
-            case 'ano':
+            case StatTimeTypes.YEARLY:
                 orderRepository.addSelect("YEAR(o.dateOfSale)", 'fecha');
                 orderRepository.groupBy("YEAR(o.dateOfSale)")
                 orderRepository.orderBy("YEAR(o.dateOfSale)");
@@ -526,7 +527,7 @@ export class OrderService extends BaseService<Order> {
         orderRepository.andWhere("DATE(o.dateOfSale) >= :before");
         orderRepository.andWhere("DATE(o.dateOfSale) <= :after");
 
-        orderRepository.setParameters({before: dateFrom, after: dateTo});
+        orderRepository.setParameters({before: dateFrom + " 00:00:00", after: dateTo + " 23:59:59"});
 
         orderRepository.getQuery();
 
@@ -573,7 +574,7 @@ export class OrderService extends BaseService<Order> {
 
 
         switch(group) {
-            case 'dia':
+            case StatTimeTypes.DAILY:
                 orderRepository.addSelect("CONCAT_WS('-',day(o.dateOfSale),month(o.dateOfSale),year(o.dateOfSale))", 'fecha');
                 orderRepository.addGroupBy("YEAR(o.dateOfSale)")
                 orderRepository.addGroupBy("MONTH(o.dateOfSale)")
@@ -582,21 +583,21 @@ export class OrderService extends BaseService<Order> {
                 orderRepository.addOrderBy("month(o.dateOfSale)");
                 orderRepository.addOrderBy("day(o.dateOfSale)");
                 break;
-            case 'semana':
+            case StatTimeTypes.WEEKLY:
                 orderRepository.addSelect("WEEK(o.dateOfSale,1) as semana, year(o.dateOfSale) as ano, CONCAT_WS('-',week(o.dateOfSale,1),year(o.dateOfSale))", 'fecha');
                 orderRepository.addGroupBy("YEAR(o.dateOfSale)")
                 orderRepository.addGroupBy("WEEK(o.dateOfSale,1)");
                 orderRepository.addOrderBy("ano");
                 orderRepository.addOrderBy("semana");
                 break;
-            case 'mes':
+            case StatTimeTypes.MONTHLY:
                 orderRepository.addSelect("CONCAT_WS('-',month(o.dateOfSale),year(o.dateOfSale))", 'fecha');
                 orderRepository.addGroupBy("YEAR(o.dateOfSale)")
                 orderRepository.addGroupBy("MONTH(o.dateOfSale)");
                 orderRepository.addOrderBy("YEAR(o.dateOfSale)");
                 orderRepository.addOrderBy("MONTH(o.dateOfSale)");
                 break;
-            case 'ano':
+            case StatTimeTypes.YEARLY:
                 orderRepository.addSelect("YEAR(o.dateOfSale)", 'fecha');
                 orderRepository.groupBy("YEAR(o.dateOfSale)")
                 orderRepository.orderBy("YEAR(o.dateOfSale)");

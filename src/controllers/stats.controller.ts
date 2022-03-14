@@ -5,6 +5,8 @@ import {EntityTarget} from "typeorm";
 import {Request, Response} from "express";
 import {OrderService} from "../services/order.service";
 import {UserService} from "../services/user.service";
+import {isValidStatTimes} from "../common/enum/statsTimeTypes";
+import {InvalidArgumentException} from "../common/exceptions";
 
 @route('/stats')
 export class StatsController extends BaseController<Size> {
@@ -28,18 +30,22 @@ export class StatsController extends BaseController<Size> {
     protected beforeUpdate(item: Object): void {
     }
 
-    @route("/estadistica_ventas/:startDate/:endDate/:grupo")
+    @route("/estadistica_ventas/:startDate/:endDate/:group")
     @GET()
     public async estadistica_ventas(req: Request, res: Response) {
         try {
             const fi = req.params.startDate;
             const ff = req.params.endDate;
-            const grupo = req.params.grupo;
+            const grupo = req.params.group;
+
+            if(!isValidStatTimes(grupo)){
+                throw new InvalidArgumentException("Agrupacion de fecha no es valida");
+            }
 
             const userIdFromSession = req['user'].id;
             const user = await this.userService.find(userIdFromSession);
 
-            const stats = await this.orderService.getStatsDay(fi, ff, grupo, user);
+            const stats = await this.orderService.getStatsDay(fi, ff, grupo.toLowerCase(), user);
 
             return res.json(stats);
 
@@ -72,7 +78,11 @@ export class StatsController extends BaseController<Size> {
             const ff = req.params.endDate;
             const grupo = req.params.group;
 
-            const stats = await this.orderService.getStatsOrigen(fi, ff, grupo);
+            if(!isValidStatTimes(grupo)){
+                throw new InvalidArgumentException("Agrupacion de fecha no es valida");
+            }
+
+            const stats = await this.orderService.getStatsOrigen(fi, ff, grupo.toLowerCase());
 
             return res.json(stats);
 
@@ -105,9 +115,13 @@ export class StatsController extends BaseController<Size> {
         try {
             const fi = req.params.startDate;
             const ff = req.params.endDate;
-            const group = req.params.group;
+            const grupo = req.params.group;
 
-            const stats = await this.orderService.getStatsTipo(fi, ff, group);
+            if(!isValidStatTimes(grupo)){
+                throw new InvalidArgumentException("Agrupacion de fecha no es valida");
+            }
+
+            const stats = await this.orderService.getStatsTipo(fi, ff, grupo.toLowerCase());
 
             return res.json(stats);
 
