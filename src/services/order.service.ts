@@ -488,17 +488,12 @@ export class OrderService extends BaseService<Order> {
         const options = await this.fieldOptionService.findByGroup('ORDERS_ORIGIN');
 
         orderRepository.addSelect("o.totalAmount");
-        orderRepository.addSelect("SUM(IF(o.origen='FACEBOOK FAN PAGE' or o.origen='FACEBOOK PERFILES', o.totalAmount,0)) as facebook");
+        orderRepository.addSelect("SUM(IF(LOWER(o.origen) LIKE 'whatsapp%', o.totalAmount,0))", "Whatsapp");
         options.map(item => {
-            console.log("origen: ", string_to_slug(item.value));
-            orderRepository.addSelect("SUM(IF(o.origen='"+item.value+"', o.totalAmount,0))", string_to_slug(item.value));
+            if(!(item.value.toLowerCase().includes("whatsapp"))) {
+                orderRepository.addSelect("SUM(IF(o.origen='" + item.value + "', o.totalAmount,0))", string_to_slug(item.value));
+            }
         });
-        //orderRepository.addSelect("SUM(IF(o.origen='PAGINA WEB ESCRITORIO', o.totalAmount,0))", "web");
-        //orderRepository.addSelect("SUM(IF(o.origen='PAGINA WEB MOVIL', o.totalAmount,0))", "webMovil");
-        //orderRepository.addSelect("SUM(IF(o.origen like 'BB PIN%', o.totalAmount,0))", "blackberry");
-        //orderRepository.addSelect("SUM(IF(o.origen like 'WHATSAPP%', o.totalAmount,0))", "whatsapp");
-        //orderRepository.addSelect("SUM(IF(o.origen='APLICACION MOVIL', o.totalAmount,0))", "app");
-        //orderRepository.addSelect("SUM(IF(o.origen='OTRO', o.totalAmount,0))", "otros");
 
         switch(group) {
             case 'dia':
@@ -533,6 +528,8 @@ export class OrderService extends BaseService<Order> {
 
         orderRepository.setParameters({before: dateFrom, after: dateTo});
 
+        orderRepository.getQuery();
+
         const rows = await orderRepository.getRawMany();
 
 
@@ -541,29 +538,19 @@ export class OrderService extends BaseService<Order> {
 
         rows.map(item => {
 
-            let origens = [];
-
+            let modified = {};
             options.map(origenItem => {
-                origens.push({
-                    name: origenItem.name,
-                    data: [parseFloat(item[string_to_slug(origenItem.value)])]
-                })
+                if(!(origenItem.name.toLowerCase().includes("whatsapp"))) {
+                    modified[origenItem.name] = parseFloat(item[string_to_slug(origenItem.value)]);
+                }
             });
+
+            modified["Whatsapp"] = parseFloat(item["Whatsapp"]);
 
             results.push({
                 fecha: item['fecha'],
-                data: origens
+                ...modified
             })
-
-            /*return
-
-            results.push({
-                name: item.name,
-                data:
-                //fecha: item['fecha'],
-                whatsapp: parseFloat(item['whatsapp']),
-                ...dataOptions
-            });*/
 
         });
 
