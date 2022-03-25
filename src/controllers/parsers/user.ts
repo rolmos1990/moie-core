@@ -1,5 +1,6 @@
 import {User} from "../../models/User";
 import * as Bcrypt from "bcryptjs";
+import {SecurityRolArrayShortDTO} from "./securityRol";
 
 export const UserListDTO = (user: User) => ({
     id: user.id,
@@ -11,7 +12,7 @@ export const UserListDTO = (user: User) => ({
     lastLogin: user.lastLogin,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
-    securityRol: user.securityRol
+    securityRol: SecurityRolArrayShortDTO(user.securityRol)
 });
 
 export const UserCreateDTO = (user: User, salt = Bcrypt.genSaltSync()) => ({

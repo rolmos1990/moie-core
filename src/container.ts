@@ -53,6 +53,10 @@ import {OrderHistoricRepository} from "./repositories/orderHistoric.repository";
 import {OrderHistoricService} from "./services/orderHistoric.service";
 import {ProductCatalogViewService} from "./services/productCatalogView.service";
 import {ProductCatalogViewRepository} from './repositories/productCatalogView.repository';
+import {SecurityRolService} from "./services/securityRol.service";
+import {SecurityPermissionService} from "./services/securityPermission.service";
+import {SecurityRolRepository} from "./repositories/securityRol.repository";
+import {SecurityPermissionRepository} from "./repositories/securityPermission.repository";
 
 export default (app: express.Application): void => {
     const container = createContainer({
@@ -87,6 +91,8 @@ export default (app: express.Application): void => {
         paymentRepository: asClass(PaymentRepository).scoped(),
         orderHistoricRepository: asClass(OrderHistoricRepository).scoped(),
         productCatalogViewRepository: asClass(ProductCatalogViewRepository).scoped(),
+        securityRolRepository: asClass(SecurityRolRepository).scoped(),
+        securityPermissionRepository: asClass(SecurityPermissionRepository).scoped(),
         // services
         userService: asClass(UserService).scoped(),
         customerService: asClass(CustomerService).scoped(),
@@ -113,7 +119,9 @@ export default (app: express.Application): void => {
         paymentService: asClass(PaymentService).scoped(),
         billConfigService: asClass(BillConfigService).scoped(),
         orderHistoricService: asClass(OrderHistoricService).scoped(),
-        productCatalogViewService: asClass(ProductCatalogViewService).scoped()
+        productCatalogViewService: asClass(ProductCatalogViewService).scoped(),
+        securityRolService: asClass(SecurityRolService).scoped(),
+        securityPermissionService: asClass(SecurityPermissionService).scoped()
     });
 
     app.use(scopePerRequest(container));
