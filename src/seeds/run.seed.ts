@@ -21,6 +21,8 @@ import {FieldOption} from "../models/FieldOption";
 import {FieldOptionsSeed} from "./fieldOptions.seed";
 import {Template} from "../models/Template";
 import {TemplateSeed} from "./template.seed";
+import {SecurityPermission} from "../models/SecurityPermission";
+import {PermissionSeed} from './permission.seed';
 
 const convertToEntity = (entity, item) => {
     Object.keys(item).forEach(prop => {
@@ -43,7 +45,8 @@ const QUERY_IS_ACTIVE = {
     customer: false,
     user: false,
     fieldOption: false,
-    template: false
+    template: false,
+    permission: false
 };
 
 export class RunSeed {
@@ -162,6 +165,17 @@ export class RunSeed {
             const fieldOption = getRepository(Template);
             TemplateSeed.map(async item => {
                 const entity = convertToEntity(new Template(), item);
+                await fieldOption.save(entity);
+            });
+            updated++;
+        }
+
+        if(QUERY_IS_ACTIVE.permission) {
+            console.log("CREATING PERMISSIONS...");
+            //Fields Options
+            const fieldOption = getRepository(SecurityPermission);
+            PermissionSeed.map(async item => {
+                const entity = convertToEntity(new SecurityPermission(), item);
                 await fieldOption.save(entity);
             });
             updated++;
