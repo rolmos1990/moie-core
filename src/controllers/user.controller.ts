@@ -85,8 +85,12 @@ export class UserController extends BaseController<User> {
     protected afterUpdate(item: Object): void {}
     protected beforeUpdate(item: Object): void {}
 
-    protected getDefaultRelations(): Array<string> {
-        return [];
+    protected getDefaultRelations(isDetail): Array<string> {
+        if(isDetail) {
+            return ['securityRol', 'securityRol.permissions'];
+        } else {
+            return [];
+        }
     }
     getGroupRelations(): Array<string> {
         return [];
