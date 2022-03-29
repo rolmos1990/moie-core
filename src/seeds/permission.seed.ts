@@ -66,14 +66,23 @@ const PermissionBasicTplSeed = [
 ];
 
 let counter = 0;
-const PermissionBasicSeed : any = PermissionBasicTplSeed.map((item) => {
-    return ["create", "edit", "show", "list"].map(o =>  (
+let PermissionBasicSeed = [];
+
+PermissionBasicTplSeed.map((item) => {
+    return  ["create", "edit", "show", "list"].map(o =>
         {
-            id: ++counter,
-            permission: item.permission + "." + o,
-            description: o.toUpperCase() + " " +item.description
+            const added = {
+                id: ++counter,
+                permission: item.permission + "." + o,
+                description: o.toUpperCase() + " " + item.description
+            }
+
+            PermissionBasicSeed.push(added);
+
+            return added;
         }
-    ))
+    );
+
 });
 
 
@@ -100,6 +109,8 @@ PermissionBasicSeed.push({
     permission: "postsale.download",
     description: "Descargas en PostVenta"
 });
+
+console.log("PERMISSIONS", PermissionBasicSeed);
 
 
 export const PermissionSeed = PermissionBasicSeed;
