@@ -120,6 +120,12 @@ export class ProductCatalogView extends BaseModel{
     @IsBoolean({groups: ['create','update']})
     status: boolean;
 
+    @Column({name:'first_image', type: 'varchar', length: 3000, nullable: true})
+    firstImage: string;
+
+    @Column({name:'second_image', type: 'varchar', length: 3000, nullable: true})
+    secondImage: string;
+
     isEmpty(): boolean {
         return (this.id == null);
     }

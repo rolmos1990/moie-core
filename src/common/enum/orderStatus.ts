@@ -20,12 +20,7 @@ export const OrderStatusNames = {
 
 /** Todos los estados de las ordenes */
 export function getAllStatus(){
-    return [OrderStatus.PENDING, OrderStatus.CONFIRMED, OrderStatus.PRINTED, OrderStatus.SENT, OrderStatus.RECONCILED];
-}
-
-/** Orden no puede ser modificada */
-export function getClosed(){
-    return [OrderStatus.CANCELED, OrderStatus.RECONCILED];
+    return [OrderStatus.PENDING, OrderStatus.CONFIRMED, OrderStatus.PRINTED, OrderStatus.SENT, OrderStatus.RECONCILED, OrderStatus.FINISHED];
 }
 
 /** Orden es cancelable */

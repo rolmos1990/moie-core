@@ -5,24 +5,24 @@ import {extension} from 'mime-types';
 import ResizeImg = require("resize-img");
 import {compile, Exception} from 'handlebars';
 import * as path from "path";
-import {create} from 'handlebars-pdf';
 import {Worksheet} from "exceljs";
-import {InvalidArgumentException, InvalidFileException} from "../common/exceptions";
+import {InvalidFileException} from "../common/exceptions";
 const createHTML = require('create-html');
 const Excel = require('exceljs')
 import moment = require("moment");
 
 const html_to_pdf = require('html-pdf-node');//disabled
-var binPath  = require('wkhtmltopdf-installer').path;
-console.log("BIN PATH: ", binPath);
+//const binPath  = require('wkhtmltopdf-installer').path;
+//console.log("BIN PATH: ", binPath);
 const wkhtmltopdf = require('wkhtmltopdf');
-wkhtmltopdf.command = binPath;
-
+wkhtmltopdf.command = "/usr/local/bin/wkhtmltopdf";
 
 export const CONFIG_MEDIA = {
-    IMAGE_PATH: '/uploads',
+    LOCAL_PATH: process.env.PUBLIC_URL,
+    DEFAULT_IMAGE: process.env.PUBLIC_URL + "/public/icons/image_not_found.png",
+    IMAGE_PATH: './public/uploads',
     PDF_PATH: '/pdf',
-    STORAGE_PATH: './storage/uploads',
+    STORAGE_PATH: './public/uploads',
     STORAGE_PDF_PATH: './storage/pdf',
     PICTURES_FOLDERS: '/users',
     RESOLUTIONS: [67,238,400,800]
@@ -137,8 +137,11 @@ export class MediaManagementService extends UtilService {
         const fileName =  `${name}.${ext}`;
         const imageBuffer = file.data;
         const filePath = CONFIG_MEDIA.STORAGE_PATH + "/" + folder + fileName;
-        writeFileSync(filePath, imageBuffer, 'utf8');
-
+        try {
+            writeFileSync(filePath, imageBuffer, 'utf8');
+        }catch(e){
+            console.log("error log", e.message);
+        }
         const fileSaved = readFileSync(filePath);
 
         const thumbs : any[] = [];

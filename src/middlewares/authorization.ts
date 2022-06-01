@@ -16,7 +16,7 @@ const PublicServices = [
 
 export const Authorization = (req: Request, res: Response, next: NextFunction) => {
     //req.header("Authorization") == 'test'
-    if(PublicServices.includes(req.path)){
+    if(PublicServices.indexOf(req.path) != -1){
         req['user'] = {id: 1}; //tst user
         next();
         return;

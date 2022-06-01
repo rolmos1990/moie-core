@@ -21,7 +21,7 @@ export class PaymentController extends BaseController<Payment> {
         private readonly paymentService: PaymentService,
         private readonly orderService: OrderService,
         private readonly orderHistoricService: OrderHistoricService,
-        private readonly userService: UserService
+        protected readonly userService: UserService
     ){
         super(paymentService);
     };

@@ -32,7 +32,6 @@
       "file-storage": "^2.0.1",
       "handlebars": "^4.7.7",
       "handlebars-pdf": "^1.0.1",
-      "html-pdf": "^3.0.1",
       "html-pdf-node": "^1.0.8",
       "jsonwebtoken": "^8.5.1",
       "mime-types": "^2.1.29",
@@ -46,7 +45,8 @@
       "to-xml": "^0.1.7",
       "typeorm": "0.2.31",
       "typeorm-revisions": "0.0.5",
-      "wkhtmltopdf": "^0.4.0"
+      "wkhtmltopdf": "^0.4.0",
+      "wkhtmltopdf-installer": "^0.3.2"
    },
    "devDependencies": {
       "@types/bcryptjs": "^2.4.2",

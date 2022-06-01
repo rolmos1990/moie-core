@@ -174,6 +174,10 @@ export default abstract class BaseRepository<T> {
         return await this.repositoryManager.save(entity);
     }
 
+    async saveMany(entities: Array<T>){
+        return await this.repositoryManager.save(entities, {chunk: 1000, transaction: true});
+    }
+
     async delete(id: T){
         await this.repositoryManager.delete(id);
     }

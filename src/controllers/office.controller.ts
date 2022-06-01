@@ -18,7 +18,6 @@ import {ExportersInterrapidisimoCd} from "../templates/exporters";
 import {ImporterImpl} from "../templates/importers/importerImpl";
 import {LIMIT_SAVE_BATCH} from "../common/persistence/mysql.persistence";
 import {OrderDeliveryService} from "../services/orderDelivery.service";
-import {OrderStatus} from "../common/enum/orderStatus";
 import {getDeliveryShortType} from "../common/helper/helpers";
 import {BatchRequestTypes, BatchRequestTypesStatus} from "../common/enum/batchRequestTypes";
 import {TemplateService} from "../services/template.service";
@@ -26,24 +25,24 @@ import {DeliveryStatus} from "../common/enum/deliveryStatus";
 import {OfficeReportTypes} from "../common/enum/officeReportTypes";
 import {ExportersOfficeCd} from "../templates/exporters/office-orders.exporters";
 import {OrderHistoricService} from "../services/orderHistoric.service";
-import {EventStatus} from "../common/enum/eventStatus";
 import {TemplatesRegisters} from "../common/enum/templatesTypes";
 import {ExportersOfficeMensajeroCd} from "../templates/exporters/office-orders-mensajero.exporters";
 import {DeliveryMethodService} from "../services/deliveryMethod.service";
+import {Modules} from "../common/enum/modules";
 
 @route('/office')
 export class OfficeController extends BaseController<Office> {
     constructor(
-        private readonly officeService: OfficeService,
-        private readonly userService: UserService,
-        private readonly orderService: OrderService,
-        private readonly mediaManagementService: MediaManagementService,
-        private readonly orderDeliveryService: OrderDeliveryService,
-        private readonly templateService: TemplateService,
-        private readonly orderHistoricService: OrderHistoricService,
-        private readonly deliveryMethodService: DeliveryMethodService
+        protected readonly officeService: OfficeService,
+        protected readonly userService: UserService,
+        protected readonly orderService: OrderService,
+        protected readonly mediaManagementService: MediaManagementService,
+        protected readonly orderDeliveryService: OrderDeliveryService,
+        protected readonly templateService: TemplateService,
+        protected readonly orderHistoricService: OrderHistoricService,
+        protected readonly deliveryMethodService: DeliveryMethodService
     ){
-        super(officeService);
+        super(officeService, userService);
     };
     protected afterCreate(item: Object): void {
 
@@ -84,8 +83,23 @@ export class OfficeController extends BaseController<Office> {
     protected async confirm(req: Request, res: Response){
         const id = req.params.id;
         try {
+
+            const userIdFromSession = req['user'].id;
+            const user = await this.userService.find(userIdFromSession);
+
             if (id) {
                 const office : Office = await this.officeService.find(parseInt(id), ['deliveryMethod', 'user']);
+
+                //Changes orders status (only has printed)
+                let orders = await this.orderService.findByObject({office: office}, ['orderDelivery', 'deliveryMethod']);
+                orders = orders.filter(order => order.isPrinted());
+
+                if(orders.length > 0){
+                    await Promise.all(orders.map(async item => {
+                        await this.orderService.updateNextStatusFromModule(item, user, Modules.Offices);
+                    }));
+                }
+
                 office.status = 2;
                 await this.officeService.createOrUpdate(office);
                 return res.json({status: 200, office: OfficeListDTO(office) } );
@@ -94,7 +108,7 @@ export class OfficeController extends BaseController<Office> {
             }
         }catch(e){
             if (e.name === InvalidArgumentException.name || e.name === "EntityNotFound") {
-                this.handleException(new InvalidArgumentException("Producto no ha sido encontrado"), res);
+                this.handleException(new InvalidArgumentException("Despacho: Algunos estados de pedidos no pueden ser finalizados."), res);
             }
             else{
                 this.handleException(new ApplicationException(), res);
@@ -319,7 +333,7 @@ export class OfficeController extends BaseController<Office> {
             const context = excelToSave.getContext();
             const ids = context.map(item => item.id);
 
-            const orders = await this.orderService.findByIdsWithDeliveries(ids);
+            const orders = await this.orderService.findByIds(ids);
             const ordersToUpdate = [];
 
             /** Actualizar todos los registros asociados */
@@ -336,11 +350,7 @@ export class OfficeController extends BaseController<Office> {
 
             //update status
             await Promise.all(ordersToUpdate.map(async item => {
-                if(item.orderDelivery.deliveryType === 1){
-                    item.status = OrderStatus.SENT;
-                    await this.orderService.createOrUpdate(item, {chunk: LIMIT_SAVE_BATCH});
-                    await this.orderHistoricService.registerEvent(item, user, EventStatus.FINISHED);
-                }
+                await this.orderService.updateNextStatusFromModule(item, user, Modules.PostVenta);
             }));
 
             return res.json({status: 200, data: {registers: registers} } );

@@ -1,5 +1,5 @@
 import {BaseService} from "../common/controllers/base.service";
-import {OrderUpdate as OrderParserUpdate} from '../controllers/parsers/order';
+import {Order as OrderParserCreate, OrderUpdate as OrderParserUpdate} from '../controllers/parsers/order';
 
 import {OrderRepository} from "../repositories/order.repository";
 import {OrderDetail} from "../models/OrderDetail";
@@ -9,12 +9,9 @@ import {ProductSizeService} from "./productSize.service";
 import {InvalidArgumentException} from "../common/exceptions";
 import {Order} from "../models/Order";
 import {CustomerService} from "./customer.service";
-import {DeliveryMethod} from "../models/DeliveryMethod";
 import {User} from "../models/User";
-import {OrderProductTrace} from "../common/helper/orderTrace";
-import {existsInEntity, string_to_slug} from "../common/helper/helpers";
+import {string_to_slug} from "../common/helper/helpers";
 import {ProductSize} from "../models/ProductSize";
-import {Product} from "../models/Product";
 import {OrderDelivery} from "../models/OrderDelivery";
 import {OrderDeliveryRepository} from "../repositories/orderDelivery.repository";
 import {DeliveryTypes, getDeliveryType} from "../common/enum/deliveryTypes";
@@ -22,12 +19,15 @@ import {DeliveryMethodService} from "./deliveryMethod.service";
 import {Office} from "../models/Office";
 import {DeliveryLocalityService} from "./deliveryLocality.service";
 import {Between, IsNull, Not} from "typeorm";
-import {OfficeReportTypes} from "../common/enum/officeReportTypes";
-import {TemplatesRegisters} from "../common/enum/templatesTypes";
-import {DeliveryStatus} from "../common/enum/deliveryStatus";
 import {OrderStatus} from "../common/enum/orderStatus";
 import {FieldOptionService} from "./fieldOption.service";
 import {StatTimeTypes} from "../common/enum/statsTimeTypes";
+import {OrderHistoricService} from "./orderHistoric.service";
+import {StatusManagerController} from "../common/controllers/status.manager.controller";
+import {Modules} from "../common/enum/modules";
+import {builderOrderTypes} from "../common/enum/orderTypes";
+import {toDateFormat} from "../templates/exporters/utilities";
+import {converterPreOrderProductInOrderDetail} from "../common/helper/converters";
 
 export class OrderService extends BaseService<Order> {
     constructor(
@@ -38,9 +38,23 @@ export class OrderService extends BaseService<Order> {
         private readonly customerService: CustomerService,
         private readonly deliveryMethodService: DeliveryMethodService,
         private readonly deliveryLocalityService: DeliveryLocalityService,
-        private readonly fieldOptionService: FieldOptionService
+        private readonly fieldOptionService: FieldOptionService,
+        private readonly orderHistoricService: OrderHistoricService
     ) {
         super(orderRepository);
+    }
+
+    async findFull(id: any){
+        const _order = await this.find(parseInt(id), ['orderDetails','orderDelivery', 'deliveryMethod', 'customer', 'user']);
+        const _orderDetails = await this.getDetails(_order);
+        _order.orderDetails = _orderDetails;
+        return _order;
+    }
+
+    newOrder() : Order{
+        const _order = new Order();
+        _order.initialize();
+        return _order;
     }
 
     async update(_order: Order) : Promise<Order>{
@@ -48,139 +62,198 @@ export class OrderService extends BaseService<Order> {
         return order;
     }
 
-    async updateOrder(parse: OrderDetail[], oldProducts: OrderDetail[], order: Order): Promise<OrderDetail[]> {
-        const pmanager = new OrderProductTrace(oldProducts, parse);
-
-        pmanager.process();
-        const diferentialProducts = pmanager.getBatches();
-
-        /** Eliminar */
-        if (diferentialProducts.deleted.length > 0) {
-            try {
-                await this.removeDetail(diferentialProducts.deleted);
-            }catch(e){
-                console.log("ERROR REMOVED ORDER", e.message);
-            }
-        }
-
-        /** Actualizar */
-        if (diferentialProducts.updated.length > 0) {
-            try {
-            await this.updateProductDetail(diferentialProducts.updated);
-            }catch(e){
-                console.log("ERROR UPDATED ORDER");
-            }
-        }
-
-        /** Agregar */
-        if (diferentialProducts.added.length > 0) {
-            try {
-            await this.addDetail(diferentialProducts.added);
-            }catch(e){
-                console.log("ERROR ADDED ORDER");
-            }
-        }
-
-        return await this.getDetails(order);
+    async updateWithOrderDelivery(order: Order) : Promise<Order>{
+        await this.createOrUpdate(order);
+        await this.orderDeliveryRepository.save(order.orderDelivery);
+        return order;
     }
 
     /**
-     * Agregar una orden al modulo de ordenes
-     * @param order
+     * Actualiza los estados de una orden (Si cumple con las reglas indicadas)
+     * @param order[]
      */
-    async addOrUpdateOrder(parse: OrderParserUpdate , deliveryMethod: DeliveryMethod, user: User, oldOrder: Order, updateAddress = false) {
-        try {
-            const customer = await this.customerService.find(parse.customer || oldOrder.customer.id, ['state', 'municipality']);
-
-            const order = new Order();
-
-            let orderDelivery = new OrderDelivery();
-            if(oldOrder && oldOrder.id) {
-                orderDelivery = await this.orderDeliveryRepository.findOneByObject({order: oldOrder});
+    async updateNextStatusFromModule(order: Order, user: User, _module: Modules) : Promise<Order> {
+        const _orderType = builderOrderTypes(order);
+        if(_module === Modules.Offices){
+            if(_orderType.isMensajero()){
+                return this.updateNextStatus(order, user);
             }
-
-            order.orderDelivery = orderDelivery;
-
-            if (oldOrder) {
-                order.id = oldOrder.id;
-            }
-
-            const deliveryCost = parse.deliveryCost || order.orderDelivery.deliveryCost || 0;
-
-            order.customer = customer;
-            order.origen = parse.origen || order.origen;
-            order.expiredDate = new Date();
-            order.status = order.status || 1;
-            order.remember = order.remember || false;
-            order.createdAt = order.createdAt || new Date();
-            order.office = null;
-
-            /** Delivery Information in Order */
-            order.orderDelivery.chargeOnDelivery = [true, false].includes(parse.chargeOnDelivery) ? parse.chargeOnDelivery : order.orderDelivery.chargeOnDelivery;
-            order.orderDelivery.deliveryType = parse.deliveryType || order.orderDelivery.deliveryType;
-            order.orderDelivery.deliveryCost = deliveryCost || 0;
-            order.deliveryMethod = deliveryMethod || order.deliveryMethod;
-            order.orderDelivery.tracking = order.orderDelivery.tracking || null;
-
-            if(parse.deliveryLocality) {
-                const deliveryLocality = await this.deliveryLocalityService.find(parse.deliveryLocality);
-                order.orderDelivery.deliveryLocality = deliveryLocality;
-            }
-
-            let products;
-
-            if (!oldOrder) {
-                products = await this.getProducts(parse.products, order);
-            } else {
-                products = oldOrder.orderDetails;
-            }
-
-            const costs = await this.getCalculateCosts(products);
-
-            order.totalAmount = (costs.totalAmount - costs.totalDiscount) + Number(deliveryCost);
-            order.subTotalAmount = costs.totalAmount;
-            order.totalDiscount = costs.totalDiscount;
-            order.totalRevenue = costs.totalRevenue;
-            order.totalWeight = costs.totalWeight;
-            order.user = (oldOrder && oldOrder.user) || order.user || user;
-            order.piecesForChanges = parse.piecesForChanges || order.piecesForChanges || null;
-            order.paymentMode = parse.paymentMode || order.paymentMode || null;
-            order.photos = parse.photos || order.photos || 0;
-            order.prints = parse.prints || order.prints || 0;
-            order.quantity = products.reduce((s,p) => p.quantity + s, 0);
-
-            //Incremento prioridad de la orden cada vez que la actualizo (solo si la orden es pendiente obtiene prioridad)
-            if((order && order.status === 1) && oldOrder){
-                order.modifiedDate = new Date();
-            } else if(!oldOrder){
-                order.modifiedDate = new Date();
-            }
-            const orderRegister = await this.createOrUpdate(order);
-
-            order.orderDelivery.order = orderRegister;
-
-            const orderDeliveryRegistered = await this.orderDeliveryRepository.save(order.orderDelivery);
-            orderRegister.orderDelivery = orderDeliveryRegistered;
-
-            await this.orderRepository.save(orderRegister);
-
-            //Actualizar cliente como mayorista
-            try {
-                await this.customerService.isMayorist(customer, order.quantity, true);
-            }catch(e){
-                console.log("No se actualizo mayorista", e.message);
-            }
-
-            if (!oldOrder) {
-                await this.addDetail(products);
-                await this.updateInventaryForOrderDetail(products, false);
-            }
-
-            return await this.find(orderRegister.id, ['orderDetails', 'customer', 'deliveryMethod', 'user', 'customer.municipality', 'customer.state', 'orderDelivery']);
-
-        } catch (e) {
-            throw e;
         }
+        else if(_module === Modules.PostVenta){
+            if(_orderType.isInterrapidisimo() && order.isPrinted()){
+                return this.updateNextStatus(order, user);
+            }
+        }
+
+        throw new InvalidArgumentException("No se pudo ejecutar siguiente estado");
+    }
+
+    /**
+     * Actualiza los estados de una orden
+     * @param order[]
+     */
+    async updateNextStatus(order: Order, user?: User) : Promise<Order> {
+        const _statusManager = new StatusManagerController(
+            order,
+            this.orderRepository,
+            user,
+            this.orderHistoricService
+            );
+        try {
+            await _statusManager.next();
+            return _statusManager.getOrder();
+        }catch(e){
+            throw new InvalidArgumentException("Estado no pudo ser actualizado");
+        }
+    }
+
+    /**
+     * Realizar la anulacion de una orden
+     * @param order[]
+     */
+    async cancelOrder(order: Order, user: User) : Promise<void> {
+        const orderDetails: OrderDetail[] = await this.getDetails(order);
+        await this.updateInventaryForOrderDetail(orderDetails, true);
+
+        const _statusManager = new StatusManagerController(
+            order,
+            this.orderRepository,
+            user,
+            this.orderHistoricService
+        );
+        await _statusManager.cancel();
+    }
+
+
+    async updateOrderDetail(_order: Order, newProducts: OrderProduct[], user: User, trackStatus = false){
+        const productSizes = await this.productSizeService.findByIds(newProducts.map(item => item.productSize));
+
+       //Check inventary
+        const tmpDetail : OrderDetail[] = await converterPreOrderProductInOrderDetail(_order, newProducts, productSizes);
+        const _oldDetails = await this.getDetails(_order);
+        await this.productSizeService.checkInventary(tmpDetail, _oldDetails);
+
+        const orderDetail : OrderDetail[] = await converterPreOrderProductInOrderDetail(_order, newProducts, productSizes);
+
+
+        //Remove old inventary
+        if(_order.orderDetails && _order.orderDetails.length > 0) {
+            await this.productSizeService.updateProductSize(_order.orderDetails, true);
+            await this.orderDetailRepository.deleteFrom(_order);
+        }
+
+        //Add new Inventary
+        await this.orderDetailRepository.saveMany(orderDetail);
+        await this.productSizeService.updateProductSize(orderDetail, false);
+
+        const updatedOrder = await this.findFull(_order.id);
+
+        //restart order to initial status
+        if(trackStatus) {
+            const _statusManager = new StatusManagerController(updatedOrder, this.orderRepository, user, this.orderHistoricService);
+            await _statusManager.start();
+        }
+
+        return await this.recalculateCosts(updatedOrder);
+    }
+
+    /** Cada vez que se realiza algun cambio en una orden se debe llamar este para recalcular los costos */
+    async recalculateCosts(_order: Order){
+
+        const costs = await this.getCalculateCosts(_order.orderDetails);
+
+        const deliveryCost = _order.orderDelivery.deliveryCost;
+
+        _order.totalAmount = (costs.totalAmount - costs.totalDiscount) + Number(deliveryCost);
+        _order.subTotalAmount = costs.totalAmount;
+        _order.totalDiscount = costs.totalDiscount;
+        _order.totalRevenue = costs.totalRevenue;
+        _order.totalWeight = costs.totalWeight;
+        _order.quantity = _order.orderDetails.reduce((s,p) => p.quantity + s, 0);
+
+        await this.createOrUpdate(_order);
+
+        return _order;
+    }
+
+    async restart(_order: Order, _user: User) : Promise<Order>{
+        const _statusManager = new StatusManagerController(_order, this.orderRepository, _user, this.orderHistoricService);
+        await _statusManager.restart();
+        const order = _statusManager.getOrder();
+        return order
+    }
+
+    /**
+     * Devuelve una orden al inicio si ha sido cambiada y maneja fechas de modificacion (ordenamiento).
+     */
+    async checkWasUpdated(_order: Order, _user: User){
+        let checkedOrder = _order;
+        const order = await this.findFull(_order.id);
+        if(order.hasDiffWith(_order)){
+            if(_order.isPending()){
+                _order.modifiedDate = new Date();
+            }
+            const _statusManager = new StatusManagerController(_order, this.orderRepository, _user, this.orderHistoricService);
+            await _statusManager.restart();
+            checkedOrder = _statusManager.getOrder();
+        }
+
+        return checkedOrder;
+    }
+
+    /**
+     * Crea o actualiza un objeto de orden a traves de un parse
+     * @param order[]
+     */
+    async registerOrder(_order: Order, parse: OrderParserCreate | OrderParserUpdate, user: User){
+
+        const isNew = _order.isEmpty();
+        const deliveryCost = parse.deliveryCost || _order.orderDelivery.deliveryCost;
+        const customer = parse.customer ? await this.customerService.findFull(parse.customer) : _order.customer;
+
+        const deliveryMethod = parse.deliveryMethod ? await this.deliveryMethodService.findByCode(parse.deliveryMethod) : _order.deliveryMethod;
+        const deliveryLocality = parse.deliveryLocality ? await this.deliveryLocalityService.find(parse.deliveryLocality) : _order.orderDelivery.deliveryLocality;
+
+        const hasTrackingChanged = (_order.orderDelivery.tracking !== parse.tracking);
+
+        /** Order Information */
+        _order.photos = parse.photos || _order.photos;
+        _order.prints = parse.prints || _order.prints;
+        _order.customer = customer;
+        _order.origen = parse.origen || _order.origen;
+        _order.expiredDate = new Date();
+        _order.remember = _order.remember || false;
+        _order.createdAt = _order.createdAt || new Date();
+        _order.totalAmount = (Number(_order.totalAmount) - Number(_order.totalDiscount)) + (Number(deliveryCost) - _order.orderDelivery.deliveryCost);
+        _order.office = null;
+
+        /** Delivery Information in Order */
+        _order.orderDelivery.chargeOnDelivery = parse.isChargeOnDelivery();
+        _order.orderDelivery.deliveryType = parse.deliveryType || _order.orderDelivery.deliveryType;
+        _order.orderDelivery.deliveryCost = deliveryCost || 0;
+        _order.deliveryMethod = deliveryMethod;
+        _order.orderDelivery.tracking = parse.tracking || _order.orderDelivery.tracking || null;
+        _order.paymentMode = parse.paymentMode || _order.paymentMode || null;
+        _order.orderDelivery.deliveryLocality = deliveryLocality || null;
+        _order.user = !_order.user ? user : _order.user;
+
+        await this.createOrUpdate(_order);
+        await this.orderDeliveryRepository.save(_order.orderDelivery);
+
+        if(!isNew){
+            if(!hasTrackingChanged){
+              _order = await this.checkWasUpdated(_order, user);
+            } else {
+                const _statusManager = new StatusManagerController(_order, this.orderRepository, user, this.orderHistoricService);
+                await _statusManager.next();
+            }
+        } else {
+            const _statusManager = new StatusManagerController(_order, this.orderRepository, user, this.orderHistoricService);
+            await _statusManager.start();
+        }
+
+        return _order;
+
     }
 
     /**
@@ -211,71 +284,6 @@ export class OrderService extends BaseService<Order> {
         };
     }
 
-    /**
-     * Obtener lista de productos de un request de productos
-     * */
-    async getProducts(products: OrderProduct[], order: Order): Promise<OrderDetail[]> {
-        const orderDetails: OrderDetail[] = [];
-        if (!products || products.length <= 0) {
-            throw new InvalidArgumentException("No se ha recibido productos");
-        }
-        await Promise.all(products.map(async item => {
-            if (!item.productSize) {
-                throw new InvalidArgumentException("No se ha indicado la talla relacionada a uno de los productos");
-            }
-            const productSize = await this.productSizeService.find(item.productSize, ['product']);
-
-            const orderDetail = new OrderDetail();
-            orderDetail.order = order;
-            orderDetail.color = productSize.color;
-            orderDetail.cost = productSize.product.cost;
-            orderDetail.discountPercent = item.discountPercentage;
-            orderDetail.price = productSize.product.price || 0;
-            orderDetail.quantity = item.quantity;
-            orderDetail.revenue = productSize.product.price - productSize.product.cost;
-            orderDetail.weight = productSize.product.weight;
-            orderDetail.size = productSize.name;
-            orderDetail.product = productSize.product;
-            orderDetail.productSize = productSize;
-
-            const beforeOrder = existsInEntity(order.orderDetails, orderDetail);
-
-            if (orderDetail.quantity <= 0) {
-                throw new InvalidArgumentException("Verifique las cantidades para producto: " + productSize.product.reference + " (" + productSize.name + ")");
-            }
-
-            /** Update order Validation */
-            if (beforeOrder.exists) {
-                const realQuantity = beforeOrder.value.quantity + productSize.quantity;
-                if (realQuantity <= 0 || realQuantity < item.quantity) {
-                    throw new InvalidArgumentException("No hay disponibilidad:  - " + productSize.product.reference + " (" + productSize.name + ")");
-                }
-            } else if (productSize.quantity <= 0 || productSize.quantity < item.quantity) {
-                /** New Order Validation */
-                throw new InvalidArgumentException("No hay disponibilidad:  - " + productSize.product.reference + " (" + productSize.name + ")");
-            }
-
-            orderDetails.push(orderDetail);
-        }));
-        return orderDetails;
-    }
-
-    async addDetail(orderDetails: OrderDetail[]): Promise<OrderDetail[]> {
-        let od: OrderDetail[] = [];
-        for (let i = 0; i < orderDetails.length; i++) {
-            const order: OrderDetail = await this.orderDetailRepository.save(orderDetails[i]);
-            od.push(order);
-        }
-        return od;
-    }
-
-    async removeDetail(orderDetails: OrderDetail[]) {
-        for (let i = 0; i < orderDetails.length; i++) {
-            delete orderDetails[i].productSize;
-            await this.orderDetailRepository.delete(orderDetails[i]);
-        }
-    }
-
     async getDetails(order: Order): Promise<OrderDetail[]> {
         return await this.orderDetailRepository.createQueryBuilder('orderDetail')
             .where('orderDetail.order = :value', {value: order.id})
@@ -303,22 +311,6 @@ export class OrderService extends BaseService<Order> {
         }));
     }
 
-    /** Actualizar el detalle de productos */
-    async updateProductDetail(updates: any) {
-        await Promise.all(updates.map(async item => {
-            const orderDetail: OrderDetail = item.orderDetail;
-            await this.productSizeService.updateInventary(orderDetail, item.diff);
-
-            await this.orderDetailRepository.update(orderDetail.id, {
-                color: orderDetail.color,
-                discountPercent: orderDetail.discountPercent,
-                quantity: orderDetail.quantity,
-                revenue: orderDetail.revenue,
-                size: orderDetail.size
-            });
-        }));
-    }
-
     /**
      * @param Order order
      * Obtener plantilla dependiendo de la orden
@@ -341,14 +333,8 @@ export class OrderService extends BaseService<Order> {
     async findByIds(orderIds: any) {
         return await this.orderRepository.createQueryBuilder('o')
             .leftJoinAndSelect('o.orderDelivery', 'od')
+            .leftJoinAndSelect('o.deliveryMethod', 'dm')
             .where('o.id IN (:orderIds)', {orderIds: orderIds})
-            .getMany();
-    }
-
-    async findByIdsWithDeliveries(orderIds: any) {
-        return await this.orderRepository.createQueryBuilder('o')
-            .where('o.id IN (:orderIds)', {orderIds: orderIds})
-            .leftJoinAndSelect('o.orderDelivery', 'od')
             .getMany();
     }
 
@@ -396,15 +382,15 @@ export class OrderService extends BaseService<Order> {
 
     /** Reporte Conciliados */
     async findOrderConciliates(dateFrom, dateTo, deliveryMethod){
-
         return await this.orderRepository.createQueryBuilder('o')
             .leftJoinAndSelect('o.customer', 'c')
             .leftJoinAndSelect('o.orderDelivery', 'd')
-            .leftJoinAndSelect('o.deliveryMethod', 'i')
-            .where("o.orderDelivery", Not(IsNull()))
-            .andWhere("d.chargeOnDelivery = :chargeOnDelivery", { chargeOnDelivery : true })
-            .andWhere("o.dateOfSale", Between(dateFrom, dateTo))
-            .andWhere("o.deliveryMethod", deliveryMethod)
+            .leftJoinAndSelect('o.deliveryMethod', 'dm')
+            .andWhere("d.deliveryType = :deliveryType")
+            .andWhere("DATE(o.dateOfSale) >= :before", {before: toDateFormat(dateFrom)})
+            .andWhere("DATE(o.dateOfSale) <= :after", {after: toDateFormat(dateTo)})
+            .andWhere("dm.code = :deliveryMethod")
+            .setParameters({deliveryType : DeliveryTypes.CHARGE_ON_DELIVERY, deliveryMethod})
             .getMany();
     }
 

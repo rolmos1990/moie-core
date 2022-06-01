@@ -21,7 +21,7 @@ export class OrderProductTrace {
         /** Obtener productos a agregar */
         /** Old {name: 1, name: 2, name: 3}, {name: 2} */
         /** Old {name: 1} -> New {} */
-        this.newProducts.map(item_new => {
+        this.newProducts && this.newProducts.map(item_new => {
             const oldProduct = existsInEntity(this.oldProducts, item_new);
             if(!oldProduct.exists){
                 //nuevos
@@ -36,7 +36,7 @@ export class OrderProductTrace {
         });
 
         /** Obtener productos a eliminar */
-        this.oldProducts.map(item_old => {
+        this.oldProducts && this.oldProducts.map(item_old => {
             const newProduct = existsInEntity(this.newProducts, item_old);
             if(!newProduct.exists){
                 //se elimina

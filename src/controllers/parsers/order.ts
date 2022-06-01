@@ -11,6 +11,7 @@ import {ProductShortDTO} from "./product";
 import {ProductSizeShort} from "./productSize";
 import {OrderDeliveryListDTO, OrderDeliveryShowDTO} from "./orderDelivery";
 import {DeliveryLocalityListDTO} from "./deliveryLocality";
+import {isPaymentMode} from "../../common/enum/paymentModes";
 
 
 export const OrderCreateDTO = async (order: any) => {
@@ -40,6 +41,7 @@ export const OrderCreateDTO = async (order: any) => {
         }
         return order;
     }catch(e){
+        console.log("error", e.message);
         return new InvalidArgumentException("Datos invalidos");
     }
 }
@@ -55,13 +57,19 @@ export class Order {
         this.piecesForChanges = props.piecesForChanges;
         this.paymentMode = props.paymentMode;
         this.deliveryLocality = props.deliveryLocality;
-        this.chargeOnDelivery = this.hasChargeOnDelivery(props);
+        this.chargeOnDelivery = this.isChargeOnDelivery();
+        this.prints = props.prints;
+        this.photos = props.photos;
 
     }
 
-    hasChargeOnDelivery(props) : boolean{
-        /** Cobro en la entrega */
-        return props.deliveryType === DeliveryEnum.CHARGE_ON_DELIVERY ? true: false;
+    isChargeOnDelivery() : boolean {
+        return this.deliveryType === DeliveryEnum.CHARGE_ON_DELIVERY ? true: false;
+    }
+
+    hasPaymentMode(){
+        const isPayment = this.paymentMode && isPaymentMode(this.paymentMode);
+        return isPayment;
     }
 
     @IsNumber()
@@ -96,6 +104,18 @@ export class Order {
     @IsString()
     origen: string;
 
+    @IsNumber()
+    @IsOptional()
+    prints: number;
+
+    @IsNumber()
+    @IsOptional()
+    photos: number;
+
+    @IsString()
+    @IsOptional()
+    tracking: string;
+
     products: OrderProduct[]
 }
 
@@ -123,7 +143,7 @@ export class OrderUpdate {
         this.piecesForChanges = props.piecesForChanges;
         this.paymentMode = props.paymentMode;
         this.deliveryLocality = props.deliveryLocality;
-        this.chargeOnDelivery = this.hasChargeOnDelivery(props) || false;
+        this.chargeOnDelivery = this.isChargeOnDelivery() || false;
 
         /** Only for Update */
         this.refreshAddress = props.refreshAddress;
@@ -132,9 +152,13 @@ export class OrderUpdate {
         this.photos = props.photos;
     }
 
-    hasChargeOnDelivery(props) : boolean{
-        /** Cobro en la entrega */
-        return props.deliveryType === DeliveryEnum.CHARGE_ON_DELIVERY;
+    isChargeOnDelivery() : boolean {
+        return this.deliveryType === DeliveryEnum.CHARGE_ON_DELIVERY;
+    }
+
+    hasPaymentMode(){
+       const isPayment = this.paymentMode && isPaymentMode(this.paymentMode);
+       return isPayment;
     }
 
     @IsNumber()

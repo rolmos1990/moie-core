@@ -7,7 +7,7 @@ export enum PaymentModes {
 };
 
 export const isPaymentMode = (paymentMode) => {
-    return [PaymentModes.CASH,PaymentModes.WIRETRANSFER].includes(paymentMode);
+    return ([PaymentModes.CASH,PaymentModes.WIRETRANSFER].indexOf(paymentMode)) !== -1;
 }
 
 export const isCash = (paymentMode) => {

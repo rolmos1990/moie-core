@@ -12,6 +12,7 @@ import {
 import {ProductSize} from "./ProductSize";
 import {Order} from "./Order";
 import {Product} from "./Product";
+import {string_to_hex} from "../common/helper/helpers";
 
 /**
  * El isImpress -> o Impreso seria un Estatus más,
@@ -72,6 +73,19 @@ export class OrderDetail extends BaseModel{
            this.size === orderDetail.size &&
            this.color === orderDetail.color){
             return true;
+        }
+        return false;
+    }
+
+    toHash() {
+        const _string = this.color + this.size + this.quantity + this.price + this.product.id + this.discountPercent;
+        const hash = string_to_hex(_string);
+        return hash;
+    }
+
+    isProductSize(productSize: ProductSize){
+        if(productSize){
+            return (productSize.color === this.color && this.product.id === productSize.product.id && this.size === productSize.name);
         }
         return false;
     }

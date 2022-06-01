@@ -11,7 +11,7 @@ import {UserService} from "../services/user.service";
 export class BillController extends BaseController<BillConfig> {
     constructor(
         private readonly billConfigService: BillConfigService,
-        private readonly userService: UserService,
+        protected readonly userService: UserService,
     ){
         super(billConfigService, userService );
     };

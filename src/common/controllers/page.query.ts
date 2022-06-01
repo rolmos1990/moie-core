@@ -205,7 +205,7 @@ export class PageQuery {
      * @get
      */
     hasOperation() : boolean{
-        return this.operators !== null;
+        return this.operators !== null && !this.operators.isEmpty();
     }
 
     /**

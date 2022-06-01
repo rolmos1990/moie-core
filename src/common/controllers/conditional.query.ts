@@ -176,7 +176,15 @@ export class ConditionalQuery {
                     } else if (query.includes("::")) {
                         //compare is equal
                         field = query.split("::");
-                        this.addConditionalQuery(field[0], conditions, Operator.EQUAL, field[1]);
+
+                        if (field[0].includes(".")) {
+                            const fieldSubField = field[0].split(".");
+                            const subfieldName = fieldSubField[1];
+                            const subfieldValue = field[1];
+                            conditions.addSub(field[0] + " = :" + subfieldName, {[subfieldName]:  subfieldValue });
+                        } else {
+                            conditions.add(field[0], Operator.EQUAL, field[1]);
+                        }
                     } else {
                         throw new ConditionalException;
                     }
@@ -211,6 +219,7 @@ export class ConditionalQuery {
         }
 
     }
+
     /**
      * Add new condition subquery in your ConditionalQuery
      * @add
@@ -322,6 +331,15 @@ export class ConditionalQuery {
 
     hasField(field){
         return Reflect.has(this.condition, field);
+    }
+
+    /**
+     * Return Boolean if the Object has some condition
+     * @get
+     */
+
+    getField(field){
+        return Reflect.get(this.condition, field);
     }
 
     /**

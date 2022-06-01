@@ -1,0 +1,36 @@
+<head>{{> catalogHeader }}</head>
+<body>
+<div class="row">
+    {{#each products}}
+    <div class="col s6" style="padding-{{borderNumber @index}}: 0px">
+        <div class="card producto-lista-pdf">
+            <div class="card-image">
+                <img src="//lucymodas.com/catalogo/{{category}}/{{reference}}_1_238.jpg">
+                <div class="marca-agua">{{reference}}</div>
+                <div class="mini">
+                    <img src="//lucymodas.com/catalogo/{{category}}/{{reference}}_2_67.jpg">
+                </div>
+            </div>
+            <div class="card-content">
+						<span class="card-title codigo">
+							<label>{{material}}</label>
+							<b>{{reference}}</b>
+						</span>
+                {{#if hasPrice}}
+                <div class="precio">
+                    <cite>$ {{ scurrency (incrementDiscount price) }}</cite>
+                    <b>$ {{scurrency discount}}</b>
+                </div>
+                {{/if}}
+                <div class="material">{{material}}</div>
+                <div class="tallas">
+                    {{#each productSizes}}
+                        <div class="chip">{{name}}</div>
+                    {{/each}}
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/each}}
+</div>
+</body>

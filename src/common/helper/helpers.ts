@@ -1,6 +1,8 @@
 import {Any} from "typeorm";
 import {DeliveryTypes, DeliveryWebService} from "../enum/deliveryTypes";
 import {InvalidArgumentException} from "../exceptions";
+import {OrderDetail} from "../../models/OrderDetail";
+import {ProductSize} from "../../models/ProductSize";
 const bwipjs = require('bwip-js');
 
 
@@ -145,4 +147,30 @@ export function string_to_slug (str) {
         .replace(/-+/g, '-'); // collapse dashes
 
     return str;
+}
+
+export function string_to_hex (str) {
+    return Buffer.from(str, 'utf8').toString('hex');
+}
+
+//Ayuda a obtener el diff de un detalle
+export function getRealOrderDetail(_orderDetails: OrderDetail[], _oldDetails: OrderDetail[]) : OrderDetail[] {
+    return _orderDetails.map(item => {
+        const oldProduct = (_oldDetails.filter(oldItem => oldItem.productSize.id == item.productSize.id))[0];
+        if (oldProduct) {
+            item.quantity -= oldProduct.quantity;
+        }
+        return item;
+    });
+}
+
+//Ayuda a obtener el diff de un inventario
+export function getRealInventary(productSizes: ProductSize[], _orderDetails: OrderDetail[]) : ProductSize[] {
+    return productSizes.map(item => {
+        const orderProduct = (_orderDetails.filter(orderItem => orderItem.productSize.id == item.id))[0];
+        if(orderProduct) {
+            item.quantity -= orderProduct.quantity;
+        }
+        return item;
+    });
 }

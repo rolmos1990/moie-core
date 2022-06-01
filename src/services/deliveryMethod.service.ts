@@ -12,6 +12,7 @@ import {DeliveryLocalityService} from "./deliveryLocality.service";
 import {Order} from "../models/Order";
 import {DeliveryStatusImpl, TrackingDelivery} from "../common/requesters/deliveries/DeliveryStatusImpl";
 import {OrderDeliveryService} from "./orderDelivery.service";
+import {OrderUpdate, OrderUpdateDTO} from "../controllers/parsers/order";
 
 export class DeliveryMethodService extends BaseService<DeliveryMethod> {
     constructor(

@@ -41,4 +41,8 @@ export abstract class BaseService<Entity> implements IService {
     public async createOrUpdate(item: Object, options = {}){
         return await this.baseRepository.save(item, options);
     }
+
+    public async createOrUpdateMany(item: Object[]){
+        return await this.baseRepository.save(item, { chunk: 1000 });
+    }
 }

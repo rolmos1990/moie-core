@@ -13,7 +13,7 @@ export class StatsController extends BaseController<Size> {
 
     constructor(
         private readonly orderService: OrderService,
-        private readonly userService: UserService
+        protected readonly userService: UserService
     ){
         super(orderService);
     };

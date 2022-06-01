@@ -2,7 +2,7 @@ import {BaseService} from "../common/controllers/base.service";
 import {ProductSize} from "../models/ProductSize";
 import {ApplicationException, InvalidArgumentException} from "../common/exceptions";
 import {ProductSizeRepository} from "../repositories/productSize.repository";
-import {isEmpty} from "../common/helper/helpers";
+import {getRealInventary, getRealOrderDetail, isEmpty} from "../common/helper/helpers";
 import {Product} from "../models/Product";
 import {IProductSize} from "../common/interfaces/IProductSize";
 import {LIMIT_SAVE_BATCH} from "../common/persistence/mysql.persistence";
@@ -10,10 +10,32 @@ import {OrderDetail} from "../models/OrderDetail";
 
 export class ProductSizeService extends BaseService<ProductSize> {
     constructor(
-        private readonly productSizeRepository: ProductSizeRepository<ProductSize>
+        private readonly productSizeRepository: ProductSizeRepository<ProductSize>,
     ){
         super(productSizeRepository);
     }
+
+    async findByIds(productSizes: number[]){
+        return await this.productSizeRepository.createQueryBuilder('ps')
+            .leftJoinAndSelect('ps.product', 'p')
+            .whereInIds(productSizes)
+            .getMany();
+    }
+
+    /**
+     * Modificar inventario desde un pedido
+     */
+    public async updateProductSize(orderDetails: OrderDetail[], increase : boolean){
+        await Promise.all(orderDetails.map(async item => {
+            if(increase){
+                await this.productSizeRepository.increment(ProductSize, {color: item.color, name: item.size, product: item.product}, 'quantity', Math.abs(item.quantity));
+            } else {
+                await this.productSizeRepository.decrement(ProductSize, {color: item.color, name: item.size, product: item.product}, 'quantity', Math.abs(item.quantity));
+            }
+        }));
+    }
+
+
 
     /**
      * Modificar el inventario
@@ -69,6 +91,15 @@ export class ProductSizeService extends BaseService<ProductSize> {
         }
     }
 
+    public async findByOrderDetail(orderDetail: OrderDetail) : Promise<ProductSize>{
+        const productSize = await this.findByObject({
+            name: orderDetail.size,
+            color: orderDetail.color,
+            product: orderDetail.product
+        }, ['product']);
+        return productSize[0];
+    }
+
     public async findByProduct(id: number, relations = []) : Promise<ProductSize[] | null>{
         if(!id){
             throw new InvalidArgumentException();
@@ -90,4 +121,28 @@ export class ProductSizeService extends BaseService<ProductSize> {
             throw new ApplicationException("No se ha encontrado producto {"+orderDetail.product.reference+"} en el Inventario");
         }
     }
-}
+
+    public async checkInventary(_orderDetails: OrderDetail[], _oldDetails: OrderDetail[]){
+
+        const productSizesToSearch = _orderDetails.map(item => item.productSize.id);
+        let productSizes =  await this.findByIds(productSizesToSearch);
+
+        let _orderDetailCopy = _orderDetails;
+
+        //ingreso productos descontados en orden actual (si tengo orden previa realizada)
+        if(_oldDetails.length > 0) {
+            _orderDetailCopy = getRealOrderDetail(_orderDetails, _oldDetails);
+        }
+
+        //deducir cantidad (a comprobar)
+        productSizes = getRealInventary(productSizes, _orderDetailCopy);
+
+        const limits = productSizes.filter(item => item.quantity < 0)[0];
+
+        if(limits){
+            throw new InvalidArgumentException("No hay disponibilidad para producto "+limits.product.reference+"");
+        }
+
+        return true;
+
+    }}

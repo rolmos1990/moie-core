@@ -18,6 +18,11 @@ export class CustomerService extends BaseService<Customer> {
         super(customerRepository);
     }
 
+    async findFull(id: any){
+        return await this.find(id, ['state', 'municipality']);
+    }
+
+
     /** Obtener el historico de ultimas ordenes de un cliente */
     /** Customer null get all customers */
     /** Status null get by all status */
@@ -110,7 +115,7 @@ export class CustomerService extends BaseService<Customer> {
             .orderBy('createdAt', OrderConditional.DESC).getMany();
     }
 
-    async isMayorist(customer: Customer, itemsBuyed: number, updateEntity: boolean = false) : Promise<boolean>{
+    async addMayorist(order: Order, updateEntity: boolean = false) : Promise<boolean>{
 
         const numberOfItemsMayorist = 6;
         const lastMayoristHistory = 2;
@@ -118,7 +123,7 @@ export class CustomerService extends BaseService<Customer> {
         const orders : Order[] = await this.orderRepository.createQueryBuilder(Order.name)
             .select("*")
             .where({
-                customer: customer,
+                customer: order.customer,
             })
             .andWhere('status IN (:statuses)')
             .setParameter('statuses', isSell())
@@ -127,7 +132,7 @@ export class CustomerService extends BaseService<Customer> {
 
         let mayoristHistory = 0;
 
-        if(itemsBuyed >= numberOfItemsMayorist){
+        if(order.quantity >= numberOfItemsMayorist){
             mayoristHistory++;
         }
 
@@ -140,8 +145,8 @@ export class CustomerService extends BaseService<Customer> {
         }
 
         if(mayoristHistory > 0 && updateEntity){
-            customer.isMayorist = true;
-            await this.customerRepository.save(customer);
+            order.customer.isMayorist = true;
+            await this.customerRepository.save(order.customer);
         }
 
         return mayoristHistory > 0;

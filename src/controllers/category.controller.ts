@@ -15,7 +15,7 @@ import {UserService} from "../services/user.service";
 import {BatchRequestService} from "../services/batchRequest.service";
 import {UserShortDTO} from "./parsers/user";
 import {TemplatesRegisters} from "../common/enum/templatesTypes";
-import {MEDIA_FORMAT_OUTPUT, MediaManagementService} from "../services/mediaManagement.service";
+import {CONFIG_MEDIA, MEDIA_FORMAT_OUTPUT, MediaManagementService} from "../services/mediaManagement.service";
 import {ProductCatalogViewService} from "../services/productCatalogView.service";
 
 @route('/category')
@@ -24,7 +24,7 @@ export class CategoryController extends BaseController<Category> {
         private readonly categoryService: CategoryService,
         private readonly productService: ProductService,
         private readonly templateService: TemplateService,
-        private readonly userService: UserService,
+        protected readonly userService: UserService,
         private readonly batchRequestService: BatchRequestService,
         private readonly mediaManagementService: MediaManagementService,
         private readonly productCatalogViewService: ProductCatalogViewService
@@ -86,9 +86,23 @@ export class CategoryController extends BaseController<Category> {
             if(products.length > 0){
 
                 const onlyReference = false;
+                const defaultImage = CONFIG_MEDIA.DEFAULT_IMAGE;
+                const defaultUrl = CONFIG_MEDIA.LOCAL_PATH;
+                const _products = products.map(item => {
+                    try {
+                            const _image1 = item.firstImage ? defaultUrl + "/" + ((JSON.parse(item.firstImage))['high']) : defaultImage;
+                            const _image2 = item.secondImage ? defaultUrl + "/" + ((JSON.parse(item.secondImage))['small']) : defaultImage;
+                            item['imagePrimary'] = _image1;
+                            item['imageSecondary'] = _image2;
+                    }catch(e){
+                        item['imagePrimary'] = defaultImage;
+                        item['imageSecondary'] = defaultImage;
+                    }
+                    return item;
+                });
 
                 const object = {
-                    products: products,
+                    products: _products,
                     hasPrice : !onlyReference,
                     category: products[0].category
                 };
@@ -137,8 +151,25 @@ export class CategoryController extends BaseController<Category> {
 
             if(products.length > 0){
 
+                const _products = products.map(item => {
+                    try {
+                        const images = item.productImage.filter(item => item.group === 1 || item.group === 2);
+                        const _image1 = (JSON.parse(images[0].thumbs))['high'];
+                        const _image2 = (JSON.parse(images[1].thumbs))['small'];
+
+                        item['primaryImage'] = "http://localhost:18210/" + _image1;
+                        item['secondaryImage'] = "http://localhost:18210/" + _image2;
+
+                        return item;
+                    }catch(e){
+                        item['primaryImage'] = "http://localhost:18210/public/icons/image_not_found.png";
+                        item['secondaryImage'] = "http://localhost:18210/public/icons/image_not_found.png";
+                        return item;
+                    }
+                });
+
                 const object = {
-                    products: products,
+                    products: _products,
                     hasPrice : !onlyReference,
                     category: products[0].category
                 };

@@ -10,7 +10,7 @@ import {CONFIG_MEDIA, MediaManagementService} from "../services/mediaManagement.
 @route('/user')
 export class UserController extends BaseController<User> {
     constructor(
-        private readonly userService: UserService,
+        protected readonly userService: UserService,
         private readonly mediaManagementService: MediaManagementService
     ){
         super(userService);

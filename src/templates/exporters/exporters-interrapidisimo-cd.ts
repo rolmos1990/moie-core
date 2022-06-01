@@ -18,9 +18,9 @@ export class ExportersInterrapidisimoCd extends SingleBaseExporters {
         const body = data.map(item => ({
            id: item.customer.document,
            name: item.customer.name.toUpperCase(),
-           phone: item.customer.phone,
-           phone2: item.customer.cellphone,
-           address: item.customer.temporalAddress || "", //TODO -- agregar direccion real del cliente
+           phone: item.customer.cellphone,
+           phone2: item.customer.phone,
+           address: item.customer.address || "", //TODO -- agregar direccion real del cliente
            cityCode: "54553000", //item.orderDelivery.deliveryLocality.deliveryAreaCode, //TODO -- reasignar aqui la localidad de interrapidisimo
            city: item.customer.municipality.name.toUpperCase(),
            description: 'PRENDAS DE VESTIR - ' + item.id,

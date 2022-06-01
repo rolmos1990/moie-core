@@ -1,0 +1,74 @@
+<header>{{> customHeader }}</header>
+<div class="wrapper">
+    <header class="header">
+        <div class="logo" id="logo_11">             <span id="total_11">{{deliveryShortType}}: {{order.deliveryMethod.name}} {{#if isChargeOnDelivery}} {{currency order.totalAmount}} {{/if}} </span><br>             <span style="font-size: 1.2em">             {{#if hasPayment}}                 {{#if isCash}}                     EFECTIVO                 {{else}}                     TRANSFERENCIA                 {{/if}}             {{/if}}             {{#if hasPiecesForChanges}}             Piezas para cambio: {{order.piecesForChanges}}             {{/if}}             </span>         </div>
+        <div class="order_info">
+            {{{qrBar}}}
+            <p><strong># Pedido:</strong> {{order.id}}</p>
+        </div>
+        <div class="client_info">
+            <p>                 <strong>Cliente:</strong>                 {{order.customer.name}}                     <strong>CC/NIT:</strong> {{order.customer.document}} </p>
+            <p><strong>Dirección:</strong> <strong>{{order.customer.municipality.name}}</strong> <strong>Dpto.:</strong> {{order.customer.state.name}}</p>
+            <p><strong>Teléfonos:</strong> {{order.customer.cellphone}} {{order.customer.phone}}</p>
+        </div>
+        {{#if hasComments}}
+        <h2>Observaciones</h2>
+        <table style="color:red">
+            {{#each comments}}
+            <tr>
+                <td>{{user.name}} {{user.lastname}} ({{dateFormat createdAt format='YYYY-MM-DD HH:mm:ss'}}): {{comment}}</td>
+            </tr>
+            {{/each}}
+        </table>
+        {{/if}}
+        <div class="client_info2">
+            <table style="width:100%;">
+                <tbody>
+                <tr>
+                    <td style="width:30%;">Pedido # {{order.id}}</td>
+                    <td style="width:35%; text-align: center;">Fecha - Hora</td>
+                    <td style="width:35%; text-align: center;">Preparador</td>
+                </tr>
+                <tr>
+                    <td>                         {{order.customer.name}}                     </td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </header>
+    <div class="content">
+        <table>
+            <thead>
+            <tr>
+                <td>                     Ref.                 </td>
+                <td>                     Color                 </td>
+                <td>                     Talla                 </td>
+                <td style="text-align: right;">                     Cant.                 </td>
+                <td style="text-align: right;">                     Precio c/desc.                 </td>
+            </tr>
+            </thead>
+            <tbody>
+            {{#each orderDetails}}
+            <tr>
+                <td style="font-weight: bold;">                     {{product.reference}}                        </td>
+                <td style="font-weight: bold;">                     {{color}}                        </td>
+                <td style="font-weight: bold;">                     {{size}}                        </td>
+                <td style="text-align: right;font-weight: bold;">                     {{quantity}}                        </td>
+                <td style="text-align: right;">                     {{scurrency price}}                        </td>
+            </tr>
+            {{/each}}
+            </tbody>
+        </table>
+    </div>
+    <div class="footer">
+        <div class="imprimir">          </div>
+        <div class="order_total">
+            <p>Cantidad de piezas: <strong>{{order.quantity}}</strong></p>
+            <p>Subtotal: <strong>{{scurrency order.subTotal}}</strong></p>
+            <p>Envío: <strong>{{scurrency order.orderDelivery.deliveryCost}}</strong></p>
+            <p>Total: <strong>{{scurrency order.totalAmount}}</strong></p>
+        </div>
+    </div>
+</div>

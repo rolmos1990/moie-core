@@ -1,21 +1,17 @@
 import {
+    AfterUpdate,
     Column,
     CreateDateColumn,
-    Entity, JoinColumn,
+    Entity,
+    JoinColumn,
     ManyToOne,
-    OneToMany, OneToOne,
+    OneToMany,
+    OneToOne,
     PrimaryGeneratedColumn,
-    UpdateDateColumn
+    UpdateDateColumn, UpdateEvent
 } from "typeorm";
 import BaseModel from "../common/repositories/base.model";
-import {
-    IsBoolean,
-    IsDate,
-    IsDecimal,
-    IsNumber,
-    IsOptional,
-    Length,
-} from "class-validator";
+import {IsBoolean, IsDate, IsDecimal, IsNumber, IsOptional, Length,} from "class-validator";
 import {Type} from "class-transformer";
 import {Customer} from "./Customer";
 import {DeliveryMethod} from "./DeliveryMethod";
@@ -24,6 +20,8 @@ import {User} from "./User";
 import {OrderDelivery} from "./OrderDelivery";
 import {Office} from "./Office";
 import {Payment} from "./Payment";
+import {OrderStatus} from "../common/enum/orderStatus";
+import {DeliveryTypes} from "../common/enum/deliveryTypes";
 
 /**
  * El isImpress -> o Impreso seria un Estatus más,
@@ -151,4 +149,107 @@ export class Order extends BaseModel{
         return (this.id == null);
     }
 
+    hasTracking() : boolean {
+        return this.orderDelivery && this.orderDelivery.tracking !== null;
+    }
+
+    hasSomeStatus(_statusses: OrderStatus[]) : boolean {
+        return _statusses.indexOf(this.status) ? true : false;
+    }
+
+    /** Status */
+    isPending() : boolean {
+        return this.status === OrderStatus.PENDING;
+    }
+
+    setPending() : void {
+        this.status = OrderStatus.PENDING;
+    }
+
+    isConfirmed() : boolean {
+        return this.status === OrderStatus.CONFIRMED;
+    }
+
+    isPrinted() : boolean {
+        return this.status === OrderStatus.PRINTED;
+    }
+
+    isSent() : boolean {
+        return this.status === OrderStatus.SENT;
+    }
+
+    isReconcilied() : boolean {
+        return this.status === OrderStatus.RECONCILED;
+    }
+
+    isCanceled() : boolean {
+        return this.status === OrderStatus.CANCELED;
+    }
+
+    isFinished() : boolean {
+        return this.status === OrderStatus.FINISHED;
+    }
+
+    /** Identifica si es un valor correspondiente a cualquier previo pago */
+    isPreviousPayment() : boolean {
+        if(!this.orderDelivery){
+            return false;
+        }
+        return ([DeliveryTypes.PAY_ONLY_DELIVERY, DeliveryTypes.PREVIOUS_PAYMENT].indexOf(this.orderDelivery.deliveryType)) !== -1;
+    }
+
+    @AfterUpdate()
+    addHistoricRegister(event: UpdateEvent<any>) {
+        console.log(event);
+        //console.log(`COLUMNS UPDATED: `, event.updatedColumns)
+    }
+
+    initialize(){
+        this.orderDelivery = new OrderDelivery();
+        this.orderDelivery.deliveryCost = 0;
+        this.prints = 0;
+        this.photos = 0;
+        this.quantity = 0;
+        this.totalWeight = 0;
+        this.totalAmount = 0;
+        this.subTotalAmount = 0;
+        this.totalDiscount = 0;
+        this.totalRevenue = 0;
+        this.status = OrderStatus.PENDING;
+    }
+
+
+    hasDiffWith(o: Order) : boolean{
+
+        if(o.isEmpty() || this.isEmpty()){
+            return true;
+        }
+
+        if(
+            o.totalAmount !== this.totalAmount ||
+            o.paymentMode !== this.paymentMode ||
+            o.payment !== this.payment ||
+            o.user !== this.user ||
+            o.piecesForChanges !== this.piecesForChanges ||
+            o.customer !== this.customer ||
+            o.quantity !== this.quantity ||
+            o.totalWeight !== this.totalWeight ||
+            o.deliveryMethod !== this.deliveryMethod ||
+            o.orderDelivery.deliveryType !== this.orderDelivery.deliveryType ||
+            o.orderDelivery.deliveryMunicipality !== this.orderDelivery.deliveryMunicipality ||
+            o.orderDelivery.chargeOnDelivery !== this.orderDelivery.chargeOnDelivery
+        ){
+            return true;
+        }
+
+        return false;
+    }
+
+    compareHashDiff(hash: string){
+        return this.orderDetails.map(item => item.toHash()).join("") !== hash;
+    }
+
+    getHashProducts(){
+        return this.orderDetails.map(item => item.toHash()).join("");
+    }
 }
