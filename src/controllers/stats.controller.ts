@@ -7,12 +7,16 @@ import {OrderService} from "../services/order.service";
 import {UserService} from "../services/user.service";
 import {isValidStatTimes} from "../common/enum/statsTimeTypes";
 import {InvalidArgumentException} from "../common/exceptions";
+import {ProductService} from "../services/product.service";
+import {CustomerService} from "../services/customer.service";
 
 @route('/stats')
 export class StatsController extends BaseController<Size> {
 
     constructor(
         private readonly orderService: OrderService,
+        private readonly productService: ProductService,
+        private readonly customerService: CustomerService,
         protected readonly userService: UserService
     ){
         super(orderService);
@@ -176,6 +180,22 @@ export class StatsController extends BaseController<Size> {
 
             return res.json(stats);
 
+
+        }catch(e){
+            this.handleException(e, res);
+        }
+    }
+
+
+
+    @route("/estadistica/dashboard")
+    @GET()
+    public async estadistica_dashboard(req: Request, res: Response) {
+        try {
+            const products = await this.productService.getDashboardStat();
+            const orders = await this.orderService.getStatDashboard();
+            const customers = await this.customerService.getStatDashboard();
+            return res.json({products, orders, customers});
 
         }catch(e){
             this.handleException(e, res);

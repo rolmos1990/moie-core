@@ -3,13 +3,10 @@ import dotenv = require('dotenv');
 import express = require('express');
 import { loadControllers } from 'awilix-express';
 import loadContainer from './container';
-//import loadPersistence from './persistence';
 import {createConnection} from "typeorm";
 import MySQLPersistence from "./common/persistence/mysql.persistence";
 import {Authorization} from './middlewares/authorization';
 import * as cors from 'cors';
-import {loadModules} from "awilix/lib/load-modules";
-import {load} from "dotenv";
 import {RunSeed} from "./seeds/run.seed";
 
 //options for cors midddleware
@@ -28,8 +25,6 @@ const options: cors.CorsOptions = {
     preflightContinue: false,
 };
 
-//require('dotenv').config();
-
 const app: express.Application = express();
 
 //use cors middleware
@@ -42,21 +37,6 @@ app.use('/public', express.static('public'));
 
 // JSON Support
 app.use(express.json());
-// CORS Support
-//app.use(cors());
-
-//persistence
-//loadPersistence(app);
-
-// Container
-
-// JwT
-//if (process.env.jwt_secret_key) {
-    // app.use(jwt({
-    //     secret: process.env.jwt_secret_key,
-    //     algorithms: ['HS256']
-    // }).unless({ path: ['/', '/check']}));
-//}
 
 // Controllers
 createConnection(MySQLPersistence).then(async connection => {

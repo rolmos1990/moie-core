@@ -57,6 +57,7 @@ import {SecurityRolService} from "./services/securityRol.service";
 import {SecurityPermissionService} from "./services/securityPermission.service";
 import {SecurityRolRepository} from "./repositories/securityRol.repository";
 import {SecurityPermissionRepository} from "./repositories/securityPermission.repository";
+import {ProductAvailableViewRepository} from "./repositories/productAvailableView.repository";
 
 export default (app: express.Application): void => {
     const container = createContainer({
@@ -93,6 +94,7 @@ export default (app: express.Application): void => {
         productCatalogViewRepository: asClass(ProductCatalogViewRepository).scoped(),
         securityRolRepository: asClass(SecurityRolRepository).scoped(),
         securityPermissionRepository: asClass(SecurityPermissionRepository).scoped(),
+        productAvailableViewRepository: asClass(ProductAvailableViewRepository).scoped(),
         // services
         userService: asClass(UserService).scoped(),
         customerService: asClass(CustomerService).scoped(),

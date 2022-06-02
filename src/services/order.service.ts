@@ -28,6 +28,7 @@ import {Modules} from "../common/enum/modules";
 import {builderOrderTypes} from "../common/enum/orderTypes";
 import {toDateFormat} from "../templates/exporters/utilities";
 import {converterPreOrderProductInOrderDetail} from "../common/helper/converters";
+import moment = require("moment");
 
 export class OrderService extends BaseService<Order> {
     constructor(
@@ -769,6 +770,55 @@ export class OrderService extends BaseService<Order> {
 
             return results;
 
+    }
+
+
+    async getStatDashboard(){
+
+        let statDailyFirst;
+        let statDailySecond;
+        let statWeeklyFirst;
+        let statWeeklySecond;
+
+            const firstDate = moment().format('YYYY-MM-DD');
+            const secondDate = moment().subtract(1, 'days').format('YYYY-MM-DD');
+
+            statDailyFirst = await this.orderRepository.createQueryBuilder('o')
+            .addSelect("SUM(o.totalAmount)", "totalAmount")
+            .andWhere("DATE(o.dateOfSale) = :date", {date: firstDate})
+            .groupBy('o.dateOfSale')
+            .getRawOne();
+
+            statDailySecond = await this.orderRepository.createQueryBuilder('o')
+            .addSelect("SUM(o.totalAmount)", "totalAmount")
+            .andWhere("DATE(o.dateOfSale) = :date", {date: secondDate})
+            .groupBy('o.dateOfSale')
+            .getRawOne();
+
+
+            const weekEnd = moment().format('YYYY-MM-DD');
+            const weekStart = moment().subtract(1, 'week').format('YYYY-MM-DD');
+
+            const weekPastEnd = moment().subtract(1, 'week').format('YYYY-MM-DD');
+            const weekPastStart = moment().subtract(2, 'week').format('YYYY-MM-DD');
+
+            statWeeklyFirst = await this.orderRepository.createQueryBuilder('o')
+            .addSelect("SUM(o.totalAmount)", "totalAmount")
+            .andWhere("DATE(o.dateOfSale) >= :before", {before: weekStart})
+            .andWhere("DATE(o.dateOfSale) <= :after", {after: weekEnd}).getRawOne();
+
+            statWeeklySecond = await this.orderRepository.createQueryBuilder('o')
+            .addSelect("SUM(o.totalAmount)", "totalAmount")
+            .andWhere("DATE(o.dateOfSale) >= :before", {before: weekPastStart})
+            .andWhere("DATE(o.dateOfSale) <= :after", {after: weekPastEnd}).getRawOne();
+
+
+        return {
+            statDailyFirst: statDailyFirst ? parseFloat(statDailyFirst['totalAmount']) || 0 : 0,
+            statDailySecond: statDailySecond ? parseFloat(statDailySecond['totalAmount']) || 0 : 0,
+            statWeeklyFirst: statWeeklyFirst ? parseFloat(statWeeklyFirst['totalAmount']) || 0 : 0,
+            statWeeklySecond: statWeeklySecond ? parseFloat(statWeeklySecond['totalAmount']) || 0 : 0,
+        }
     }
 
 }

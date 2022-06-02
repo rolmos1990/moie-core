@@ -166,4 +166,21 @@ export class CustomerService extends BaseService<Customer> {
             .orderBy('createdAt', OrderConditional.DESC).getCount();
         return result;
     }
+
+
+    async getStatDashboard(){
+
+        const today = moment().format('YYYY-MM-DD');
+
+        const registersToday = await this.customerRepository.createQueryBuilder('c')
+            .addSelect("COUNT(c.id)", "registersToday")
+            .where("DATE(c.createdAt) = :date", {date: today})
+            .getRawOne();
+
+        const registers = await this.customerRepository.createQueryBuilder('c')
+            .addSelect("COUNT(c.id)", "registers")
+            .getRawOne();
+
+        return {registers: registers ? registers['registers'] : 0, registersToday: registersToday ? registersToday['registersToday'] : 0};
+    }
 }
