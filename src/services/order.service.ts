@@ -214,8 +214,8 @@ export class OrderService extends BaseService<Order> {
 
         const deliveryMethod = parse.deliveryMethod ? await this.deliveryMethodService.findByCode(parse.deliveryMethod) : _order.deliveryMethod;
         const deliveryLocality = parse.deliveryLocality ? await this.deliveryLocalityService.find(parse.deliveryLocality) : _order.orderDelivery.deliveryLocality;
-
         const hasTrackingChanged = (_order.orderDelivery.tracking !== parse.tracking);
+        const hasChangeDeliveryCost = (_order.orderDelivery.deliveryCost !== deliveryCost);
 
         /** Order Information */
         _order.photos = parse.photos || _order.photos;
@@ -225,7 +225,6 @@ export class OrderService extends BaseService<Order> {
         _order.expiredDate = new Date();
         _order.remember = _order.remember || false;
         _order.createdAt = _order.createdAt || new Date();
-        _order.totalAmount = (Number(_order.totalAmount) - Number(_order.totalDiscount)) + (Number(deliveryCost) - _order.orderDelivery.deliveryCost);
         _order.office = null;
 
         /** Delivery Information in Order */
@@ -242,6 +241,11 @@ export class OrderService extends BaseService<Order> {
         await this.orderDeliveryRepository.save(_order.orderDelivery);
 
         if(!isNew){
+            /** Recalculate cost in order if has any change in costs */
+            if(hasChangeDeliveryCost){
+                await this.recalculateCosts(_order);
+            }
+            /** Tracking historic for order (change status if be changed) */
             if(!hasTrackingChanged){
               _order = await this.checkWasUpdated(_order, user);
             } else {
