@@ -1,0 +1,30 @@
+version: '2'
+
+networks:
+  app-tier:
+    driver: bridge
+
+services:
+  mysqldb:
+    container_name: mysqldb
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 'Panama2018.'
+      MYSQL_PASSWORD: 'Panama2018.'
+      MYSQL_USER: 'moie-lucy'
+      MYSQL_ROOT_HOST: '%'
+      DB_NAME: 'moie-lucy-v2'
+    expose:
+      - "3306"
+    ports:
+      - "3306:3306"
+    networks:
+      - app-tier
+    volumes:
+      - "./scripts/moie-v2-qa-bk.sql:/docker-entrypoint-initdb.d/1.sql"
+      #- "./scripts/schema.sql:/docker-entrypoint-initdb.d/1.sql"
+      #- "./scripts/data.sql:/docker-entrypoint-initdb.d/2.sql"
+      - /var/apps/mysql/etc/custom.cnf:/etc/mysql/conf.d/custom.cnf
+      - /var/db:/var/lib/mysql

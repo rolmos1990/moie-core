@@ -1,0 +1,31 @@
+version: '2'
+
+networks:
+  app-tier:
+    driver: bridge
+
+services:
+  api:
+    container_name: api
+    image: 'rolmos/moie-lucy-api:${APP_VERSION}'
+    command: 'npm run start'
+    volumes:
+      - /var/storage:/storage/
+    ports:
+      - "18210:18210"
+    depends_on:
+      - mysqldb
+    networks:
+      - app-tier
+    environment:
+      PORT: $PORT
+      HOST: $HOST
+      DB_HOST: $DB_HOST
+      DB_PORT: $DB_PORT
+      DB_USERNAME: $DB_USERNAME
+      DB_PASSWORD: $DB_PASSWORD
+      DB_DATABASE: $DB_DATABASE
+      SEED_DB: $SEED_DB
+      DIAN_USER: $DIAN_USER
+      DIAN_PASSWORD: $DIAN_PASSWORD
+      PUBLIC_URL: $PUBLIC_URL

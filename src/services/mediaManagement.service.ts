@@ -20,9 +20,9 @@ wkhtmltopdf.command = "/usr/local/bin/wkhtmltopdf";
 export const CONFIG_MEDIA = {
     LOCAL_PATH: process.env.PUBLIC_URL,
     DEFAULT_IMAGE: process.env.PUBLIC_URL + "/public/icons/image_not_found.png",
-    IMAGE_PATH: './public/uploads',
+    IMAGE_PATH: './uploads',
     PDF_PATH: '/pdf',
-    STORAGE_PATH: './public/uploads',
+    STORAGE_PATH: './storage/uploads',
     STORAGE_PDF_PATH: './storage/pdf',
     PICTURES_FOLDERS: '/users',
     RESOLUTIONS: [67,238,400,800]

@@ -32,6 +32,7 @@ app.use(cors(options));
 app.use(express.json({limit: '50mb'}));
 app.use('/css', express.static('css'));
 app.use('/public', express.static('public'));
+app.use('/uploads', express.static('storage/uploads'));
 
 //Blocked use for this directories
 
