@@ -45,12 +45,11 @@ jobs:
             END
         env:
           SSH_USER: ${{ secrets.AWS_USERNAME }}
-          SSH_KEY: ${{ secrets.GITHUB_ACTIONS_DEPLOY }}
+          SSH_KEY: ${{ secrets.AWS_PRIVATE_KEY }}
           SSH_HOST: ${{ secrets.AWS_HOST }}
-          DOCKER_REPOSITORY: ${{ secrets.DOCKER_REPOSITORY }}
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USER }}
-          DOCKER_PASSWORD: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+
       #- name: Stop the server
+      - uses: benjlevesque/short-sha@v1.2
       - name: Deploy in Cluster
         env:
           PORT: ${{ secrets.PORT }}
