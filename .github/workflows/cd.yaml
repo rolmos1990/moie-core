@@ -65,4 +65,4 @@ jobs:
           DIAN_PASSWORD: ${{ secrets.DIAN_PASSWORD }}
           PUBLIC_URL: ${{ secrets.PUBLIC_URL }}
         run: |
-          ssh staging "echo 'hola'"
+          ssh apikey "echo 'hola'"
