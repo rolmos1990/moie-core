@@ -52,6 +52,7 @@ jobs:
           DOCKER_REPOSITORY: ${{ secrets.DOCKER_REPOSITORY }}
           DOCKER_USERNAME: ${{ secrets.DOCKER_USER }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+          OTHER: test
 
       - uses: benjlevesque/short-sha@v1.2
       - name: Deploy in Cluster
