@@ -29,3 +29,9 @@ Ik7JUQKBgDR8emcE15iO1BU+iqxkhPkrFWJV0HfOeWW6DzIbBRVG9ue9DgGo/43K
 SFtVtWPfljdYcjE6S4wgFf217r9tBWhh7mw72agqxQnYEYOIG382d0t8Q7r8VJjD
 aFWZG0mk+PoitJya8ed8gEayazKH1pgy3IxUHWWCZKAJBDZV3Ldc
 -----END RSA PRIVATE KEY-----
+
+
+
+-- create network (required)
+
+docker network create app-tier --driver=bridge

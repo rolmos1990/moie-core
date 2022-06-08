@@ -2,11 +2,11 @@ version: '2'
 
 networks:
   app-tier:
+    name: app-tier
     driver: bridge
 
 services:
   api:
-    container_name: api
     image: 'rolmos/moie-lucy-api:${APP_VERSION}'
     command: 'npm run start'
     volumes:
@@ -18,14 +18,39 @@ services:
     networks:
       - app-tier
     environment:
-      PORT: $PORT
-      HOST: $HOST
-      DB_HOST: $DB_HOST
-      DB_PORT: $DB_PORT
-      DB_USERNAME: $DB_USERNAME
-      DB_PASSWORD: $DB_PASSWORD
-      DB_DATABASE: $DB_DATABASE
-      SEED_DB: $SEED_DB
-      DIAN_USER: $DIAN_USER
-      DIAN_PASSWORD: $DIAN_PASSWORD
-      PUBLIC_URL: $PUBLIC_URL
+      PORT: ${PORT}
+      HOST: ${HOST}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_DATABASE: ${DB_DATABASE}
+      SEED_DB: ${SEED_DB}
+      DIAN_USER: ${DIAN_USER}
+      DIAN_PASSWORD: ${DIAN_PASSWORD}
+      PUBLIC_URL: ${PUBLIC_URL}
+      TZ: America/Bogota
+
+  mysqldb:
+    container_name: mysqldb
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password --sql_mode=""
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_ROOT_HOST: '%'
+      DB_NAME: ${DB_DATABASE}
+    expose:
+      - "3306"
+    ports:
+      - "3306:3306"
+    networks:
+      - app-tier
+    volumes:
+      #- "./scripts/moie-v2-qa-bk.sql:/docker-entrypoint-initdb.d/1.sql"
+      #- "./scripts/schema.sql:/docker-entrypoint-initdb.d/1.sql"
+      #- "./scripts/data.sql:/docker-entrypoint-initdb.d/2.sql"
+      - /var/db:/var/lib/mysql
+      - ./etc/custom.cnf:/etc/my.cnf
