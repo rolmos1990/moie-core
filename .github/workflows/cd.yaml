@@ -32,7 +32,6 @@ jobs:
           password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
           dockerfile: Dockerfile
           tags: 0.1-${{ env.SHA }}
-
       - name: Configure SSH
         run: |
             mkdir -p ~/.ssh/
@@ -53,7 +52,6 @@ jobs:
           DOCKER_REPOSITORY: ${{ secrets.DOCKER_REPOSITORY }}
           DOCKER_USERNAME: ${{ secrets.DOCKER_USER }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_ACCESS_TOKEN }}
-
       #- name: Stop the server
       - uses: benjlevesque/short-sha@v1.2
         name: Deploy in Cluster
