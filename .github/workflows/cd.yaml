@@ -22,6 +22,8 @@ jobs:
       CI: false
     steps:
       - uses: actions/checkout@v3
+
+      - uses: benjlevesque/short-sha@v1.2
       - uses: elgohr/Publish-Docker-Github-Action@master
         name: Publish to Github Packages Registry
         with:
@@ -31,6 +33,7 @@ jobs:
           password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
           dockerfile: Dockerfile
           tags: 0.1-${{ env.SHA }}
+
       - name: Configure SSH
         run: |
             mkdir -p ~/.ssh/
