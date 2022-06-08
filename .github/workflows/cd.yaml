@@ -45,7 +45,7 @@ jobs:
             END
         env:
           SSH_USER: ${{ secrets.AWS_USERNAME }}
-          SSH_KEY: ${{ secrets.AWS_PRIVATE_KEY }}
+          SSH_KEY: ${{ secrets.GITHUB_ACTIONS_DEPLOY }}
           SSH_HOST: ${{ secrets.AWS_HOST }}
           DOCKER_REPOSITORY: ${{ secrets.DOCKER_REPOSITORY }}
           DOCKER_USERNAME: ${{ secrets.DOCKER_USER }}
@@ -53,7 +53,6 @@ jobs:
       #- name: Stop the server
       - name: Deploy in Cluster
         env:
-          DOCKER_TAG: ${{ steps.short-sha.outputs.sha }}
           PORT: ${{ secrets.PORT }}
           HOST: ${{ secrets.HOST }}
           DB_HOST: ${{ secrets.DB_HOST }}
@@ -66,6 +65,4 @@ jobs:
           DIAN_PASSWORD: ${{ secrets.DIAN_PASSWORD }}
           PUBLIC_URL: ${{ secrets.PUBLIC_URL }}
         run: |
-            ssh apikey "cd /var/apps/backend && docker-compose stop"
-            ssh apikey "cd /var/apps/backend && APP_VERSION=0.1-$SHA docker-compose pull"
-            ssh apikey "cd /var/apps/backend && APP_VERSION=0.1-$SHA docker-compose up -d"
+          ssh staging "echo 'hola'"
