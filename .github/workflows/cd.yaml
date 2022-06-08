@@ -53,10 +53,10 @@ jobs:
           DOCKER_REPOSITORY: ${{ secrets.DOCKER_REPOSITORY }}
           DOCKER_USERNAME: ${{ secrets.DOCKER_USER }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_ACCESS_TOKEN }}
-          OTHER: test
 
+      #- name: Stop the server
       - uses: benjlevesque/short-sha@v1.2
-      - name: Deploy in Cluster
+        name: Deploy in Cluster
         env:
           DOCKER_TAG: ${{ steps.short-sha.outputs.sha }}
           PORT: ${{ secrets.PORT }}
