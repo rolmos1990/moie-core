@@ -22,7 +22,6 @@ jobs:
       CI: false
     steps:
       - uses: actions/checkout@v3
-      - uses: benjlevesque/short-sha@v1.2
       - uses: elgohr/Publish-Docker-Github-Action@master
         name: Publish to Github Packages Registry
         with:
@@ -52,8 +51,7 @@ jobs:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USER }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_ACCESS_TOKEN }}
       #- name: Stop the server
-      - uses: benjlevesque/short-sha@v1.2
-        name: Deploy in Cluster
+      - name: Deploy in Cluster
         env:
           DOCKER_TAG: ${{ steps.short-sha.outputs.sha }}
           PORT: ${{ secrets.PORT }}
