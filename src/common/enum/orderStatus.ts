@@ -30,5 +30,5 @@ export function isCancellable(){
 
 /** Ordenes que han sido vendidas */
 export function isSell(){
-    return [OrderStatus.PRINTED, OrderStatus.SENT, OrderStatus.RECONCILED];
+    return [OrderStatus.CONFIRMED, OrderStatus.PRINTED, OrderStatus.SENT, OrderStatus.RECONCILED, OrderStatus.FINISHED];
 }

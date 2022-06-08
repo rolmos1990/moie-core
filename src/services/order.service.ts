@@ -19,7 +19,7 @@ import {DeliveryMethodService} from "./deliveryMethod.service";
 import {Office} from "../models/Office";
 import {DeliveryLocalityService} from "./deliveryLocality.service";
 import {Between, IsNull, Not} from "typeorm";
-import {OrderStatus} from "../common/enum/orderStatus";
+import {isSell, OrderStatus} from "../common/enum/orderStatus";
 import {FieldOptionService} from "./fieldOption.service";
 import {StatTimeTypes} from "../common/enum/statsTimeTypes";
 import {OrderHistoricService} from "./orderHistoric.service";
@@ -29,6 +29,7 @@ import {builderOrderTypes} from "../common/enum/orderTypes";
 import {toDateFormat} from "../templates/exporters/utilities";
 import {converterPreOrderProductInOrderDetail} from "../common/helper/converters";
 import moment = require("moment");
+import {OrderConditional} from "../common/enum/order.conditional";
 
 export class OrderService extends BaseService<Order> {
     constructor(
@@ -102,6 +103,7 @@ export class OrderService extends BaseService<Order> {
             );
         try {
             await _statusManager.next();
+            await this.addMayorist(order, true);
             return _statusManager.getOrder();
         }catch(e){
             throw new InvalidArgumentException("Estado no pudo ser actualizado");
@@ -123,6 +125,7 @@ export class OrderService extends BaseService<Order> {
             this.orderHistoricService
         );
         await _statusManager.cancel();
+        await this.addMayorist(order, true);
     }
 
 
@@ -324,6 +327,49 @@ export class OrderService extends BaseService<Order> {
         const aliasFree = order.orderDelivery.deliveryCost == 0 ? 'FREE' : 'PAID';
         const deliveryTemplateName = `COPY_RESUME_${getDeliveryType(order.orderDelivery.deliveryType)}_${order.deliveryMethod.code}_${aliasFree}`;
         return deliveryTemplateName;
+    }
+
+    /**
+     * @param Order order
+     * Registrar un cliente mayorista desde ordenes
+     */
+    async addMayorist(order: Order, updateEntity: boolean = false) : Promise<boolean>{
+
+        const numberOfItemsMayorist = 6;
+        const lastMayoristHistory = 2;
+
+        const orders : Order[] = await this.orderRepository.createQueryBuilder(Order.name)
+            .select("*")
+            .where({
+                customer: order.customer,
+            })
+            .andWhere('status IN (:statuses)')
+            .setParameter('statuses', isSell())
+            .limit(lastMayoristHistory)
+            .orderBy('created_at', OrderConditional.DESC).getMany();
+
+        let mayoristHistory = 0;
+
+        if(order.quantity >= numberOfItemsMayorist){
+            mayoristHistory++;
+        }
+
+        if(orders){
+            orders.map(item => {
+                if(item.quantity >= numberOfItemsMayorist){
+                    mayoristHistory++;
+                }
+            })
+        }
+
+        if(mayoristHistory > 0 && updateEntity){
+            order.customer.isMayorist = true;
+            await this.customerService.createOrUpdate(order.customer);
+        } else {
+            order.customer.isMayorist = false;
+            await this.customerService.createOrUpdate(order.customer);
+        }
+        return mayoristHistory > 0;
     }
 
     /**

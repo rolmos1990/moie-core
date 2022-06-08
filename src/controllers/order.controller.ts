@@ -112,6 +112,7 @@ export class OrderController extends BaseController<Order> {
                 let order = await this.orderService.registerOrder(_order, parse, user);
                 const orderDetail : OrderProduct[] = converterArrayToProductsObject(req.body.products);
                 order = await this.orderService.updateOrderDetail(order, orderDetail, user);
+                await this.orderService.addMayorist(_order, true);
 
                 return res.json({status: 200, order: OrderShowDTO(order)});
         }catch(e){
@@ -202,7 +203,7 @@ export class OrderController extends BaseController<Order> {
                     throw new InvalidArgumentException("Lote no ha sido encontrado");
                 }
                 orders = entity.body.map(item => item.order);
-                orders = await this.orderService.findByIds(orders); //TODO -- agregar aqui customer por que puede fallar
+                orders = await this.orderService.findByIds(orders);
             }
 
             const user = await this.getUser(req);
@@ -250,6 +251,7 @@ export class OrderController extends BaseController<Order> {
                 if (req.body.products && req.body.products.length > 0) {
                     const productsOrders = converterArrayToProductsObject(req.body.products);
                     const _order = await this.orderService.updateOrderDetail(_entity, productsOrders, user, true);
+                    await this.orderService.addMayorist(_order, true);
                     return res.json({status: 200, order: OrderShowDTO(_order)});
                 }
             }catch(e){
