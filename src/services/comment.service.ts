@@ -2,6 +2,7 @@ import {BaseService} from "../common/controllers/base.service";
 import {Comment} from "../models/Comment";
 import {CommentRepository} from "../repositories/comment.repository";
 import {Order} from "../models/Order";
+import {CommentEntities} from "../common/enum/commentEntities";
 
 export class CommentService extends BaseService<Comment> {
     constructor(
@@ -12,7 +13,7 @@ export class CommentService extends BaseService<Comment> {
 
     async getByOrder(order: Order){
 
-        const field = {"entity": "Order", "idRelated": order.id};
+        const field = {"entity": CommentEntities.ORDER, "idRelated": order.id};
         const relations = ["user"];
         const limit = 5;
 
