@@ -64,4 +64,6 @@ jobs:
           DIAN_PASSWORD: ${{ secrets.DIAN_PASSWORD }}
           PUBLIC_URL: ${{ secrets.PUBLIC_URL }}
         run: |
-          ssh apikey "echo 'hola'"
+          ssh apikey "cd /var/apps/backend && docker-compose stop"
+          ssh apikey "cd /var/apps/backend && APP_VERSION=0.1-$SHA docker-compose pull"
+          ssh apikey "cd /var/apps/backend && APP_VERSION=0.1-$SHA docker-compose up -d"

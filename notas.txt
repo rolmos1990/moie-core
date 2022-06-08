@@ -1,54 +1,31 @@
-ROLES:
+key server:
 
+SSH_KEY:
 
-/role (POST)
-
-{
-name: "RoleName"
-permissions: [
-"user.create",
-"user.list",
-"user.edit"
-]
-}
-
-/role (GET)
------
-[{
-id,
-name,
-permissions
-}]
------
-
-/role/{id} (GET)
------
-{
-id,
-name,
-permissions
-}
-
-/role/{id} (PUT)
-
-{
-name: "RoleName"
-permissions: ["user.create","user.list","user.edit"]
-}
-
------
-/permission
-[
-  {
-  name: "Usuarios",
-  group: "user",
-  permissions:
-  [{name: "create", description: "Permite crear usuario" },
-   {name: "list", description: "Permite listar usuario" }
-  ]
-  }
-  }
-]
-
------
-
+-----BEGIN RSA PRIVATE KEY-----
+MIIEowIBAAKCAQEAzDVv5BnzF2ivdPXske29dGOCRFBhhEBrwVmI3CMRaPfcrxc/
+XaqwGcFZu6tDQUg2GzdDCaBgPfgN8wG9142z2aVqpW7cW68T5o7oDtAwssHowXUl
+AkwCpCZSG35SaoLcBcYT605viYmzXdIfxeUthTqBD5dplbo0pbIzZjSkiv630A+i
+uu+tn/qxe7vwyh0y//JvNiuU1Ub2aXhihH1bZSwl/Jkc3ShHMOHY3Ig75D3qCz0V
+jMgAoHfdvWkoMsoPyOx50JZVjvoJ1Ois6slS3M5Xfa3KImWjiKqIzyvNHBalg+AJ
+SRob5ALaiTvovLIFn1Cdc3ADm5u3u9+BAN07QwIDAQABAoIBAQCXkKnlgSUeIMLp
+aoYVoYDWW+0Zyxc106KmtU+RJC4N3Lnc8sJDQSbHVuzFD84xK+mMta15/aCxHeUs
+kgRXcoMkbVQESY4gNofsvfCa3gbnBmk8/TdkxwnGz/JtGYsOJuYrGuM56NN8H8oT
+Ppv6g6kPk2arLdReHwBoYyUnHLdruWMHvgmdYPVzaPl8MqwmmGZThCBZbB5RneZt
+nvTPSIC8wD7NyiCJB1Fyx/AzvNVw1ErKhdJM7syUla1MBK2S5dluTNmcrnHbsbag
+0qrpB5QbVGbO3CUIVcTmG6GWFdfbsXGZl/ijhFOJZGDAUIbU7ydIeX6TBWoA3TbI
+BgJLPdFRAoGBAO2oM8ywXBdZ/LiZ3O6cm7WpCN1WOW/ig1GfgAHPVaf2mmJbzwBK
+Qcv44Lftx7Oti2EybvmlpEowr3h7BE1+FsJ0cA0CC3QvC6R2rNqt9CUPLB3xoBSZ
+6vwlduBjoWIMO3UJXO+4RUjpdUAy0l6eFs+EnR+sP+lSXz6iMhJTLMkNAoGBANv4
+VtsAiCQY4u0uj9ds696u7WxKC1g7VsuZs6bp/PSHJGReYHYssdwj/Ma6Pld9ujsh
+SHqEHeJFCSwlw4FVM7y20T44wkZ27rspaHEd7RkoP5NTg5bLhld0YJLNKSYZSoPL
+xjDMj4bWAfnuEq83MeCwT9u6ua5c3E95dXbsl2GPAoGARKVbIPqn/w69Es1OpZWS
+3GwQ5W3sdUbmS4NYxC0RPszaVyLRrfHFA5fFwRrrnhi4s8CPkYio5c0eQhy2Z3PO
+OyjK3NcEW/Di2gR1dUzdwn6ZbaTHamvzFhX0OmhMyzdhTTMBJzUAvkjA12RWo4Hi
+cNqLUAS/CTQD0uGiuOxReVkCgYAZ25+aLv3SAHrslsSh9lPj4XxXdnzO6mrRlEfi
+Hy91L02/3rhILAjcb/6O/eXGMylpOghjHpTEvIjPf8DzuyhRzsvaHKH51pFJvxxf
+77yncGvIzdByMYqhTTTtDOEBcYeo5pNtuR5GI3IoByx7HGnol9FLay/Yp2HeldCR
+Ik7JUQKBgDR8emcE15iO1BU+iqxkhPkrFWJV0HfOeWW6DzIbBRVG9ue9DgGo/43K
+SFtVtWPfljdYcjE6S4wgFf217r9tBWhh7mw72agqxQnYEYOIG382d0t8Q7r8VJjD
+aFWZG0mk+PoitJya8ed8gEayazKH1pgy3IxUHWWCZKAJBDZV3Ldc
+-----END RSA PRIVATE KEY-----
