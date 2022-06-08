@@ -22,8 +22,8 @@ export const CONFIG_MEDIA = {
     DEFAULT_IMAGE: process.env.PUBLIC_URL + "/public/icons/image_not_found.png",
     IMAGE_PATH: './uploads',
     PDF_PATH: '/pdf',
-    STORAGE_PATH: './storage/uploads',
-    STORAGE_PDF_PATH: './storage/pdf',
+    STORAGE_PATH: '../storage/uploads',
+    STORAGE_PDF_PATH: '../storage/pdf',
     PICTURES_FOLDERS: '/users',
     RESOLUTIONS: [67,238,400,800]
 };
