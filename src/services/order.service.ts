@@ -30,6 +30,7 @@ import {toDateFormat} from "../templates/exporters/utilities";
 import {converterPreOrderProductInOrderDetail} from "../common/helper/converters";
 import moment = require("moment");
 import {OrderConditional} from "../common/enum/order.conditional";
+import {Customer} from "../models/Customer";
 
 export class OrderService extends BaseService<Order> {
     constructor(
@@ -116,6 +117,7 @@ export class OrderService extends BaseService<Order> {
      */
     async cancelOrder(order: Order, user: User) : Promise<void> {
         const orderDetails: OrderDetail[] = await this.getDetails(order);
+        await this.addMayorist(order, true);
         await this.updateInventaryForOrderDetail(orderDetails, true);
 
         const _statusManager = new StatusManagerController(
@@ -125,7 +127,6 @@ export class OrderService extends BaseService<Order> {
             this.orderHistoricService
         );
         await _statusManager.cancel();
-        await this.addMayorist(order, true);
     }
 
 
@@ -333,12 +334,12 @@ export class OrderService extends BaseService<Order> {
      * @param Order order
      * Registrar un cliente mayorista desde ordenes
      */
-    async addMayorist(order: Order, updateEntity: boolean = false) : Promise<boolean>{
+    async addMayorist(order: Order, updateEntity: boolean = false, refresh = false, customer = Customer) : Promise<boolean>{
 
         const numberOfItemsMayorist = 6;
         const lastMayoristHistory = 2;
 
-        const orders : Order[] = await this.orderRepository.createQueryBuilder(Order.name)
+        let orders : Order[] = await this.orderRepository.createQueryBuilder(Order.name)
             .select("*")
             .where({
                 customer: order.customer,
@@ -362,12 +363,14 @@ export class OrderService extends BaseService<Order> {
             })
         }
 
-        if(mayoristHistory > 0 && updateEntity){
-            order.customer.isMayorist = true;
-            await this.customerService.createOrUpdate(order.customer);
-        } else {
-            order.customer.isMayorist = false;
-            await this.customerService.createOrUpdate(order.customer);
+        if(order && order.customer) {
+            if (mayoristHistory > 0 && updateEntity) {
+                order.customer.isMayorist = true;
+                await this.customerService.createOrUpdate(order.customer);
+            } else {
+                order.customer.isMayorist = false;
+                await this.customerService.createOrUpdate(order.customer);
+            }
         }
         return mayoristHistory > 0;
     }
@@ -427,7 +430,7 @@ export class OrderService extends BaseService<Order> {
             .leftJoinAndSelect('o.deliveryMethod', 'i')
             .andWhere("d.deliveryDate", Between(dateFrom, dateTo))
             .andWhere("o.deliveryMethod = :deliveryMethod", {deliveryMethod: 1})
-            .andWhere("o.status", status)
+            .andWhere("o.status = :status", {status: status})
             .getMany();
     }
 

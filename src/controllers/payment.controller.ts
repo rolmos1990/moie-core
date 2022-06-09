@@ -91,7 +91,7 @@ export class PaymentController extends BaseController<Payment> {
 
     protected getDefaultRelations(isDetail= false): Array<string> {
         if(isDetail){
-            return ['order','order.customer']
+            return ['order','order.customer','order.orderDelivery']
         } else {
             return [];
         };
