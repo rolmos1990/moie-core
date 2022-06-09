@@ -10,6 +10,8 @@ COPY --from=wkhtmltopdf /bin/libwkhtmltox* /bin/
 
 RUN apk update freetype freetype-dev ttf-freefont
 
+RUN apk add --no-cache zlib fontconfig freetype libx11 libxext libxrender
+
 #deployment
 WORKDIR /src
 COPY ./package*.json /src/
