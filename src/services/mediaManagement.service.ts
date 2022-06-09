@@ -218,7 +218,7 @@ export class MediaManagementService extends UtilService {
             } else if(format === MEDIA_FORMAT_OUTPUT.b64storage){
                 const filename = "CATALOG_"+moment().unix()+".pdf";
                 const url = `${CONFIG_MEDIA.PDF_PATH}/${filename}`;
-                wkhtmltopdf(html, { output: `${CONFIG_MEDIA.STORAGE_PDF_PATH}/${filename}` });
+                wkhtmltopdf(html, { spawnOptions:{shell: true}, output: `${CONFIG_MEDIA.STORAGE_PDF_PATH}/${filename}` });
                 return {data: "", url: url };
             }
 

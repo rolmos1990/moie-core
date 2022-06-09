@@ -21,17 +21,18 @@ Steps to run this project:
 
 
 #RUN ON SERVER
+   docker build -t rolmos/moie-lucy-api .
 
-    docker run \
-    -dp \
-    --name moie-core \
-    -e PORT=18210 \
-    -e HOST=http://localhost \
-    -e DB_HOST=localhost \
-    -e DB_PORT=6603 \
-    -e DB_USERNAME=root \
-    -e DB_PASSWORD=root \
-    -e DB_DATABASE=moie-lucy-v2 \
-    -e SEED_DB=true \
-    -e DIAN_USER=1CCC171F7911107313 \
-    -e DIAN_PASSWORD=1CCC171F7911107313
+   docker run -e PORT=18211 \
+   -e HOST=http://localhost \
+   -e DB_HOST=3.85.198.54 \
+   -e DB_PORT=3306 \
+   -e DB_USERNAME=root \
+   -e DB_DATABASE=moie-lucy-v2 \
+   -e DB_PASSWORD=Panama2018. \
+   -e SEED_DB=false \
+   -e DIAN_USER=1CCC171F7911107313 \
+   -e DIAN_PASSWORD=1CCC171F7911107313 \
+   -e PUBLIC_URL=http://localhost:18211 \
+   --name moie-lucy-api \
+   -dp 18211:18211 rolmos/moie-lucy-api
