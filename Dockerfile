@@ -8,6 +8,8 @@ COPY --from=wkhtmltopdf /bin/wkhtmltopdf /bin/wkhtmltopdf
 COPY --from=wkhtmltopdf /bin/wkhtmltoimage /bin/wkhtmltoimage
 COPY --from=wkhtmltopdf /bin/libwkhtmltox* /bin/
 
+RUN apk update freetype freetype-dev ttf-freefont
+
 #deployment
 WORKDIR /src
 COPY ./package*.json /src/

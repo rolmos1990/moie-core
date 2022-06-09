@@ -115,43 +115,6 @@ export class CustomerService extends BaseService<Customer> {
             .orderBy('createdAt', OrderConditional.DESC).getMany();
     }
 
-    async addMayorist(order: Order, updateEntity: boolean = false) : Promise<boolean>{
-
-        const numberOfItemsMayorist = 6;
-        const lastMayoristHistory = 2;
-
-        const orders : Order[] = await this.orderRepository.createQueryBuilder(Order.name)
-            .select("*")
-            .where({
-                customer: order.customer,
-            })
-            .andWhere('status IN (:statuses)')
-            .setParameter('statuses', isSell())
-            .limit(lastMayoristHistory)
-            .orderBy('created_at', OrderConditional.DESC).getMany();
-
-        let mayoristHistory = 0;
-
-        if(order.quantity >= numberOfItemsMayorist){
-            mayoristHistory++;
-        }
-
-        if(orders){
-            orders.map(item => {
-                if(item.quantity >= numberOfItemsMayorist){
-                    mayoristHistory++;
-                }
-            })
-        }
-
-        if(mayoristHistory > 0 && updateEntity){
-            order.customer.isMayorist = true;
-            await this.customerRepository.save(order.customer);
-        }
-
-        return mayoristHistory > 0;
-    }
-
     /** Obtener el historico de ultimas ordenes de un cliente */
     async getRegisteredsByRange(startDate, endDate){
 

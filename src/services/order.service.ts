@@ -19,7 +19,7 @@ import {DeliveryMethodService} from "./deliveryMethod.service";
 import {Office} from "../models/Office";
 import {DeliveryLocalityService} from "./deliveryLocality.service";
 import {Between, IsNull, Not} from "typeorm";
-import {OrderStatus} from "../common/enum/orderStatus";
+import {isSell, OrderStatus} from "../common/enum/orderStatus";
 import {FieldOptionService} from "./fieldOption.service";
 import {StatTimeTypes} from "../common/enum/statsTimeTypes";
 import {OrderHistoricService} from "./orderHistoric.service";
@@ -29,6 +29,8 @@ import {builderOrderTypes} from "../common/enum/orderTypes";
 import {toDateFormat} from "../templates/exporters/utilities";
 import {converterPreOrderProductInOrderDetail} from "../common/helper/converters";
 import moment = require("moment");
+import {OrderConditional} from "../common/enum/order.conditional";
+import {Customer} from "../models/Customer";
 
 export class OrderService extends BaseService<Order> {
     constructor(
@@ -102,6 +104,7 @@ export class OrderService extends BaseService<Order> {
             );
         try {
             await _statusManager.next();
+            await this.addMayorist(order, true);
             return _statusManager.getOrder();
         }catch(e){
             throw new InvalidArgumentException("Estado no pudo ser actualizado");
@@ -114,6 +117,7 @@ export class OrderService extends BaseService<Order> {
      */
     async cancelOrder(order: Order, user: User) : Promise<void> {
         const orderDetails: OrderDetail[] = await this.getDetails(order);
+        await this.addMayorist(order, true);
         await this.updateInventaryForOrderDetail(orderDetails, true);
 
         const _statusManager = new StatusManagerController(
@@ -328,6 +332,51 @@ export class OrderService extends BaseService<Order> {
 
     /**
      * @param Order order
+     * Registrar un cliente mayorista desde ordenes
+     */
+    async addMayorist(order: Order, updateEntity: boolean = false, refresh = false, customer = Customer) : Promise<boolean>{
+
+        const numberOfItemsMayorist = 6;
+        const lastMayoristHistory = 2;
+
+        let orders : Order[] = await this.orderRepository.createQueryBuilder(Order.name)
+            .select("*")
+            .where({
+                customer: order.customer,
+            })
+            .andWhere('status IN (:statuses)')
+            .setParameter('statuses', isSell())
+            .limit(lastMayoristHistory)
+            .orderBy('created_at', OrderConditional.DESC).getMany();
+
+        let mayoristHistory = 0;
+
+        if(order.quantity >= numberOfItemsMayorist){
+            mayoristHistory++;
+        }
+
+        if(orders){
+            orders.map(item => {
+                if(item.quantity >= numberOfItemsMayorist){
+                    mayoristHistory++;
+                }
+            })
+        }
+
+        if(order && order.customer) {
+            if (mayoristHistory > 0 && updateEntity) {
+                order.customer.isMayorist = true;
+                await this.customerService.createOrUpdate(order.customer);
+            } else {
+                order.customer.isMayorist = false;
+                await this.customerService.createOrUpdate(order.customer);
+            }
+        }
+        return mayoristHistory > 0;
+    }
+
+    /**
+     * @param Order order
      * Obtener plantilla dependiendo de la orden
      */
     getExportOfficeReport(order: Order) {
@@ -381,7 +430,7 @@ export class OrderService extends BaseService<Order> {
             .leftJoinAndSelect('o.deliveryMethod', 'i')
             .andWhere("d.deliveryDate", Between(dateFrom, dateTo))
             .andWhere("o.deliveryMethod = :deliveryMethod", {deliveryMethod: 1})
-            .andWhere("o.status", status)
+            .andWhere("o.status = :status", {status: status})
             .getMany();
     }
 
@@ -448,13 +497,20 @@ export class OrderService extends BaseService<Order> {
         }
 
         if(user !== null){
-            orderRepository.where("o.user", user);
+            orderRepository.leftJoinAndSelect('o.user', 'u')
+                .where("u.id = :user")
+                .andWhere("DATE(o.dateOfSale) >= :before")
+                .andWhere("DATE(o.dateOfSale) <= :after")
+                .addGroupBy('o.user')
+                .setParameters({before: dateFrom, after: dateTo, user: user['id']});
+        } else {
+            orderRepository.andWhere("DATE(o.dateOfSale) >= :before");
+            orderRepository.andWhere("DATE(o.dateOfSale) <= :after");
+
+            orderRepository.setParameters({before: dateFrom, after: dateTo});
         }
 
-        orderRepository.andWhere("DATE(o.dateOfSale) >= :before");
-        orderRepository.andWhere("DATE(o.dateOfSale) <= :after");
-
-        orderRepository.setParameters({before: dateFrom, after: dateTo});
+        console.log(orderRepository.getSql());
 
         const rows = await orderRepository.getRawMany();
 

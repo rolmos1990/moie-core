@@ -125,7 +125,7 @@ export class BillController extends BaseController<Bill> {
         const {dateFrom, dateTo, type} = req.query;
         try {
 
-            if(!(type === EBillType.CREDIT || type === EBillType.INVOICE)){
+            if(!(type === EBillType.CREDIT || type === EBillType.INVOICE || type === EBillType.INVOICE_CLASSIC)){
                 throw new InvalidArgumentException("Tipo no valido");
             }
 

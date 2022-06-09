@@ -9,7 +9,7 @@ import {EventStatus} from "../enum/eventStatus";
 
 export class StatusManagerController {
 
-    private _statusHistoric : OrderHistoric[];
+    readonly _statusHistoric : OrderHistoric[];
 
     constructor(
         protected readonly order: Order,
@@ -63,6 +63,7 @@ export class StatusManagerController {
         /*** Previo Pago */
         if (order.isPreviousPayment()) {
             if (order.isReconcilied()) {
+                this.order.prints = (this.order.prints + 1) || 1;
                 this.setStatus(OrderStatus.PRINTED);
             }
             else if (order.isPrinted()) {

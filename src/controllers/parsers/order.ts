@@ -289,12 +289,13 @@ export const OrderDetailShowDTO = (orderDetail: OrderDetail | any) => ({
 });
 
 
-export const OrderPaymentShowDTO = (orderDetail: OrderDetail | any) => ({
-    id: orderDetail.id,
-    status: orderDetail.status,
-    customer: CustomerListDTO(orderDetail.customer),
-    createdAt: orderDetail.createdAt,
-    quantity: orderDetail.quantity,
-    totalAmount: orderDetail.totalAmount,
-    subTotalAmount: orderDetail.subTotalAmount,
+export const OrderPaymentShowDTO = (order: Order | any) => ({
+    id: order.id,
+    status: order.status,
+    customer: CustomerListDTO(order.customer),
+    createdAt: order.createdAt,
+    quantity: order.quantity,
+    totalAmount: order.totalAmount,
+    subTotalAmount: order.subTotalAmount,
+    orderDelivery: OrderDeliveryListDTO(order.orderDelivery)
 });

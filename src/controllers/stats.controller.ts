@@ -34,20 +34,24 @@ export class StatsController extends BaseController<Size> {
     protected beforeUpdate(item: Object): void {
     }
 
-    @route("/estadistica_ventas/:startDate/:endDate/:group")
+    @route("/estadistica_ventas/:startDate/:endDate/:group/:user?")
     @GET()
     public async estadistica_ventas(req: Request, res: Response) {
         try {
             const fi = req.params.startDate;
             const ff = req.params.endDate;
             const grupo = req.params.group;
+            const userId = req.params.user;
 
             if(!isValidStatTimes(grupo)){
                 throw new InvalidArgumentException("Agrupacion de fecha no es valida");
             }
 
-            const userIdFromSession = req['user'].id;
-            const user = await this.userService.find(userIdFromSession);
+            let user = null;
+
+            if(userId){
+                user = await this.userService.find(parseInt(userId));
+            }
 
             const stats = await this.orderService.getStatsDay(fi, ff, grupo.toLowerCase(), user);
 

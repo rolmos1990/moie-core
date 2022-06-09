@@ -5,6 +5,7 @@ export const OrderDeliveryListDTO = (orderDelivery: OrderDelivery) => ({
     tracking: orderDelivery ? orderDelivery.tracking : null,
     deliveryDate: orderDelivery ? orderDelivery.deliveryDate : null,
     chargeOnDelivery: orderDelivery ? orderDelivery.chargeOnDelivery : null,
+    deliveryCost: orderDelivery ? orderDelivery.deliveryCost : 0,
     deliveryType:  orderDelivery ? orderDelivery.deliveryType : null,
     deliveryStatus: orderDelivery ? orderDelivery.deliveryStatus : null,
     deliveryLocality: orderDelivery ? DeliveryLocalityListDTO(orderDelivery.deliveryLocality) : null

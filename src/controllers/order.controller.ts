@@ -3,7 +3,15 @@ import {EntityTarget} from "typeorm";
 import {Order} from "../models/Order";
 import {OrderService} from "../services/order.service";
 import {GET, POST, PUT, route} from "awilix-express";
-import {OrderCreateDTO, OrderListDTO, OrderShortDTO, OrderShowDTO, Order as OrderCreate, OrderUpdate, OrderUpdateDTO} from "./parsers/order";
+import {
+    Order as OrderCreate,
+    OrderCreateDTO,
+    OrderListDTO,
+    OrderShortDTO,
+    OrderShowDTO,
+    OrderUpdate,
+    OrderUpdateDTO
+} from "./parsers/order";
 import {Request, Response} from "express";
 import {ApplicationException, InvalidArgumentException} from "../common/exceptions";
 import {DeliveryMethodService} from "../services/deliveryMethod.service";
@@ -33,6 +41,7 @@ import {TemplatesRegisters} from "../common/enum/templatesTypes";
 import {OrderDeliveryService} from "../services/orderDelivery.service";
 import {DeliveryTypes} from "../common/enum/deliveryTypes";
 import {converterArrayToProductsObject} from "../common/helper/converters";
+import {Operator} from "../common/enum/operators";
 
 
 @route('/order')
@@ -112,6 +121,7 @@ export class OrderController extends BaseController<Order> {
                 let order = await this.orderService.registerOrder(_order, parse, user);
                 const orderDetail : OrderProduct[] = converterArrayToProductsObject(req.body.products);
                 order = await this.orderService.updateOrderDetail(order, orderDetail, user);
+                await this.orderService.addMayorist(_order, true);
 
                 return res.json({status: 200, order: OrderShowDTO(order)});
         }catch(e){
@@ -136,7 +146,7 @@ export class OrderController extends BaseController<Order> {
             let orders = [];
 
             if(request.order) {
-                entity = await this.orderService.find(parseInt(request.order));
+                entity = await this.orderService.findFull(request.order);
                 orders.push(entity);
             } else {
                 entity = await this.batchRequestService.find(parseInt(request.batch));
@@ -167,7 +177,7 @@ export class OrderController extends BaseController<Order> {
                     await this.orderService.cancelOrder(entity, user);
                     return res.json({status: 200, order: OrderShowDTO(entity)});
                 } else {
-                    throw new InvalidArgumentException("No existe registro indicado para actualizar");
+                    throw new InvalidArgumentException("El pedido no puede ser anulado bajo es estado actual");
                 }
             }
 
@@ -202,7 +212,7 @@ export class OrderController extends BaseController<Order> {
                     throw new InvalidArgumentException("Lote no ha sido encontrado");
                 }
                 orders = entity.body.map(item => item.order);
-                orders = await this.orderService.findByIds(orders); //TODO -- agregar aqui customer por que puede fallar
+                orders = await this.orderService.findByIds(orders);
             }
 
             const user = await this.getUser(req);
@@ -211,6 +221,7 @@ export class OrderController extends BaseController<Order> {
                 let updates = [];
                 await Promise.all(orders.map(async entity => {
                     const order = await this.orderService.updateNextStatus(entity, user);
+                    await this.orderService.addMayorist(order, true);
                     updates.push(order);
                 }));
                 entity.status = BatchRequestTypesStatus.EXECUTED;
@@ -218,6 +229,7 @@ export class OrderController extends BaseController<Order> {
                 return res.json({status: 200, updates: updates.map(item => OrderShortDTO(item))});
             } else {
                 const order = await this.orderService.updateNextStatus(entity, user);
+                await this.orderService.addMayorist(order, true);
                 return res.json({status: 200, order: OrderShowDTO(order)});
             }
 
@@ -250,6 +262,7 @@ export class OrderController extends BaseController<Order> {
                 if (req.body.products && req.body.products.length > 0) {
                     const productsOrders = converterArrayToProductsObject(req.body.products);
                     const _order = await this.orderService.updateOrderDetail(_entity, productsOrders, user, true);
+                    await this.orderService.addMayorist(_order, true);
                     return res.json({status: 200, order: OrderShowDTO(_order)});
                 }
             }catch(e){
@@ -662,7 +675,31 @@ export class OrderController extends BaseController<Order> {
         }
     }
 
+    @route('/filterby/conciliations')
+    @GET()
+    public async forConciliates(req: Request, res: Response){
+        try {
 
+            const query = req.query;
+            const parametersQuery = this.builderParamsPage(query);
+            const queryCondition = parametersQuery.queryCondition;
+
+            const filterStatus = queryCondition.addFieldValue('status', Operator.IN , [OrderStatus.SENT]);
+            queryCondition.addCondition(filterStatus.field, filterStatus.value);
+            queryCondition.addSub("orderDelivery.deliveryType = :deliveryType", {"deliveryType" : DeliveryTypes.CHARGE_ON_DELIVERY });
+            //parametersQuery.queryCondition = queryCondition;
+
+            const parametersOrders = this.builderOrder(query);
+            let page = new PageQuery(parametersQuery.limit,parametersQuery.pageNumber,queryCondition, parametersQuery.operationQuery);
+
+            const response = await this.processPaginationIndex(page, parametersOrders, parametersQuery);
+            res.json(response);
+
+        }catch(e){
+            this.handleException(e, res);
+            console.log("error", e);
+        }
+    }
 
 /*    /!**
      * Obtener solo un tipo de ordenes
