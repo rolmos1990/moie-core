@@ -157,13 +157,13 @@ export class CategoryController extends BaseController<Category> {
                         const _image1 = (JSON.parse(images[0].thumbs))['high'];
                         const _image2 = (JSON.parse(images[1].thumbs))['small'];
 
-                        item['primaryImage'] = "http://localhost:18210/" + _image1;
-                        item['secondaryImage'] = "http://localhost:18210/" + _image2;
+                        item['primaryImage'] = process.env.PUBLIC_URL + "/" + _image1;
+                        item['secondaryImage'] = process.env.PUBLIC_URL + "/" + _image2;
 
                         return item;
                     }catch(e){
-                        item['primaryImage'] = "http://localhost:18210/public/icons/image_not_found.png";
-                        item['secondaryImage'] = "http://localhost:18210/public/icons/image_not_found.png";
+                        item['primaryImage'] = process.env.PUBLIC_URL + "/" + "public/icons/image_not_found.png";
+                        item['secondaryImage'] = process.env.PUBLIC_URL + "/" + "public/icons/image_not_found.png";
                         return item;
                     }
                 });
