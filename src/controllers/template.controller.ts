@@ -48,10 +48,10 @@ export class TemplateController extends BaseController<Template> {
 
     @route('/checkTimeZone')
     @GET()
-    public async update(req: Request, res: Response) {
+    public checkTimeZone(req: Request, res: Response) {
         try {
             res.json({
-                currentTime: new moment().format("YYYY-MM-DD-H-mm")
+                currentTime: moment().format("YYYY-MM-DD-H-mm")
             });
         }catch(e){
             this.handleException(e, res);
