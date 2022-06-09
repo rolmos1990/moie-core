@@ -55,7 +55,6 @@ export class ClientsManagementService extends UtilService {
 
                 });
             });
-            console.log("request",request);
             return request;
 
         }catch(e){

@@ -19,8 +19,6 @@ export class BatchRequestController extends UserRequiredController<BatchRequest>
 
     protected afterUpdate(item: any): void {
         if(item.status === BatchRequestTypesStatus.EXECUTED){
-          //TODO -- cambia todo el estado de las ordenes
-            console.log("ESTADO DE ORDENES CAMBIADAS", item.status);
         }
     }
 

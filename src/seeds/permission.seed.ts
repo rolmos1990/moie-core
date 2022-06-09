@@ -110,9 +110,6 @@ PermissionBasicSeed.push({
     description: "Descargas en PostVenta"
 });
 
-console.log("PERMISSIONS", PermissionBasicSeed);
-
-
 export const PermissionSeed = PermissionBasicSeed;
 
 

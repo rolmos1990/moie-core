@@ -47,7 +47,6 @@ export default abstract class BaseRepository<T> {
             // 👇 Here is where you can modify the SQL for the query to suit your requirements
             //query = query.replace(/ WITH \(UPDLOCK, ROWLOCK\) /, ' WITH (UPDLOCK, READPAST) ');
 
-            console.log("query", query);
             const rawResults = await sum.getRawMany();
 
             const queryRunner =  this.repositoryManager.manager.connection.createQueryRunner();
@@ -75,10 +74,7 @@ export default abstract class BaseRepository<T> {
                 rawRelationCountResults,
                 queryRunner,
             );
-            console.log(rawResults);
-            console.log("mainAlias", sum.expressionMap.mainAlias);
             const result = transformer.transform(rawResults, sum.expressionMap.mainAlias);
-            console.log(result);
             return result;
         }
         else if(operators.isGroup()){

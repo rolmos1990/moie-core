@@ -19,7 +19,6 @@ export class DeliveryStatusImpl extends BaseRequester{
     constructor(order: Order){
         super();
         this.order = order;
-        console.log("orderDeliveryMethod", order.deliveryMethod);
         switch(order.deliveryMethod.code){
             case "INTERRAPIDISIMO":
                 this.caller = new DeliveryStatusInterrapidisimo(this.order);

@@ -76,7 +76,6 @@ export const requestStatDTO = async (request: any) => {
     try {
         request = new RequestStats(request);
         const statErrors = await validate(request);
-        console.log("STATS ERRORS", statErrors.length);
         if(statErrors.length > 0){
             const errorMessage = Object.values(statErrors[0].constraints)[0];
             throw new InvalidArgumentException(errorMessage);
@@ -97,7 +96,6 @@ export class RequestStats {
         if(props.afterDate) {
             this.afterDate = moment(props.afterDate, 'YYYY-MM-DD').format("YYYY-MM-DD");
         }
-        console.log("CATEGORY MODE -- ", props.categoryMode);
         this.categoryMode = props.categoryMode && props.categoryMode !== false && props.categoryMode !== "false" ? true : false;
     }
     @IsBoolean({"message": "categoryMode - Debe ser indicado"})

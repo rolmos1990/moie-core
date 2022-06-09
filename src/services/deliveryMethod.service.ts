@@ -51,7 +51,6 @@ export class DeliveryMethodService extends BaseService<DeliveryMethod> {
         }
 
         /** Metodo de Envio por Defecto - Toma la dirección del cliente */
-        console.log("CUSTOMER", customer);
         if(!customer.state || !customer.municipality){
             throw new InvalidArgumentException("Dirección de cliente es requerida");
         }

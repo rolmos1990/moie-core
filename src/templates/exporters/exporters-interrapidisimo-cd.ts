@@ -14,7 +14,6 @@ export class ExportersInterrapidisimoCd extends SingleBaseExporters {
     }
 
     getBody(data: Order[]) {
-        console.log("DEBUG -- DATA INFO", JSON.stringify(data[0]));
         const body = data.map(item => ({
            id: item.customer.document,
            name: item.customer.name.toUpperCase(),

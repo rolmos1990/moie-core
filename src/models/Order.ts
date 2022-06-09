@@ -200,8 +200,6 @@ export class Order extends BaseModel{
 
     @AfterUpdate()
     addHistoricRegister(event: UpdateEvent<any>) {
-        console.log(event);
-        //console.log(`COLUMNS UPDATED: `, event.updatedColumns)
     }
 
     initialize(){
