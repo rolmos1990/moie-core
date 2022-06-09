@@ -13,7 +13,7 @@ import moment = require("moment");
 
 const html_to_pdf = require('html-pdf-node');//disabled
 const wkhtmltopdf = require('wkhtmltopdf');
-//wkhtmltopdf.command = "/bin/wkhtmltopdf";
+wkhtmltopdf.command = "/bin/wkhtmltopdf";
 
 export const CONFIG_MEDIA = {
     LOCAL_PATH: process.env.PUBLIC_URL,
