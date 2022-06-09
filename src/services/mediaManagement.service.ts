@@ -63,7 +63,7 @@ export class MediaManagementService extends UtilService {
             throw  new InvalidFileException("No es posible realizar el guardado de la imagen");
         }
 
-        const ext = extension(file.type);
+        const ext = extension(file.type) || "jpeg";
         const fileName =  `${name}.${ext}`;
         const writeFilePath = `${CONFIG_MEDIA.STORAGE_PATH}/${folder ? folder + '/' : ''}${fileName}`;
         const readFilePath = `${CONFIG_MEDIA.IMAGE_PATH}${folder ? folder + '/' : ''}${fileName}`;
