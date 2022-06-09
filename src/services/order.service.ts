@@ -497,13 +497,20 @@ export class OrderService extends BaseService<Order> {
         }
 
         if(user !== null){
-            orderRepository.where("o.user", user);
+            orderRepository.leftJoinAndSelect('o.user', 'u')
+                .where("u.id = :user")
+                .andWhere("DATE(o.dateOfSale) >= :before")
+                .andWhere("DATE(o.dateOfSale) <= :after")
+                .addGroupBy('o.user')
+                .setParameters({before: dateFrom, after: dateTo, user: user['id']});
+        } else {
+            orderRepository.andWhere("DATE(o.dateOfSale) >= :before");
+            orderRepository.andWhere("DATE(o.dateOfSale) <= :after");
+
+            orderRepository.setParameters({before: dateFrom, after: dateTo});
         }
 
-        orderRepository.andWhere("DATE(o.dateOfSale) >= :before");
-        orderRepository.andWhere("DATE(o.dateOfSale) <= :after");
-
-        orderRepository.setParameters({before: dateFrom, after: dateTo});
+        console.log(orderRepository.getSql());
 
         const rows = await orderRepository.getRawMany();
 
