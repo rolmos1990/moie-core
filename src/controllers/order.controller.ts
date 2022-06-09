@@ -3,7 +3,15 @@ import {EntityTarget} from "typeorm";
 import {Order} from "../models/Order";
 import {OrderService} from "../services/order.service";
 import {GET, POST, PUT, route} from "awilix-express";
-import {OrderCreateDTO, OrderListDTO, OrderShortDTO, OrderShowDTO, Order as OrderCreate, OrderUpdate, OrderUpdateDTO} from "./parsers/order";
+import {
+    Order as OrderCreate,
+    OrderCreateDTO,
+    OrderListDTO,
+    OrderShortDTO,
+    OrderShowDTO,
+    OrderUpdate,
+    OrderUpdateDTO
+} from "./parsers/order";
 import {Request, Response} from "express";
 import {ApplicationException, InvalidArgumentException} from "../common/exceptions";
 import {DeliveryMethodService} from "../services/deliveryMethod.service";
@@ -33,6 +41,7 @@ import {TemplatesRegisters} from "../common/enum/templatesTypes";
 import {OrderDeliveryService} from "../services/orderDelivery.service";
 import {DeliveryTypes} from "../common/enum/deliveryTypes";
 import {converterArrayToProductsObject} from "../common/helper/converters";
+import {Operator} from "../common/enum/operators";
 
 
 @route('/order')
@@ -666,7 +675,31 @@ export class OrderController extends BaseController<Order> {
         }
     }
 
+    @route('/filterby/conciliations')
+    @GET()
+    public async forConciliates(req: Request, res: Response){
+        try {
 
+            const query = req.query;
+            const parametersQuery = this.builderParamsPage(query);
+            const queryCondition = parametersQuery.queryCondition;
+
+            const filterStatus = queryCondition.addFieldValue('status', Operator.IN , [OrderStatus.SENT]);
+            queryCondition.addCondition(filterStatus.field, filterStatus.value);
+            queryCondition.addSub("orderDelivery.deliveryType = :deliveryType", {"deliveryType" : DeliveryTypes.CHARGE_ON_DELIVERY });
+            //parametersQuery.queryCondition = queryCondition;
+
+            const parametersOrders = this.builderOrder(query);
+            let page = new PageQuery(parametersQuery.limit,parametersQuery.pageNumber,queryCondition, parametersQuery.operationQuery);
+
+            const response = await this.processPaginationIndex(page, parametersOrders, parametersQuery);
+            res.json(response);
+
+        }catch(e){
+            this.handleException(e, res);
+            console.log("error", e);
+        }
+    }
 
 /*    /!**
      * Obtener solo un tipo de ordenes
