@@ -137,7 +137,7 @@ export class OrderController extends BaseController<Order> {
             let orders = [];
 
             if(request.order) {
-                entity = await this.orderService.find(parseInt(request.order));
+                entity = await this.orderService.findFull(request.order);
                 orders.push(entity);
             } else {
                 entity = await this.batchRequestService.find(parseInt(request.batch));
@@ -168,7 +168,7 @@ export class OrderController extends BaseController<Order> {
                     await this.orderService.cancelOrder(entity, user);
                     return res.json({status: 200, order: OrderShowDTO(entity)});
                 } else {
-                    throw new InvalidArgumentException("No existe registro indicado para actualizar");
+                    throw new InvalidArgumentException("El pedido no puede ser anulado bajo es estado actual");
                 }
             }
 
@@ -212,6 +212,7 @@ export class OrderController extends BaseController<Order> {
                 let updates = [];
                 await Promise.all(orders.map(async entity => {
                     const order = await this.orderService.updateNextStatus(entity, user);
+                    await this.orderService.addMayorist(order, true);
                     updates.push(order);
                 }));
                 entity.status = BatchRequestTypesStatus.EXECUTED;
@@ -219,6 +220,7 @@ export class OrderController extends BaseController<Order> {
                 return res.json({status: 200, updates: updates.map(item => OrderShortDTO(item))});
             } else {
                 const order = await this.orderService.updateNextStatus(entity, user);
+                await this.orderService.addMayorist(order, true);
                 return res.json({status: 200, order: OrderShowDTO(order)});
             }
 
