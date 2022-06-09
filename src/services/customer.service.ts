@@ -28,14 +28,11 @@ export class CustomerService extends BaseService<Customer> {
     /** Status null get by all status */
     /** beforeDate and afterDate are optionals */
     async getOrdersByProduct(customer: Customer, statuses: OrderStatus[] = getAllStatus(), beforeDate, afterDate, categoryMode = false){
-        console.log("BEFORE DATE SEARCH -- ", beforeDate);
         const query = this.orderDetailRepository.createQueryBuilder("orderDetail")
             .leftJoinAndSelect('orderDetail.product', 'p')
             .leftJoinAndSelect("orderDetail.order", "o");
 
         let params = {'statuses': statuses};
-
-        console.log("CUSTOMER SEARCH -- ", customer.id);
 
         if(customer){
             query.andWhere("o.customer = :customer");
@@ -63,16 +60,12 @@ export class CustomerService extends BaseService<Customer> {
         query.setParameters(params);
 
         const result = await query.getRawMany();
-
-        console.log("DEBUG ALL RESULT", result);
-
         return result;
     }
 
 
     /** Obtener cantidad de ordenes por estado en un cliente */
     async getOrdersStats(customer: Customer, statuses: OrderStatus[] = getAllStatus(), beforeDate, afterDate){
-        console.log("BEFORE DATE SEARCH -- ", beforeDate);
         const query = this.orderRepository.createQueryBuilder("o")
 
         let params = {'statuses': statuses};

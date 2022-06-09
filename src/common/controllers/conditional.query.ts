@@ -44,7 +44,6 @@ export class ConditionalQuery {
                         }
                         const tmpConditions = conditions.get();
                         conditions.addConditionOr(tmpConditions);
-                        console.log("options", tmpConditions);
                         conditions.clearCondition();
                });
 

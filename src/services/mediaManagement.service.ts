@@ -12,8 +12,6 @@ const Excel = require('exceljs')
 import moment = require("moment");
 
 const html_to_pdf = require('html-pdf-node');//disabled
-//const binPath  = require('wkhtmltopdf-installer').path;
-//console.log("BIN PATH: ", binPath);
 const wkhtmltopdf = require('wkhtmltopdf');
 wkhtmltopdf.command = "/usr/local/bin/wkhtmltopdf";
 
@@ -317,7 +315,6 @@ export class MediaManagementService extends UtilService {
                 return await workbook.xlsx.write(res)
                     .then(function (data) {
                         res.end();
-                        console.log('File write done........');
                     });
             }
             if(format === MEDIA_FORMAT_OUTPUT.b64){

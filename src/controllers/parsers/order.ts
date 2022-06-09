@@ -41,7 +41,6 @@ export const OrderCreateDTO = async (order: any) => {
         }
         return order;
     }catch(e){
-        console.log("error", e.message);
         return new InvalidArgumentException("Datos invalidos");
     }
 }

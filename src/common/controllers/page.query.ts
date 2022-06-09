@@ -115,7 +115,6 @@ export class PageQuery {
             return [];
         }
         const object = ArrayToObject(this.orders, 'field','value');
-        console.log("getOrder:: ", object);
         return object;
     }
 
