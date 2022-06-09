@@ -11,7 +11,8 @@ const PublicServices = [
     "/office/gen/officePdfReport/12",
     "/category/39/test/printTestRequest",
     "/category/38/test/printTestRequest",
-    "/deliveryMethod/cron/updateDeliveryStatus"
+    "/deliveryMethod/cron/updateDeliveryStatus",
+    "/template/checkTimeZone",
 ];;
 
 export const Authorization = (req: Request, res: Response, next: NextFunction) => {

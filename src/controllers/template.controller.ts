@@ -1,9 +1,11 @@
 import {BaseController} from "../common/controllers/base.controller";
 import {EntityTarget} from "typeorm";
 import {StateService} from "../services/state.service";
-import {route} from "awilix-express";
+import {GET, PUT, route} from "awilix-express";
 import {Template} from "../models/Template";
 import {TemplateService} from "../services/template.service";
+import {json, Request, Response} from "express";
+import * as moment from "moment";
 
 @route('/template')
 export class TemplateController extends BaseController<Template> {
@@ -42,6 +44,14 @@ export class TemplateController extends BaseController<Template> {
 
     getParsePUT(entity: Template): Object {
         return entity;
+    }
+
+    @route('/checkTimeZone')
+    @GET()
+    public async update(req: Request, res: Response) {
+        return res.json({
+            currentTime: new moment().format("YYYY-MM-DD-H-mm")
+        });
     }
 
     protected getDefaultRelations(): Array<string> {
