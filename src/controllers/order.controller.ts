@@ -700,37 +700,4 @@ export class OrderController extends BaseController<Order> {
             console.log("error", e);
         }
     }
-
-/*    /!**
-     * Obtener solo un tipo de ordenes
-     * @param req
-     * @param res
-     *!/
-    @route('/onlyBy/chargeOnDelivery')
-    @GET()
-    public async onlyChargeOnDelivery(req: Request, res: Response) {
-        try{
-            const query = req.query;
-            const parametersQuery = this.builderParamsPage(query);
-
-            //replace condition
-            const queryCondition = parametersQuery.queryCondition;
-
-            //filter only by deliveryType -> 3
-            queryCondition.addSub("orderDelivery.deliveryType = :deliveryType", {"deliveryType" : 3 });
-
-            //queryCondition.addRelationalField('orderDelivery', {'deliveryType': DeliveryTypes.CHARGE_ON_DELIVERY});
-            parametersQuery.queryCondition = queryCondition;
-
-            const parametersOrders = this.builderOrder(query);
-            let page = new PageQuery(parametersQuery.limit,parametersQuery.pageNumber,parametersQuery.queryCondition, parametersQuery.operationQuery);
-
-            const response = await this.processPaginationIndex(page, parametersOrders, parametersQuery);
-            res.json(response);
-
-        }catch(e){
-            this.handleException(e, res);
-            console.log("error", e);
-        }
-    }*/
 }

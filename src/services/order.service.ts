@@ -218,7 +218,7 @@ export class OrderService extends BaseService<Order> {
 
         const deliveryMethod = parse.deliveryMethod ? await this.deliveryMethodService.findByCode(parse.deliveryMethod) : _order.deliveryMethod;
         const deliveryLocality = parse.deliveryLocality ? await this.deliveryLocalityService.find(parse.deliveryLocality) : _order.orderDelivery.deliveryLocality;
-        const hasTrackingChanged = (_order.orderDelivery.tracking !== parse.tracking);
+        const hasTrackingChanged = (_order.orderDelivery.tracking !== parse.tracking) && parse.tracking;
         const hasChangeDeliveryCost = (_order.orderDelivery.deliveryCost !== deliveryCost);
 
         /** Order Information */
