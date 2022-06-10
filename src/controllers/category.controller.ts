@@ -148,22 +148,23 @@ export class CategoryController extends BaseController<Category> {
             page.setRelations(['productSize', 'category', 'productImage']);
 
             let products = await this.productCatalogViewService.all(page);
+            const defaultImage = CONFIG_MEDIA.DEFAULT_IMAGE;
+            const defaultUrl = CONFIG_MEDIA.LOCAL_PATH;
 
             if(products.length > 0){
 
                 const _products = products.map(item => {
                     try {
-                        const images = item.productImage.filter(item => item.group === 1 || item.group === 2);
-                        const _image1 = (JSON.parse(images[0].thumbs))['high'];
-                        const _image2 = (JSON.parse(images[1].thumbs))['small'];
+                        const _image1 = item.firstImage ? defaultUrl + "/" + ((JSON.parse(item.firstImage))['high']) : defaultImage;
+                        const _image2 = item.secondImage ? defaultUrl + "/" + ((JSON.parse(item.secondImage))['small']) : defaultImage;
 
-                        item['primaryImage'] = process.env.PUBLIC_URL + "/" + _image1;
-                        item['secondaryImage'] = process.env.PUBLIC_URL + "/" + _image2;
+                        item['imagePrimary'] = _image1;
+                        item['imageSecondary'] = _image2;
 
                         return item;
                     }catch(e){
-                        item['primaryImage'] = process.env.PUBLIC_URL + "/" + "public/icons/image_not_found.png";
-                        item['secondaryImage'] = process.env.PUBLIC_URL + "/" + "public/icons/image_not_found.png";
+                        item['imagePrimary'] = defaultImage;
+                        item['imageSecondary'] = defaultImage;
                         return item;
                     }
                 });
