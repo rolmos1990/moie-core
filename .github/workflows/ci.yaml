@@ -3,20 +3,11 @@ name: Continuous Integration
 on: [pull_request]
 
 jobs:
-  buildAndTest:
+  deploy:
     name: Build
     runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version: [14.x]
     steps:
-      - uses: actions/checkout@v1
-
-      - name: only dependencies https
-        run: git config --global url."https://".insteadOf git://
-
-      - name: Install dependencies
-        run: yarn
-
-      - name: Build
-        run: yarn build
+      - uses: actions/checkout@v3
