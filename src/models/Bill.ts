@@ -10,9 +10,7 @@ import BaseModel from "../common/repositories/base.model";
 import {IsBoolean, IsDate, IsDecimal, IsInt, Length} from "class-validator";
 import {Type} from "class-transformer";
 import {Order} from "./Order";
-import {Customer} from "./Customer";
 import {BillConfig} from "./BillConfig";
-import {OrderDetail} from "./OrderDetail";
 import {BillCreditMemo} from "./BillCreditMemo";
 
 @Entity({name: 'Bill'})

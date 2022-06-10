@@ -52,6 +52,7 @@ jobs:
           SSH_HOST: ${{ secrets.AWS_HOST }}
 
       #- name: Stop the server
+      #clean docker images -> docker rmi $(docker images -a -q)
       - uses: benjlevesque/short-sha@v1.2
       - name: Deploy in Cluster
         env:

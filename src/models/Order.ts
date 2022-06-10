@@ -22,6 +22,7 @@ import {Office} from "./Office";
 import {Payment} from "./Payment";
 import {OrderStatus} from "../common/enum/orderStatus";
 import {DeliveryTypes} from "../common/enum/deliveryTypes";
+import {Bill} from "./Bill";
 
 /**
  * El isImpress -> o Impreso seria un Estatus más,
@@ -145,6 +146,9 @@ export class Order extends BaseModel{
     @JoinColumn({name: 'payment_id'})
     payment: Payment;
 
+    @OneToOne(() => Bill, bill => bill.order)
+    bill: Bill;
+
     isEmpty(): boolean {
         return (this.id == null);
     }
@@ -196,6 +200,18 @@ export class Order extends BaseModel{
             return false;
         }
         return ([DeliveryTypes.PAY_ONLY_DELIVERY, DeliveryTypes.PREVIOUS_PAYMENT].indexOf(this.orderDelivery.deliveryType)) !== -1;
+    }
+
+    /** Identifica si la orden puede ser cancelable */
+    canBeCanceled() : boolean {
+        if(this.isPreviousPayment() && this.isPending()){
+            return true;
+        }
+        if(!this.isPreviousPayment() && [OrderStatus.PENDING,OrderStatus.CONFIRMED,OrderStatus.SENT,OrderStatus.PRINTED].includes(this.status)){
+            return true;
+        }
+
+        return false;
     }
 
     @AfterUpdate()
