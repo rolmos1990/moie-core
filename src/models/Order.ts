@@ -202,6 +202,18 @@ export class Order extends BaseModel{
         return ([DeliveryTypes.PAY_ONLY_DELIVERY, DeliveryTypes.PREVIOUS_PAYMENT].indexOf(this.orderDelivery.deliveryType)) !== -1;
     }
 
+    /** Identifica si la orden puede ser cancelable */
+    canBeCanceled() : boolean {
+        if(this.isPreviousPayment() && this.isPending()){
+            return true;
+        }
+        if(!this.isPreviousPayment() && [OrderStatus.PENDING,OrderStatus.CONFIRMED,OrderStatus.SENT,OrderStatus.PRINTED].includes(this.status)){
+            return true;
+        }
+
+        return false;
+    }
+
     @AfterUpdate()
     addHistoricRegister(event: UpdateEvent<any>) {
     }

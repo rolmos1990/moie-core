@@ -164,7 +164,7 @@ export class OrderController extends BaseController<Order> {
                 let updates = [];
                 await Promise.all(orders.map(async _item => {
                     const _order : Order = _item;
-                    if (_order.isPending()) {
+                    if (_order.canBeCanceled()) {
                         await this.orderService.cancelOrder(_order, user);
                         updates.push(_order);
                     }
@@ -173,7 +173,7 @@ export class OrderController extends BaseController<Order> {
                 await this.batchRequestService.createOrUpdate(entity);
                 return res.json({status: 200, updates: updates.map(item => OrderShortDTO(item))});
             } else {
-                if (entity.isPending()) {
+                if (entity.canBeCanceled()) {
                     await this.orderService.cancelOrder(entity, user);
                     return res.json({status: 200, order: OrderShowDTO(entity)});
                 } else {

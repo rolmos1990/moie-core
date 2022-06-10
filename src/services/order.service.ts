@@ -80,6 +80,8 @@ export class OrderService extends BaseService<Order> {
         if(_module === Modules.Offices){
             if(_orderType.isMensajero()){
                 return this.updateNextStatus(order, user);
+            } else {
+                return;
             }
         }
         else if(_module === Modules.PostVenta){
@@ -486,7 +488,7 @@ export class OrderService extends BaseService<Order> {
                 orderRepository.addGroupBy("week(o.dateOfSale,1)");
                 break;
             case StatTimeTypes.MONTHLY:
-                orderRepository.select('SUM(o.totalAmount) as monto, SUM(o.totalRevenue) as ganancia, SUM(o.quantity) as piezas, concat_ws("-",month(o.dateOfSale,1),year(o.dateOfSale)) as fecha');
+                orderRepository.select('SUM(o.totalAmount) as monto, SUM(o.totalRevenue) as ganancia, SUM(o.quantity) as piezas, concat_ws("-",month(o.dateOfSale),year(o.dateOfSale)) as fecha');
                 orderRepository.addGroupBy("year(o.dateOfSale)")
                 orderRepository.addGroupBy("month(o.dateOfSale)");
                 break;
@@ -845,12 +847,14 @@ export class OrderService extends BaseService<Order> {
 
             statDailyFirst = await this.orderRepository.createQueryBuilder('o')
             .addSelect("SUM(o.totalAmount)", "totalAmount")
+            .addSelect("COUNT(o.id)", "totalQty")
             .andWhere("DATE(o.dateOfSale) = :date", {date: firstDate})
             .groupBy('o.dateOfSale')
             .getRawOne();
 
             statDailySecond = await this.orderRepository.createQueryBuilder('o')
             .addSelect("SUM(o.totalAmount)", "totalAmount")
+            .addSelect("COUNT(o.id)", "totalQty")
             .andWhere("DATE(o.dateOfSale) = :date", {date: secondDate})
             .groupBy('o.dateOfSale')
             .getRawOne();
@@ -863,21 +867,31 @@ export class OrderService extends BaseService<Order> {
             const weekPastStart = moment().subtract(2, 'week').format('YYYY-MM-DD');
 
             statWeeklyFirst = await this.orderRepository.createQueryBuilder('o')
+            .addSelect("COUNT(o.id)", "totalQty")
             .addSelect("SUM(o.totalAmount)", "totalAmount")
             .andWhere("DATE(o.dateOfSale) >= :before", {before: weekStart})
             .andWhere("DATE(o.dateOfSale) <= :after", {after: weekEnd}).getRawOne();
 
             statWeeklySecond = await this.orderRepository.createQueryBuilder('o')
             .addSelect("SUM(o.totalAmount)", "totalAmount")
+            .addSelect("COUNT(o.id)", "totalQty")
             .andWhere("DATE(o.dateOfSale) >= :before", {before: weekPastStart})
             .andWhere("DATE(o.dateOfSale) <= :after", {after: weekPastEnd}).getRawOne();
 
 
         return {
             statDailyFirst: statDailyFirst ? parseFloat(statDailyFirst['totalAmount']) || 0 : 0,
+            statDailyQtyFirst: statDailyFirst ? parseFloat(statDailyFirst['totalQty']) || 0 : 0,
+
             statDailySecond: statDailySecond ? parseFloat(statDailySecond['totalAmount']) || 0 : 0,
+            statDailyQtySecond: statDailySecond ? parseFloat(statDailySecond['totalQty']) || 0 : 0,
+
             statWeeklyFirst: statWeeklyFirst ? parseFloat(statWeeklyFirst['totalAmount']) || 0 : 0,
+            statWeeklyQtyFirst: statWeeklyFirst ? parseFloat(statWeeklyFirst['totalQty']) || 0 : 0,
+
             statWeeklySecond: statWeeklySecond ? parseFloat(statWeeklySecond['totalAmount']) || 0 : 0,
+            statWeeklyQtySecond: statWeeklySecond ? parseFloat(statWeeklySecond['totalQty']) || 0 : 0,
+
         }
     }
 
