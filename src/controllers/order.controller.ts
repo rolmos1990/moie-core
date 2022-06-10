@@ -597,9 +597,9 @@ export class OrderController extends BaseController<Order> {
 
     protected getDefaultRelations(isDetail): Array<string> {
         if(isDetail) {
-            return ['customer', 'deliveryMethod', 'user', 'customer.municipality', 'customer.state', 'orderDelivery', 'orderDelivery.deliveryLocality'];
+            return ['customer', 'deliveryMethod', 'user', 'customer.municipality', 'customer.state', 'orderDelivery', 'orderDelivery.deliveryLocality', 'bill'];
         } else {
-            return ['payment', 'customer', 'deliveryMethod', 'orderDetails', 'user', 'customer.municipality', 'customer.state', 'orderDelivery'];
+            return ['payment', 'customer', 'deliveryMethod', 'orderDetails', 'user', 'customer.municipality', 'customer.state', 'orderDelivery', 'bill'];
         }
     }
 

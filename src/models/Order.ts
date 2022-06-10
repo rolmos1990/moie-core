@@ -22,6 +22,7 @@ import {Office} from "./Office";
 import {Payment} from "./Payment";
 import {OrderStatus} from "../common/enum/orderStatus";
 import {DeliveryTypes} from "../common/enum/deliveryTypes";
+import {Bill} from "./Bill";
 
 /**
  * El isImpress -> o Impreso seria un Estatus más,
@@ -144,6 +145,9 @@ export class Order extends BaseModel{
     @OneToOne(() => Payment, payment => payment.order)
     @JoinColumn({name: 'payment_id'})
     payment: Payment;
+
+    @OneToOne(() => Bill, bill => bill.order)
+    bill: Bill;
 
     isEmpty(): boolean {
         return (this.id == null);
