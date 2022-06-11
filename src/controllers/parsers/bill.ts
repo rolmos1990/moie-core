@@ -10,5 +10,6 @@ export const BillListDTO = (bill: Bill) => ({
     status: bill.status,
     creditNote: bill.creditMemo,
     order: OrderListDTO(bill.order),
-    dianLog:  bill.dianLog
+    dianLog:  bill.dianLog,
+    dianCreditMemoLog:  bill.dianCreditMemoLog
 });

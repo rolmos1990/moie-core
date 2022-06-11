@@ -7,7 +7,7 @@ import {
     PrimaryGeneratedColumn
 } from "typeorm";
 import BaseModel from "../common/repositories/base.model";
-import {IsBoolean, IsDate, IsDecimal, IsInt, Length} from "class-validator";
+import {IsBoolean, IsDate, IsDecimal, IsInt, IsString, Length} from "class-validator";
 import {Type} from "class-transformer";
 import {Order} from "./Order";
 import {BillConfig} from "./BillConfig";
@@ -44,8 +44,12 @@ export class Bill extends BaseModel{
     status: string;
 
     @Column({name:'dianLog', type: 'text', nullable: true})
-    @IsBoolean({groups: ['create','update']})
+    @IsString({groups: ['create','update']})
     dianLog: string;
+
+    @Column({name:'dianCreditMemoLog', type: 'text', nullable: true})
+    @IsString({groups: ['create','update']})
+    dianCreditMemoLog: string;
 
     @OneToOne(() => BillCreditMemo, billCreditMemo => billCreditMemo.bill)
     creditMemo: BillCreditMemo;

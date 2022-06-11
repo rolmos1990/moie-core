@@ -498,7 +498,7 @@ export class OrderService extends BaseService<Order> {
                 break;
         }
 
-        if(user !== null){
+        if(user != null){
             orderRepository.leftJoinAndSelect('o.user', 'u')
                 .where("u.id = :user")
                 .andWhere("DATE(o.dateOfSale) >= :before")

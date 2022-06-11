@@ -15,6 +15,7 @@ import {InvalidArgumentException} from "../common/exceptions";
 import {MEDIA_FORMAT_OUTPUT, MediaManagementService} from "../services/mediaManagement.service";
 import {ElectronicBillAdaptor} from "../templates/adaptors/ElectronicBillAdaptor";
 import {ExpotersEletronicBill} from "../templates/exporters/electronic-bill";
+import {BillCreditMemo} from "../models/BillCreditMemo";
 
 const moment = require("moment");
 
@@ -100,19 +101,31 @@ export class BillController extends BaseController<Bill> {
 
         try {
         const bill = await this.billService.findBill(id);
-        const hasSomeMemo = bill.creditMemo;
+        const hasSomeMemo = bill.creditMemo && bill.creditMemo.status == true;
 
         if(bill.status !== BillStatus.SEND || hasSomeMemo){
             throw new InvalidArgumentException("La solicitud no puede ser generada");
         }
 
         const memotype : EBillType = type;
+        if(bill.creditMemo) {
+            await this.billService.deleteMemoByBill(bill.creditMemo);
+        }
 
         billMemo = await this.billService.createMemo(bill, memotype);
-            await this.billService.sendElectronicBill(bill, memotype, false, billMemo);
-            billMemo.status = true;
+        const resp = await this.billService.sendElectronicBill(bill, memotype, false, billMemo);
+
+        if(resp == true){
+            const billUpdated = await this.billService.findBill(id);
+            billUpdated.creditMemo.status = true;
+            await this.billService.updateMemo(billMemo);
+            return res.json({status: 200, billCreditMemo: billUpdated.creditMemo});
+        }
+            billMemo.bill = bill;
             await this.billService.updateMemo(billMemo);
             return res.json({status: 200, billCreditMemo: billMemo});
+
+
         }catch(e){
             this.handleException(e, res);
             console.log("error", e);

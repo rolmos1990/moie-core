@@ -17,7 +17,7 @@ import {BillCreditMemoRepository} from "../repositories/billCreditMemo.repositor
 import {InvalidMunicipalityException} from "../common/exceptions/invalidMunicipality.exception";
 import {InvalidDocumentException} from "../common/exceptions/invalidDocument.exception";
 import {Between} from "typeorm";
-import moment = require("moment");
+
 
 export class BillService extends BaseService<Bill> {
     constructor(
@@ -88,6 +88,11 @@ export class BillService extends BaseService<Bill> {
         return bill;
     }
 
+    async deleteMemoByBill(creditMemo: BillCreditMemo) {
+       const toDelete = await this.billCreditMemoRepository.findOneByObject({id: creditMemo.id});
+       await this.billCreditMemoRepository.delete(toDelete);
+    }
+
     async createMemo(bill: Bill, type : EBillType) : Promise<BillCreditMemo> {
         const creditMemo = new BillCreditMemo();
         creditMemo.bill = bill;
@@ -123,7 +128,6 @@ export class BillService extends BaseService<Bill> {
         const auth = new Buffer(`${user}:${password}`).toString("base64");
 
         const soapBody = new CreateBillSoap(bill, type, creditMemo);
-        console.log(soapBody);
 
         const options = {
             url: 'https://www.febtw.co:8087/ServiceBTW/FEServicesBTW.svc?wsdl',
@@ -138,10 +142,14 @@ export class BillService extends BaseService<Bill> {
         if(res["RecepcionXmlFromERPResult"]){
 
             //save log
-            await this.saveLog(bill, res);
-
+            await this.saveLog(bill, type, res);
             if(res["RecepcionXmlFromERPResult"]["success"]){
-                return true;
+                //Validacion para determinar si fue timbrado o no
+                if( res["RecepcionXmlFromERPResult"]["Tracer"].indexOf('FIN Log Timbrado factura DIAN') >= 0){
+                    return true;
+                } else {
+                    return false;
+                }
             } else{
                 throw new InvalidArgumentException("No se pudo recibir la factura");
             }
@@ -150,11 +158,19 @@ export class BillService extends BaseService<Bill> {
         }
     }
 
-    async saveLog(bill: Bill, res: any){
-        if(res && res["RecepcionXmlFromERPResult"] && res["RecepcionXmlFromERPResult"]["Tracer"]) {
-            const log = res["RecepcionXmlFromERPResult"]["Tracer"];
-            bill.dianLog = log;
-            await this.billRepository.save(bill);
+    async saveLog(bill: Bill, _type: EBillType, res: any){
+        if(_type === EBillType.INVOICE){
+            if(res && res["RecepcionXmlFromERPResult"] && res["RecepcionXmlFromERPResult"]["Tracer"]) {
+                const log = res["RecepcionXmlFromERPResult"]["Tracer"];
+                bill.dianLog = log;
+                await this.billRepository.save(bill);
+            }
+        } else {
+            if(res && res["RecepcionXmlFromERPResult"] && res["RecepcionXmlFromERPResult"]["Tracer"]) {
+                const log = res["RecepcionXmlFromERPResult"]["Tracer"];
+                bill.dianCreditMemoLog = log;
+                await this.billRepository.save(bill);
+            }
         }
     }
 

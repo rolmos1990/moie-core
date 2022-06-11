@@ -49,7 +49,7 @@ export class StatsController extends BaseController<Size> {
 
             let user = null;
 
-            if(userId){
+            if(userId && userId != "null"){
                 user = await this.userService.find(parseInt(userId));
             }
 
