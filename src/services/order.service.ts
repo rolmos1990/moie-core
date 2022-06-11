@@ -174,6 +174,7 @@ export class OrderService extends BaseService<Order> {
         _order.totalAmount = (costs.totalAmount - costs.totalDiscount) + Number(deliveryCost);
         _order.subTotalAmount = costs.totalAmount;
         _order.totalDiscount = costs.totalDiscount;
+        _order.totalWithDiscount = _order.subTotalAmount - _order.totalDiscount;
         _order.totalRevenue = costs.totalRevenue;
         _order.totalWeight = costs.totalWeight;
         _order.quantity = _order.orderDetails.reduce((s,p) => p.quantity + s, 0);
@@ -477,23 +478,23 @@ export class OrderService extends BaseService<Order> {
 
         switch(group) {
             case StatTimeTypes.DAILY:
-                orderRepository.select('SUM(o.totalAmount) as monto, SUM(o.totalRevenue) as ganancia, SUM(o.quantity) as piezas, concat_ws("-",day(o.dateOfSale),month(o.dateOfSale),year(o.dateOfSale)) as fecha');
+                orderRepository.select('SUM(o.totalWithDiscount) as monto, SUM(o.totalRevenue) as ganancia, SUM(o.quantity) as piezas, concat_ws("-",day(o.dateOfSale),month(o.dateOfSale),year(o.dateOfSale)) as fecha');
                 orderRepository.addGroupBy("year(o.dateOfSale)")
                 orderRepository.addGroupBy("month(o.dateOfSale)")
                 orderRepository.addGroupBy("day(o.dateOfSale)");
                 break;
             case StatTimeTypes.WEEKLY:
-                orderRepository.select('SUM(o.totalAmount) as monto, SUM(o.totalRevenue) as ganancia, SUM(o.quantity) as piezas, concat_ws("-",week(o.dateOfSale,1),year(o.dateOfSale)) as fecha');
+                orderRepository.select('SUM(o.totalWithDiscount) as monto, SUM(o.totalRevenue) as ganancia, SUM(o.quantity) as piezas, concat_ws("-",week(o.dateOfSale,1),year(o.dateOfSale)) as fecha');
                 orderRepository.addGroupBy("year(o.dateOfSale)")
                 orderRepository.addGroupBy("week(o.dateOfSale,1)");
                 break;
             case StatTimeTypes.MONTHLY:
-                orderRepository.select('SUM(o.totalAmount) as monto, SUM(o.totalRevenue) as ganancia, SUM(o.quantity) as piezas, concat_ws("-",month(o.dateOfSale),year(o.dateOfSale)) as fecha');
+                orderRepository.select('SUM(o.totalWithDiscount) as monto, SUM(o.totalRevenue) as ganancia, SUM(o.quantity) as piezas, concat_ws("-",month(o.dateOfSale),year(o.dateOfSale)) as fecha');
                 orderRepository.addGroupBy("year(o.dateOfSale)")
                 orderRepository.addGroupBy("month(o.dateOfSale)");
                 break;
             case StatTimeTypes.YEARLY:
-                orderRepository.select('SUM(o.totalAmount) as monto, SUM(o.totalRevenue) as ganancia, SUM(o.quantity) as piezas, year(o.dateOfSale) as fecha');
+                orderRepository.select('SUM(o.totalWithDiscount) as monto, SUM(o.totalRevenue) as ganancia, SUM(o.quantity) as piezas, year(o.dateOfSale) as fecha');
                 orderRepository.addGroupBy("year(o.dateOfSale)");
                 break;
         }
@@ -537,11 +538,11 @@ export class OrderService extends BaseService<Order> {
         const orderRepository = this.orderRepository.createQueryBuilder('o');
         const options = await this.fieldOptionService.findByGroup('ORDERS_ORIGIN');
 
-        orderRepository.addSelect("o.totalAmount");
-        orderRepository.addSelect("SUM(IF(LOWER(o.origen) LIKE 'whatsapp%', o.totalAmount,0))", "Whatsapp");
+        orderRepository.addSelect("o.totalWithDiscount");
+        orderRepository.addSelect("SUM(IF(LOWER(o.origen) LIKE 'whatsapp%', o.totalWithDiscount,0))", "Whatsapp");
         options.map(item => {
             if(!(item.value.toLowerCase().includes("whatsapp"))) {
-                orderRepository.addSelect("SUM(IF(o.origen='" + item.value + "', o.totalAmount,0))", string_to_slug(item.value));
+                orderRepository.addSelect("SUM(IF(o.origen='" + item.value + "', o.totalWithDiscount,0))", string_to_slug(item.value));
             }
         });
 
@@ -614,11 +615,11 @@ export class OrderService extends BaseService<Order> {
 
         const orderRepository = this.orderRepository.createQueryBuilder('o');
 
-        orderRepository.addSelect("o.totalAmount");
+        orderRepository.addSelect("o.totalWithDiscount");
         orderRepository.addSelect("SUM(IF(d.deliveryType=1, 1,0))", "cantidadPrevioPago");
-        orderRepository.addSelect("SUM(IF(d.deliveryType=1, o.totalAmount,0))", "montoPrevioPago");
+        orderRepository.addSelect("SUM(IF(d.deliveryType=1, o.totalWithDiscount,0))", "montoPrevioPago");
         orderRepository.addSelect("SUM(IF(d.deliveryType=3, 1,0))", "cantidadContraEntrega");
-        orderRepository.addSelect("SUM(IF(d.deliveryType=3, o.totalAmount,0))", "montoContraEntrega");
+        orderRepository.addSelect("SUM(IF(d.deliveryType=3, o.totalWithDiscount,0))", "montoContraEntrega");
         orderRepository.leftJoin("o.orderDelivery", "d")
 
 
@@ -708,7 +709,7 @@ export class OrderService extends BaseService<Order> {
 
         orderRepository.addSelect("hour(o.createdAt)", "hora");
         orderRepository.addSelect("COUNT(*)", "cantidad");
-        orderRepository.addSelect("SUM(o.totalAmount)", "monto");
+        orderRepository.addSelect("SUM(o.totalWithDiscount)", "monto");
 
         orderRepository.where("DATE(o.dateOfSale) >= :before");
         orderRepository.andWhere("DATE(o.dateOfSale) <= :after");
@@ -777,7 +778,7 @@ export class OrderService extends BaseService<Order> {
     async getStatsWhatsapp(dateFrom, dateTo) {
         const orderRepository = this.orderRepository.createQueryBuilder('o');
         orderRepository.addSelect("o.origen");
-        orderRepository.addSelect("SUM(o.totalAmount) as monto");
+        orderRepository.addSelect("SUM(o.totalWithDiscount) as monto");
         orderRepository.where("o.origen LIKE :origen");
         orderRepository.andWhere("DATE(o.dateOfSale) >= :before");
         orderRepository.andWhere("DATE(o.dateOfSale) <= :after");
@@ -809,7 +810,7 @@ export class OrderService extends BaseService<Order> {
 
             orderRepository.leftJoin('o.customer', 'c');
             orderRepository.leftJoin('c.state', 's');
-            orderRepository.select('SUM(o.totalAmount) as monto')
+            orderRepository.select('SUM(o.totalWithDiscount) as monto')
             orderRepository.addSelect('s.name', 'estado')
 
             orderRepository.andWhere("DATE(o.dateOfSale) >= :before");
@@ -846,14 +847,14 @@ export class OrderService extends BaseService<Order> {
             const secondDate = moment().subtract(1, 'days').format('YYYY-MM-DD');
 
             statDailyFirst = await this.orderRepository.createQueryBuilder('o')
-            .addSelect("SUM(o.totalAmount)", "totalAmount")
+            .addSelect("SUM(o.totalWithDiscount)", "totalAmount")
             .addSelect("COUNT(o.id)", "totalQty")
             .andWhere("DATE(o.dateOfSale) = :date", {date: firstDate})
             .groupBy('o.dateOfSale')
             .getRawOne();
 
             statDailySecond = await this.orderRepository.createQueryBuilder('o')
-            .addSelect("SUM(o.totalAmount)", "totalAmount")
+            .addSelect("SUM(o.totalWithDiscount)", "totalAmount")
             .addSelect("COUNT(o.id)", "totalQty")
             .andWhere("DATE(o.dateOfSale) = :date", {date: secondDate})
             .groupBy('o.dateOfSale')
@@ -868,12 +869,12 @@ export class OrderService extends BaseService<Order> {
 
             statWeeklyFirst = await this.orderRepository.createQueryBuilder('o')
             .addSelect("COUNT(o.id)", "totalQty")
-            .addSelect("SUM(o.totalAmount)", "totalAmount")
+            .addSelect("SUM(o.totalWithDiscount)", "totalAmount")
             .andWhere("DATE(o.dateOfSale) >= :before", {before: weekStart})
             .andWhere("DATE(o.dateOfSale) <= :after", {after: weekEnd}).getRawOne();
 
             statWeeklySecond = await this.orderRepository.createQueryBuilder('o')
-            .addSelect("SUM(o.totalAmount)", "totalAmount")
+            .addSelect("SUM(o.totalWithDiscount)", "totalAmount")
             .addSelect("COUNT(o.id)", "totalQty")
             .andWhere("DATE(o.dateOfSale) >= :before", {before: weekPastStart})
             .andWhere("DATE(o.dateOfSale) <= :after", {after: weekPastEnd}).getRawOne();

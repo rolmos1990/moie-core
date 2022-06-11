@@ -51,6 +51,10 @@ export class Order extends BaseModel{
     @IsDecimal({ decimal_digits: '2'}, {groups: ['create','update']})
     totalAmount: number;
 
+    @Column({name:'total_with_discount', type: 'decimal'})
+    @IsDecimal({ decimal_digits: '2'}, {groups: ['create','update']})
+    totalWithDiscount: number;
+
     @Column({name:'sub_total', type: 'decimal'})
     @IsDecimal({ decimal_digits: '2'}, {groups: ['create','update']})
     subTotalAmount: number;

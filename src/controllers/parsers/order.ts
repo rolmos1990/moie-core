@@ -224,6 +224,7 @@ export const OrderListDTO = (order: OrderModel) => ({
     deliveryLocality: order.orderDelivery && order.orderDelivery.deliveryLocality ? DeliveryLocalityListDTO(order.orderDelivery.deliveryLocality) : null,
     origen: order.origen,
     totalAmount: order.totalAmount,
+    totalWithDiscount: order.totalWithDiscount,
     subTotalAmount: order.subTotalAmount,
     totalDiscount: order.totalDiscount,
     totalRevenue: order.totalRevenue,
@@ -249,6 +250,7 @@ export const OrderShowDTO = (order: OrderModel) => ({
     deliveryLocality: order.orderDelivery && order.orderDelivery.deliveryLocality ? DeliveryLocalityListDTO(order.orderDelivery.deliveryLocality) : null,
     origen: order.origen,
     totalAmount: order.totalAmount,
+    totalWithDiscount: order.totalWithDiscount,
     subTotalAmount: order.subTotalAmount,
     totalDiscount: order.totalDiscount,
     totalRevenue: order.totalRevenue,
@@ -297,6 +299,7 @@ export const OrderPaymentShowDTO = (order: Order | any) => ({
     createdAt: order.createdAt,
     quantity: order.quantity,
     totalAmount: order.totalAmount,
+    totalWithDiscount: order.totalWithDiscount,
     subTotalAmount: order.subTotalAmount,
     orderDelivery: OrderDeliveryListDTO(order.orderDelivery)
 });
