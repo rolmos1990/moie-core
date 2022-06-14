@@ -1,4 +1,4 @@
-import {GET, POST, PUT, route} from "awilix-express";
+import {DELETE, GET, POST, PUT, route} from "awilix-express";
 import {BaseController} from "../common/controllers/base.controller";
 import {Product} from "../models/Product";
 import {EntityTarget} from "typeorm";
@@ -17,6 +17,7 @@ import {Request, Response} from "express";
 import {OrderService} from "../services/order.service";
 import {PageQuery} from "../common/controllers/page.query";
 import {OrderConditional} from "../common/enum/order.conditional";
+import {ProductImageService} from "../services/productImage.service";
 
 @route('/product')
 export class ProductController extends BaseController<Product> {
@@ -24,6 +25,7 @@ export class ProductController extends BaseController<Product> {
         private readonly productService: ProductService,
         private readonly productSizeService: ProductSizeService,
         private readonly orderService: OrderService,
+        private readonly productImageService: ProductImageService,
     ){
         super(productService, productSizeService);
     };

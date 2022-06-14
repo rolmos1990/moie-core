@@ -1,5 +1,5 @@
 import {decodeBase64Image} from "../common/helper/helpers";
-import {readFileSync, writeFile, createWriteStream, writeFileSync, existsSync, mkdirSync} from "fs";
+import {readFileSync, writeFile, createWriteStream, writeFileSync, existsSync, mkdirSync, unlinkSync} from "fs";
 import {UtilService} from "../common/controllers/util.service";
 import {extension} from 'mime-types';
 import ResizeImg = require("resize-img");
@@ -159,6 +159,14 @@ export class MediaManagementService extends UtilService {
         });
 
         await Promise.all(saved);
+    }
+
+    async deleteFileFromPath(filePath){
+        try {
+            unlinkSync(filePath);
+        }catch(e){
+            console.log("error log", e.message);
+        }
     }
 
     async createHTML(){
