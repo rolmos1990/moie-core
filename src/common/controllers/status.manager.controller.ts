@@ -102,7 +102,6 @@ export class StatusManagerController {
                 }
             }
             else if (order.isPending()) {
-                this.order.dateOfSale = new Date();
                 this.setStatus(OrderStatus.CONFIRMED);
             }
                 return;

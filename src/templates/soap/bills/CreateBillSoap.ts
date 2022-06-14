@@ -275,13 +275,16 @@ export class CreateBillSoap extends BaseSoapTemplate {
             'InvcHead' : InvcHead,
             'InvcDtl' : InvcDtl,
             'InvcTax' : InvcTax,
-            'InvcMisc' : InvcMisc,
             'SalesTRC' : SalesTRC,
             'Customer' : Customer,
             'Company' : Company,
             'COOneTime' : COOneTime
             }
         };
+
+        if(orderDelivery.deliveryCost > 0){
+            data['ARInvoiceDataSet']['InvcMisc'] = InvcMisc;
+        }
 
         //remove all unuset values
         ['InvcDtl', 'InvcTax'].forEach(item => {

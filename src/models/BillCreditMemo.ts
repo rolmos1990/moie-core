@@ -16,7 +16,7 @@ export class BillCreditMemo extends BaseModel{
     @PrimaryGeneratedColumn('increment')
     id: number;
 
-    @OneToOne(() => Bill, bill => bill.creditMemo)
+    @OneToOne(() => Bill, bill => bill.creditMemo, {onDelete: "CASCADE"})
     @JoinColumn({name: 'bill_id'})
     bill: Bill;
 

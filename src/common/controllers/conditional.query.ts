@@ -152,6 +152,23 @@ export class ConditionalQuery {
                         //compare (not in)
                         field = query.split("$nin");
 
+                        //compare like
+                        field = query.split("$nin");
+
+                        if (field[0].includes(".")) {
+                            const fieldSubField = field[0].split(".");
+                            const subfieldName = fieldSubField[1];
+                            const subfieldValue = field[1].split("::");
+                            conditions.addSub(field[0] + " NOT IN (:" + subfieldName + ")", {[subfieldName]:  subfieldValue.join("::").replace(/, ([^,]*)$/, ' and $1')});
+                        } else {
+                            const subQuery = field[1].split("::");
+                            if (!(subQuery.length > 0)) {
+                                throw new ConditionalException;
+                            }
+                            this.addConditionalQuery(field[0], conditions, Operator.NOT_IN, subQuery);
+                        }
+
+
                         const subQuery = field[1].split("::");
                         if (!(subQuery.length > 0)) {
                             throw new ConditionalException;

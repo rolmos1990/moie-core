@@ -108,22 +108,23 @@ export class BillController extends BaseController<Bill> {
         }
 
         const memotype : EBillType = type;
-        if(bill.creditMemo) {
-            await this.billService.deleteMemoByBill(bill.creditMemo);
+
+        if(bill.creditMemo != null) {
+            billMemo = bill.creditMemo;
+        } else {
+            billMemo = await this.billService.createMemo(bill, memotype);
+            bill.creditMemo = billMemo;
         }
 
-        billMemo = await this.billService.createMemo(bill, memotype);
         const resp = await this.billService.sendElectronicBill(bill, memotype, false, billMemo);
 
-        if(resp == true){
-            const billUpdated = await this.billService.findBill(id);
-            billUpdated.creditMemo.status = true;
-            await this.billService.updateMemo(billMemo);
-            return res.json({status: 200, billCreditMemo: billUpdated.creditMemo});
+        if(resp == true) {
+            bill.creditMemo.status = true;
+            await this.billService.updateMemo(bill.creditMemo);
+            return res.json({status: 200, billCreditMemo: bill.creditMemo});
         }
-            billMemo.bill = bill;
-            await this.billService.updateMemo(billMemo);
-            return res.json({status: 200, billCreditMemo: billMemo});
+            bill.creditMemo.bill = null;
+            return res.json({status: 200, billCreditMemo: bill.creditMemo});
 
 
         }catch(e){

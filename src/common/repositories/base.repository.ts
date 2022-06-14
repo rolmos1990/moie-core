@@ -41,9 +41,6 @@ export default abstract class BaseRepository<T> {
             } else {
                 sum.select(this.repositoryManager.metadata.columns.map(item => tableName + "." + item.databaseNameWithoutPrefixes).join(","))
             }
-
-            let query = sum.getQuery();
-
             // 👇 Here is where you can modify the SQL for the query to suit your requirements
             //query = query.replace(/ WITH \(UPDLOCK, ROWLOCK\) /, ' WITH (UPDLOCK, READPAST) ');
 
@@ -94,22 +91,18 @@ export default abstract class BaseRepository<T> {
 
             const tableName = this.repositoryManager.metadata.tableName;
 
-            //const subQuery = ['orderDelivery.tracking = :tracking', { tracking: 123456 }];
-
             const subQueries = page.getWhereSubQuery();
             const where = page.getWhere();
-            //{ orderDelivery: tableName + '.orderDelivery' }
+
             return await this.repositoryManager.find({
                 ...page.get(),
-                join: { alias: tableName, innerJoin: page.getSubQueryInnerJoin(tableName) },
+                join: { alias: tableName, leftJoin: page.getSubQueryInnerJoin(tableName) },
                 where: qb => {
                     qb.where(where);
                     subQueries.forEach(item => {
                        qb.andWhere(item.query, item.search); // Filter related field
 
                     });
-                    //qb.andWhere();
-                    //.andWhere(page.getWhereSubQuery() 'orderDelivery.tracking = :tracking', { tracking: 123456 }); // Filter related field
                 }
             });
         }

@@ -243,6 +243,7 @@ export class OrderService extends BaseService<Order> {
         _order.paymentMode = parse.paymentMode || _order.paymentMode || null;
         _order.orderDelivery.deliveryLocality = deliveryLocality || null;
         _order.user = !_order.user ? user : _order.user;
+        _order.piecesForChanges = parse.piecesForChanges || _order.piecesForChanges || 0;
 
         await this.createOrUpdate(_order);
         await this.orderDeliveryRepository.save(_order.orderDelivery);
@@ -513,8 +514,6 @@ export class OrderService extends BaseService<Order> {
             orderRepository.setParameters({before: dateFrom, after: dateTo});
         }
 
-        console.log(orderRepository.getSql());
-
         const rows = await orderRepository.getRawMany();
 
         let results = [];
@@ -578,8 +577,6 @@ export class OrderService extends BaseService<Order> {
         orderRepository.andWhere("DATE(o.dateOfSale) <= :after");
 
         orderRepository.setParameters({before: dateFrom + " 00:00:00", after: dateTo + " 23:59:59"});
-
-        orderRepository.getQuery();
 
         const rows = await orderRepository.getRawMany();
 

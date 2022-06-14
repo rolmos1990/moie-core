@@ -89,8 +89,10 @@ export class BillService extends BaseService<Bill> {
     }
 
     async deleteMemoByBill(creditMemo: BillCreditMemo) {
-       const toDelete = await this.billCreditMemoRepository.findOneByObject({id: creditMemo.id});
-       await this.billCreditMemoRepository.delete(toDelete);
+       return this.billCreditMemoRepository
+           .createQueryBuilder("o")
+           .where("o.bill", creditMemo.bill)
+           .delete();
     }
 
     async createMemo(bill: Bill, type : EBillType) : Promise<BillCreditMemo> {
