@@ -83,9 +83,11 @@ export class StatusManagerController {
         if (!order.isPreviousPayment()) {
             if (order.isSent()) {
                 if (_orderType.isInterrapidisimo() || _orderType.isMensajero()) {
+                    this.order.dateOfSale = new Date();
                     this.setStatus(OrderStatus.RECONCILED);
                     this.setStatus(OrderStatus.FINISHED);
                 } else {
+                    this.order.dateOfSale = new Date();
                     this.setStatus(OrderStatus.FINISHED);
                 }
             }
@@ -97,6 +99,7 @@ export class StatusManagerController {
                 if (_orderType.isMensajero() || _orderType.isInterrapidisimo()) {
                     this.setStatus(OrderStatus.SENT);
                 }  else if(_orderType.isOtro()){
+                    this.order.dateOfSale = new Date();
                     this.setStatus(OrderStatus.SENT);
                     this.setStatus(OrderStatus.FINISHED);
                 }

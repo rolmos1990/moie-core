@@ -59,7 +59,7 @@ export class PaymentController extends BaseController<Payment> {
             if (orderId && id) {
                 const user = await this.userService.find(req["user"]);
                 const order = await this.orderService.find(orderId, ['orderDelivery']);
-                await this.orderService.update(order);
+                //await this.orderService.update(order);
                 const payment = await this.paymentService.find(parseInt(id));
                 order.payment = payment;
 
