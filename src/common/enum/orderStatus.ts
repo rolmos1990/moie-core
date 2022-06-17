@@ -28,6 +28,11 @@ export function isCancellable(){
     return [OrderStatus.PENDING, OrderStatus.CONFIRMED];
 }
 
+/** Orden es cancelable */
+export function isNotCancelled(){
+    return [OrderStatus.PENDING, OrderStatus.CONFIRMED, OrderStatus.PRINTED, OrderStatus.SENT, OrderStatus.RECONCILED, OrderStatus.FINISHED];
+}
+
 /** Ordenes que han sido vendidas */
 export function isSell(){
     return [OrderStatus.CONFIRMED, OrderStatus.PRINTED, OrderStatus.SENT, OrderStatus.RECONCILED, OrderStatus.FINISHED];

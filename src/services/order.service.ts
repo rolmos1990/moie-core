@@ -511,7 +511,7 @@ export class OrderService extends BaseService<Order> {
             orderRepository.andWhere("DATE(o.dateOfSale) >= :before");
             orderRepository.andWhere("DATE(o.dateOfSale) <= :after");
 
-            orderRepository.setParameters({before: dateFrom, after: dateTo});
+            orderRepository.setParameters({before: dateFrom + " 00:00:00", after: dateTo + " 23:59:59"});
         }
 
         const rows = await orderRepository.getRawMany();
@@ -688,7 +688,7 @@ export class OrderService extends BaseService<Order> {
         orderRepository.andWhere("DATE(o.dateOfSale) >= :before");
         orderRepository.andWhere("DATE(o.dateOfSale) <= :after");
 
-        orderRepository.setParameters({before: dateFrom, after: dateTo});
+        orderRepository.setParameters({before: dateFrom + " 00:00:00", after: dateTo + " 23:59:59"});
 
         orderRepository.groupBy("p.id")
         orderRepository.orderBy("cantidad", "DESC");
@@ -708,8 +708,8 @@ export class OrderService extends BaseService<Order> {
         orderRepository.addSelect("COUNT(*)", "cantidad");
         orderRepository.addSelect("SUM(o.totalWithDiscount)", "monto");
 
-        orderRepository.where("DATE(o.dateOfSale) >= :before");
-        orderRepository.andWhere("DATE(o.dateOfSale) <= :after");
+        orderRepository.where("DATE(o.createdAt) >= :before");
+        orderRepository.andWhere("DATE(o.createdAt) <= :after");
 
         orderRepository.setParameters({before: dateFrom + " 00:00:00", after: dateTo + " 23:59:59"});
 
@@ -780,7 +780,7 @@ export class OrderService extends BaseService<Order> {
         orderRepository.andWhere("DATE(o.dateOfSale) >= :before");
         orderRepository.andWhere("DATE(o.dateOfSale) <= :after");
 
-        orderRepository.setParameters({origen: "%WHATSAPP%", before: dateFrom, after: dateTo});
+        orderRepository.setParameters({origen: "%WHATSAPP%", before: dateFrom + " 00:00:00", after: dateTo + " 23:59:59"});
         orderRepository.groupBy("o.origen");
         orderRepository.orderBy('o.origen');
 
@@ -846,14 +846,18 @@ export class OrderService extends BaseService<Order> {
             statDailyFirst = await this.orderRepository.createQueryBuilder('o')
             .addSelect("SUM(o.totalWithDiscount)", "totalAmount")
             .addSelect("COUNT(o.id)", "totalQty")
-            .andWhere("DATE(o.dateOfSale) = :date", {date: firstDate})
+            .andWhere("DATE(o.createdAt) = :date")
+            .andWhere("o.status != :cancelled")
+            .setParameters({date: secondDate, cancelled: OrderStatus.CANCELED})
             .groupBy('o.dateOfSale')
             .getRawOne();
 
             statDailySecond = await this.orderRepository.createQueryBuilder('o')
             .addSelect("SUM(o.totalWithDiscount)", "totalAmount")
             .addSelect("COUNT(o.id)", "totalQty")
-            .andWhere("DATE(o.dateOfSale) = :date", {date: secondDate})
+            .andWhere("DATE(o.createdAt) = :date")
+            .andWhere("o.status != :cancelled")
+            .setParameters({date: secondDate, cancelled: OrderStatus.CANCELED})
             .groupBy('o.dateOfSale')
             .getRawOne();
 
@@ -867,14 +871,18 @@ export class OrderService extends BaseService<Order> {
             statWeeklyFirst = await this.orderRepository.createQueryBuilder('o')
             .addSelect("COUNT(o.id)", "totalQty")
             .addSelect("SUM(o.totalWithDiscount)", "totalAmount")
-            .andWhere("DATE(o.dateOfSale) >= :before", {before: weekStart})
-            .andWhere("DATE(o.dateOfSale) <= :after", {after: weekEnd}).getRawOne();
+            .andWhere("DATE(o.createdAt) >= :before", {before: weekStart})
+            .andWhere("DATE(o.createdAt) <= :after", {after: weekEnd})
+            .andWhere("o.status != :cancelled", {cancelled: OrderStatus.CANCELED})
+            .getRawOne();
 
             statWeeklySecond = await this.orderRepository.createQueryBuilder('o')
             .addSelect("SUM(o.totalWithDiscount)", "totalAmount")
             .addSelect("COUNT(o.id)", "totalQty")
-            .andWhere("DATE(o.dateOfSale) >= :before", {before: weekPastStart})
-            .andWhere("DATE(o.dateOfSale) <= :after", {after: weekPastEnd}).getRawOne();
+            .andWhere("DATE(o.createdAt) >= :before", {before: weekPastStart})
+            .andWhere("DATE(o.createdAt) <= :after", {after: weekPastEnd})
+            .andWhere("o.status != :cancelled", {cancelled: OrderStatus.CANCELED})
+            .getRawOne();
 
 
         return {
