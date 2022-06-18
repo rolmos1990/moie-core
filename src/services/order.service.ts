@@ -479,37 +479,37 @@ export class OrderService extends BaseService<Order> {
 
         switch(group) {
             case StatTimeTypes.DAILY:
-                orderRepository.select('SUM(o.totalWithDiscount) as monto, SUM(o.totalRevenue) as ganancia, SUM(o.quantity) as piezas, concat_ws("-",day(o.createdAt),month(o.createdAt),year(o.createdAt)) as fecha');
-                orderRepository.addGroupBy("year(o.createdAt)")
-                orderRepository.addGroupBy("month(o.createdAt)")
-                orderRepository.addGroupBy("day(o.createdAt)");
+                orderRepository.select('SUM(o.totalWithDiscount) as monto, SUM(o.totalRevenue) as ganancia, SUM(o.quantity) as piezas, concat_ws("-",day(o.dateOfSale),month(o.dateOfSale),year(o.dateOfSale)) as fecha');
+                orderRepository.addGroupBy("year(o.dateOfSale)")
+                orderRepository.addGroupBy("month(o.dateOfSale)")
+                orderRepository.addGroupBy("day(o.dateOfSale)");
                 break;
             case StatTimeTypes.WEEKLY:
-                orderRepository.select('SUM(o.totalWithDiscount) as monto, SUM(o.totalRevenue) as ganancia, SUM(o.quantity) as piezas, concat_ws("-",week(o.createdAt,1),year(o.createdAt)) as fecha');
-                orderRepository.addGroupBy("year(o.createdAt)")
-                orderRepository.addGroupBy("week(o.createdAt,1)");
+                orderRepository.select('SUM(o.totalWithDiscount) as monto, SUM(o.totalRevenue) as ganancia, SUM(o.quantity) as piezas, concat_ws("-",week(o.dateOfSale,1),year(o.dateOfSale)) as fecha');
+                orderRepository.addGroupBy("year(o.dateOfSale)")
+                orderRepository.addGroupBy("week(o.dateOfSale,1)");
                 break;
             case StatTimeTypes.MONTHLY:
-                orderRepository.select('SUM(o.totalWithDiscount) as monto, SUM(o.totalRevenue) as ganancia, SUM(o.quantity) as piezas, concat_ws("-",month(o.createdAt),year(o.createdAt)) as fecha');
-                orderRepository.addGroupBy("year(o.createdAt)")
-                orderRepository.addGroupBy("month(o.createdAt)");
+                orderRepository.select('SUM(o.totalWithDiscount) as monto, SUM(o.totalRevenue) as ganancia, SUM(o.quantity) as piezas, concat_ws("-",month(o.dateOfSale),year(o.dateOfSale)) as fecha');
+                orderRepository.addGroupBy("year(o.dateOfSale)")
+                orderRepository.addGroupBy("month(o.dateOfSale)");
                 break;
             case StatTimeTypes.YEARLY:
-                orderRepository.select('SUM(o.totalWithDiscount) as monto, SUM(o.totalRevenue) as ganancia, SUM(o.quantity) as piezas, year(o.createdAt) as fecha');
-                orderRepository.addGroupBy("year(o.createdAt)");
+                orderRepository.select('SUM(o.totalWithDiscount) as monto, SUM(o.totalRevenue) as ganancia, SUM(o.quantity) as piezas, year(o.dateOfSale) as fecha');
+                orderRepository.addGroupBy("year(o.dateOfSale)");
                 break;
         }
 
         if(user != null){
             orderRepository.leftJoinAndSelect('o.user', 'u')
                 .where("u.id = :user")
-                .andWhere("DATE(o.createdAt) >= :before")
-                .andWhere("DATE(o.createdAt) <= :after")
+                .andWhere("DATE(o.dateOfSale) >= :before")
+                .andWhere("DATE(o.dateOfSale) <= :after")
                 .addGroupBy('o.user')
                 .setParameters({before: dateFrom, after: dateTo, user: user['id']});
         } else {
-            orderRepository.andWhere("DATE(o.createdAt) >= :before");
-            orderRepository.andWhere("DATE(o.createdAt) <= :after");
+            orderRepository.andWhere("DATE(o.dateOfSale) >= :before");
+            orderRepository.andWhere("DATE(o.dateOfSale) <= :after");
 
             orderRepository.setParameters({before: dateFrom + " 00:00:00", after: dateTo + " 23:59:59"});
         }
