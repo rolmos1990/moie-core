@@ -840,16 +840,16 @@ export class OrderService extends BaseService<Order> {
         let statWeeklyFirst;
         let statWeeklySecond;
 
-            const firstDate = moment().set('hour', 0).set('minute', 0).set('second', 0).format('YYYY-MM-DD');
-            const secondDate = moment().set('hour', 0).set('minute', 0).set('second', 0).subtract(1, 'days').format('YYYY-MM-DD');
+            const firstDate = moment().format('YYYY-MM-DD');
+            const secondDate = moment().subtract(1, 'days').format('YYYY-MM-DD');
 
             statDailyFirst = await this.orderRepository.createQueryBuilder('o')
             .addSelect("SUM(o.totalWithDiscount)", "totalAmount")
             .addSelect("COUNT(o.id)", "totalQty")
             .andWhere("DATE(o.createdAt) = :date")
             .andWhere("o.status != :cancelled")
-            .setParameters({date: secondDate, cancelled: OrderStatus.CANCELED})
-            .groupBy('o.createdAt')
+            .setParameters({date: firstDate, cancelled: OrderStatus.CANCELED})
+            .groupBy('DATE(o.createdAt)')
             .getRawOne();
 
             statDailySecond = await this.orderRepository.createQueryBuilder('o')
@@ -858,7 +858,7 @@ export class OrderService extends BaseService<Order> {
             .andWhere("DATE(o.createdAt) = :date")
             .andWhere("o.status != :cancelled")
             .setParameters({date: secondDate, cancelled: OrderStatus.CANCELED})
-            .groupBy('o.createdAt')
+            .groupBy('DATE(o.createdAt)')
             .getRawOne();
 
 

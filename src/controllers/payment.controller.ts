@@ -1,4 +1,4 @@
-import {POST, route} from 'awilix-express';
+import {DELETE, POST, route} from 'awilix-express';
 import {PaymentService} from "../services/payment.service";
 import {BaseController} from "../common/controllers/base.controller";
 import {Payment} from "../models/Payment";
@@ -48,6 +48,25 @@ export class PaymentController extends BaseController<Payment> {
 
     public getEntityTarget(): EntityTarget<any> {
         return Payment;
+    }
+
+    @route('/:id/delete')
+    @DELETE()
+    protected async deletePayment(req: Request, res: Response){
+        try {
+            const id = req.params.id;
+            const payment = await this.paymentService.find(parseInt(id));
+            payment.status = PaymentStatus.CANCELLED;
+            await this.paymentService.createOrUpdate(payment);
+            return res.json({status: 200 } );
+        } catch(e){
+            if (e.name === InvalidArgumentException.name || e.name === "EntityNotFound") {
+                this.handleException(new InvalidArgumentException("Pago no ha sido encontrado"), res);
+            }
+            else{
+                this.handleException(new ApplicationException(), res);
+            }
+        }
     }
 
     @route('/applyPayment/:id')
