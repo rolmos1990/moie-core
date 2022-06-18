@@ -394,8 +394,7 @@ export class OrderController extends BaseController<Order> {
                     order.status = OrderStatus.FINISHED;
                     try {
                         await this.orderService.update(order);
-                        await this.orderHistoricService.registerEvent(order, user, EventStatus.RECONCILED);
-                        await this.orderHistoricService.registerEvent(order, user, EventStatus.FINISHED);
+                        await this.orderService.updateNextStatus(order);
                         itemSuccess.push(order.id);
                     }catch(e){
                         itemFailures.push(order.id);
@@ -405,8 +404,7 @@ export class OrderController extends BaseController<Order> {
                     order.status = OrderStatus.SENT;
                     try {
                         await this.orderService.update(order);
-                        await this.orderHistoricService.registerEvent(order, user, EventStatus.SENT);
-                        await this.orderHistoricService.registerEvent(order, user, EventStatus.FINISHED);
+                        await this.orderService.updateNextStatus(order);
                         itemSuccess.push(order.id);
                     }catch(e){
                         itemFailures.push(order.id);
@@ -416,7 +414,7 @@ export class OrderController extends BaseController<Order> {
                     order.status = OrderStatus.RECONCILED;
                     try {
                         await this.orderService.update(order);
-                        await this.orderHistoricService.registerEvent(order, null);
+                        await this.orderService.updateNextStatus(order);
                         itemSuccess.push(order.id);
                     }catch(e){
                         itemFailures.push(order.id);
