@@ -48,7 +48,7 @@ export class BillService extends BaseService<Bill> {
             const billConfig = await this.billConfigRepository.findByObject(conditional.get());
 
             //empiezo a partir de donde diga la configuracion
-            if(nexLegalNumber != null){
+            if(nexLegalNumber == null){
                 nexLegalNumber = billConfig[0].startNumber;
             }
 
