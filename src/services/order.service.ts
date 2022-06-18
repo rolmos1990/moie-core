@@ -849,7 +849,7 @@ export class OrderService extends BaseService<Order> {
             .andWhere("DATE(o.createdAt) = :date")
             .andWhere("o.status != :cancelled")
             .setParameters({date: secondDate, cancelled: OrderStatus.CANCELED})
-            .groupBy('o.dateOfSale')
+            .groupBy('o.createdAt')
             .getRawOne();
 
             statDailySecond = await this.orderRepository.createQueryBuilder('o')
@@ -858,7 +858,7 @@ export class OrderService extends BaseService<Order> {
             .andWhere("DATE(o.createdAt) = :date")
             .andWhere("o.status != :cancelled")
             .setParameters({date: secondDate, cancelled: OrderStatus.CANCELED})
-            .groupBy('o.dateOfSale')
+            .groupBy('o.createdAt')
             .getRawOne();
 
 
