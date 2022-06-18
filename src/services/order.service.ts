@@ -840,8 +840,8 @@ export class OrderService extends BaseService<Order> {
         let statWeeklyFirst;
         let statWeeklySecond;
 
-            const firstDate = moment().format('YYYY-MM-DD');
-            const secondDate = moment().subtract(1, 'days').format('YYYY-MM-DD');
+            const firstDate = moment().set('hour', 0).set('minute', 0).set('second', 0).format('YYYY-MM-DD');
+            const secondDate = moment().set('hour', 0).set('minute', 0).set('second', 0).subtract(1, 'days').format('YYYY-MM-DD');
 
             statDailyFirst = await this.orderRepository.createQueryBuilder('o')
             .addSelect("SUM(o.totalWithDiscount)", "totalAmount")
