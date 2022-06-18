@@ -391,9 +391,9 @@ export class OrderController extends BaseController<Order> {
                 if(isMensajeroChargeOnDelivery || isInterrapidisimoChargeOnDelivery){
                     //MENSAJERO CONTRAPAGO o INTERRAPIDISIMO CONTRAPAGO
                     /** TODO - HACER AJUSTE AQUI PARA QUE EL REGISTER EVENT SEA QUIEN AJUSTE EL ESTADO DEPENDIENDO DEL TIPO DE PEDIDO Y EL HISTORIAL DE ESTADOS */
-                    order.status = OrderStatus.FINISHED;
+                    //order.status = OrderStatus.FINISHED;
                     try {
-                        await this.orderService.update(order);
+                        //await this.orderService.update(order);
                         await this.orderService.updateNextStatus(order);
                         itemSuccess.push(order.id);
                     }catch(e){
@@ -401,9 +401,9 @@ export class OrderController extends BaseController<Order> {
                     }
                 } else if(order.deliveryMethod.id === INTERRAPIDISIMO && _previousPayments.indexOf(order.orderDelivery.deliveryType)){
                     //INTERRAPIDISIMO PREVIOPAGO
-                    order.status = OrderStatus.SENT;
+                    //order.status = OrderStatus.SENT;
                     try {
-                        await this.orderService.update(order);
+                        //await this.orderService.update(order);
                         await this.orderService.updateNextStatus(order);
                         itemSuccess.push(order.id);
                     }catch(e){
@@ -411,9 +411,9 @@ export class OrderController extends BaseController<Order> {
                     }
                 } else {
                     //BY DEFAULT RECONCILIED THE ORDER
-                    order.status = OrderStatus.RECONCILED;
+                    //order.status = OrderStatus.RECONCILED;
                     try {
-                        await this.orderService.update(order);
+                        //await this.orderService.update(order);
                         await this.orderService.updateNextStatus(order);
                         itemSuccess.push(order.id);
                     }catch(e){
