@@ -35,19 +35,26 @@ export class BillService extends BaseService<Bill> {
         const lastNumber = this.billRepository.createQueryBuilder('b')
             .select("MAX(b.legal_number)", "max")
         const result = await lastNumber.getRawOne();
-        const nexLegalNumber = (result["max"] + 1) || 1;
+        let nexLegalNumber = (result["max"] + 1) || null;
 
+            const conditional = new ConditionalQuery();
 
-        const conditional = new ConditionalQuery();
-        conditional.add("startNumber", Operator.LESS_OR_EQUAL_THAN, nexLegalNumber);
-        conditional.add("finalNumber", Operator.GREATHER_OR_EQUAL_THAN, nexLegalNumber);
-        conditional.add("status", Operator.EQUAL, 1);
+            if(nexLegalNumber != null){
+                conditional.add("startNumber", Operator.LESS_OR_EQUAL_THAN, nexLegalNumber);
+                conditional.add("finalNumber", Operator.GREATHER_OR_EQUAL_THAN, nexLegalNumber);
+            }
 
-        const billConfig = await this.billConfigRepository.findByObject(conditional.get());
+            conditional.add("status", Operator.EQUAL, 1);
+            const billConfig = await this.billConfigRepository.findByObject(conditional.get());
 
-        if(billConfig.length <= 0){
-            throw new InvalidArgumentException("No es posible procesar la siguiente factura");
-        }
+            //empiezo a partir de donde diga la configuracion
+            if(nexLegalNumber != null){
+                nexLegalNumber = billConfig[0].startNumber;
+            }
+
+            if(billConfig.length <= 0){
+                throw new InvalidArgumentException("No es posible procesar la siguiente factura");
+            }
 
         return {number: nexLegalNumber, config: billConfig[0]};
     }
