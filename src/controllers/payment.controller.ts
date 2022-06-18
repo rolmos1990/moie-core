@@ -61,7 +61,9 @@ export class PaymentController extends BaseController<Payment> {
                 const order = await this.orderService.find(orderId, ['orderDelivery']);
                 //await this.orderService.update(order);
                 const payment = await this.paymentService.find(parseInt(id));
+                payment.status = PaymentStatus.CONCILIED;
                 order.payment = payment;
+
 
                 //register payment and update payment in order
                 await this.paymentService.createOrUpdate(payment);
