@@ -4,6 +4,7 @@ import {Product} from "../models/Product";
 import {InvalidArgumentException} from "../common/exceptions";
 import {ProductAvailableViewRepository} from "../repositories/productAvailableView.repository";
 import {ProductAvailable} from "../models/ProductAvailable";
+import {Category} from "../models/Category";
 
 export class ProductService extends BaseService<Product> {
     constructor(
@@ -16,6 +17,14 @@ export class ProductService extends BaseService<Product> {
     public async getReference(referenceKey: string){
         try {
             return this.productRepository.getNextReferenceCode(referenceKey);
+        }catch(e){
+            throw new InvalidArgumentException();
+        }
+    }
+
+    public async getNextOrder(category: Category) : Promise<number>{
+        try {
+            return await this.productRepository.getNextOrderFromCategory(category);
         }catch(e){
             throw new InvalidArgumentException();
         }

@@ -170,11 +170,11 @@ export abstract class BaseController<Parse> {
     @PUT()
     public async update(req: Request, res: Response) {
         try {
-            const oldEntity = await this.service.find(req.params.id);
+            const oldEntity = await this.service.find(req.params.id, this.getDefaultRelations(false));
             if(oldEntity) {
                 let entity = await this.parseObject(oldEntity, req.body);
                 entity = this.getParsePUT(entity);
-                this.beforeUpdate(entity);
+                await this.beforeUpdate(entity, oldEntity);
 
                 const errors = await this.validateEntity(entity, [GROUPS.PUT]);
                 if (errors && errors.length > 0) {
@@ -239,7 +239,7 @@ export abstract class BaseController<Parse> {
     protected abstract afterCreate(item: Object, user?: User): void;
 
     /* Before update object in repository */
-    protected abstract beforeUpdate(item: Object): void;
+    protected abstract beforeUpdate(item: Object, olditem?: Object): any;
 
     /* After update object in repository */
     protected abstract afterUpdate(item: Object): void;

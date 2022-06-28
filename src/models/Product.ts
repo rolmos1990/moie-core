@@ -117,6 +117,10 @@ export class Product extends BaseModel{
     @IsOptional()
     sizeDescription: string;
 
+    @Column({type: 'integer', default: 0})
+    @IsNumber()
+    orden: number;
+
     isEmpty(): boolean {
         return (this.id == null);
     }

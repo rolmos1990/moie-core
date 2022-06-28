@@ -42,9 +42,19 @@ export class ProductController extends BaseController<Product> {
         }
         const newReference = await this.productService.getReference(item.referenceKey);
         item['reference'] = newReference;
+
+        if(item['category']){
+            const _nextOrden = await this.productService.getNextOrder(item['category']);
+            item['orden'] = _nextOrden;
+        }
     }
 
-    protected beforeUpdate(item: Object): void {
+    protected async beforeUpdate(item: Object, olditem: Object): Promise<any> {
+        const oldItem = this.productService.find(item['id'], ['category']);
+        if(item && item['category'] != oldItem['category']){
+            const _nextOrden = await this.productService.getNextOrder(item['category']);
+            item['orden'] = _nextOrden;
+        }
     }
 
     @route('/:id/productPendings')
@@ -85,6 +95,40 @@ export class ProductController extends BaseController<Product> {
                 throw new InvalidArgumentException();
             }
         }catch(e){
+            if (e.name === InvalidArgumentException.name || e.name === "EntityNotFound") {
+                this.handleException(new InvalidArgumentException("Producto no ha sido encontrado"), res);
+            }
+            else{
+                this.handleException(new ApplicationException(), res);
+
+            }
+        }
+    }
+
+    @route('/:id/reorder')
+    @POST()
+    protected async reorder(req: Request, res: Response){
+        const id = req.params.id;
+        try {
+            const {orden, category} = req.body;
+            if(orden){
+                const product : Product = await this.productService.find(parseInt(id));
+                const productAffected : Product = (await this.productService.findByObject({orden: orden, category: category}))[0];
+
+                productAffected.orden = product.orden || 0;
+                product.orden = orden;
+
+                await this.productService.createOrUpdate(productAffected);
+                await this.productService.createOrUpdate(product);
+
+                return res.json({status: 200 } );
+            } else {
+                throw new InvalidArgumentException();
+            }
+        }catch(e){
+
+            console.log("message error: ", e.message);
+
             if (e.name === InvalidArgumentException.name || e.name === "EntityNotFound") {
                 this.handleException(new InvalidArgumentException("Producto no ha sido encontrado"), res);
             }

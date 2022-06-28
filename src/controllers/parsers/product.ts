@@ -23,7 +23,8 @@ export const ProductListDTO = (product: Product) => ({
     productImage: product.productImage,
     productAvailable: product.productAvailable && ProductAvailableDTO(product.productAvailable),
     productSize: product.productSize,
-    cost: product.cost
+    cost: product.cost,
+    orden: product.orden || 0,
 });
 
 export const ProductDetailDTO = (product: Product) => ({
@@ -88,7 +89,8 @@ export const ProductUpdateDTO = (product: Product) => ({
     published: product.published,
     status: product.status,
     tags: product.tags || null,
-    sizeDescription: product.sizeDescription || null
+    sizeDescription: product.sizeDescription || null,
+    orden: product.orden || 0,
 });
 
 export const ProductQuoteDTO = (products) => products.map(product => ({

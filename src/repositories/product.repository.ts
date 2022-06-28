@@ -5,6 +5,7 @@ import {Size} from "../models/Size";
 import {InvalidArgumentException} from "../common/exceptions";
 import {FieldOption} from "../models/FieldOption";
 import {FIELD_OPTIONS} from "../common/enum/fieldOptions";
+import {Category} from "../models/Category";
 
 export class ProductRepository<T> extends BaseRepository<Product>{
     protected readonly repositoryManager : Repository<Product>;
@@ -14,6 +15,20 @@ export class ProductRepository<T> extends BaseRepository<Product>{
         super();
         this.repositoryManager = getRepository(Product);
         this.fieldOptionsRepositoryManager = getRepository(FieldOption);
+    }
+
+    async getNextOrderFromCategory(category: Category){
+
+        const product = await this.repositoryManager
+            .createQueryBuilder('p')
+            .where({ category: category})
+            .addOrderBy('orden', 'DESC').getOne();
+        if(product){
+            const _orden = product.orden;
+            return _orden + 1;
+        }
+
+        return 1;
     }
 
     /**
