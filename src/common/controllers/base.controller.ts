@@ -170,6 +170,7 @@ export abstract class BaseController<Parse> {
     @PUT()
     public async update(req: Request, res: Response) {
         try {
+            //add here
             const oldEntity = await this.service.find(req.params.id, this.getDefaultRelations(false));
             if(oldEntity) {
                 let entity = await this.parseObject(oldEntity, req.body);
