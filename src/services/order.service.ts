@@ -466,11 +466,6 @@ export class OrderService extends BaseService<Order> {
             .getMany();
     }
 
-    /** Reporte Ventas */
-
-    async getStatsSalesDateRange(dateFrom, DateTo, user){
-    }
-
 
     /** Obtener estadisticas de Ventas por Dia/Mes/Semana */
     async getStatsDay(dateFrom, dateTo, group, user){

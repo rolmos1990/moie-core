@@ -33,13 +33,14 @@ export const converterPreOrderProductInOrderDetail = async (order: Order, produc
     await Promise.all(products.map(async item => {
         const productSize = (productSizes.filter(_i => _i.id === item.productSize))[0];
 
+        const discountAmount = item.discountPercentage > 0 ? ((productSize.product.price *  item.discountPercentage) / 100 ) : 0;
         const orderDetail = new OrderDetail();
         orderDetail.color = productSize.color;
         orderDetail.cost = productSize.product.cost;
         orderDetail.discountPercent = item.discountPercentage;
         orderDetail.price = productSize.product.price || 0;
         orderDetail.quantity = item.quantity;
-        orderDetail.revenue = productSize.product.price - productSize.product.cost;
+        orderDetail.revenue = (productSize.product.price - productSize.product.cost) - discountAmount;
         orderDetail.weight = productSize.product.weight;
         orderDetail.size = productSize.name;
         orderDetail.product = productSize.product;

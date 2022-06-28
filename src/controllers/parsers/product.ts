@@ -84,7 +84,7 @@ export const ProductUpdateDTO = (product: Product) => ({
     cost: product.cost ? product.cost : 0,
     discount: product.discount || 0,
     weight: product.weight ? product.weight : 0,
-    size: product.size || null,
+    //size: product.size || null, //No se debe actualizar la talla bajo ningun concepto
     published: product.published,
     status: product.status,
     tags: product.tags || null,
