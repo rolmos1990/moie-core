@@ -1,7 +1,8 @@
 export interface IProductSize {
     name: string,
     color: string,
-    qty: number
+    qty: number,
+    id?: number
 };
 
 export interface IProductDetail {

@@ -89,7 +89,7 @@ export class ProductController extends BaseController<Product> {
             const sizesValues: Array<IProductSize> = req.body || [];
             if (id) {
                 const product : Product = await this.productService.find(parseInt(id), ['size']);
-                this.productSizeService.changeProductSize(product, sizesValues);
+                await this.productSizeService.changeProductSize(product, sizesValues);
                 return res.json({status: 200 } );
             } else {
                 throw new InvalidArgumentException();

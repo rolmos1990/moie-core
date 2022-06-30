@@ -35,7 +35,7 @@ export class BillService extends BaseService<Bill> {
         const lastNumber = this.billRepository.createQueryBuilder('b')
             .select("MAX(b.legal_number)", "max")
         const result = await lastNumber.getRawOne();
-        let nexLegalNumber = (result["max"] + 1) || null;
+        let nexLegalNumber = result["max"] ? (result["max"] + 1) : null;
 
             const conditional = new ConditionalQuery();
 
@@ -45,6 +45,7 @@ export class BillService extends BaseService<Bill> {
             }
 
             conditional.add("status", Operator.EQUAL, 1);
+
             const billConfig = await this.billConfigRepository.findByObject(conditional.get());
 
             //empiezo a partir de donde diga la configuracion
@@ -154,10 +155,10 @@ export class BillService extends BaseService<Bill> {
             await this.saveLog(bill, type, res);
             if(res["RecepcionXmlFromERPResult"]["success"]){
                 //Validacion para determinar si fue timbrado o no
-                if( res["RecepcionXmlFromERPResult"]["Tracer"].indexOf('FIN Log Timbrado factura DIAN') >= 0){
+                if( res["RecepcionXmlFromERPResult"]["Tracer"].indexOf('FIN Log Timbrado factura DIAN') > 0){
                     return true;
                 } else {
-                    return false;
+                    throw new InvalidArgumentException("No se pudo generar la factura");
                 }
             } else{
                 throw new InvalidArgumentException("No se pudo recibir la factura");

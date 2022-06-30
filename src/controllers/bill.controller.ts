@@ -92,6 +92,35 @@ export class BillController extends BaseController<Bill> {
         return res.json({status: 200});
     }
 
+
+    /** Reenviar factura */
+    @route('/sendInvoice/:id')
+    @POST()
+    public async resendBill(req: Request, res: Response){
+        const id = req.params.id;
+        const bill = await this.billService.findBill(id);
+        try {
+            await this.billService.sendElectronicBill(bill, EBillType.INVOICE, false);
+            bill.status = BillStatus.SEND;
+            await this.billService.createOrUpdate(bill);
+        }catch(e){
+
+            if(e instanceof InvalidMunicipalityException){
+                bill.status = BillStatus.NO_MUNICIPALITY
+            }
+            else if(e instanceof InvalidDocumentException){
+                bill.status = BillStatus.NO_IDENTITY
+            } else {
+                bill.status = BillStatus.ERROR
+            }
+
+            await this.billService.createOrUpdate(bill);
+        }
+
+
+        return res.json({status: 200});
+    }
+
     @route('/creditMemo/:id')
     @POST()
     public async cancelBill(req: Request, res: Response){

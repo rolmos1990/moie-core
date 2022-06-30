@@ -264,7 +264,7 @@ export class CreateBillSoap extends BaseSoapTemplate {
                 InvcTax = undefined;
             }
             InvcHead['InvoiceRef'] = InvcHead['LegalNumber'];
-            InvcHead['LegalNumber'] = this.note.id.toString();
+            InvcHead['LegalNumber'] = "1" + this.note.id.toString();
         }
 
 

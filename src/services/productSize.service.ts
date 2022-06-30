@@ -42,6 +42,7 @@ export class ProductSizeService extends BaseService<ProductSize> {
      */
     public async changeProductSize(product: Product, sizesValues: Array<IProductSize>){
         const productSizes: ProductSize[] = await this.findByProduct(product.id);
+        const toDelete = [];
 
         if (!product.isEmpty() && product.size) {
             if (!productSizes.length) {
@@ -55,12 +56,23 @@ export class ProductSizeService extends BaseService<ProductSize> {
                     productSizes.push(prodSize);
                 });
             } else {
-                sizesValues.forEach(({name, color, qty}) => {
-                    const exists = productSizes.filter(item => item.name === name && item.color === color);
+                sizesValues.forEach(({name, color, qty, id}) => {
+                    const existsId = productSizes.filter(item => item.id === id);
+                    let exists = productSizes.filter(item => item.name === name && item.color === color);
+
+                    if(existsId){
+                        exists = existsId;
+                    }
+
                     if(!isEmpty(exists)) {
                         //modificamos existente
                         productSizes.map(item => {
-                            if (item.name === name && item.color === color) {
+                            if(id && (item.id === id)){
+                                item.name = name;
+                                item.color = color;
+                                item.quantity = qty;
+                            }
+                            else if (item.name === name && item.color === color) {
                                 item.color = color;
                                 item.quantity = qty;
                             }
@@ -77,9 +89,26 @@ export class ProductSizeService extends BaseService<ProductSize> {
                 });
             }
 
+            //Verificar los eliminados
+            if(productSizes.length > 0){
+                productSizes.map(item => {
+                    const hasOne = sizesValues.filter(newItem => item.id == newItem.id);
+                    if(hasOne.length === 0){
+                        toDelete.push(item);
+                    }
+                });
+            }
+
             let itemSaved : ProductSize[];
             try {
-                itemSaved = await this.createOrUpdate(productSizes, {chunk: LIMIT_SAVE_BATCH});
+                itemSaved = await this.createOrUpdate(productSizes);
+
+                //force to delete
+                if(toDelete.length > 0){
+                    await Promise.all(toDelete.map(async item => {
+                        await this.delete(item);
+                    }));
+                }
             }catch(e){
                 throw new InvalidArgumentException("No se ha podido guardar el registro");
             }

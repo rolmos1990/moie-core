@@ -22,6 +22,33 @@ export class CustomerService extends BaseService<Customer> {
         return await this.find(id, ['state', 'municipality']);
     }
 
+    async whereIn(customersId: []){
+        const query = this.customerRepository.createQueryBuilder("c")
+            .andWhere("c.id IN (:customers)")
+            .setParameters({customers: customersId});
+        const result = await query.getMany();
+        return result;
+    }
+
+
+    async getOrdersFinishedForCustomers(customers: Customer[]){
+
+        const params = {
+            status: OrderStatus.FINISHED,
+            customers: customers.map(item => item.id)
+        };
+
+        const query = this.orderRepository.createQueryBuilder("o")
+            .select("COUNT(o.id) as qty, c.id as id, c.name as name")
+            .leftJoin('o.customer', 'c')
+            .andWhere("o.customer IN (:customers)")
+            .andWhere("o.status = :status")
+            .setParameters(params);
+
+        const result = await query.getRawMany();
+        return result;
+    }
+
 
     /** Obtener el historico de ultimas ordenes de un cliente */
     /** Customer null get all customers */

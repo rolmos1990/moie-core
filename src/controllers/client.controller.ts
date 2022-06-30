@@ -2,7 +2,7 @@ import {BaseController} from "../common/controllers/base.controller";
 import {Customer} from "../models/Customer";
 import {EntityTarget} from "typeorm";
 import {CustomerService} from "../services/customer.service";
-import {GET, route} from "awilix-express";
+import {GET, POST, route} from "awilix-express";
 import {
     CustomerCreateDTO,
     CustomerListDTO,
@@ -43,6 +43,25 @@ export class CustomerController extends BaseController<Customer> {
     getInstance(): Object {
         return new Customer();
     }
+
+    @POST()
+    @route('/get/salesFinished')
+    async salesFinished(req: Request, res: Response){
+        try {
+            const {customers} = req.body;
+            const customersEntities = await this.customerService.whereIn(customers);
+            if (customers) {
+                const orders = await this.customerService.getOrdersFinishedForCustomers(customersEntities);
+                res.json(orders);
+            } else {
+                res.json([]);
+            }
+        } catch (e) {
+            console.log("error generado...", e);
+            this.handleException(e, res);
+        }
+    }
+
     /** --> query {{base_url}}/customer/77032/stats?beforeDate=2000-10-10&afterDate=1998-10-10&categoryMode=true */
     /** Obtener estadisticas de productos {qty, sumPrice, productId, name} */
     @GET()

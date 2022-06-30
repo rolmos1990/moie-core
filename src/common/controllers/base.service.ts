@@ -34,8 +34,8 @@ export abstract class BaseService<Entity> implements IService {
         return this.baseRepository.findByObjectWithLimit(object, relations, limit);
     }
 
-    public delete(id: number): Promise<Entity> {
-        return this.baseRepository.delete(id);
+    public async delete(id: number): Promise<Entity> {
+        return await this.baseRepository.delete(id);
     }
 
     public async createOrUpdate(item: Object, options = {}){
