@@ -158,6 +158,13 @@ export class CategoryController extends BaseController<Category> {
                         const _image1 = item.firstImage ? defaultUrl + "/" + ((JSON.parse(item.firstImage))['high']) : defaultImage;
                         const _image2 = item.secondImage ? defaultUrl + "/" + ((JSON.parse(item.secondImage))['small']) : defaultImage;
 
+
+                        item.productSize.map(_sizeItem => {
+                          if(_sizeItem.name.toUpperCase() == "UNICA"){
+                              _sizeItem['sizeDesc'] = item['sizeDescription'];
+                          }
+                        });
+
                         item['imagePrimary'] = _image1;
                         item['imageSecondary'] = _image2;
 
@@ -165,6 +172,13 @@ export class CategoryController extends BaseController<Category> {
                     }catch(e){
                         item['imagePrimary'] = defaultImage;
                         item['imageSecondary'] = defaultImage;
+
+                        item.productSize.map(_sizeItem => {
+                            if(_sizeItem.name.toUpperCase() == "UNICA"){
+                                _sizeItem['sizeDesc'] = item['sizeDescription'];
+                            }
+                        });
+
                         return item;
                     }
                 });
