@@ -33,6 +33,9 @@ export class ProductCatalogView extends BaseModel{
     @MaxLength(800, {groups: ['create','update']})
     description: string;
 
+    @Column({name:'size_description', type: 'varchar', length: 800, nullable: true})
+    sizeDescription: string;
+
     @Column({name:'material', type: 'varchar', length: 150, nullable: true})
     @Length(3, 150, {groups: ['create','update']})
     material: string;
