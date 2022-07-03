@@ -81,6 +81,25 @@ export class TemplateService extends BaseService<Template> {
             }
         });
 
+        registerHelper('priceWithDiscount', function (product) {
+            let discount = 0;
+            if(product) {
+                if (product.discount > 0) {
+                    discount = (product.price * product.discount) / 100;
+                } else if (product.category && product.category.discountPercent > 0) {
+                    discount = (product.price * product.category.discountPercent) / 100;
+                }
+                const priceWithDiscount =(product.price - discount);
+
+                const numberFormat = new Intl.NumberFormat('es-CO', {minimumFractionDigits: 2});
+                return numberFormat.format(priceWithDiscount)
+
+            } else {
+                const numberFormat = new Intl.NumberFormat('es-CO', {minimumFractionDigits: 2});
+                return numberFormat.format(0)
+            }
+        });
+
         //Use comparatives in template
         registerHelper('ifCond', function (v1, operator, v2, options) {
 
