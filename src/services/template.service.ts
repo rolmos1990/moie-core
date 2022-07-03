@@ -100,6 +100,10 @@ export class TemplateService extends BaseService<Template> {
             }
         });
 
+        registerHelper('setVariable', function(varName, varValue, options){
+            options.data.root[varName] = varValue;
+        });
+
         //Use comparatives in template
         registerHelper('ifCond', function (v1, operator, v2, options) {
 
