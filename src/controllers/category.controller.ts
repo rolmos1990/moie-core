@@ -161,7 +161,7 @@ export class CategoryController extends BaseController<Category> {
 
                         item.productSize = item.productSize.map(_sizeItem => {
                           if(_sizeItem.name.toUpperCase() == "UNICA"){
-                              _sizeItem['sizeDesc'] = item.description;
+                              _sizeItem['sizeDesc'] = item.sizeDescription;
                           }
                           return _sizeItem;
                         });
@@ -176,7 +176,7 @@ export class CategoryController extends BaseController<Category> {
 
                         item.productSize = item.productSize.map(_sizeItem => {
                             if(_sizeItem.name.toUpperCase() == "UNICA"){
-                                _sizeItem['sizeDesc'] = item['sizeDescription'];
+                                _sizeItem['sizeDesc'] = item.sizeDescription;
                             }
                             return _sizeItem;
                         });
