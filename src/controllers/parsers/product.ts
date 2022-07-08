@@ -23,6 +23,7 @@ export const ProductListDTO = (product: Product) => ({
     productImage: product.productImage,
     productAvailable: product.productAvailable && ProductAvailableDTO(product.productAvailable),
     productSize: product.productSize,
+    sizeDescription: product.sizeDescription,
     cost: product.cost,
     orden: product.orden || 0,
 });
