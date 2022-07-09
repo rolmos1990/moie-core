@@ -116,6 +116,7 @@ export class MediaManagementService extends UtilService {
     }
 
     writeFileSyncRecursive(filename, content, charset) {
+        try {
         // -- normalize path separator to '/' instead of path.sep,
         // -- as / works in node for Windows as well, and mixed \\ and / can appear in the path
         let filepath = filename.replace(/\\/g,'/');
@@ -143,9 +144,11 @@ export class MediaManagementService extends UtilService {
             },
             root // first 'acc', important
         );
-
-        // -- write file
-        writeFileSync(root + filepath, content, charset);
+            // -- write file
+            writeFileSync(root + filepath, content, charset);
+        }catch(e){
+            console.log(":: no se pudo generar el fichero :: ", e.message);
+        }
     }
 
     /**
