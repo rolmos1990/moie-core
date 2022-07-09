@@ -25,7 +25,7 @@ export class ProductImageService extends BaseService<Product> {
             const productImage = productImageList[0] || new ProductImage();
 
 
-            const folder = product.category ? "/"+product.category : "";
+            const folder = product.category ? "/"+product.category.id : "";
 
             const allPaths = this.mediaManagementService.getImagePaths(folder, filename, image)
             if(allPaths) {
