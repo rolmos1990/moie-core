@@ -37,7 +37,7 @@ export class ProductImageController extends BaseController<ProductImage> {
         try {
             const id = req.params.id;
             const body = req.body;
-            const product = await this.productService.find(parseInt(id));
+            const product = await this.productService.find(parseInt(id), ['category']);
 
             if(!product){
                 throw new InvalidArgumentException();
