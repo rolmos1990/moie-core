@@ -131,7 +131,7 @@ export class MediaManagementService extends UtilService {
         /**
          * Saving original image
          */
-        const ext = extension(file.type);
+        const ext = "jpg"; //extension(file.type);
         const fileName =  `${name}.${ext}`;
         const imageBuffer = file.data;
         const filePath = CONFIG_MEDIA.STORAGE_PATH + "/" + folder + fileName;
