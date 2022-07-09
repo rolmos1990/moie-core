@@ -85,7 +85,7 @@ export class MediaManagementService extends UtilService {
             return false;
         }
 
-        const ext = extension(file.type);
+        const ext = "jpg"; //extension(file.type);
         const fileName =  `${name}_800.${ext}`;
         const filePath = CONFIG_MEDIA.IMAGE_PATH + "/" + folder + fileName;
 
