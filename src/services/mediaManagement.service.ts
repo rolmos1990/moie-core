@@ -115,42 +115,6 @@ export class MediaManagementService extends UtilService {
         return response;
     }
 
-    writeFileSyncRecursive(filename, content, charset) {
-        try {
-        // -- normalize path separator to '/' instead of path.sep,
-        // -- as / works in node for Windows as well, and mixed \\ and / can appear in the path
-        let filepath = filename.replace(/\\/g,'/');
-
-        // -- preparation to allow absolute paths as well
-        let root = '';
-        if (filepath[0] === '/') {
-            root = '/';
-            filepath = filepath.slice(1);
-        }
-        else if (filepath[1] === ':') {
-            root = filepath.slice(0,3);   // c:\
-            filepath = filepath.slice(3);
-        }
-
-        // -- create folders all the way down
-        const folders = filepath.split('/').slice(0, -1);  // remove last item, file
-        folders.reduce(
-            (acc, folder) => {
-                const folderPath = acc + folder + '/';
-                if (!existsSync(folderPath)) {
-                    mkdirSync(folderPath);
-                }
-                return folderPath
-            },
-            root // first 'acc', important
-        );
-            // -- write file
-            writeFileSync(root + filepath, content, charset);
-        }catch(e){
-            console.log(":: no se pudo generar el fichero :: ", e.message);
-        }
-    }
-
     /**
      *
      * @param folder = /var/example
@@ -171,11 +135,12 @@ export class MediaManagementService extends UtilService {
         const fileName =  `${name}.${ext}`;
         const imageBuffer = file.data;
         const filePath = CONFIG_MEDIA.STORAGE_PATH + "/" + folder + fileName;
-        try {
-            this.writeFileSyncRecursive(filePath, imageBuffer, 'utf8');
-        }catch(e){
-            console.log("error log", e.message);
+
+        if (!existsSync(CONFIG_MEDIA.STORAGE_PATH + "/" + folder)) {
+            mkdirSync(CONFIG_MEDIA.STORAGE_PATH + "/" + folder);
         }
+
+        writeFileSync(filePath, imageBuffer, 'utf8');
         const fileSaved = readFileSync(filePath);
 
         const thumbs : any[] = [];
