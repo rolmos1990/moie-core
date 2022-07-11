@@ -1,4 +1,4 @@
-import {GET, route} from "awilix-express";
+import {GET, PUT, route} from "awilix-express";
 import {BaseController} from "../common/controllers/base.controller";
 import {Category} from "../models/Category";
 import {EntityTarget} from "typeorm";
@@ -35,7 +35,9 @@ export class CategoryController extends BaseController<Category> {
     protected afterCreate(item: Object): void {
     }
 
-    protected afterUpdate(item: Object): void {
+    protected async afterUpdate(item: Object, req: Request): Promise<void> {
+        const {body} = req;
+        await this.categoryService.updateImage(item, body.file);
     }
 
     protected beforeCreate(item: Object): void {
@@ -119,6 +121,28 @@ export class CategoryController extends BaseController<Category> {
             console.log("error", e);
         }
     }
+
+
+    @route('updateImage/:id')
+    @PUT()
+    public async updateImage(req: Request, res: Response) {
+        try {
+            const id = req.params.id;
+            const body = req.body;
+            const category = await this.categoryService.find(parseInt(id));
+
+            if(!category){
+                throw new InvalidArgumentException();
+            }
+
+            await this.categoryService.updateImage(category, body.file);
+
+            return res.json({status: 200});
+        }catch(e){
+            this.handleException(e, res);
+        }
+    }
+
 
     /** Servicios */
 

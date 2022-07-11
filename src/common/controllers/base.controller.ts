@@ -183,7 +183,10 @@ export abstract class BaseController<Parse> {
                     throw new InvalidArgumentException(errorMessage);
                 }
                 const response = await this.service.createOrUpdate(entity);
-                this.afterUpdate(response);
+
+                if(this.afterUpdate) {
+                    await this.afterUpdate(response, req);
+                }
 
                 return res.json({status: 200});
             }
@@ -243,7 +246,7 @@ export abstract class BaseController<Parse> {
     protected abstract beforeUpdate(item: Object, olditem?: Object): any;
 
     /* After update object in repository */
-    protected abstract afterUpdate(item: Object): void;
+    protected abstract afterUpdate(item: Object, req? : Object): void;
 
     handleException(err: any, res: Response) {
         if (err.name === ApplicationException.name) {
