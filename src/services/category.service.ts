@@ -16,7 +16,7 @@ export class CategoryService extends BaseService<Category> {
         try {
             const folder = "categories/";
             const _filename = "category_" + category.id;
-            category.filename = _filename;
+            category.filename = _filename + ".jpg";
             await this.mediaManagementService.addImageFromBinary(folder, _filename, fileBinary);
             await this.categoryRepository.save(category);
         }catch(e){
