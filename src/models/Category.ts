@@ -28,7 +28,6 @@ export class Category extends BaseModel{
     updatedAt: Date;
 
     @Column({name:'filename', type: 'varchar', length: 100})
-    @Length(3, 255, {groups: ['create','update']})
     filename: string;
 
     @Column({type: 'boolean'})
