@@ -17,6 +17,7 @@ import {UserShortDTO} from "./parsers/user";
 import {TemplatesRegisters} from "../common/enum/templatesTypes";
 import {CONFIG_MEDIA, MEDIA_FORMAT_OUTPUT, MediaManagementService} from "../services/mediaManagement.service";
 import {ProductCatalogViewService} from "../services/productCatalogView.service";
+import {CategoryCreateDTO, CategoryUpdateDTO} from "./parsers/category";
 
 @route('/category')
 export class CategoryController extends BaseController<Category> {
@@ -63,11 +64,11 @@ export class CategoryController extends BaseController<Category> {
     }
 
     getParsePOST(entity: Category): Object {
-        return entity;
+        return CategoryCreateDTO(entity);
     }
 
     getParsePUT(entity: Category): Object {
-        return entity;
+        return CategoryUpdateDTO(entity);
     }
 
     /** Test templates */

@@ -14,12 +14,13 @@ export class CategoryService extends BaseService<Category> {
 
     async updateImage(category, fileBinary){
         try {
-            const folder = "/categories";
+            const folder = "categories";
             const _filename = "category_" + category.id + ".jpg";
             category.filename = _filename;
             await this.mediaManagementService.addImageFromBinary(folder, _filename, fileBinary);
             await this.categoryRepository.save(category);
         }catch(e){
+            console.log("error imagen", e.message);
             throw Error("No se pudo guardar la imagen");
         }
     }
