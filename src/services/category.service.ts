@@ -12,13 +12,21 @@ export class CategoryService extends BaseService<Category> {
     }
 
 
-    async updateImage(category, fileBinary){
+    async updateImage(category, fileBinary, _type){
         try {
-            const folder = "categories/";
-            const _filename = "category_" + category.id;
-            category.filename = _filename + ".jpg";
-            await this.mediaManagementService.addImageFromBinary(folder, _filename, fileBinary);
-            await this.categoryRepository.save(category);
+            if(_type == 'banner') {
+                const folder = "categories/";
+                const _filename = "category_banner_" + category.id;
+                category.filenameBanner = _filename + ".jpg";
+                await this.mediaManagementService.addImageFromBinary(folder, _filename, fileBinary);
+                await this.categoryRepository.save(category);
+            } else {
+                const folder = "categories/";
+                const _filename = "category_" + category.id;
+                category.filename = _filename + ".jpg";
+                await this.mediaManagementService.addImageFromBinary(folder, _filename, fileBinary);
+                await this.categoryRepository.save(category);
+            }
         }catch(e){
             console.log("error imagen", e.message);
             throw Error("No se pudo guardar la imagen");

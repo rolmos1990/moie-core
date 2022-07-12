@@ -30,6 +30,9 @@ export class Category extends BaseModel{
     @Column({name:'filename', type: 'varchar', length: 100})
     filename: string;
 
+    @Column({name:'filename_banner', type: 'varchar', length: 100})
+    filenameBanner: string;
+
     @Column({type: 'boolean'})
     @IsBoolean({groups: ['create','update']})
     status: boolean;

@@ -38,7 +38,12 @@ export class CategoryController extends BaseController<Category> {
 
     protected async afterUpdate(item: Object, req: Request): Promise<void> {
         const {body} = req;
-        await this.categoryService.updateImage(item, body.file);
+        if(body.fileBanner) {
+            await this.categoryService.updateImage(item, body.fileBanner, 'banner');
+        }
+        if(body.file) {
+            await this.categoryService.updateImage(item, body.file, 'portada');
+        }
     }
 
     protected beforeCreate(item: Object): void {
@@ -136,7 +141,7 @@ export class CategoryController extends BaseController<Category> {
                 throw new InvalidArgumentException();
             }
 
-            await this.categoryService.updateImage(category, body.file);
+            await this.categoryService.updateImage(category, body.file, 'portada');
 
             return res.json({status: 200});
         }catch(e){

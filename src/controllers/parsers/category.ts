@@ -6,7 +6,8 @@ export const CategoryCreateDTO = (category: Category) => ({
     updatedAt: category.updatedAt,
     status: category.status,
     discountPercent: category.discountPercent ? parseFloat(category.discountPercent.toString()) : null,
-    filename: category.filename
+    filename: category.filename,
+    filenameBanner: category.filenameBanner
 });
 
 export const CategoryUpdateDTO = (category: Category) => ({
@@ -16,5 +17,6 @@ export const CategoryUpdateDTO = (category: Category) => ({
     updatedAt: category.updatedAt,
     status: category.status,
     discountPercent: category.discountPercent ? parseFloat(category.discountPercent.toString()) : null,
-    filename: category.filename
+    filename: category.filename,
+    filenameBanner: category.filenameBanner
 });
