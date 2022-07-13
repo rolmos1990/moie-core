@@ -2,11 +2,10 @@ import {
     Column,
     CreateDateColumn,
     Entity, JoinColumn,
-    ManyToOne, OneToOne, PrimaryColumn,
-    PrimaryGeneratedColumn,
+    ManyToOne, OneToOne, PrimaryColumn
 } from "typeorm";
 import BaseModel from "../common/repositories/base.model";
-import {IsDate, IsDecimal, Length, MaxLength} from "class-validator";
+import {IsDate, IsDecimal, MaxLength} from "class-validator";
 import {Type} from "class-transformer";
 import {Category} from "./Category";
 import {StoreDatabaseName} from "../common/persistence";

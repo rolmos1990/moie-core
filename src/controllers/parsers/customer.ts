@@ -1,6 +1,6 @@
-import {Client} from "../../models/Client";
+import {Customer} from "../../models/Client";
 
-export const CustomerCreateDTO = (client: Client) => ({
+export const CustomerCreateDTO = (client: Customer) => ({
     name: client.name,
     email: client.email,
     phone: client.phone,
@@ -14,7 +14,7 @@ export const CustomerCreateDTO = (client: Client) => ({
     updatedAt: null
 });
 
-export const CustomerListDTO = (client: Client) => ({
+export const CustomerListDTO = (client: Customer) => ({
     id: client.id,
     name: client.name,
     email: client.email,
@@ -29,7 +29,7 @@ export const CustomerListDTO = (client: Client) => ({
     updatedAt: client.updatedAt
 });
 
-export const CustomerUpdateDTO = (client: Client) => ({
+export const CustomerUpdateDTO = (client: Customer) => ({
     id: client.id,
     name: client.name,
     email: client.email,

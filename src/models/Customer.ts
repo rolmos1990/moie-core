@@ -12,8 +12,8 @@ import {Municipality} from "./Municipality";
 import {State} from "./State";
 import {NewDatabaseName} from "../common/persistence";
 
-@Entity({database: NewDatabaseName, name: 'Client', orderBy: {id: 'DESC'}})
-export class Client extends BaseModel{
+@Entity({database: NewDatabaseName, name: 'Customer', orderBy: {id: 'DESC'}})
+export class Customer extends BaseModel{
     @PrimaryGeneratedColumn('increment')
     id: number;
 
@@ -55,6 +55,10 @@ export class Client extends BaseModel{
     @JoinColumn({ name:'municipality_id' })
     municipality: Municipality | null;
 
+    @Column({type: 'varchar', length: 300, nullable: true})
+    @Length(0, 300, {groups: ['create','update']})
+    address: string;
+
     @Column({type: 'boolean'})
     @IsBoolean({groups: ['create','update']})
     status: boolean;
@@ -70,7 +74,7 @@ export class Client extends BaseModel{
     updatedAt: Date;
 
     equals(obj: any) {
-        if(obj instanceof Client === false){
+        if(obj instanceof Customer === false){
             return false;
         }
         if(obj.id === this.id){
@@ -80,7 +84,7 @@ export class Client extends BaseModel{
     }
 
     toString(){
-        return Client.toString();
+        return Customer.toString();
     }
 
     isEmpty(){

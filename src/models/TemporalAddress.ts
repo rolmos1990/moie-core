@@ -7,7 +7,7 @@ import BaseModel from "../common/repositories/base.model";
 import {IsDate, IsEmail, Length, IsBoolean} from "class-validator";
 import {NewDatabaseName} from "../common/persistence";
 import {Product} from "./Product";
-import {Client} from "./Client";
+import {Customer} from "./Client";
 
 @Entity({database: NewDatabaseName, name: 'TemporalAddress', orderBy: {id: 'DESC'}})
 export class TemporalAddress extends BaseModel {
@@ -22,9 +22,9 @@ export class TemporalAddress extends BaseModel {
     @Length(0, 255, {groups: ['create', 'update']})
     municipality: string;
 
-    @OneToOne(() => Client, client => client.id)
+    @OneToOne(() => Customer, client => client.id)
     @JoinColumn({name:'client_id'})
-    client: Client;
+    client: Customer;
 
     isEmpty() : boolean{
         return (this.id == null);

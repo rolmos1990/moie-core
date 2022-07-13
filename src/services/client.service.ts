@@ -1,8 +1,8 @@
 import {BaseService} from "../common/controllers/base.service";
 import {Category} from "../models/Category";
 import {getRepository} from "typeorm";
-import {Client as ClientOriginal} from "../models_moie/Client";
-import {Client} from "../models/Client";
+import {Customer as ClientOriginal} from "../models_moie/Customer";
+import {Customer} from "../models/Customer";
 import {TemporalAddress} from "../models/TemporalAddress";
 
 export class ClientService extends BaseService<Category> {
@@ -13,7 +13,7 @@ export class ClientService extends BaseService<Category> {
 
     constructor(){
         super();
-        this.newRepository = getRepository(Client);
+        this.newRepository = getRepository(Customer);
         this.originalRepository = getRepository(ClientOriginal);
         this.newAddressRepository = getRepository(TemporalAddress);
     }
@@ -35,11 +35,10 @@ export class ClientService extends BaseService<Category> {
 
         const items : ClientOriginal[] = await query.getMany();
 
-        const itemSaved: Client[] = [];
-        const temporalAddressSaved: TemporalAddress[] = [];
+        const itemSaved: Customer[] = [];
 
         await items.forEach(item => {
-            const _item = new Client();
+            const _item = new Customer();
             _item.id = item.id;
             _item.document = item.ci;
             _item.name = item.name;
@@ -48,6 +47,7 @@ export class ClientService extends BaseService<Category> {
             _item.cellphone = item.cellphone;
             _item.phone = item.phone;
             _item.hasNotification = true;
+            _item.address = item.city;
             if(item.municipality) {
                 _item.state = item.municipality.municipalityNew.state;
                 _item.municipality = item.municipality.municipalityNew;

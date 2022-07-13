@@ -2,20 +2,17 @@ import {
     Column,
     CreateDateColumn,
     Entity, JoinColumn, ManyToOne, OneToOne,
-    PrimaryGeneratedColumn,
-    UpdateDateColumn
+    PrimaryGeneratedColumn
 } from "typeorm";
 import BaseModel from "../common/repositories/base.model";
-import {IsDate, IsEmail, Length, IsBoolean} from "class-validator";
+import {IsDate, IsEmail, Length} from "class-validator";
 import { Type } from 'class-transformer';
 import {Municipality} from "./Municipality";
-import {State} from "./State";
 import {OriginalDatabaseName} from "../common/persistence";
-import {Product as ProductWeb} from "../models_web/Product";
-import {Client as ClientNew} from "../models/Client";
+import {Customer as ClientNew} from "../models/Customer";
 
 @Entity({database: OriginalDatabaseName, name: 'cliente', orderBy: {id: 'DESC'}, synchronize: false})
-export class Client extends BaseModel{
+export class Customer extends BaseModel{
     @PrimaryGeneratedColumn('increment')
     id: number;
 
@@ -40,6 +37,7 @@ export class Client extends BaseModel{
     @Length(3, 45, {groups: ['create','update']})
     cellphone: string;
 
+    //address
     @Column({name:'ciudad', type: 'varchar', length: 255})
     city: string;
 
@@ -60,7 +58,7 @@ export class Client extends BaseModel{
     clientNew: ClientNew;
 
     equals(obj: any) {
-        if(obj instanceof Client === false){
+        if(obj instanceof Customer === false){
             return false;
         }
         if(obj.id === this.id){
@@ -70,7 +68,7 @@ export class Client extends BaseModel{
     }
 
     toString(){
-        return Client.toString();
+        return Customer.toString();
     }
 
     isEmpty(){

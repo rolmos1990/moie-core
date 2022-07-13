@@ -1,5 +1,5 @@
 import {ClientSeed} from'./client.seed';
-import {Client} from "../models/Client";
+import {Customer} from "../models/Client";
 import {getRepository} from "typeorm";
 import {State} from "../models/State";
 import {StateSeed} from "./state.seed";
@@ -87,9 +87,9 @@ export class RunSeed {
 
         console.log("CREATING CLIENTS...");
         //Clients
-        const customer = getRepository(Client);
+        const customer = getRepository(Customer);
         ClientSeed.map(async item => {
-            const entity = convertToEntity(new Client(), item);
+            const entity = convertToEntity(new Customer(), item);
             await customer.save(entity);
         });
 

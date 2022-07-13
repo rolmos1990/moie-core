@@ -64,6 +64,15 @@ export class Product extends BaseModel{
     @MaxLength(255, {groups: ['create','update']})
     tags: string;
 
+    @Column({name:'reference_key', type: 'varchar', length: 4, nullable: true})
+    @MaxLength(4, {groups: ['create','update']})
+    referenceKey: string;
+
+    @Column({name:'provider_reference', type: 'varchar', length: 12, nullable: true})
+    @MaxLength(12, {groups: ['create','update']})
+    @IsOptional()
+    providerReference: string;
+
     @ManyToOne(() => Category, category => category.products)
     @JoinColumn({name:'category_id'})
     category: Category;
@@ -93,6 +102,9 @@ export class Product extends BaseModel{
     @OneToMany(() => ProductImage, productImage => productImage.product)
     productImage: ProductImage[];
 
+    //@OneToOne(() => ProductAvailable, productAvailable => productAvailable.id)
+    //productAvailable: ProductAvailable;
+
     @Column({type: 'boolean'})
     @IsBoolean({groups: ['create','update']})
     published: boolean;
@@ -100,6 +112,15 @@ export class Product extends BaseModel{
     @Column({type: 'boolean'})
     @IsBoolean({groups: ['create','update']})
     status: boolean;
+
+    @Column({name:'size_description', type: 'varchar', length: 30, nullable: true})
+    @MaxLength(12, {groups: ['create','update']})
+    @IsOptional()
+    sizeDescription: string;
+
+    @Column({type: 'integer', default: 0})
+    @IsNumber()
+    orden: number;
 
     /** TEMPORAL - SOLO PARA CORRER MIGRACIÓN */
     @OneToOne(() => ProductWithNew, productOriginal => productOriginal.productNew)

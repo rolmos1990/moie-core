@@ -1,8 +1,8 @@
 import {BaseService} from "../common/controllers/base.service";
 import {Category} from "../models/Category";
 import {getRepository} from "typeorm";
-import {Client as ClientOriginal} from "../models_moie/Client";
-import {Client} from "../models/Client";
+import {Customer as ClientOriginal} from "../models_moie/Client";
+import {Customer} from "../models/Client";
 import {TemporalAddress} from "../models/TemporalAddress";
 
 export class TemporalAddressService extends BaseService<Category> {
@@ -13,7 +13,7 @@ export class TemporalAddressService extends BaseService<Category> {
 
     constructor(){
         super();
-        this.newRepository = getRepository(Client);
+        this.newRepository = getRepository(Customer);
         this.originalRepository = getRepository(ClientOriginal);
         this.newAddressRepository = getRepository(TemporalAddress);
     }

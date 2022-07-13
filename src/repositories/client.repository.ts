@@ -1,12 +1,12 @@
 import BaseRepository from "../common/repositories/base.repository";
 import {getRepository, Repository} from "typeorm";
-import {Client} from "../models/Client";
+import {Customer} from "../models/Client";
 
-export class ClientRepository<T> extends BaseRepository<Client>{
-    protected readonly repositoryManager : Repository<Client>;
+export class ClientRepository<T> extends BaseRepository<Customer>{
+    protected readonly repositoryManager : Repository<Customer>;
 
     constructor(){
         super();
-        this.repositoryManager = getRepository(Client);
+        this.repositoryManager = getRepository(Customer);
     }
 }

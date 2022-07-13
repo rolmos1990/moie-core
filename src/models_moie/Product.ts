@@ -27,10 +27,6 @@ export class Product extends BaseModel{
     @Length(3, 255, {groups: ['create','update']})
     name: string;
 
-    @Column({name:'marca', type: 'varchar', length: 800, nullable: true})
-    @MaxLength(800, {groups: ['create','update']})
-    brand: string;
-
     @Column({name:'material', type: 'varchar', length: 150, nullable: true})
     @Length(3, 150, {groups: ['create','update']})
     material: string;

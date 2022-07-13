@@ -15,6 +15,10 @@ export class Size extends BaseModel{
     @Length(3, 100, {groups: ['create','update']})
     name: string;
 
+    @Column({name:'has_description', type: 'boolean', default: 0})
+    @IsBoolean({groups: ['create','update']})
+    hasDescription: boolean;
+
     @Column("simple-array")
     sizes: string[];
 

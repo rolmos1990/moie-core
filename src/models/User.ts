@@ -23,6 +23,10 @@ export class User extends BaseModel{
     @Length(3, 30, {groups: ['create','update']})
     lastname: string;
 
+    @Column({name:'photo', type: 'text' })
+    @Length(1, 100, {groups: ['create','update']})
+    photo: string;
+
     @Column({type: 'varchar', length: 300, nullable: true})
     @Length(0, 300, {groups: ['create','update']})
     @IsEmail()
@@ -58,6 +62,13 @@ export class User extends BaseModel{
     @Type(() => Date)
     @IsDate()
     updatedAt: Date;
+
+    @ManyToOne(() => SecurityRol, { nullable: true })
+    @JoinColumn({name: 'security_role_id'})
+    securityRol: SecurityRol;
+
+    //@OneToMany(() => Notification, notifications => notifications.user)
+    //notifications: Notification[];
 
     equals(obj: any) {
         if(obj instanceof User === false){

@@ -39,9 +39,19 @@ export class Category extends BaseModel{
     @IsDate()
     updatedAt: Date;
 
+    @Column({name:'filename', type: 'varchar', length: 100})
+    filename: string;
+
+    @Column({name:'filename_banner', type: 'varchar', length: 100})
+    filenameBanner: string;
+
     @Column({type: 'boolean'})
     @IsBoolean({groups: ['create','update']})
     status: boolean;
+
+    @Column({name:'discount_percent', type: 'decimal'})
+    @IsDecimal({ decimal_digits: '2'}, {groups: ['create','update']})
+    discountPercent: number;
 
     isEmpty(): boolean {
         return false;

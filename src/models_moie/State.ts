@@ -11,9 +11,8 @@ import {State as StateNew} from "../models/State";
 
 @Entity({database: OriginalDatabaseName, name: 'estado', orderBy: {id: 'ASC'}, synchronize: false})
 export class State extends BaseModel{
-    @PrimaryColumn({name:'id', type: 'varchar', length: 255})
-    @Length(3, 255, {groups: ['create','update']})
-    id: string;
+    @PrimaryColumn({name:'id', type: 'integer'})
+    id: number;
 
     @Column({name:'codigo_dian', type: 'varchar', length: 10})
     @Length(3, 10, {groups: ['create','update']})
