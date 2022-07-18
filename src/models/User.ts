@@ -63,26 +63,8 @@ export class User extends BaseModel{
     @IsDate()
     updatedAt: Date;
 
-    @ManyToOne(() => SecurityRol, { nullable: true })
-    @JoinColumn({name: 'security_role_id'})
-    securityRol: SecurityRol;
-
-    //@OneToMany(() => Notification, notifications => notifications.user)
-    //notifications: Notification[];
-
-    equals(obj: any) {
-        if(obj instanceof User === false){
-            return false;
-        }
-        if(obj.id === this.id){
-            return true;
-        }
-        return false;
-    }
-
-    toString(){
-        return User.toString();
-    }
+    @Column({name: 'security_role_id', type: 'integer'})
+    securityRol: number;
 
     isEmpty(){
         return (this.id == null);

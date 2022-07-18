@@ -1,19 +1,17 @@
 import {BaseService} from "../common/controllers/base.service";
-import {Category} from "../models/Category";
-import {Product} from "../models/Product";
 import {getRepository} from "typeorm";
-import {Size as SizeOriginal} from "../models_moie/Size";
-import {Size} from "../models/Size";
+import {CommentOrder as CommentOriginal} from "../models_moie/CommentOrder";
+import {Comment} from "../models/Comments";
 import {serverConfig} from "../config/ServerConfig";
 
-export class SizeService extends BaseService<Category> {
+export class CommentOrderService extends BaseService<Comment> {
 
     private readonly newRepository;
     private readonly originalRepository;
     constructor(){
         super();
-        this.newRepository = getRepository(Size);
-        this.originalRepository = getRepository(SizeOriginal);
+        this.newRepository = getRepository(Comment);
+        this.originalRepository = getRepository(CommentOriginal);
     }
 
     /**
@@ -24,19 +22,26 @@ export class SizeService extends BaseService<Category> {
         await this.newRepository.query("SET FOREIGN_KEY_CHECKS=0;");
 
         const query = this.originalRepository.createQueryBuilder("p")
-            .orderBy("p.id", "DESC")
+            .leftJoinAndSelect("p.user", "u")
+            .leftJoinAndSelect("p.order", "o")
+            .orderBy("p.id", "ASC")
             .skip(skip)
             .take(limit);
 
-        const items : SizeOriginal[] = await query.getMany();
+        const items : CommentOriginal[] = await query.getMany();
 
-        const itemSaved: Size[] = [];
+        const itemSaved: Comment[] = [];
 
         await items.forEach(item => {
-            const _item = new Size();
+
+            const _item = new Comment();
             _item.id = item.id;
-            _item.name = item.name;
-            _item.sizes = JSON.parse(item.sizes);
+            _item.comment = item.message;
+            _item.createdAt = item.createdAt;
+            _item.user = item.user ? item.user.idNumeric : 1;
+            _item.entity = 'order';
+            _item.idRelated = item.order ? item.order.id.toString() : null;
+
             itemSaved.push(_item);
         });
         const saved = await this.newRepository.save(itemSaved, { chunk: limit });
@@ -48,8 +53,8 @@ export class SizeService extends BaseService<Category> {
      */
     async down(){
         try {
-            await this.newRepository.query(`DELETE FROM Size`);
-            await this.newRepository.query(`ALTER TABLE Size AUTO_INCREMENT = 1`);
+            //await this.newRepository.query(`DELETE FROM Comment`);
+            //await this.newRepository.query(`ALTER TABLE Comment AUTO_INCREMENT = 1`);
 
         }catch(e){
             this.printError();
@@ -83,6 +88,6 @@ export class SizeService extends BaseService<Category> {
     }
 
     processName() {
-        return SizeService.name
+        return CommentOrderService.name
     }
 }

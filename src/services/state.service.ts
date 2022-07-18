@@ -3,6 +3,7 @@ import {Category} from "../models/Category";
 import {getRepository} from "typeorm";
 import {State as StateOriginal} from "../models_moie/State";
 import {State} from "../models/State";
+import {serverConfig} from "../config/ServerConfig";
 
 export class StateService extends BaseService<Category> {
 
@@ -61,6 +62,14 @@ export class StateService extends BaseService<Category> {
     async counts(){
         const {count} = await this.originalRepository.createQueryBuilder("p")
             .select("COUNT(p.id)", "count").getRawOne();
+
+        if(serverConfig.isFakeCounters){
+            if(count < serverConfig.fakeCounterLimit){
+                return count;
+            }
+            return serverConfig.fakeCounterLimit;
+        }
+
         return count;
     }
 

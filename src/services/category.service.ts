@@ -2,6 +2,7 @@ import {BaseService} from "../common/controllers/base.service";
 import {Category} from "../models/Category";
 import {Category as CategoryWeb} from "../models_web/Category";
 import {getRepository} from "typeorm";
+import {serverConfig} from "../config/ServerConfig";
 
 export class CategoryService extends BaseService<Category> {
 
@@ -59,6 +60,14 @@ export class CategoryService extends BaseService<Category> {
     async counts(){
         const {count} = await this.storeRepository.createQueryBuilder("p")
             .select("COUNT(p.id)", "count").getRawOne();
+
+        if(serverConfig.isFakeCounters){
+            if(count < serverConfig.fakeCounterLimit){
+                return count;
+            }
+            return serverConfig.fakeCounterLimit;
+        }
+
         return count;
     }
 

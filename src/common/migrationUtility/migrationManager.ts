@@ -38,6 +38,7 @@ export class MigrationManager {
                 this.printMessage(name,size,totalMigrados, monitor);
             }
         } catch (e) {
+            console.log("message error: ", e.message);
             this.printErrorMessage(e, pointer);
             await this.service.down();
             process.exit(20);
@@ -48,7 +49,7 @@ export class MigrationManager {
 
     private printMessage(name, size, totalMigrados, monitor){
         console.log("**** -- Result " + name + " --- ****");
-        if(totalMigrados === size){
+        if(totalMigrados >= size){
             console.log("**** Se ha migrado satisfactoriamente los registros - total: ", totalMigrados + " ****");
         } else {
             console.log("**** Registros migrados :" + totalMigrados + ", Registros totales: " + size + " ****");

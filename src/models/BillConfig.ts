@@ -1,6 +1,6 @@
 import {Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn} from "typeorm";
 import BaseModel from "../common/repositories/base.model";
-import {IsBoolean, IsDate, IsInt, Length} from "class-validator";
+import {IsDate, IsInt} from "class-validator";
 import {Type} from "class-transformer";
 
 @Entity({name: 'BillConfig'})
@@ -8,8 +8,7 @@ export class BillConfig extends BaseModel{
     @PrimaryGeneratedColumn('increment')
     id: number;
 
-    @Column({name:'number', type: 'varchar', length: 100, unique: true})
-    @Length(3, 255, {groups: ['create','update']})
+    @Column({name:'number', type: 'varchar', length: 100})
     number: string;
 
     @Column({name:'start_number', type: 'bigint'})
@@ -21,11 +20,9 @@ export class BillConfig extends BaseModel{
     finalNumber: number;
 
     @Column({name:'prefix', type: 'varchar', length: 5})
-    @Length(1, 5, {groups: ['create','update']})
     prefix: string;
 
     @Column({name:'resolution_date', type: 'varchar', length: 100, unique: true})
-    @Length(3, 50, {groups: ['create','update']})
     resolutionDate: string;
 
     @CreateDateColumn({name:'created_at'})
@@ -39,7 +36,6 @@ export class BillConfig extends BaseModel{
     updatedAt: Date;
 
     @Column({type: 'boolean'})
-    @IsBoolean({groups: ['create','update']})
     status: boolean;
 
     isEmpty(): boolean {

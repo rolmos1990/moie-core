@@ -1,4 +1,5 @@
 import {Any} from "typeorm";
+import * as Bcrypt from "bcryptjs";
 
 export interface DecodeDataObj {
     type: string,
@@ -24,4 +25,9 @@ export function decodeBase64Image(dataString) : DecodeDataObj | Error {
     rsp.data = new Buffer(matches[2], 'base64');
 
     return rsp;
+}
+
+export async function getPasswordAndSalt(password: string) {
+    const salt = Bcrypt.genSaltSync();
+    return {password: Bcrypt.hashSync(password, salt), salt: salt};
 }

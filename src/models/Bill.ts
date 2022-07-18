@@ -2,25 +2,19 @@ import {
     Column,
     CreateDateColumn,
     Entity,
-    JoinColumn, ManyToOne,
-    OneToOne,
     PrimaryGeneratedColumn
 } from "typeorm";
 import BaseModel from "../common/repositories/base.model";
 import {IsBoolean, IsDate, IsDecimal, IsInt, IsString} from "class-validator";
 import {Type} from "class-transformer";
-import {Order} from "./Order";
-import {BillConfig} from "./BillConfig";
-import {BillCreditMemo} from "./BillCreditMemo";
 
 @Entity({name: 'Bill'})
 export class Bill extends BaseModel{
     @PrimaryGeneratedColumn('increment')
     id: number;
 
-    @OneToOne(() => Order, order => order.id)
-    @JoinColumn({name: 'order_id'})
-    order: Order;
+    @Column({name:'order_id', type: 'integer'})
+    order: number;
 
     @CreateDateColumn({name:'created_at'})
     @Type(() => Date)
@@ -31,13 +25,12 @@ export class Bill extends BaseModel{
     @IsDecimal({ decimal_digits: '2'}, {groups: ['create','update']})
     tax: number;
 
-    @Column({name:'legal_number', type: 'bigint'})
+    @Column({name:'legal_number', type: 'bigint', nullable: true})
     @IsInt({groups: ['create','update']})
     legalNumber: number;
 
-    @ManyToOne(() => BillConfig)
-    @JoinColumn({name: 'bill_config_id'})
-    billConfig: BillConfig;
+    @Column({name:'bill_config_id', type: 'integer'})
+    billConfig: number;
 
     @Column({name:'status', type: 'varchar', length: 100})
     @IsBoolean({groups: ['create','update']})
@@ -50,9 +43,6 @@ export class Bill extends BaseModel{
     @Column({name:'dianCreditMemoLog', type: 'text', nullable: true})
     @IsString({groups: ['create','update']})
     dianCreditMemoLog: string;
-
-    @OneToOne(() => BillCreditMemo, billCreditMemo => billCreditMemo.bill)
-    creditMemo: BillCreditMemo;
 
     isEmpty(): boolean {
         return false;

@@ -1,19 +1,18 @@
 import {BaseService} from "../common/controllers/base.service";
-import {Category} from "../models/Category";
-import {Product} from "../models/Product";
 import {getRepository} from "typeorm";
-import {Size as SizeOriginal} from "../models_moie/Size";
-import {Size} from "../models/Size";
+import {Office as OfficeOriginal} from "../models_moie/Office";
+import {Office} from "../models/Office";
+import {converters} from "../common/helper/converters";
 import {serverConfig} from "../config/ServerConfig";
 
-export class SizeService extends BaseService<Category> {
+export class OfficeService extends BaseService<Office> {
 
     private readonly newRepository;
     private readonly originalRepository;
     constructor(){
         super();
-        this.newRepository = getRepository(Size);
-        this.originalRepository = getRepository(SizeOriginal);
+        this.newRepository = getRepository(Office);
+        this.originalRepository = getRepository(OfficeOriginal);
     }
 
     /**
@@ -23,20 +22,27 @@ export class SizeService extends BaseService<Category> {
 
         await this.newRepository.query("SET FOREIGN_KEY_CHECKS=0;");
 
-        const query = this.originalRepository.createQueryBuilder("p")
-            .orderBy("p.id", "DESC")
+        const query = this.originalRepository.createQueryBuilder("u")
+            .orderBy("u.id", "ASC")
             .skip(skip)
             .take(limit);
 
-        const items : SizeOriginal[] = await query.getMany();
+        const items : OfficeOriginal[] = await query.getMany();
 
-        const itemSaved: Size[] = [];
+        const itemSaved: Office[] = [];
 
         await items.forEach(item => {
-            const _item = new Size();
+            const _item = new Office();
             _item.id = item.id;
-            _item.name = item.name;
-            _item.sizes = JSON.parse(item.sizes);
+            _item.batchDate = item.createdAt;
+            _item.description = item.description;
+            _item.name = item.description;
+
+            //converters
+            _item.type = converters._deliveryTypeConverter(item.type);
+            _item.deliveryMethod = converters._deliveryMethodConverter_single(item.method);
+            _item.status = converters._officeStatusConverter_single(item.status);
+
             itemSaved.push(_item);
         });
         const saved = await this.newRepository.save(itemSaved, { chunk: limit });
@@ -48,8 +54,8 @@ export class SizeService extends BaseService<Category> {
      */
     async down(){
         try {
-            await this.newRepository.query(`DELETE FROM Size`);
-            await this.newRepository.query(`ALTER TABLE Size AUTO_INCREMENT = 1`);
+            await this.newRepository.query(`DELETE FROM Office`);
+            await this.newRepository.query(`ALTER TABLE Office AUTO_INCREMENT = 1`);
 
         }catch(e){
             this.printError();
@@ -83,6 +89,6 @@ export class SizeService extends BaseService<Category> {
     }
 
     processName() {
-        return SizeService.name
+        return OfficeService.name
     }
 }

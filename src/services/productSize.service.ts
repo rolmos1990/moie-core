@@ -3,6 +3,7 @@ import {Category} from "../models/Category";
 import {getRepository} from "typeorm";
 import {ProductSize} from "../models/ProductSize";
 import {ProductSize as ProductSizeOriginal} from "../models_moie/ProductSize";
+import {serverConfig} from "../config/ServerConfig";
 
 export class ProductSizeService extends BaseService<Category> {
 
@@ -65,6 +66,14 @@ export class ProductSizeService extends BaseService<Category> {
     async counts(){
         const {count} = await this.originalRepository.createQueryBuilder("p")
             .select("COUNT(p.id)", "count").getRawOne();
+
+        if(serverConfig.isFakeCounters){
+            if(count < serverConfig.fakeCounterLimit){
+                return count;
+            }
+            return serverConfig.fakeCounterLimit;
+        }
+
         return count;
     }
 

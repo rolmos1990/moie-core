@@ -8,9 +8,19 @@ import {ProductSizeService} from "../services/productSize.service";
 import {DeliveryLocalityService} from "../services/deliveryLocality.service";
 import {StateService} from "../services/state.service";
 import {MunicipalityService} from "../services/municipality.service";
-import {ClientService} from "../services/client.service";
+import {CustomerService} from "../services/client.service";
 import {ProductImageService} from "../services/productImage.service";
-import {TemporalAddressService} from "../services/temporalAddress.service";
+import {PaymentService} from "../services/payment.service";
+import {OfficeService} from "../services/office.service";
+import {UserService} from "../services/user.service";
+import {OrderService} from "../services/order.service";
+import {CommentCustomerService} from "../services/commentCustomer.service";
+import {CommentOrderService} from "../services/commentOrder.service";
+import {OrderDetailService} from "../services/orderDetail.service";
+import {OrderHistoricService} from "../services/orderHistoric.service";
+import {BillConfigService} from "../services/billConfig.service";
+import {BillService} from "../services/bill.service";
+import {BillCreditMemoService} from "../services/billCreditMemo.service";
 
 @route('/migration')
 export class MigrationController {
@@ -23,8 +33,18 @@ export class MigrationController {
         private readonly deliveryLocalityService: DeliveryLocalityService,
         private readonly stateService: StateService,
         private readonly municipalityService: MunicipalityService,
-        private readonly clientService: ClientService,
-        private readonly temporalAddressService: TemporalAddressService
+        private readonly customerService: CustomerService,
+        private readonly userService: UserService,
+        private readonly officeService: OfficeService,
+        private readonly paymentService: PaymentService,
+        private readonly orderService: OrderService,
+        private readonly commentCustomerService: CommentCustomerService,
+        private readonly commentOrderService: CommentOrderService,
+        private readonly orderDetailService: OrderDetailService,
+        private readonly orderHistoricService: OrderHistoricService,
+        private readonly billConfigService: BillConfigService,
+        private readonly billService: BillService,
+        private readonly billCreditMemoService: BillCreditMemoService,
     ){
     };
     @GET()
@@ -82,13 +102,63 @@ export class MigrationController {
 
         console.log("########################");
         console.log("8. Migrando Clientes");
-        const migrationClient = new MigrationManager(this.clientService);
-        await migrationClient.run();
+        const migrationCustomer = new MigrationManager(this.customerService);
+        await migrationCustomer.run();
 
-        // console.log("########################");
-        // console.log("8. Migrando Direcciones temporales Clientes");
-        // const migrationTemporalAddress = new MigrationManager(this.temporalAddressService);
-        // await migrationTemporalAddress.run();
+        console.log("########################");
+        console.log("9. Migrando Usuarios");
+        const migrationUser = new MigrationManager(this.userService);
+        await migrationUser.run();
+
+        console.log("########################");
+        console.log("10. Migrando Despachos");
+        const migrationOffice = new MigrationManager(this.officeService);
+        await migrationOffice.run();
+
+        console.log("########################");
+        console.log("11. Migrando Pagos");
+        const migrationPayment = new MigrationManager(this.paymentService);
+        await migrationPayment.run();
+
+        console.log("########################");
+        console.log("12. Migrando Ordenes");
+        const migrationOrder = new MigrationManager(this.orderService);
+        await migrationOrder.run();
+
+        console.log("########################");
+        console.log("13. Migrando Comentarios de Clientes");
+        const migrationCommentCustomer = new MigrationManager(this.commentCustomerService);
+        await migrationCommentCustomer.run();
+
+        console.log("########################");
+        console.log("14. Migrando Comentarios de Ordenes");
+        const migrationCommentOrder = new MigrationManager(this.commentOrderService);
+        await migrationCommentOrder.run();
+
+        console.log("########################");
+        console.log("15. Migrando Detalles de Ordenes");
+        const migrationOrderDetail = new MigrationManager(this.orderDetailService);
+        await migrationOrderDetail.run();
+
+        console.log("########################");
+        console.log("16. Migrando Historico de Ordenes");
+        const migrationOrderHistoric = new MigrationManager(this.orderHistoricService);
+        await migrationOrderHistoric.run();
+
+        console.log("########################");
+        console.log("17. Migrando Configuracion de Facturacion");
+        const migrationBillConfig = new MigrationManager(this.billConfigService);
+        await migrationBillConfig.run();
+
+        console.log("########################");
+        console.log("18. Migrando Facturas");
+        const migrationBill = new MigrationManager(this.billService);
+        await migrationBill.run();
+
+        console.log("########################");
+        console.log("19. Migrando Facturas");
+        const migrationBillCreditMemo = new MigrationManager(this.billCreditMemoService);
+        await migrationBillCreditMemo.run();
 
         return;
     }

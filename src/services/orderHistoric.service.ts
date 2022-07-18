@@ -1,19 +1,18 @@
 import {BaseService} from "../common/controllers/base.service";
-import {Category} from "../models/Category";
-import {Product} from "../models/Product";
 import {getRepository} from "typeorm";
-import {Size as SizeOriginal} from "../models_moie/Size";
-import {Size} from "../models/Size";
+import {OrderHistoric as OrderHistoricOriginal} from "../models_moie/OrderHistoric";
+import {OrderHistoric} from "../models/OrderHistoric";
+import {converters} from "../common/helper/converters";
 import {serverConfig} from "../config/ServerConfig";
 
-export class SizeService extends BaseService<Category> {
+export class OrderHistoricService extends BaseService<OrderHistoric> {
 
     private readonly newRepository;
     private readonly originalRepository;
     constructor(){
         super();
-        this.newRepository = getRepository(Size);
-        this.originalRepository = getRepository(SizeOriginal);
+        this.newRepository = getRepository(OrderHistoric);
+        this.originalRepository = getRepository(OrderHistoricOriginal);
     }
 
     /**
@@ -23,20 +22,23 @@ export class SizeService extends BaseService<Category> {
 
         await this.newRepository.query("SET FOREIGN_KEY_CHECKS=0;");
 
-        const query = this.originalRepository.createQueryBuilder("p")
-            .orderBy("p.id", "DESC")
+        const query = this.originalRepository.createQueryBuilder("u")
+            .where("u.entity", "venta")
+            .orderBy("u.id", "ASC")
             .skip(skip)
             .take(limit);
 
-        const items : SizeOriginal[] = await query.getMany();
+        const items : OrderHistoricOriginal[] = await query.getMany();
 
-        const itemSaved: Size[] = [];
+        const itemSaved: OrderHistoric[] = [];
 
         await items.forEach(item => {
-            const _item = new Size();
-            _item.id = item.id;
-            _item.name = item.name;
-            _item.sizes = JSON.parse(item.sizes);
+            const _item = new OrderHistoric();
+            //(auto-increase id) _item.id
+            _item.user = item.user ? item.user.idNumeric : null;
+            _item.order = item.entityId ? parseInt(item.entityId) : null;
+            _item.status = converters._orderHistoricStatus_single(item.status);
+            _item.createdAt = item.createdAt;
             itemSaved.push(_item);
         });
         const saved = await this.newRepository.save(itemSaved, { chunk: limit });
@@ -48,8 +50,8 @@ export class SizeService extends BaseService<Category> {
      */
     async down(){
         try {
-            await this.newRepository.query(`DELETE FROM Size`);
-            await this.newRepository.query(`ALTER TABLE Size AUTO_INCREMENT = 1`);
+            await this.newRepository.query(`DELETE FROM OrderHistoric`);
+            await this.newRepository.query(`ALTER TABLE OrderHistoric AUTO_INCREMENT = 1`);
 
         }catch(e){
             this.printError();
@@ -61,7 +63,7 @@ export class SizeService extends BaseService<Category> {
      */
     async counts(){
         const {count} = await this.originalRepository.createQueryBuilder("p")
-            .select("COUNT(p.id)", "count").getRawOne();
+            .select("COUNT(p.id)", "count").where("p.entity", "venta").getRawOne();
 
         if(serverConfig.isFakeCounters){
             if(count < serverConfig.fakeCounterLimit){
@@ -83,6 +85,6 @@ export class SizeService extends BaseService<Category> {
     }
 
     processName() {
-        return SizeService.name
+        return OrderHistoricService.name
     }
 }

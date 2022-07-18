@@ -3,22 +3,25 @@ import {
     CreateDateColumn,
     Entity,
     JoinColumn,
-    ManyToOne,
-    PrimaryGeneratedColumn
+    ManyToOne, OneToOne, PrimaryColumn
 } from "typeorm";
 import BaseModel from "../common/repositories/base.model";
 import {IsBoolean, IsDate, IsDecimal, IsNumber, IsOptional, Length,} from "class-validator";
 import {Type} from "class-transformer";
 import {Customer} from "./Customer";
+import {Payment} from "./Payment";
+import {User} from "./User";
+import {Office} from "./Office";
+import {OriginalDatabaseName} from "../common/persistence";
 
 /**
  * El isImpress -> o Impreso seria un Estatus más,
  *
  */
-@Entity({name: 'Order'})
+@Entity({database: OriginalDatabaseName, name: 'venta', orderBy: {id: 'ASC'}, synchronize: false})
 export class Order extends BaseModel{
 
-    @PrimaryGeneratedColumn('increment')
+    @PrimaryColumn({name:'id', type: 'integer'})
     id: number;
 
     @ManyToOne(() => Customer)
@@ -37,7 +40,7 @@ export class Order extends BaseModel{
     @IsOptional()
     origen: string;
 
-    @Column({name:'status', type: 'varchar', length: 300})
+    @Column({name:'estatus', type: 'varchar', length: 300})
     status: string;
 
     @CreateDateColumn({name:'fecha_creacion'})
@@ -45,7 +48,7 @@ export class Order extends BaseModel{
     @IsDate()
     createdAt: Date;
 
-    @CreateDateColumn({name:'fecha_venta', nullable: true})
+    @Column({name:'fecha_venta', nullable: true})
     @Type(() => Date)
     @IsDate()
     @IsOptional()
@@ -74,32 +77,27 @@ export class Order extends BaseModel{
     @Column({name:'confirmacion', type: 'varchar', length: 350})
     confirmation: string;
 
-    @Column({name:'id_despacho', type: 'integer', nullable: true})
-    office: number;
-
     @Column({name:'piezas_cambio', type: 'integer', nullable: true})
     piecesForChanges: number;
 
     @Column({name:'id_localidad', type: 'integer', nullable: true})
     deliveryLocality: number;
 
-    @Column({name:'remember', type: 'boolean', nullable: true})
-    @IsBoolean({groups: ['create','update']})
-    remember: boolean;
-
-    @Column({name:'paymentMode', type: 'integer', nullable: true})
-    @IsNumber()
+    @Column({name:'forma_pago', type: 'varchar', length: 350})
     @IsOptional()
-    paymentMode: number;
+    paymentMode: string;
 
-    @Column({name:'pieces_for_changes', type: 'integer', nullable: true})
-    @IsNumber()
-    @IsOptional()
-    piecesForChanges: number;
+    @ManyToOne(() => Office)
+    @JoinColumn({name: 'id_despacho'})
+    office: Office;
 
-    @Column({name:'id_usuario', type: 'integer', nullable: true})
-    user: number;
+    @ManyToOne(() => User)
+    @JoinColumn({name: 'id_usuario'})
+    user: User;
 
+    //@ManyToOne(() => Payment)
+    //@JoinColumn({name: "id", referencedColumnName: "order"})
+    //payment: Payment;
 
     isEmpty(): boolean {
         return (this.id == null);

@@ -1,19 +1,18 @@
 import {BaseService} from "../common/controllers/base.service";
-import {Category} from "../models/Category";
-import {Product} from "../models/Product";
 import {getRepository} from "typeorm";
-import {Size as SizeOriginal} from "../models_moie/Size";
-import {Size} from "../models/Size";
+import {Bill as BillOriginal} from "../models_moie/Bill";
+import {Bill} from "../models/Bill";
+import {converters} from "../common/helper/converters";
 import {serverConfig} from "../config/ServerConfig";
 
-export class SizeService extends BaseService<Category> {
+export class BillService extends BaseService<Bill> {
 
     private readonly newRepository;
     private readonly originalRepository;
     constructor(){
         super();
-        this.newRepository = getRepository(Size);
-        this.originalRepository = getRepository(SizeOriginal);
+        this.newRepository = getRepository(Bill);
+        this.originalRepository = getRepository(BillOriginal);
     }
 
     /**
@@ -24,19 +23,27 @@ export class SizeService extends BaseService<Category> {
         await this.newRepository.query("SET FOREIGN_KEY_CHECKS=0;");
 
         const query = this.originalRepository.createQueryBuilder("p")
-            .orderBy("p.id", "DESC")
+            .leftJoinAndSelect("p.order", "o")
+            .orderBy("p.id", "ASC")
             .skip(skip)
             .take(limit);
 
-        const items : SizeOriginal[] = await query.getMany();
+        const items : BillOriginal[] = await query.getMany();
 
-        const itemSaved: Size[] = [];
+        const itemSaved: Bill[] = [];
 
         await items.forEach(item => {
-            const _item = new Size();
+            const _item = new Bill();
             _item.id = item.id;
-            _item.name = item.name;
-            _item.sizes = JSON.parse(item.sizes);
+            _item.dianCreditMemoLog = null;
+            _item.order = item.order ? item.order.id : null;
+            _item.billConfig = item.billConfig ? item.billConfig.id : null;
+            _item.dianLog = null;
+            _item.status = converters._billStatus(item);
+            _item.tax = item.tax;
+            _item.legalNumber = item.legalNumber;
+            _item.createdAt = item.createdAt;
+
             itemSaved.push(_item);
         });
         const saved = await this.newRepository.save(itemSaved, { chunk: limit });
@@ -48,8 +55,8 @@ export class SizeService extends BaseService<Category> {
      */
     async down(){
         try {
-            await this.newRepository.query(`DELETE FROM Size`);
-            await this.newRepository.query(`ALTER TABLE Size AUTO_INCREMENT = 1`);
+            await this.newRepository.query(`DELETE FROM Bill`);
+            await this.newRepository.query(`ALTER TABLE Bill AUTO_INCREMENT = 1`);
 
         }catch(e){
             this.printError();
@@ -83,6 +90,6 @@ export class SizeService extends BaseService<Category> {
     }
 
     processName() {
-        return SizeService.name
+        return BillService.name
     }
 }

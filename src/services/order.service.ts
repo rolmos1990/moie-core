@@ -1,19 +1,19 @@
 import {BaseService} from "../common/controllers/base.service";
-import {Category} from "../models/Category";
 import {getRepository} from "typeorm";
-import {State as StateOriginal} from "../models_moie/State";
-import {State} from "../models/State";
 import {Order as OrderOriginal} from "../models_moie/Order";
 import {Order} from "../models/Order";
+import {converters} from "../common/helper/converters";
+import {OrderDelivery} from "../models/OrderDelivery";
+import {serverConfig} from "../config/ServerConfig";
 
-export class OrderService extends BaseService<Category> {
+export class OrderService extends BaseService<Order> {
 
     private readonly newRepository;
     private readonly originalRepository;
     constructor(){
         super();
-        this.newRepository = getRepository(State);
-        this.originalRepository = getRepository(StateOriginal);
+        this.newRepository = getRepository(Order);
+        this.originalRepository = getRepository(OrderOriginal);
     }
 
     /**
@@ -24,37 +24,74 @@ export class OrderService extends BaseService<Category> {
         await this.newRepository.query("SET FOREIGN_KEY_CHECKS=0;");
 
         const query = this.originalRepository.createQueryBuilder("o")
-
-            .orderBy("p.id", "ASC")
+            .leftJoinAndSelect("o.office", "f")
+            //.leftJoinAndSelect("o.payment", "p")
+            .leftJoinAndSelect("o.user", "u")
+            .leftJoinAndSelect("o.customer", "c")
+            .leftJoinAndSelect("c.municipality", "m")
+            .orderBy("o.id", "ASC")
             .skip(skip)
             .take(limit);
 
         const items : OrderOriginal[] = await query.getMany();
 
         const itemSaved: Order[] = [];
-        //TODO -- terminar la migracion de ordenes
+        const itemDeliverySaved: OrderDelivery[] = [];
+
         await items.forEach(item => {
-            const _item = new Order();
-            _item.id = item.id;
-            _item.dateOfSale = item.dateOfSale;
-            _item.piecesForChanges = item.piecesForChanges;
-            _item.status = item.status;
-            _item.office = item.office;
-            _item.deliveryMethod = item.deliveryMethod;
-            _item.prints = item.prints;
-            _item.photos = 0;
-            _item.user = item.user;
-            _item.expiredDate = item.expiredDate;
-            _item.
-
-            _item.dianCode = item.dianCode;
-            _item.isoCode = item.isoCode;
-            _item.status = true;
+            try {
+                const _item = new Order();
+                _item.id = item.id;
+                _item.dateOfSale = item.dateOfSale;
+                _item.piecesForChanges = item.piecesForChanges;
+                _item.prints = item.prints;
+                _item.photos = 0;
+                _item.expiredDate = item.expiredDate;
+                _item.origen = item.origen;
+                _item.customer = item.customer ? item.customer.id : null;
 
 
+                //Converters
+                _item.status = converters._statusConverter(item);
+                _item.deliveryMethod = converters._deliveryMethodConverter(item);
 
-            itemSaved.push(_item);
+
+                //Calculate amount
+                _item.totalAmount = 0;
+                _item.subTotalAmount = 0;
+                _item.totalWithDiscount = 0;
+                _item.totalWeight = 0;
+                _item.totalRevenue = 0;
+                _item.quantity = 0;
+
+
+                _item.remember = item.remember;
+                _item.paymentMode = 1; //item.paymentMode;
+                _item.createdAt = item.createdAt;
+                _item.updatedAt = item.dateOfSale || item.createdAt;
+                _item.modifiedDate = item.dateOfSale || item.createdAt;
+
+
+                //relations (internal)
+                _item.orderDelivery = converters._orderDeliveryConverter(item);
+
+                //relations (externals - previous)
+                //if (item.payment && item.payment.id) {
+                //    _item.payment = item.payment.id;
+                //}
+
+                _item.user = item.user ? item.user.idNumeric : null;
+                _item.office = item.office ? item.office.id : null;
+                //_item.bill = item.
+
+
+                itemSaved.push(_item);
+            }catch(e){
+                console.log("error en pedido", e.message);
+            }
+            //itemDeliverySaved.push(_item.orderDelivery);
         });
+
         const saved = await this.newRepository.save(itemSaved, { chunk: limit });
         this.printResult(saved, items);
     }
@@ -64,10 +101,11 @@ export class OrderService extends BaseService<Category> {
      */
     async down(){
         try {
-            await this.newRepository.query(`DELETE FROM State`);
-            await this.newRepository.query(`ALTER TABLE State AUTO_INCREMENT = 1`);
+            await this.newRepository.query('DELETE FROM `Order`');
+            await this.newRepository.query('ALTER TABLE `Order` AUTO_INCREMENT = 1');
 
         }catch(e){
+            console.log(e.message);
             this.printError();
         }
     }
@@ -76,8 +114,16 @@ export class OrderService extends BaseService<Category> {
      * Cantidad previa para evaluar si finalizo con exito
      */
     async counts(){
-        const {count} = await this.originalRepository.createQueryBuilder("p")
-            .select("COUNT(p.id)", "count").getRawOne();
+        const {count} = await this.originalRepository.createQueryBuilder("o")
+            .select("COUNT(o.id)", "count").getRawOne();
+
+        if(serverConfig.isFakeCounters){
+            if(count < serverConfig.fakeCounterLimit){
+                return count;
+            }
+            return serverConfig.fakeCounterLimit;
+        }
+
         return count;
     }
 
@@ -85,12 +131,12 @@ export class OrderService extends BaseService<Category> {
      * Cantidad nueva para verificar si coincide con la migración
      */
     async countsNew(){
-        const {count} = await this.newRepository.createQueryBuilder("p")
-            .select("COUNT(p.id)", "count").getRawOne();
+        const {count} = await this.newRepository.createQueryBuilder("o")
+            .select("COUNT(o.id)", "count").getRawOne();
         return count;
     }
 
     processName() {
-        return StateService.name
+        return OrderService.name
     }
 }

@@ -2,23 +2,19 @@ import {
     Column,
     CreateDateColumn,
     Entity,
-    JoinColumn,
-    OneToOne,
     PrimaryGeneratedColumn
 } from "typeorm";
 import BaseModel from "../common/repositories/base.model";
 import {IsBoolean, IsDate, Length} from "class-validator";
 import {Type} from "class-transformer";
-import {Bill} from "./Bill";
 
 @Entity({name: 'BillCreditMemo'})
 export class BillCreditMemo extends BaseModel{
     @PrimaryGeneratedColumn('increment')
     id: number;
 
-    @OneToOne(() => Bill, bill => bill.creditMemo, {onDelete: "CASCADE"})
-    @JoinColumn({name: 'bill_id'})
-    bill: Bill;
+    @Column({name: 'bill_id', type: 'integer'})
+    bill: number;
 
     @Column({name:'memoType', type: 'varchar', length: 100})
     @Length(3, 50, {groups: ['create','update']})

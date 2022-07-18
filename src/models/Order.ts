@@ -4,7 +4,6 @@ import {
     Entity,
     JoinColumn,
     ManyToOne,
-    OneToMany,
     OneToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn
@@ -13,12 +12,8 @@ import BaseModel from "../common/repositories/base.model";
 import {IsBoolean, IsDate, IsDecimal, IsNumber, IsOptional, Length,} from "class-validator";
 import {Type} from "class-transformer";
 import {Customer} from "./Customer";
-import {DeliveryMethod} from "./DeliveryMethod";
-import {OrderDetail} from "./OrderDetail";
 import {User} from "./User";
 import {OrderDelivery} from "./OrderDelivery";
-import {Office} from "./Office";
-import {Payment} from "./Payment";
 import {Bill} from "./Bill";
 
 /**
@@ -31,13 +26,11 @@ export class Order extends BaseModel{
     @PrimaryGeneratedColumn('increment')
     id: number;
 
-    @ManyToOne(() => Customer)
-    @JoinColumn({name: 'customer_id'})
-    customer: Customer;
+    @Column({name: 'customer_id', type: 'integer'})
+    customer: number;
 
-    @ManyToOne(() => DeliveryMethod)
-    @JoinColumn({name: 'delivery_method_id'})
-    deliveryMethod: DeliveryMethod;
+    @Column({name: 'delivery_method_id', type: 'integer'})
+    deliveryMethod: number;
 
     @Column({name:'origen', type: 'varchar', length: 150, nullable: true})
     @Length(3, 150, {groups: ['create','update']})
@@ -116,13 +109,11 @@ export class Order extends BaseModel{
     @IsOptional()
     updatedAt: Date;
 
-    @ManyToOne(() => User)
-    @JoinColumn({name: 'user_id'})
-    user: User;
+    @Column({name:'user_id', type: 'integer'})
+    user: number;
 
-    @ManyToOne(() => Office, { nullable: true })
-    @JoinColumn({name: 'office_id'})
-    office: Office;
+    @Column({name:'office_id', type: 'integer'})
+    office: number;
 
     @Column({name:'status', type: 'integer'})
     @IsNumber()
@@ -136,19 +127,18 @@ export class Order extends BaseModel{
     @IsNumber()
     photos: number;
 
-    @OneToMany(() => OrderDetail, orderDetail => orderDetail.order)
-    orderDetails: OrderDetail[];
+    //@OneToMany(() => OrderDetail, orderDetail => orderDetail.order)
+    //orderDetails: OrderDetail[];
 
     @OneToOne(() => OrderDelivery, orderDelivery => orderDelivery.order)
     @JoinColumn({name: 'order_delivery_id'})
     orderDelivery: OrderDelivery;
 
-    @OneToOne(() => Payment, payment => payment.order)
-    @JoinColumn({name: 'payment_id'})
-    payment: Payment;
+    @Column({name:'payment_id', type: 'integer', default: 0})
+    payment: number;
 
-    @OneToOne(() => Bill, bill => bill.order)
-    bill: Bill;
+    //@Column({name:'bill_id', type: 'integer'})
+    //bill: number;
 
     isEmpty(): boolean {
         return (this.id == null);

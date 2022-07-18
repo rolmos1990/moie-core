@@ -52,9 +52,9 @@ export class Payment extends BaseModel{
     @OneToOne(() => Order, order => order.payment) // specify inverse side as a second parameter    user: User;
     order: Order;
 
-    @ManyToOne(() => User, {nullable: true})
-    @JoinColumn({name: 'user_id'})
-    user: User;
+
+    @Column({name:'user_id', type: 'integer'})
+    user: number;
 
     @CreateDateColumn({name:'created_at'})
     @Type(() => Date)

@@ -6,6 +6,7 @@ import {Product as ProductOriginal} from "../models_moie/Product";
 import {getRepository} from "typeorm";
 import {ProductImage, SIZES} from "../models/ProductImage";
 import {Size} from "../models_moie/Size";
+import {serverConfig} from "../config/ServerConfig";
 
 interface CategoryI {
     id: number,
@@ -133,6 +134,14 @@ export class ProductService extends BaseService<Product> {
     async counts(){
         const {count} = await this.originalRepository.createQueryBuilder("p")
             .select("COUNT(p.id)", "count").getRawOne();
+
+        if(serverConfig.isFakeCounters){
+            if(count < serverConfig.fakeCounterLimit){
+                return count;
+            }
+            return serverConfig.fakeCounterLimit;
+        }
+
         return count;
     }
 

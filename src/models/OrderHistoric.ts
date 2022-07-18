@@ -11,17 +11,15 @@ export class OrderHistoric extends BaseModel{
     @PrimaryGeneratedColumn('increment')
     id: number;
 
-    @ManyToOne(() => Order)
-    @JoinColumn({name: 'order_id'})
-    order: Order;
+    @Column({name:'order_id', type: 'integer'})
+    order: number;
 
     @Column({name:'status', type: 'integer'})
     @IsNumber()
     status: number;
 
-    @ManyToOne(() => User, {nullable: true})
-    @JoinColumn({name: 'user_id'})
-    user: User;
+    @Column({name:'user_id', type: 'integer'})
+    user: number;
 
     @CreateDateColumn({name:'created_at'})
     @Type(() => Date)

@@ -8,9 +8,19 @@ import {ProductSizeService} from "./services/productSize.service";
 import {DeliveryLocalityService} from "./services/deliveryLocality.service";
 import {StateService} from "./services/state.service";
 import {MunicipalityService} from "./services/municipality.service";
-import {ClientService} from "./services/client.service";
+import {CustomerService} from "./services/client.service";
 import {ProductImageService} from "./services/productImage.service";
-import {TemporalAddressService} from "./services/temporalAddress.service";
+import {UserService} from "./services/user.service";
+import {OfficeService} from "./services/office.service";
+import {PaymentService} from "./services/payment.service";
+import {OrderService} from "./services/order.service";
+import {CommentCustomerService} from "./services/commentCustomer.service";
+import {CommentOrderService} from "./services/commentOrder.service";
+import {OrderDetailService} from "./services/orderDetail.service";
+import {OrderHistoricService} from "./services/orderHistoric.service";
+import {BillConfigService} from "./services/billConfig.service";
+import {BillService} from "./services/bill.service";
+import {BillCreditMemoService} from "./services/billCreditMemo.service";
 
 export default (app: express.Application): void => {
     const container = createContainer({
@@ -26,10 +36,19 @@ export default (app: express.Application): void => {
         deliveryLocalityService: asClass(DeliveryLocalityService).scoped(),
         stateService: asClass(StateService).scoped(),
         municipalityService: asClass(MunicipalityService).scoped(),
-        clientService: asClass(ClientService).scoped(),
+        customerService: asClass(CustomerService).scoped(),
         productImageService: asClass(ProductImageService).scoped(),
-        temporalAddressService: asClass(TemporalAddressService).scoped(),
-
+        userService: asClass(UserService).scoped(),
+        officeService: asClass(OfficeService).scoped(),
+        paymentService: asClass(PaymentService).scoped(),
+        orderService: asClass(OrderService).scoped(),
+        commentCustomerService: asClass(CommentCustomerService).scoped(),
+        commentOrderService: asClass(CommentOrderService).scoped(),
+        orderDetailService: asClass(OrderDetailService).scoped(),
+        orderHistoricService: asClass(OrderHistoricService).scoped(),
+        billConfigService: asClass(BillConfigService).scoped(),
+        billService: asClass(BillService).scoped(),
+        billCreditMemoService: asClass(BillCreditMemoService).scoped(),
     });
 
     app.use(scopePerRequest(container));

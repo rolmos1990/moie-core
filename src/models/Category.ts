@@ -50,7 +50,6 @@ export class Category extends BaseModel{
     status: boolean;
 
     @Column({name:'discount_percent', type: 'decimal'})
-    @IsDecimal({ decimal_digits: '2'}, {groups: ['create','update']})
     discountPercent: number;
 
     isEmpty(): boolean {

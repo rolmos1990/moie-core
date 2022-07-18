@@ -9,7 +9,6 @@ import {
     IsDecimal,
     IsNumber,
 } from "class-validator";
-import {ProductSize} from "./ProductSize";
 import {Order} from "./Order";
 import {Product} from "./Product";
 
@@ -23,15 +22,14 @@ export class OrderDetail extends BaseModel{
     @PrimaryGeneratedColumn('increment')
     id: number;
 
-    productSize: ProductSize
-
     @ManyToOne(() => Order)
     @JoinColumn({name: 'order_id'})
-    order: Order;
+    order: number;
 
+    @Column({name:'product_id', type: 'integer'})
     @ManyToOne(() => Product)
     @JoinColumn({name: 'product_id'})
-    product: Product;
+    product: number;
 
     @Column({name:'color', type: 'varchar', length: 800, nullable: true})
     color: string;

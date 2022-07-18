@@ -1,0 +1,76 @@
+PORT=18210;HOST=http://localhost;DB_HOST=3.85.198.54;DB_PORT=3306;DB_USERNAME=root;DB_PASSWORD=Panama2018.;DB_DATABASE=moie-lucy-v2;SEED_DB=true;DIAN_USER=1CCC171F7911107313;DIAN_PASSWORD=1CCC171F7911107313;PUBLIC_URL=http://localhost:18210
+
+
+PORT=18210;HOST=http://localhost;DB_HOST=localhost;DB_PORT=6603;DB_USERNAME=root;DB_PASSWORD=Panama2018.;DB_DATABASE=moie-lucy-v2;SEED_DB=true;DIAN_USER=1CCC171F7911107313;DIAN_PASSWORD=1CCC171F7911107313;PUBLIC_URL=http://localhost:18210
+
+
+
+### FOR MIGRATION
+
+
+1. Generar Respaldo del Servidor
+
+mysqldump -u root -p --single-transaction moie-lucy > moie-lucy.sql
+
+-------------------------------------
+
+2. Generar Usuarios validos de Moie
+
+
+CREATE USER 'moie'@'%' IDENTIFIED BY 'Panama2018.';
+GRANT ALL PRIVILEGES ON *.* To 'moie'@'%' IDENTIFIED BY 'Panama2018.';
+FLUSH PRIVILEGES;
+
+------------------------------------
+
+
+3. Download Script MySQL To Migrate
+
+sudo scp -i ${dir_certificates}/lucy-modas.pem ubuntu@44.192.20.154:/var/bk_mysql/moie-lucy.sql /Users/ramon/Backups
+
+
+Replace in SQL...
+
+---------------------------------
+
+Replace: --
+
+utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+with: --
+
+utf8 COLLATE=utf8_general_ci;
+
+---
+
+Replace: --
+
+utf8mb4_0900_ai_ci
+
+with: --
+
+utf8_general_ci
+
+------
+
+RUN THIS: (Take utf8mb4_0900_ai_ci
+
+mysql -u root -p moie-lucy < /Users/ramon/dumps/moie-v1/moie-lucy.sql
+
+-------------------------------------
+
+IMPORT THE STORE DATABASE
+
+mysql -u root -p lucy-web < /Users/ramon/dumps/lucy-web.sql
+
+replace again the collations...
+
+
+IMPORT THE NEW DATABASE
+
+mysql -u root -p moie-lucy-v2 < /Users/ramon/dumps/moie-lucy-v2.sql
+
+replace again the collations...
+
+
+

@@ -1,21 +1,19 @@
 import {BaseService} from "../common/controllers/base.service";
 import {Category} from "../models/Category";
 import {getRepository} from "typeorm";
-import {Customer as ClientOriginal} from "../models_moie/Customer";
+import {Customer as CustomerOriginal} from "../models_moie/Customer";
 import {Customer} from "../models/Customer";
-import {TemporalAddress} from "../models/TemporalAddress";
+import {serverConfig} from "../config/ServerConfig";
 
-export class ClientService extends BaseService<Category> {
+export class CustomerService extends BaseService<Category> {
 
     private readonly newRepository;
     private readonly originalRepository;
-    private readonly newAddressRepository;
 
     constructor(){
         super();
         this.newRepository = getRepository(Customer);
-        this.originalRepository = getRepository(ClientOriginal);
-        this.newAddressRepository = getRepository(TemporalAddress);
+        this.originalRepository = getRepository(CustomerOriginal);
     }
 
     /**
@@ -33,7 +31,7 @@ export class ClientService extends BaseService<Category> {
             .skip(skip)
             .take(limit);
 
-        const items : ClientOriginal[] = await query.getMany();
+        const items : CustomerOriginal[] = await query.getMany();
 
         const itemSaved: Customer[] = [];
 
@@ -65,11 +63,8 @@ export class ClientService extends BaseService<Category> {
      */
     async down(){
         try {
-            await this.newRepository.query(`DELETE FROM Client`);
-            await this.newRepository.query(`ALTER TABLE Client AUTO_INCREMENT = 1`);
-
-            await this.newRepository.query(`DELETE FROM TemporalAddress`);
-            await this.newRepository.query(`ALTER TABLE TemporalAddress AUTO_INCREMENT = 1`);
+            await this.newRepository.query(`DELETE FROM Customer`);
+            await this.newRepository.query(`ALTER TABLE Customer AUTO_INCREMENT = 1`);
 
         }catch(e){
             this.printError();
@@ -82,6 +77,14 @@ export class ClientService extends BaseService<Category> {
     async counts(){
         const {count} = await this.originalRepository.createQueryBuilder("p")
             .select("COUNT(p.id)", "count").getRawOne();
+
+        if(serverConfig.isFakeCounters){
+            if(count < serverConfig.fakeCounterLimit){
+                return count;
+            }
+            return serverConfig.fakeCounterLimit;
+        }
+
         return count;
     }
 
@@ -95,6 +98,6 @@ export class ClientService extends BaseService<Category> {
     }
 
     processName() {
-        return ClientService.name
+        return CustomerService.name
     }
 }

@@ -21,7 +21,7 @@ export class Office extends BaseModel{
     name: string;
 
     @Column({name:'type', type: 'integer'})
-    type: DeliveryTypes;
+    type: number;
 
     @Column({name: 'delivery_method_id', type: 'integer'})
     deliveryMethod: number;

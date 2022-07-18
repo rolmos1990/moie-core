@@ -1,8 +1,6 @@
 import {Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn} from "typeorm";
 import BaseModel from "../common/repositories/base.model";
 import {IsBoolean, IsDate, IsDecimal, IsOptional, Length} from "class-validator";
-import {Order} from "./Order";
-import {DeliveryLocality} from "./DeliveryLocality";
 import {Type} from "class-transformer";
 
 @Entity({name: 'OrderDelivery'})
@@ -11,17 +9,15 @@ export class OrderDelivery extends BaseModel{
     @PrimaryGeneratedColumn('increment')
     id: number;
 
-    @OneToOne(() => Order, order => order.id)
-    @JoinColumn({name: 'order_id'})
-    order: Order;
+    @Column({name:'order_id', type: 'integer', nullable: true})
+    order: number;
 
     @Column({name:'delivery_cost', type: 'decimal'})
     @IsDecimal({ decimal_digits: '2'}, {groups: ['create','update']})
     deliveryCost: number;
 
-    @ManyToOne(() => DeliveryLocality)
-    @JoinColumn({name: 'deliveryLocality_id'})
-    deliveryLocality: DeliveryLocality;
+    @Column({name:'deliveryLocality_id', type: 'integer', nullable: true})
+    deliveryLocality: number;
 
     /** Estado y municipio para dirección de orden */
     @Column({name:'deliveryState', type: 'varchar', length: 200, nullable: true})

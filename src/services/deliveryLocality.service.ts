@@ -4,6 +4,7 @@ import {getRepository} from "typeorm";
 import {DeliveryLocality as DeliveryLocalityOriginal} from "../models_moie/DeliveryLocality";
 import {DeliveryLocality} from "../models/DeliveryLocality";
 import {convertDeliveryType} from "../common/migrationUtility/singleConversors";
+import {serverConfig} from "../config/ServerConfig";
 
 export class DeliveryLocalityService extends BaseService<Category> {
 
@@ -66,6 +67,14 @@ export class DeliveryLocalityService extends BaseService<Category> {
     async counts(){
         const {count} = await this.originalRepository.createQueryBuilder("p")
             .select("COUNT(p.id)", "count").getRawOne();
+
+        if(serverConfig.isFakeCounters){
+            if(count < serverConfig.fakeCounterLimit){
+                return count;
+            }
+            return serverConfig.fakeCounterLimit;
+        }
+
         return count;
     }
 

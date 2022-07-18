@@ -20,13 +20,12 @@ export class Comment extends BaseModel{
     @Column({type: 'varchar', length: 255})
     idRelated: string;
 
-    @Column({type: 'varchar', length: 255})
-    @Length(3, 255, {groups: ['create','update']})
+    @Column({type: 'varchar', length: 2200})
     comment: string;
 
     @ManyToOne(() => User)
     @JoinColumn({name: 'user_id'})
-    user: User;
+    user: number;
 
     @CreateDateColumn({name:'created_at'})
     @Type(() => Date)

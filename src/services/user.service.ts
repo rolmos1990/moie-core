@@ -1,19 +1,18 @@
 import {BaseService} from "../common/controllers/base.service";
-import {Category} from "../models/Category";
-import {Product} from "../models/Product";
 import {getRepository} from "typeorm";
-import {Size as SizeOriginal} from "../models_moie/Size";
-import {Size} from "../models/Size";
+import {User as UserOriginal} from "../models_moie/User";
+import {User} from "../models/User";
+import {getPasswordAndSalt} from "../common/helper/helpers";
 import {serverConfig} from "../config/ServerConfig";
 
-export class SizeService extends BaseService<Category> {
+export class UserService extends BaseService<User> {
 
     private readonly newRepository;
     private readonly originalRepository;
     constructor(){
         super();
-        this.newRepository = getRepository(Size);
-        this.originalRepository = getRepository(SizeOriginal);
+        this.newRepository = getRepository(User);
+        this.originalRepository = getRepository(UserOriginal);
     }
 
     /**
@@ -23,20 +22,29 @@ export class SizeService extends BaseService<Category> {
 
         await this.newRepository.query("SET FOREIGN_KEY_CHECKS=0;");
 
-        const query = this.originalRepository.createQueryBuilder("p")
-            .orderBy("p.id", "DESC")
+        const query = this.originalRepository.createQueryBuilder("u")
+            .orderBy("u.id", "ASC")
             .skip(skip)
             .take(limit);
 
-        const items : SizeOriginal[] = await query.getMany();
+        const items : UserOriginal[] = await query.getMany();
 
-        const itemSaved: Size[] = [];
+        const itemSaved: User[] = [];
+
+        const _password = await getPasswordAndSalt("Moie123.");
 
         await items.forEach(item => {
-            const _item = new Size();
-            _item.id = item.id;
+
+            const _item = new User();
+            _item.id = item.idNumeric;
+            _item.username = item.id;
+            _item.password = _password.password;
+            _item.salt = _password.salt;
+            _item.email = item.id + "@gmail.com";
             _item.name = item.name;
-            _item.sizes = JSON.parse(item.sizes);
+            _item.createdAt = new Date();
+            _item.securityRol = 2;
+            _item.status = true;
             itemSaved.push(_item);
         });
         const saved = await this.newRepository.save(itemSaved, { chunk: limit });
@@ -48,8 +56,8 @@ export class SizeService extends BaseService<Category> {
      */
     async down(){
         try {
-            await this.newRepository.query(`DELETE FROM Size`);
-            await this.newRepository.query(`ALTER TABLE Size AUTO_INCREMENT = 1`);
+            await this.newRepository.query(`DELETE FROM User`);
+            await this.newRepository.query(`ALTER TABLE User AUTO_INCREMENT = 1`);
 
         }catch(e){
             this.printError();
@@ -83,6 +91,6 @@ export class SizeService extends BaseService<Category> {
     }
 
     processName() {
-        return SizeService.name
+        return UserService.name
     }
 }
