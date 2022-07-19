@@ -24,6 +24,7 @@ export class BillService extends BaseService<Bill> {
 
         const query = this.originalRepository.createQueryBuilder("p")
             .leftJoinAndSelect("p.order", "o")
+            .leftJoinAndSelect("p.billConfig", "bc")
             .leftJoinAndSelect("o.orderNew", "on")
             .orderBy("p.id", "ASC")
             .skip(skip)
