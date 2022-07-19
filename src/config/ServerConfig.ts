@@ -8,5 +8,5 @@ export const serverConfig = {
     jwtSecret: process.env.JWT_SECRET || "test",
     isFakeCounters: false,
     fakeCounterLimit: 5000,
-    includeServices: [PaymentService.name] //[PaymentService.name, OrderService.name]
+    includeServices: [] //[PaymentService.name, OrderService.name]
 };

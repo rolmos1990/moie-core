@@ -60,6 +60,8 @@ export class MigrationController {
         console.log("...........    INICIANDO PROCESO DE MIGRACIÓN   .................");
         console.log("#################################################################");
 
+        const dateStart = new Date();
+
         console.log("##########################");
         console.log("1. Migrando Categorias");
         const migrationManagerCategory = new MigrationManager(this.categoryService);
@@ -159,6 +161,17 @@ export class MigrationController {
         console.log("19. Migrando Facturas");
         const migrationBillCreditMemo = new MigrationManager(this.billCreditMemoService);
         await migrationBillCreditMemo.run();
+
+        const dateEnd = new Date();
+
+        const diff = Math.abs(dateStart.getTime() - dateEnd.getTime());
+        const seconds = Math.floor((diff/ 1000));
+
+        const minutes = Math.floor(seconds / 60);
+        const _seconds = Math.floor(seconds % 60);
+
+        console.log("## FINALIZADO ####")
+        console.log(`Duracion Minutos - ${minutes} : ${_seconds}`);
 
         return;
     }
