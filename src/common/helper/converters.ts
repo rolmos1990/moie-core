@@ -78,10 +78,10 @@ const DELIVERY_METHOD = {
 const _officeStatusConverter_single = (_status) => {
 
     if(_status == 'FINALIZADO'){
-        return 1;
+        return 2;
     }
 
-    return 0;
+    return 1;
 }
 
 const _deliveryMethodConverter_single = (methodName) => {
