@@ -25,7 +25,7 @@ export class OrderDetailService extends BaseService<OrderDetail> {
             .leftJoinAndSelect("od.product", "p")
             .leftJoinAndSelect("p.productSize", "ps")
             .leftJoinAndSelect("p.productNew", "pn")
-            .leftJoinAndSelect("pn.size", "siz")
+            .leftJoinAndSelect("od.order", "o")
             .orderBy("p.id", "ASC")
             .skip(skip)
             .take(limit);
@@ -43,8 +43,9 @@ export class OrderDetailService extends BaseService<OrderDetail> {
 
             const _item = new OrderDetail();
             _item.id = item.id;
+            _item.color = item.color;
             _item.quantity = item.quantity;
-            _item.size = item.product && item.product.productNew && item.product.productNew.size? item.product.productNew.size.name : "";
+            _item.size = item.size;
             _item.product = item.product && item.product.productNew ? item.product.productNew.id : null;
             _item.order = item.order ? item.order.id : null;
             _item.cost = item.cost;
@@ -99,6 +100,6 @@ export class OrderDetailService extends BaseService<OrderDetail> {
     }
 
     processName() {
-        return OrderDetail.name
+        return OrderDetailService.name
     }
 }

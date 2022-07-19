@@ -5,6 +5,7 @@ import {Order} from "../models/Order";
 import {converters} from "../common/helper/converters";
 import {OrderDelivery} from "../models/OrderDelivery";
 import {serverConfig} from "../config/ServerConfig";
+import {getCalculateCosts} from "../common/helper/helpers";
 
 export class OrderService extends BaseService<Order> {
 
@@ -32,6 +33,8 @@ export class OrderService extends BaseService<Order> {
             .leftJoinAndSelect("o.user", "u")
             .leftJoinAndSelect("o.customer", "c")
             .leftJoinAndSelect("c.municipality", "m")
+            .leftJoinAndSelect("o.orderDetail", "od")
+            .leftJoinAndSelect("od.product", "p")
             .orderBy("o.id", "ASC")
             .skip(skip)
             .take(limit);
@@ -58,14 +61,18 @@ export class OrderService extends BaseService<Order> {
                 _item.status = converters._statusConverter(item);
                 _item.deliveryMethod = converters._deliveryMethodConverter(item);
 
+                //Calculate costs
+                if(item.orderDetail) {
 
-                //Calculate amount
-                _item.totalAmount = 0;
-                _item.subTotalAmount = 0;
-                _item.totalWithDiscount = 0;
-                _item.totalWeight = 0;
-                _item.totalRevenue = 0;
-                _item.quantity = 0;
+                    const costs = getCalculateCosts(item.orderDetail);
+                    //Calculate amount
+                    _item.totalAmount = (costs.totalAmount - costs.totalDiscount) + item.deliveryAmount;
+                    _item.subTotalAmount = costs.totalAmount;
+                    _item.totalWithDiscount = costs.totalDiscount;
+                    _item.totalWeight = costs.totalWeight;
+                    _item.totalRevenue = costs.totalRevenue;
+                    _item.quantity = item.orderDetail.reduce((s, p) => parseInt(p.quantity.toString()) + parseInt(s.toString()), 0);
+                }
 
 
                 _item.remember = item.remember;

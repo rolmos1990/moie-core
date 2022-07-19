@@ -19,11 +19,9 @@ export class OrderHistoric extends BaseModel{
     entity: string;
 
     @Column({name:'id_objeto', type: 'varchar', length: 10})
-    @Length(3, 10, {groups: ['create','update']})
     entityId: string;
 
-    @Column({name:'accion', type: 'varchar', length: 10})
-    @Length(3, 10, {groups: ['create','update']})
+    @Column({name:'accion', type: 'varchar', length: 30})
     status: string;
 
     @ManyToOne(() => User)

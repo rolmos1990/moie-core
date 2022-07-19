@@ -135,18 +135,18 @@ const _orderDeliveryConverter = (order: Order) : OrderDelivery => {
 }
 
 const HISTORIC_STATUS = {
-    registrar: 1,
-    actualizar: 8,
-    imprimir: 3,
-    confirmar: 2,
-    anular: 6,
+    'registrar': 1,
+    'actualizar': 8,
+    'imprimir': 3,
+    'confirmar': 2,
+    'anular': 6,
     'confirmar envio': 4,
-    vendido: 7
+    'vendido': 7
 };
 
 const _orderHistoricStatus_single = (_historicStatus) => {
 
-    if(_historicStatus == null || _historicStatus == ''){
+    if(_historicStatus === null || _historicStatus === ''){
         return HISTORIC_STATUS.registrar;
     }
 

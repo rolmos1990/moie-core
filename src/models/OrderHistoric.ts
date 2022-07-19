@@ -1,9 +1,7 @@
-import {Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn} from "typeorm";
+import {Column, CreateDateColumn, Entity, PrimaryGeneratedColumn} from "typeorm";
 import BaseModel from "../common/repositories/base.model";
 import {IsDate, IsNumber} from "class-validator";
 import {Type} from "class-transformer";
-import {Order} from "./Order";
-import {User} from "./User";
 
 @Entity({name: 'OrderHistoric'})
 export class OrderHistoric extends BaseModel{

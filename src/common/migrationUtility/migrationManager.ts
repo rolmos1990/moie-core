@@ -4,11 +4,9 @@ import {PaymentService} from "../../services/payment.service";
 import {OrderService} from "../../services/order.service";
 import {serverConfig} from "../../config/ServerConfig";
 
-const LIMIT_PER_BATCH = 5000;
-
 export class MigrationManager {
     private readonly service : BaseService<any>;
-    private limitPerBatch = LIMIT_PER_BATCH;
+    private limitPerBatch = serverConfig.limitPerBatch;
     constructor(service: BaseService<any>){
         this.service = service;
     }

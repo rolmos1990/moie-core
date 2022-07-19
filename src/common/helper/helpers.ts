@@ -1,5 +1,6 @@
 import {Any} from "typeorm";
 import * as Bcrypt from "bcryptjs";
+import {OrderDetail} from "../../models_moie/OrderDetail";
 
 export interface DecodeDataObj {
     type: string,
@@ -30,4 +31,31 @@ export function decodeBase64Image(dataString) : DecodeDataObj | Error {
 export async function getPasswordAndSalt(password: string) {
     const salt = Bcrypt.genSaltSync();
     return {password: Bcrypt.hashSync(password, salt), salt: salt};
+}
+
+
+export function getCalculateCosts(orderDetails: OrderDetail[]) {
+    let totalAmount : number = 0;
+    let totalWeight : number = 0;
+    let totalDiscount = 0;
+    let totalRevenue = 0;
+    orderDetails.map(item => {
+        totalWeight += item.product ? Number(item.product.weight || 0) * Number(item.quantity) : 0;
+        if (item.adjustment > 0) {
+            totalDiscount += ((Number(item.price) * Number(item.adjustment)) / 100) * Number(item.quantity);
+        } else {
+            totalDiscount = 0;
+        }
+        totalAmount += Number(item.price) * Number(item.quantity);
+        const revenue = item.price - item.cost;
+
+        totalRevenue += revenue;
+    });
+
+    return {
+        totalAmount,
+        totalWeight,
+        totalDiscount,
+        totalRevenue
+    };
 }

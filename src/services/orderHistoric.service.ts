@@ -22,9 +22,11 @@ export class OrderHistoricService extends BaseService<OrderHistoric> {
 
         await this.newRepository.query("SET FOREIGN_KEY_CHECKS=0;");
 
-        const query = this.originalRepository.createQueryBuilder("u")
-            .where("u.entity", "venta")
-            .orderBy("u.id", "ASC")
+        const query = this.originalRepository.createQueryBuilder("p")
+            .leftJoinAndSelect("p.user", "s")
+            .where("p.entity = :objeto", {objeto : "venta"})
+            .where("p.status != :accion", {accion: "leer"})
+            .orderBy("p.id", "ASC")
             .skip(skip)
             .take(limit);
 
@@ -35,11 +37,14 @@ export class OrderHistoricService extends BaseService<OrderHistoric> {
         await items.forEach(item => {
             const _item = new OrderHistoric();
             //(auto-increase id) _item.id
-            _item.user = item.user ? item.user.idNumeric : null;
+            _item.id = null;
+            _item.user = item.user && item.user.idNumeric ? parseInt(item.user.idNumeric.toString()) || null : null;
             _item.order = item.entityId ? parseInt(item.entityId) : null;
             _item.status = converters._orderHistoricStatus_single(item.status);
             _item.createdAt = item.createdAt;
-            itemSaved.push(_item);
+            if(!!_item.status && !isNaN(_item.order)) {
+                itemSaved.push(_item);
+            }
         });
         const saved = await this.newRepository.save(itemSaved, { chunk: limit });
         this.printResult(saved, items);
@@ -63,7 +68,10 @@ export class OrderHistoricService extends BaseService<OrderHistoric> {
      */
     async counts(){
         const {count} = await this.originalRepository.createQueryBuilder("p")
-            .select("COUNT(p.id)", "count").where("p.entity", "venta").getRawOne();
+            .select("COUNT(p.id)", "count")
+            .where("p.entity = :objeto", {objeto : "venta"})
+            .where("p.status != :accion", {accion: "leer"})
+            .getRawOne();
 
         if(serverConfig.isFakeCounters){
             if(count < serverConfig.fakeCounterLimit){
