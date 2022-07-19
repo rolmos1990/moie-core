@@ -106,6 +106,7 @@ const _deliveryMethodConverter = (order: Order) => {
 const _orderDeliveryConverter = (order: Order) : OrderDelivery => {
     const municipality = order.customer ? order.customer.municipality : null;
     const _orderDelivery = new OrderDelivery();
+
     _orderDelivery.deliveryCost = order.deliveryAmount;
     _orderDelivery.deliveryLocality = order.deliveryLocality;
     _orderDelivery.chargeOnDelivery = (order.deliveryType === CHARGE_ON_DELIVERY) ? true : false;
@@ -114,13 +115,20 @@ const _orderDeliveryConverter = (order: Order) : OrderDelivery => {
     _orderDelivery.tracking = order.trackingNumber;
     _orderDelivery.sync = false;
 
-    if(converters._statusConverter(order) != STATUS.CANCELED && (converters._deliveryMethodConverter_single(order.deliveryMethod) == DELIVERY_METHOD.INTERRAPIDISIMO) && (order.trackingNumber != '' && order.trackingNumber != '') ){
-        _orderDelivery.sync = true;
-    }
-
     _orderDelivery.deliveryDate = null;
     _orderDelivery.deliveryCurrentLocality = null;
     _orderDelivery.order = order ? order.id : null;
+
+    if(order.postSale[0]) {
+        //order.postSale[0].payu
+        _orderDelivery.deliveryCurrentLocality = order.postSale[0].deliveryCurrentLocality;
+        _orderDelivery.deliveryDate = order.postSale[0].deliveryDate;
+        _orderDelivery.deliveryStatus = order.postSale[0].deliveryStatus;
+        _orderDelivery.tracking = order.postSale[0].tracking;
+        _orderDelivery.deliveryStatusDate = order.postSale[0].deliveryStatusDate;
+        _orderDelivery.sync = order.postSale[0].sync;
+    }
+
 
     return _orderDelivery;
 }

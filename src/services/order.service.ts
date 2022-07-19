@@ -28,7 +28,7 @@ export class OrderService extends BaseService<Order> {
 
         const query = this.originalRepository.createQueryBuilder("o")
             .leftJoinAndSelect("o.office", "f")
-            //.leftJoinAndSelect("o.payment", "p")
+            .leftJoinAndSelect("o.postSale", "ps")
             .leftJoinAndSelect("o.user", "u")
             .leftJoinAndSelect("o.customer", "c")
             .leftJoinAndSelect("c.municipality", "m")

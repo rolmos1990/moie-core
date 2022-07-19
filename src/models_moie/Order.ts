@@ -3,7 +3,7 @@ import {
     CreateDateColumn,
     Entity,
     JoinColumn,
-    ManyToOne, OneToOne, PrimaryColumn
+    ManyToOne, OneToMany, OneToOne, PrimaryColumn
 } from "typeorm";
 import BaseModel from "../common/repositories/base.model";
 import {IsBoolean, IsDate, IsDecimal, IsNumber, IsOptional, Length,} from "class-validator";
@@ -14,6 +14,7 @@ import {User} from "./User";
 import {Office} from "./Office";
 import {OriginalDatabaseName} from "../common/persistence";
 import {Order as OrderNew} from "../models/Order";
+import {OrderPostSale} from "./OrderPostSale";
 
 /**
  * El isImpress -> o Impreso seria un Estatus más,
@@ -99,6 +100,9 @@ export class Order extends BaseModel{
     @ManyToOne(() => User)
     @JoinColumn({name: 'id_usuario'})
     user: User;
+
+    @OneToMany(() => OrderPostSale, (postSale) => postSale.order)
+    postSale: OrderPostSale[]
 
     isEmpty(): boolean {
         return (this.id == null);
