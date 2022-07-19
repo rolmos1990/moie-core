@@ -116,14 +116,14 @@ export class MigrationController {
         await migrationOffice.run();
 
         console.log("########################");
-        console.log("11. Migrando Pagos");
-        const migrationPayment = new MigrationManager(this.paymentService);
-        await migrationPayment.run();
-
-        console.log("########################");
-        console.log("12. Migrando Ordenes");
+        console.log("13. Migrando Ordenes");
         const migrationOrder = new MigrationManager(this.orderService);
         await migrationOrder.run();
+
+        console.log("########################");
+        console.log("12. Migrando Pagos");
+        const migrationPayment = new MigrationManager(this.paymentService);
+        await migrationPayment.run();
 
         console.log("########################");
         console.log("13. Migrando Comentarios de Clientes");

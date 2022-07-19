@@ -1,20 +1,22 @@
-import {Column, CreateDateColumn, Entity, PrimaryGeneratedColumn} from "typeorm";
+import {Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn} from "typeorm";
 import BaseModel from "../common/repositories/base.model";
-import {IsDate, IsDecimal, IsOptional, Length} from "class-validator";
+import {IsDecimal, Length} from "class-validator";
 import {OriginalDatabaseName} from "../common/persistence";
 import {Type} from "class-transformer";
+import {Order} from "../models_moie/Order";
 
 /**
  * Existencia de Productos.
  */
-@Entity({database: OriginalDatabaseName, name: 'pago', orderBy: {id: 'ASC'}, synchronize: false})
+@Entity({database: OriginalDatabaseName, name: 'pago', orderBy: {id: 'ASC'}})
 export class Payment extends BaseModel{
 
     @PrimaryGeneratedColumn('increment')
     id: number;
 
-    @Column({name:'id_venta', type: 'integer'})
-    order: number;
+    @ManyToOne(() => Order)
+    @JoinColumn({name:'id_venta'})
+    order: Order;
 
     @Column({name:'nombre', type: 'varchar', length: 255})
     @Length(1, 100, {groups: ['create','update']})

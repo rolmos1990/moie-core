@@ -1,5 +1,8 @@
 import {IService} from "../interfaces/IService";
 import {BaseService} from "../controllers/base.service";
+import {PaymentService} from "../../services/payment.service";
+import {OrderService} from "../../services/order.service";
+import {serverConfig} from "../../config/ServerConfig";
 
 const LIMIT_PER_BATCH = 5000;
 
@@ -11,7 +14,11 @@ export class MigrationManager {
     }
     async run(monitor = true) {
         let pointer = 0;
-        const name = this.service.processName();
+        const name = await this.service.processName();
+        if(serverConfig.includeServices.length > 0 && !(serverConfig.includeServices.includes(name))){
+            return;
+        }
+
         try {
 
             const size = await this.service.counts();

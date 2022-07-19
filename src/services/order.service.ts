@@ -10,10 +10,13 @@ export class OrderService extends BaseService<Order> {
 
     private readonly newRepository;
     private readonly originalRepository;
+    private readonly orderDeliveryRepository;
+
     constructor(){
         super();
         this.newRepository = getRepository(Order);
         this.originalRepository = getRepository(OrderOriginal);
+        this.orderDeliveryRepository = getRepository(OrderDelivery);
     }
 
     /**
@@ -75,16 +78,10 @@ export class OrderService extends BaseService<Order> {
                 //relations (internal)
                 _item.orderDelivery = converters._orderDeliveryConverter(item);
 
-                //relations (externals - previous)
-                //if (item.payment && item.payment.id) {
-                //    _item.payment = item.payment.id;
-                //}
-
                 _item.user = item.user ? item.user.idNumeric : null;
                 _item.office = item.office ? item.office.id : null;
-                //_item.bill = item.
 
-
+                itemDeliverySaved.push(_item.orderDelivery);
                 itemSaved.push(_item);
             }catch(e){
                 console.log("error en pedido", e.message);
@@ -93,6 +90,8 @@ export class OrderService extends BaseService<Order> {
         });
 
         const saved = await this.newRepository.save(itemSaved, { chunk: limit });
+        await this.orderDeliveryRepository.save(itemDeliverySaved, {chunk: limit});
+
         this.printResult(saved, items);
     }
 
