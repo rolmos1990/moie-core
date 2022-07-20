@@ -7,6 +7,7 @@ import {
     Order as OrderCreate,
     OrderCreateDTO,
     OrderListDTO,
+    OrderListShortDTO,
     OrderShortDTO,
     OrderShowDTO,
     OrderUpdate,
@@ -93,6 +94,7 @@ export class OrderController extends BaseController<Order> {
             return OrderShowDTO(entity)
         } else {
             return OrderListDTO(entity);
+            //return OrderListShortDTO(entity);
         }
     }
 

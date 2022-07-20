@@ -2,15 +2,15 @@ import {IsBoolean, IsNumber, IsOptional, IsString, validate} from "class-validat
 import {OrderProduct} from "./orderProduct";
 import {InvalidArgumentException} from "../../common/exceptions";
 import {Order as OrderModel} from '../../models/Order';
-import {DeliveryMethodListDTO} from "./deliveryMethod";
-import {CustomerListDTO, CustomerShortDTO} from "./customer";
+import {DeliveryMethodListDTO, DeliveryMethodShortListDTO} from "./deliveryMethod";
+import {CustomerListDTO, CustomerListShortDTO, CustomerShortDTO} from "./customer";
 import {DeliveryEnum} from "../../models/DeliveryMethod";
 import {UserShortDTO} from "./user";
 import {OrderDetail} from "../../models/OrderDetail";
 import {ProductShortDTO} from "./product";
 import {ProductSizeShort} from "./productSize";
-import {OrderDeliveryListDTO, OrderDeliveryShowDTO} from "./orderDelivery";
-import {DeliveryLocalityListDTO} from "./deliveryLocality";
+import {OrderDeliveryListDTO, OrderDeliveryShortListDTO, OrderDeliveryShowDTO} from "./orderDelivery";
+import {DeliveryLocalityListDTO, DeliveryLocalityListShortDTO} from "./deliveryLocality";
 import {isPaymentMode} from "../../common/enum/paymentModes";
 
 
@@ -241,6 +241,20 @@ export const OrderListDTO = (order: OrderModel) => ({
     office: order.office,
     payment: order.payment,
     bill: order.bill
+});
+
+export const OrderListShortDTO = (order: OrderModel) => ({
+    id: order ? order.id : null,
+    deliveryMethod: DeliveryMethodShortListDTO(order.deliveryMethod),
+    orderDelivery: OrderDeliveryShortListDTO(order.orderDelivery),
+    deliveryLocality: order.orderDelivery && order.orderDelivery.deliveryLocality ? DeliveryLocalityListShortDTO(order.orderDelivery.deliveryLocality) : null,
+    totalAmount: order.totalAmount,
+    totalWithDiscount: order.totalWithDiscount,
+    createdAt: order.createdAt,
+    status: order.status,
+    quantity: order.quantity,
+    customer: CustomerListShortDTO(order.customer),
+    user: UserShortDTO(order.user)
 });
 
 

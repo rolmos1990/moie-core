@@ -153,6 +153,11 @@ export const CustomerShortDTO = (customer: Customer) => ({
     isMayorist: customer ? customer.isMayorist : false
 });
 
+export const CustomerListShortDTO = (customer: Customer) => ({
+    name: customer ? customer.name : null,
+    isMayorist: customer ? customer.isMayorist : false
+});
+
 const stats = (stat) => ({
     id: stat.productId || stat.categoryId,
     sumPrices: stat.sumPrices,

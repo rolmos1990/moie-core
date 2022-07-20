@@ -5,3 +5,7 @@ export const DeliveryMethodListDTO = (deliveryMethod: DeliveryMethod) => ({
     code: deliveryMethod ? deliveryMethod.code : null,
     name: deliveryMethod ? deliveryMethod.name : null,
 });
+
+export const DeliveryMethodShortListDTO = (deliveryMethod: DeliveryMethod) => ({
+    name: deliveryMethod ? deliveryMethod.name : null,
+});

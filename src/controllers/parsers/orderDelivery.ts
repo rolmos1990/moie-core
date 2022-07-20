@@ -11,6 +11,11 @@ export const OrderDeliveryListDTO = (orderDelivery: OrderDelivery) => ({
     deliveryLocality: orderDelivery ? DeliveryLocalityListDTO(orderDelivery.deliveryLocality) : null
 });
 
+export const OrderDeliveryShortListDTO = (orderDelivery: OrderDelivery) => ({
+    chargeOnDelivery: orderDelivery ? orderDelivery.chargeOnDelivery : null,
+    deliveryType:  orderDelivery ? orderDelivery.deliveryType : null
+});
+
 export const OrderDeliveryShowDTO = (orderDelivery: OrderDelivery) => ({
     deliveryCost: orderDelivery ? orderDelivery.deliveryCost : null,
     deliveryState: orderDelivery ? orderDelivery.deliveryState : null,
