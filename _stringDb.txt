@@ -72,5 +72,9 @@ mysql -u root -p moie-lucy-v2 < /Users/ramon/dumps/moie-lucy-v2.sql
 
 replace again the collations...
 
+-----------------------------------------
+
+4. Ejecutar el programa de migracion (Moie Migrations)
+
 
 

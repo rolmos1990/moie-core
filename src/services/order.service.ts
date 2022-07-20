@@ -76,7 +76,7 @@ export class OrderService extends BaseService<Order> {
 
 
                 _item.remember = item.remember;
-                _item.paymentMode = 1; //item.paymentMode;
+                _item.paymentMode = converters._paymentModeConverter_single(item.paymentMode); //item.paymentMode;
                 _item.createdAt = item.createdAt;
                 _item.updatedAt = item.dateOfSale || item.createdAt;
                 _item.modifiedDate = item.dateOfSale || item.createdAt;

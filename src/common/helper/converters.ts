@@ -84,6 +84,14 @@ const _officeStatusConverter_single = (_status) => {
     return 1;
 }
 
+const _paymentModeConverter_single = (paymentMode) => {
+    if(paymentMode == 'TRANSFERENCIA'){
+        return 2;
+    }
+
+    return 1;
+}
+
 const _deliveryMethodConverter_single = (methodName) => {
 
     if(methodName == null || methodName == ''){
@@ -177,6 +185,7 @@ export const converters = {
     _deliveryMethodConverter_single,
     _deliveryMethodConverter,
     _officeStatusConverter_single,
+    _paymentModeConverter_single,
     _orderDeliveryConverter,
     _orderHistoricStatus_single,
     _creditMemoStatus,
