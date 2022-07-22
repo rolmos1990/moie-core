@@ -78,3 +78,14 @@ replace again the collations...
 
 
 
+
+5. Migrar imagenes (copiar en el directorio requerido desde el servidor destino):
+
+## Si quisiera acceder al servidor ssh -o HostKeyAlgorithms=+ssh-rsa -o PubkeyAcceptedKeyTypes=+ssh-rsa  lucymodas@lucymodas.com -p 22
+
+sudo scp -rp -o HostKeyAlgorithms=+ssh-rsa -o PubkeyAcceptedKeyTypes=+ssh-rsa lucymodas@lucymodas.com:www/catalogo /var/catalogo_test
+
+
+
+
+
