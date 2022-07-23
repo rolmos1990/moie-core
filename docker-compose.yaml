@@ -9,8 +9,47 @@ services:
   api:
     image: 'rolmos/moie-lucy-api:${APP_VERSION}'
     command: 'npm run start'
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
     volumes:
-      - /var/storage:/storage/
+      - /var/storage/uploads:/storage/uploads:rw
+      - /var/storage/pdf:/storage/pdf:rw
+    ports:
+      - "18210:18210"
+    depends_on:
+      - mysqldb
+    networks:
+      - app-tier
+    environment:
+      PORT: ${PORT}
+      HOST: ${HOST}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_DATABASE: ${DB_DATABASE}
+      SEED_DB: ${SEED_DB}
+      DIAN_USER: ${DIAN_USER}
+      DIAN_PASSWORD: ${DIAN_PASSWORD}
+      PUBLIC_URL: ${PUBLIC_URL}
+      TZ: America/Bogota
+
+  api2:
+    image: 'rolmos/moie-lucy-api:${APP_VERSION}'
+    command: 'npm run start'
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    volumes:
+      - /var/storage/uploads:/storage/uploads:rw
+      - /var/storage/pdf:/storage/pdf:rw
     ports:
       - "18210:18210"
     depends_on:
@@ -54,3 +93,11 @@ services:
       #- "./scripts/data.sql:/docker-entrypoint-initdb.d/2.sql"
       - /var/db:/var/lib/mysql
       - ./etc/custom.cnf:/etc/my.cnf
+
+  nginx:
+    build: ./nginx
+    ports:
+      - '80:8080'
+    depends_on:
+      - api
+      - api2
