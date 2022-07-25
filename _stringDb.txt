@@ -55,7 +55,7 @@ utf8_general_ci
 
 RUN THIS: (Take utf8mb4_0900_ai_ci
 
-mysql -u root -p moie-lucy < /Users/ramon/dumps/moie-v1/moie-lucy.sql
+mysql -u root -p moie-lucy < /Users/ramon/Backups/moie-lucy.sql
 
 -------------------------------------
 
