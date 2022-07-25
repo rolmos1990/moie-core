@@ -37,6 +37,7 @@ export class CustomerService extends BaseService<Category> {
 
         await items.forEach(item => {
             const _item = new Customer();
+
             _item.id = item.id;
             _item.document = item.ci;
             _item.name = item.name;
@@ -46,6 +47,8 @@ export class CustomerService extends BaseService<Category> {
             _item.phone = item.phone;
             _item.hasNotification = true;
             _item.address = item.city;
+            _item.createdAt = item.createdAt;
+
             if(item.municipality) {
                 _item.state = item.municipality.municipalityNew.state;
                 _item.municipality = item.municipality.municipalityNew;

@@ -118,6 +118,7 @@ const _orderDeliveryConverter = (order: Order) : OrderDelivery => {
     _orderDelivery.id = order.id;
     _orderDelivery.deliveryCost = order.deliveryAmount;
     _orderDelivery.deliveryLocality = order.deliveryLocality;
+    _orderDelivery.deliveryType = _deliveryTypeConverter(order.deliveryType);
     _orderDelivery.chargeOnDelivery = (order.deliveryType === CHARGE_ON_DELIVERY) ? true : false;
     _orderDelivery.deliveryMunicipality = municipality ? municipality.name : '';
     _orderDelivery.deliveryState = order.customer ? order.customer.state : null;
