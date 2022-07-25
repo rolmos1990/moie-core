@@ -98,6 +98,8 @@ services:
     build: ./nginx
     ports:
       - '18210:18210'
+    networks:
+      - app-tier
     depends_on:
       - api
       - api2
