@@ -115,10 +115,13 @@ export class ProductController extends BaseController<Product> {
                 const product : Product = await this.productService.find(parseInt(id));
                 const productAffected : Product = (await this.productService.findByObject({orden: orden, category: category}))[0];
 
-                productAffected.orden = product.orden || 0;
-                product.orden = orden;
+                //if exists some product affected
+                if(productAffected){
+                    productAffected.orden = product.orden || 0;
+                    product.orden = orden;
+                    await this.productService.createOrUpdate(productAffected);
+                }
 
-                await this.productService.createOrUpdate(productAffected);
                 await this.productService.createOrUpdate(product);
 
                 return res.json({status: 200 } );
