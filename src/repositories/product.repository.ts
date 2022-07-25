@@ -22,10 +22,10 @@ export class ProductRepository<T> extends BaseRepository<Product>{
         const product = await this.repositoryManager
             .createQueryBuilder('p')
             .where({ category: category})
-            .addOrderBy('orden', 'DESC').getOne();
+            .addOrderBy('orden', 'ASC').getOne();
         if(product){
             const _orden = product.orden;
-            return _orden + 1;
+            return _orden - 1;
         }
 
         return 1;
