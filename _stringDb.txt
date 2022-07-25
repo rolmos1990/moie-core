@@ -83,7 +83,16 @@ replace again the collations...
 
 ## Si quisiera acceder al servidor ssh -o HostKeyAlgorithms=+ssh-rsa -o PubkeyAcceptedKeyTypes=+ssh-rsa  lucymodas@lucymodas.com -p 22
 
-sudo scp -rp -o HostKeyAlgorithms=+ssh-rsa -o PubkeyAcceptedKeyTypes=+ssh-rsa lucymodas@lucymodas.com:www/catalogo /var/catalogo_test
+
+- sudo nohup scp -rp -o HostKeyAlgorithms=+ssh-rsa -o PubkeyAcceptedKeyTypes=+ssh-rsa lucymodas@lucymodas.com:www/catalogo /var/catalogo_test > /var/logs/nohup.out 2>&1
+- (After add password run - Control + Z)
+- bg (for run the command in background)
+- jobs (check the job is working)..
+
+--------
+
+-- > count files migrated is working
+find . -type f | wc -l
 
 
 

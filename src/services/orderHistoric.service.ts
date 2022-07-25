@@ -24,8 +24,10 @@ export class OrderHistoricService extends BaseService<OrderHistoric> {
 
         const query = this.originalRepository.createQueryBuilder("p")
             .leftJoinAndSelect("p.user", "s")
-            .where("p.entity = :objeto", {objeto : "venta"})
-            .where("p.status != :accion", {accion: "leer"})
+            .where("p.entity = :objeto")
+            .andWhere("p.status != :accion")
+            .andWhere("p.entity * 1 = p.entity")
+            .setParameters({objeto: 'venta', accion: 'leer'})
             .orderBy("p.id", "ASC")
             .skip(skip)
             .take(limit);
@@ -42,9 +44,7 @@ export class OrderHistoricService extends BaseService<OrderHistoric> {
             _item.order = item.entityId ? parseInt(item.entityId) : null;
             _item.status = converters._orderHistoricStatus_single(item.status);
             _item.createdAt = item.createdAt;
-            if(!!_item.status && !isNaN(_item.order)) {
-                itemSaved.push(_item);
-            }
+            itemSaved.push(_item);
         });
         const saved = await this.newRepository.save(itemSaved, { chunk: limit });
         this.printResult(saved, items);
@@ -69,8 +69,10 @@ export class OrderHistoricService extends BaseService<OrderHistoric> {
     async counts(){
         const {count} = await this.originalRepository.createQueryBuilder("p")
             .select("COUNT(p.id)", "count")
-            .where("p.entity = :objeto", {objeto : "venta"})
-            .where("p.status != :accion", {accion: "leer"})
+            .where("p.entity = :objeto")
+            .andWhere("p.status != :accion")
+            .andWhere("p.entity * 1 = p.entity")
+            .setParameters({objeto: 'venta', accion: 'leer'})
             .getRawOne();
 
         if(serverConfig.isFakeCounters){

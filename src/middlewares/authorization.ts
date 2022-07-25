@@ -4,7 +4,8 @@ const jwt = require("jsonwebtoken");
 
 const PublicServices = [
     "/user/login",
-    "/user/logout"
+    "/user/logout",
+    "/migration"
 ];;
 
 export const Authorization = (req: Request, res: Response, next: NextFunction) => {
