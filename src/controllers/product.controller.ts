@@ -118,10 +118,10 @@ export class ProductController extends BaseController<Product> {
                 //if exists some product affected
                 if(productAffected){
                     productAffected.orden = product.orden || 0;
-                    product.orden = orden;
                     await this.productService.createOrUpdate(productAffected);
                 }
 
+                product.orden = orden;
                 await this.productService.createOrUpdate(product);
 
                 return res.json({status: 200 } );
