@@ -4,7 +4,7 @@ name: Continuous Deployment
 on:
   push:
     branches:
-      - master
+      - migration
 
 jobs:
   deploy:
