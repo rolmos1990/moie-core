@@ -1,11 +1,10 @@
 import {BaseService} from "../common/controllers/base.service";
-import {Category} from "../models/Category";
 import {getRepository} from "typeorm";
 import {Customer as CustomerOriginal} from "../models_moie/Customer";
 import {Customer} from "../models/Customer";
 import {serverConfig} from "../config/ServerConfig";
 
-export class CustomerService extends BaseService<Category> {
+export class CustomerService extends BaseService<Customer> {
 
     private readonly newRepository;
     private readonly originalRepository;

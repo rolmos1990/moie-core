@@ -1,11 +1,10 @@
 import {BaseService} from "../common/controllers/base.service";
-import {Category} from "../models/Category";
 import {getRepository} from "typeorm";
 import {State as StateOriginal} from "../models_moie/State";
 import {State} from "../models/State";
 import {serverConfig} from "../config/ServerConfig";
 
-export class StateService extends BaseService<Category> {
+export class StateService extends BaseService<State> {
 
     private readonly newRepository;
     private readonly originalRepository;

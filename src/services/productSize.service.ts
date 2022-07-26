@@ -5,7 +5,7 @@ import {ProductSize} from "../models/ProductSize";
 import {ProductSize as ProductSizeOriginal} from "../models_moie/ProductSize";
 import {serverConfig} from "../config/ServerConfig";
 
-export class ProductSizeService extends BaseService<Category> {
+export class ProductSizeService extends BaseService<ProductSize> {
 
     private readonly newRepository;
     private readonly originalRepository;

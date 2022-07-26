@@ -22,7 +22,6 @@ export class PaymentService extends BaseService<Payment> {
      * Levantar migración de datos
      */
     async up(limit, skip = 0){
-
         await this.newRepository.query("SET FOREIGN_KEY_CHECKS=0;");
 
         const query = this.originalRepository.createQueryBuilder("u")
@@ -51,6 +50,18 @@ export class PaymentService extends BaseService<Payment> {
             _item.email = item.email;
             _item.type = item.type;
             _item.user = 1;
+            _item.status = 0;
+
+            if(_item.order === null){
+                //CANCELLED
+                _item.status = 2;
+            } else if(_item.order && _item.order.id === 0){
+                //PENDING ORDER
+                _item.status = 0;
+            } else {
+                //CONCILIED
+                _item.status = 1;
+            }
 
             if(item.order && item.order.orderNew){
                 item.order.orderNew.payment = item.id;
@@ -72,9 +83,9 @@ export class PaymentService extends BaseService<Payment> {
     async down(){
         try {
 
-            const conn = await getConnection(MySQLMoiePersistenceConnection.name);
-            await conn.query("UPDATE `moie-lucy`.pago SET id_venta = null where id_venta = -1");
-
+            //const conn = await getConnection(MySQLMoiePersistenceConnection.name);
+            //await conn.query("UPDATE `moie-lucy`.pago SET id_venta = null where id_venta = -1");
+            await this.newRepository.query("SET FOREIGN_KEY_CHECKS=0;");
             await this.newRepository.query(`DELETE FROM Payment`);
             await this.newRepository.query(`ALTER TABLE Payment AUTO_INCREMENT = 1`);
 

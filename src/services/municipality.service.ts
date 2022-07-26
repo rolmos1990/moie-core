@@ -1,11 +1,10 @@
 import {BaseService} from "../common/controllers/base.service";
-import {Category} from "../models/Category";
 import {getRepository} from "typeorm";
 import {Municipality as MunicipalityOriginal} from "../models_moie/Municipality";
 import {Municipality} from "../models/Municipality";
 import {serverConfig} from "../config/ServerConfig";
 
-export class MunicipalityService extends BaseService<Category> {
+export class MunicipalityService extends BaseService<Municipality> {
 
     private readonly newRepository;
     private readonly originalRepository;

@@ -1,12 +1,11 @@
 import {BaseService} from "../common/controllers/base.service";
-import {Category} from "../models/Category";
 import {getRepository} from "typeorm";
 import {DeliveryLocality as DeliveryLocalityOriginal} from "../models_moie/DeliveryLocality";
 import {DeliveryLocality} from "../models/DeliveryLocality";
 import {convertDeliveryType} from "../common/migrationUtility/singleConversors";
 import {serverConfig} from "../config/ServerConfig";
 
-export class DeliveryLocalityService extends BaseService<Category> {
+export class DeliveryLocalityService extends BaseService<DeliveryLocality> {
 
     private readonly newRepository;
     private readonly originalRepository;

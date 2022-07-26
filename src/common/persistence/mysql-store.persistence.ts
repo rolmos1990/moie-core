@@ -2,16 +2,16 @@ import {MysqlConnectionOptions} from "typeorm/driver/mysql/MysqlConnectionOption
 
 export default <MysqlConnectionOptions> {
     type: "mysql",
-    host: "127.0.0.1",
+    host: "44.192.20.154",
     port: 3306,
-    username: "root",
+    username: "moie",
     password: "Panama2018.",
     database: "lucy-web",
     supportBigNumbers: true,
     bigNumberStrings: false,
     synchronize: false,
     logging: false,
-    debug: false,
+    debug: true,
     ssl: false,
     entities: [
         `${__dirname}/../../models/**/*`,

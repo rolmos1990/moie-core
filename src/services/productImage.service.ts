@@ -2,7 +2,6 @@ import {BaseService} from "../common/controllers/base.service";
 import {Product} from "../models/Product";
 import {getRepository} from "typeorm";
 import {ProductImage, SIZES} from "../models/ProductImage";
-import {serverConfig} from "../config/ServerConfig";
 
 export class ProductImageService extends BaseService<ProductImage> {
 

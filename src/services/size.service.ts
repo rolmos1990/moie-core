@@ -1,12 +1,10 @@
 import {BaseService} from "../common/controllers/base.service";
-import {Category} from "../models/Category";
-import {Product} from "../models/Product";
 import {getRepository} from "typeorm";
 import {Size as SizeOriginal} from "../models_moie/Size";
 import {Size} from "../models/Size";
 import {serverConfig} from "../config/ServerConfig";
 
-export class SizeService extends BaseService<Category> {
+export class SizeService extends BaseService<SizeService> {
 
     private readonly newRepository;
     private readonly originalRepository;

@@ -8,7 +8,7 @@ export class CategoryService extends BaseService<Category> {
 
     private readonly newRepository;
     private readonly storeRepository;
-    //private readonly originalRepository;
+
     constructor(){
         super();
         this.newRepository = getRepository(Category);
