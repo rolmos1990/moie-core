@@ -1,6 +1,7 @@
 import {MysqlConnectionOptions} from "typeorm/driver/mysql/MysqlConnectionOptions";
 
 export default <MysqlConnectionOptions> {
+    name: "moie-lucy",
     type: "mysql",
     insecureAuth: true,
     debug: false,
@@ -9,7 +10,6 @@ export default <MysqlConnectionOptions> {
     host: "44.192.20.154",
     port: 3306,
     username: "root",
-    //username: "root",
     password: "Panama2018.",
     database: "moie-lucy",
     supportBigNumbers: true,

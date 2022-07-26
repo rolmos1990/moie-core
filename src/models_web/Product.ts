@@ -7,7 +7,7 @@ import {
 import BaseModel from "../common/repositories/base.model";
 import {IsDate, IsDecimal, MaxLength} from "class-validator";
 import {Type} from "class-transformer";
-import {Category} from "./Category";
+import {CategoryWeb} from "./CategoryWeb";
 import {StoreDatabaseName} from "../common/persistence";
 import {Product as ProductOriginal} from '../models_moie/Product';
 
@@ -31,9 +31,9 @@ export class Product extends BaseModel{
     @IsDecimal({ decimal_digits: '2'}, {groups: ['create','update']})
     discount: number;
 
-    @ManyToOne(() => Category, category => category.products)
+    @ManyToOne(() => CategoryWeb, category => category.products)
     @JoinColumn({name:'id_categoria'})
-    category: Category;
+    category: CategoryWeb;
 
     @CreateDateColumn({name:'fecha'})
     @Type(() => Date)

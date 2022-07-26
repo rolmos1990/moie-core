@@ -1,5 +1,3 @@
-import {EntityTarget} from "typeorm";
-
 export interface IService{
     up: Function,
     down: Function,

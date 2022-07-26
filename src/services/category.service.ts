@@ -1,26 +1,28 @@
 import {BaseService} from "../common/controllers/base.service";
 import {Category} from "../models/Category";
-import {Category as CategoryWeb} from "../models_web/Category";
+import {CategoryWeb} from "../models_web/CategoryWeb";
 import {getRepository} from "typeorm";
 import {serverConfig} from "../config/ServerConfig";
+import {MySQLMoieStorePersistenceConnection} from "../common/persistence";
 
 export class CategoryService extends BaseService<Category> {
 
     private readonly newRepository;
-    private readonly storeRepository;
+    private readonly originalRepository;
 
     constructor(){
         super();
         this.newRepository = getRepository(Category);
-        this.storeRepository = getRepository(CategoryWeb);
+        this.originalRepository = getRepository(CategoryWeb, MySQLMoieStorePersistenceConnection.name);
     }
 
     /**
      * Levantar migración de datos
      */
     async up(limit, skip = 0){
+
         await this.newRepository.query("SET FOREIGN_KEY_CHECKS=0;");
-        const items : CategoryWeb[] = await this.storeRepository.createQueryBuilder("c")
+        const items : CategoryWeb[] = await this.originalRepository.createQueryBuilder("c")
             .orderBy("c.id", "ASC")
             .skip(skip)
             .take(limit)
@@ -58,7 +60,7 @@ export class CategoryService extends BaseService<Category> {
      * Cantidad previa para evaluar si finalizo con exito
      */
     async counts(){
-        const {count} = await this.storeRepository.createQueryBuilder("p")
+        const {count} = await this.originalRepository.createQueryBuilder("p")
             .select("COUNT(p.id)", "count").getRawOne();
 
         if(serverConfig.isFakeCounters){

@@ -8,14 +8,14 @@ import {
     PrimaryGeneratedColumn
 } from "typeorm";
 import BaseModel from "../common/repositories/base.model";
-import {IsDate, Length} from "class-validator";
+import {IsDate} from "class-validator";
 import {Type} from "class-transformer";
 import {Product} from "./Product";
 import {Category as CategoryNew} from "../models/Category";
 import {StoreDatabaseName} from "../common/persistence";
 
 @Entity({database: StoreDatabaseName, name: 'categoria', orderBy: {id: 'ASC'}, synchronize: false})
-export class Category extends BaseModel{
+export class CategoryWeb extends BaseModel{
 
     @PrimaryGeneratedColumn('increment')
     id: number;

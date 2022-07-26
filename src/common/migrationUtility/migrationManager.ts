@@ -69,9 +69,9 @@ export class MigrationManager {
     }
 
     private printErrorMessage(e, pointer){
-        console.log("--- Se ha producido un error en el registro " + pointer);
-        console.log("--- Detalle de error", e.message);
-        console.log("--- Eliminando progreso...");
+        console.log("--- Se ha producido un error en el registro: " + pointer);
+        console.log("--- Detalle de error: ", e.message);
+        console.log("--- Eliminando progreso ---");
     }
 
     private printFinish(name){

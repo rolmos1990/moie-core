@@ -9,6 +9,10 @@ export abstract class BaseService<Entity> implements IService {
     abstract async countsNew();
     abstract async processName();
 
+    static getName(){
+        return BaseService.name;
+    }
+
     printResult(saved, items){
         console.log("-- cantidad de registros guardados -- ", saved.length);
         console.log("-- se ha guardado con exito : ",  (saved.length === items.length) ? "Si" : "No" );

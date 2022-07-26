@@ -1,4 +1,5 @@
-import {CategoryService} from "../services/category.service";
+//import service to migration
+import {services} from "../services/services";
 
 const TIME_DEFAULT = Math.floor(Date.now() / 1000) + (60 * 60); //1 Hour
 

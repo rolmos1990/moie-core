@@ -1,7 +1,12 @@
 import {MysqlConnectionOptions} from "typeorm/driver/mysql/MysqlConnectionOptions";
 
 export default <MysqlConnectionOptions> {
+    name: "lucy_web",
     type: "mysql",
+    insecureAuth: true,
+    debug: false,
+    trace: true,
+    //host: "127.0.0.1",
     host: "44.192.20.154",
     port: 3306,
     username: "root",
@@ -11,8 +16,6 @@ export default <MysqlConnectionOptions> {
     bigNumberStrings: false,
     synchronize: false,
     logging: false,
-    debug: false,
-    ssl: false,
     entities: [
         `${__dirname}/../../models/**/*`,
         `${__dirname}/../../models_moie/**/*`,
