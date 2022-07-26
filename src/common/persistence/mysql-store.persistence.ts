@@ -6,7 +6,7 @@ export default <MysqlConnectionOptions> {
     port: 3306,
     username: "moie",
     password: "Panama2018.",
-    database: "lucy-web",
+    database: "lucy_web",
     supportBigNumbers: true,
     bigNumberStrings: false,
     synchronize: false,
