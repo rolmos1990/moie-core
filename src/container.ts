@@ -21,6 +21,7 @@ import {OrderHistoricService} from "./services/orderHistoric.service";
 import {BillConfigService} from "./services/billConfig.service";
 import {BillService} from "./services/bill.service";
 import {BillCreditMemoService} from "./services/billCreditMemo.service";
+import {CommentPostSaleService} from "./services/commentPostSale.service";
 
 export default (app: express.Application): void => {
     const container = createContainer({
@@ -49,6 +50,7 @@ export default (app: express.Application): void => {
         billConfigService: asClass(BillConfigService).scoped(),
         billService: asClass(BillService).scoped(),
         billCreditMemoService: asClass(BillCreditMemoService).scoped(),
+        commentPostSaleService: asClass(CommentPostSaleService).scoped(),
     });
 
     app.use(scopePerRequest(container));

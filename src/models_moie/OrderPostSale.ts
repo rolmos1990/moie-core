@@ -4,10 +4,9 @@ import {
     PrimaryGeneratedColumn,
 } from "typeorm";
 import BaseModel from "../common/repositories/base.model";
-import {IsDate, IsDecimal, IsOptional, Length} from "class-validator";
+import {IsDate, IsOptional, Length} from "class-validator";
 import {OriginalDatabaseName} from "../common/persistence";
 import {Order} from "./Order";
-import {ProductWithNew} from "./ProductWithNew";
 import {Type} from "class-transformer";
 
 @Entity({database: OriginalDatabaseName, name: 'postventa', orderBy: {id: 'ASC'}, synchronize: false})

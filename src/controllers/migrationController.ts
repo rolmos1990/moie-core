@@ -21,6 +21,7 @@ import {OrderHistoricService} from "../services/orderHistoric.service";
 import {BillConfigService} from "../services/billConfig.service";
 import {BillService} from "../services/bill.service";
 import {BillCreditMemoService} from "../services/billCreditMemo.service";
+import {CommentPostSaleService} from "../services/commentPostSale.service";
 
 @route('/migration')
 export class MigrationController {
@@ -40,6 +41,7 @@ export class MigrationController {
         private readonly orderService: OrderService,
         private readonly commentCustomerService: CommentCustomerService,
         private readonly commentOrderService: CommentOrderService,
+        private readonly commentPostSaleService: CommentPostSaleService,
         private readonly orderDetailService: OrderDetailService,
         private readonly orderHistoricService: OrderHistoricService,
         private readonly billConfigService: BillConfigService,
@@ -138,27 +140,32 @@ export class MigrationController {
         await migrationCommentOrder.run();
 
         console.log("########################");
-        console.log("15. Migrando Detalles de Ordenes");
+        console.log("15. Migrando Comentarios de PostVentas");
+        const migrationCommentPostSale = new MigrationManager(this.commentPostSaleService);
+        await migrationCommentPostSale.run();
+
+        console.log("########################");
+        console.log("16. Migrando Detalles de Ordenes");
         const migrationOrderDetail = new MigrationManager(this.orderDetailService);
         await migrationOrderDetail.run();
 
         console.log("########################");
-        console.log("16. Migrando Historico de Ordenes");
+        console.log("17. Migrando Historico de Ordenes");
         const migrationOrderHistoric = new MigrationManager(this.orderHistoricService);
         await migrationOrderHistoric.run();
 
         console.log("########################");
-        console.log("17. Migrando Configuracion de Facturacion");
+        console.log("18. Migrando Configuracion de Facturacion");
         const migrationBillConfig = new MigrationManager(this.billConfigService);
         await migrationBillConfig.run();
 
         console.log("########################");
-        console.log("18. Migrando Facturas");
+        console.log("19. Migrando Facturas");
         const migrationBill = new MigrationManager(this.billService);
         await migrationBill.run();
 
         console.log("########################");
-        console.log("19. Migrando Facturas");
+        console.log("20. Migrando Facturas");
         const migrationBillCreditMemo = new MigrationManager(this.billCreditMemoService);
         await migrationBillCreditMemo.run();
 
