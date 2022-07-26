@@ -1,0 +1,13 @@
+name: Continuous Integration
+
+on: [pull_request]
+
+jobs:
+  deploy:
+    name: Build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [14.x]
+    steps:
+      - uses: actions/checkout@v3
