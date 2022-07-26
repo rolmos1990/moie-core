@@ -21,8 +21,15 @@ CREATE USER 'moie'@'%' IDENTIFIED BY 'Panama2018.';
 GRANT ALL PRIVILEGES ON *.* To 'moie'@'%' IDENTIFIED BY 'Panama2018.';
 FLUSH PRIVILEGES;
 
+
+2.2 #Export structure moie-lucy-v2 (local)
+sudo scp -i ${dir_certificates}/lucy-modas.pem /Users/ramon/Backups/moie-lucy-v2.sql ubuntu@3.85.198.54:/var/mysql_backups
+mysql -u root -p moie-lucy-v2 < /var/mysql_backups/moie-lucy-v2.sql
+
 ------------------------------------
 3.1 Copy database from local to server
+
+
 
 sudo scp -i ${dir_certificates}/lucy-modas.pem /Users/ramon/Backups/lucy_web.sql ubuntu@44.192.20.154:/var/bk_mysql
 mysql -u root -p lucy_web < /var/bk_mysql/lucy_web.sql
