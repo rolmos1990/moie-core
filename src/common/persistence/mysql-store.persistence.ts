@@ -4,7 +4,7 @@ export default <MysqlConnectionOptions> {
     type: "mysql",
     host: "44.192.20.154",
     port: 3306,
-    username: "moie",
+    username: "root",
     password: "Panama2018.",
     database: "lucy_web",
     supportBigNumbers: true,

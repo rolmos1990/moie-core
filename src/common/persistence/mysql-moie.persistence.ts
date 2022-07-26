@@ -8,7 +8,7 @@ export default <MysqlConnectionOptions> {
     //host: "127.0.0.1",
     host: "44.192.20.154",
     port: 3306,
-    username: "moie",
+    username: "root",
     //username: "root",
     password: "Panama2018.",
     database: "moie-lucy",
