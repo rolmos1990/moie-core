@@ -2,7 +2,7 @@ import { ConnectionOptions } from "typeorm";
 
 export default <ConnectionOptions> {
     type: "mysql",
-    host: "0.0.0.0",
+    host: process.env.DB_HOST,
     port: parseInt(process.env.DB_PORT!) || 8889,
     username: process.env.DB_USERNAME || "root",
     password: process.env.DB_PASSWORD || "Panama2018.",
