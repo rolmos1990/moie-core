@@ -11,7 +11,7 @@ export default <MysqlConnectionOptions> {
     bigNumberStrings: false,
     synchronize: false,
     logging: false,
-    debug: true,
+    debug: false,
     ssl: false,
     entities: [
         `${__dirname}/../../models/**/*`,
