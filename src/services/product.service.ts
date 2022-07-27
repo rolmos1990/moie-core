@@ -64,7 +64,7 @@ export class ProductService extends BaseService<Product> {
             .leftJoinAndSelect("p.size", "size")
             .leftJoinAndSelect("size.sizeNew", "sizeNew")
             .leftJoinAndSelect("productWeb.category", "cat")
-            //.leftJoinAndSelect("cat.category", "catnew")
+            .leftJoinAndSelect("cat.category", "catnew")
             .orderBy("p.id", "DESC")
             .skip(skip)
             .take(limit);
