@@ -1,43 +1,10 @@
 import {BaseService} from "../common/controllers/base.service";
 import {Product} from "../models/Product";
-import {Category as CategoryNew} from "../models/Category";
 import {ProductWeb} from "../models_web/ProductWeb";
 import {ProductOriginal} from "../models_moie/Product";
 import {getRepository} from "typeorm";
-import {SizeOriginal} from "../models_moie/Size";
 import {serverConfig} from "../config/ServerConfig";
 import {MySQLMoieStorePersistenceConnection, MySQLPersistenceConnection} from "../common/persistence";
-
-interface CategoryI {
-    id: number,
-    name: string,
-    categoryNew: CategoryNew
-};
-
-interface ProductWebI {
-    codigo: string,
-    descripcion: string,
-    imagenes: number,
-    discount: number,
-    category: CategoryI
-    createdAt: Date
-};
-
-interface ProductMixedI {
-    id: string,
-    name: string,
-    brand: string,
-    material: string,
-    provider: string,
-    price: number,
-    cost: number,
-    weight: number,
-    tags: string,
-    size: SizeOriginal,
-    createdAt: Date,
-    productWeb: ProductWebI,
-    category: CategoryI
-}
 
 export class ProductService extends BaseService<Product> {
 
@@ -60,27 +27,26 @@ export class ProductService extends BaseService<Product> {
         await this.newRepository.query("SET FOREIGN_KEY_CHECKS=0;");
 
         const query = this.originalRepository.createQueryBuilder("p")
-            .leftJoinAndSelect("p.productWeb", "productWeb")
+            //.leftJoinAndSelect("p.productWeb", "productWeb")
             .leftJoinAndSelect("p.size", "size")
-            .leftJoinAndSelect("size.sizeNew", "sizeNew")
-            .leftJoinAndSelect("productWeb.category", "cat")
-            .leftJoinAndSelect("cat.category", "catnew")
+            //.leftJoinAndSelect("size.sizeNew", "sizeNew")
+            //.leftJoinAndSelect("productWeb.category", "cat")
             .orderBy("p.id", "DESC")
             .skip(skip)
             .take(limit);
 
-        const items : ProductMixedI[] = await query.getMany();
+        const items : ProductOriginal[] = await query.getMany();
 
         const products: Product[] = [];
 
         await items.forEach(item => {
             const product = new Product();
             product.name = item.name;
-            product.provider = item.brand;
+            product.provider = item.provider;
             product.cost = item.cost;
             product.price = item.price;
             if(item.size) {
-                product.size = item.size.sizeNew;
+                product.size = item.size.id;
             }
             product.createdAt = item.createdAt;
             product.updatedAt = item.createdAt;
@@ -97,12 +63,12 @@ export class ProductService extends BaseService<Product> {
                  * Si contiene producto web (Descarga la información del producto web)
                  */
                 product.discount = productWeb.discount;
-                product.description = productWeb.descripcion;
+                product.description = productWeb.description;
                 product.imagesQuantity = productWeb.imagenes;
                 product.published = true;
 
                 if(productWeb.category){
-                    product.category = productWeb.category.categoryNew;
+                    product.category = productWeb.category.id;
                 }
 
             }
