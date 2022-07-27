@@ -8,8 +8,8 @@ export const serverConfig = {
     jwtSecret: process.env.JWT_SECRET || "test",
     isFakeCounters: false,
     fakeCounterLimit: 5000,
-    includeServices: [services.CommentOrder, services.CommentPostSale, services.OrderDetail, services.OrderHistoric, services.BillConfig, services.Bill, services.BillCreditMemo],
-    limitPerBatch: 3000,
+    includeServices: [services.Bill, services.BillCreditMemo],
+    limitPerBatch: 5000,
     smallLimitPerRequests: [services.Payment],
     smallLimit: 800,
 };
