@@ -2,7 +2,6 @@ import {
     Column,
     CreateDateColumn,
     Entity, JoinColumn,
-    ManyToOne,
     OneToMany, OneToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn
@@ -11,8 +10,6 @@ import BaseModel from "../common/repositories/base.model";
 import {IsBoolean, IsDate, IsDecimal, IsNumber, IsOptional, Length, MaxLength} from "class-validator";
 import {Type} from "class-transformer";
 import {ProductSize} from "./ProductSize";
-import {Size} from "./Size";
-import {Category} from "./Category";
 import {ProductImage} from "./ProductImage";
 import {NewDatabaseName} from "../common/persistence";
 import {ProductWithNew} from "../models_moie/ProductWithNew";

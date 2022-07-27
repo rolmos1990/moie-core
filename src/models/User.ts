@@ -6,7 +6,7 @@ import {
     UpdateDateColumn
 } from "typeorm";
 import BaseModel from "../common/repositories/base.model";
-import {IsDate, IsEmail, Length, IsBoolean, IsDateString} from "class-validator";
+import {IsDate, IsEmail, Length, IsBoolean} from "class-validator";
 import { Type } from 'class-transformer';
 import {NewDatabaseName} from "../common/persistence";
 

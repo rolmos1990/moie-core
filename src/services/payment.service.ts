@@ -1,5 +1,5 @@
 import {BaseService} from "../common/controllers/base.service";
-import {createConnection, getConnection, getRepository} from "typeorm";
+import {getRepository} from "typeorm";
 import {Payment as PaymentOriginal} from "../models_moie/Payment";
 import {Payment} from "../models/Payment";
 import {serverConfig} from "../config/ServerConfig";
@@ -37,11 +37,14 @@ export class PaymentService extends BaseService<Payment> {
 
         const orderUpdated : OrderNew[] = [];
 
+        const d = new Date();
+        d.setDate(d.getFullYear() - 7); // 7 Years ago
+
         await items.forEach(item => {
             const _item = new Payment();
             _item.id = item.id;
             _item.name = item.name || 'Sin Nombre';
-            _item.createdAt = item.createdAt ? item.createdAt : new Date()
+            _item.createdAt = item.createdAt;
             _item.status = item.order ? 1 : 0;
             _item.originBank = item.origen;
             _item.targetBank = item.bank;
@@ -51,6 +54,10 @@ export class PaymentService extends BaseService<Payment> {
             _item.type = item.type;
             _item.user = 1;
             _item.status = 0;
+
+            if(isNaN(item.createdAt.getTime())){
+                _item.createdAt = new Date();
+            }
 
             if(_item.order === null){
                 //CANCELLED

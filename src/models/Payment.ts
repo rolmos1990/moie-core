@@ -3,9 +3,9 @@ import BaseModel from "../common/repositories/base.model";
 import {IsDate, IsDecimal, IsNumber, IsOptional, Length} from "class-validator";
 import {Type} from "class-transformer";
 import {Order} from "./Order";
-import {User} from "./User";
+import {NewDatabaseName} from "../common/persistence";
 
-@Entity({name: 'Payment'})
+@Entity({database: NewDatabaseName, name: 'Payment'})
 export class Payment extends BaseModel{
 
     @PrimaryGeneratedColumn('increment')

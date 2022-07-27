@@ -2,8 +2,9 @@ import {Column, CreateDateColumn, Entity, PrimaryGeneratedColumn} from "typeorm"
 import BaseModel from "../common/repositories/base.model";
 import {IsDate, IsNumber} from "class-validator";
 import {Type} from "class-transformer";
+import {NewDatabaseName} from "../common/persistence";
 
-@Entity({name: 'OrderHistoric'})
+@Entity({database: NewDatabaseName, name: 'OrderHistoric'})
 export class OrderHistoric extends BaseModel{
 
     @PrimaryGeneratedColumn('increment')

@@ -2,8 +2,9 @@ import {Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColu
 import BaseModel from "../common/repositories/base.model";
 import {IsDate, IsInt} from "class-validator";
 import {Type} from "class-transformer";
+import {NewDatabaseName} from "../common/persistence";
 
-@Entity({name: 'BillConfig'})
+@Entity({database: NewDatabaseName, name: 'BillConfig'})
 export class BillConfig extends BaseModel{
     @PrimaryGeneratedColumn('increment')
     id: number;

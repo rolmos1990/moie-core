@@ -7,8 +7,9 @@ import {
 import BaseModel from "../common/repositories/base.model";
 import {IsBoolean, IsDate, IsDecimal, IsInt, IsString} from "class-validator";
 import {Type} from "class-transformer";
+import {NewDatabaseName} from "../common/persistence";
 
-@Entity({name: 'Bill'})
+@Entity({database: NewDatabaseName, name: 'Bill'})
 export class Bill extends BaseModel{
     @PrimaryGeneratedColumn('increment')
     id: number;

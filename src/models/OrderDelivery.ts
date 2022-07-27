@@ -1,9 +1,10 @@
-import {Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn} from "typeorm";
+import {Column, Entity, PrimaryGeneratedColumn, UpdateDateColumn} from "typeorm";
 import BaseModel from "../common/repositories/base.model";
 import {IsBoolean, IsDate, IsDecimal, IsOptional, Length} from "class-validator";
 import {Type} from "class-transformer";
+import {NewDatabaseName} from "../common/persistence";
 
-@Entity({name: 'OrderDelivery'})
+@Entity({database: NewDatabaseName, name: 'OrderDelivery'})
 export class OrderDelivery extends BaseModel{
 
     @PrimaryGeneratedColumn('increment')

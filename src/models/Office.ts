@@ -3,9 +3,10 @@ import BaseModel from "../common/repositories/base.model";
 import {IsDate, IsNumber, Length} from "class-validator";
 import {Type} from "class-transformer";
 import {User} from "./User";
+import {NewDatabaseName} from "../common/persistence";
 
 //Equivalente a (despachos)
-@Entity({name: 'Office'})
+@Entity({database: NewDatabaseName, name: 'Office'})
 export class Office extends BaseModel{
 
     @PrimaryGeneratedColumn('increment')

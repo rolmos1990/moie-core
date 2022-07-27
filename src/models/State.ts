@@ -4,7 +4,7 @@ import {
     PrimaryGeneratedColumn,
 } from "typeorm";
 import BaseModel from "../common/repositories/base.model";
-import {IsBoolean, IsDecimal, IsInt, Length} from "class-validator";
+import {IsBoolean, Length} from "class-validator";
 import {Municipality} from "./Municipality";
 import {NewDatabaseName} from "../common/persistence";
 

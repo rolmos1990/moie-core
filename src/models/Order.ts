@@ -3,7 +3,6 @@ import {
     CreateDateColumn,
     Entity,
     JoinColumn,
-    ManyToOne,
     OneToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn
@@ -11,16 +10,14 @@ import {
 import BaseModel from "../common/repositories/base.model";
 import {IsBoolean, IsDate, IsDecimal, IsNumber, IsOptional, Length,} from "class-validator";
 import {Type} from "class-transformer";
-import {Customer} from "./Customer";
-import {User} from "./User";
 import {OrderDelivery} from "./OrderDelivery";
-import {Bill} from "./Bill";
+import {NewDatabaseName} from "../common/persistence";
 
 /**
  * El isImpress -> o Impreso seria un Estatus más,
  *
  */
-@Entity({name: 'Order'})
+@Entity({database: NewDatabaseName, name: 'Order'})
 export class Order extends BaseModel{
 
     @PrimaryGeneratedColumn('increment')

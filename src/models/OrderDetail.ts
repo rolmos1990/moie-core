@@ -11,12 +11,13 @@ import {
 } from "class-validator";
 import {Order} from "./Order";
 import {Product} from "./Product";
+import {NewDatabaseName} from "../common/persistence";
 
 /**
  * El isImpress -> o Impreso seria un Estatus más,
  *
  */
-@Entity({name: 'OrderDetail'})
+@Entity({database: NewDatabaseName, name: 'OrderDetail'})
 export class OrderDetail extends BaseModel{
 
     @PrimaryGeneratedColumn('increment')
