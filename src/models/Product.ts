@@ -102,9 +102,6 @@ export class Product extends BaseModel{
     @OneToMany(() => ProductImage, productImage => productImage.product)
     productImage: ProductImage[];
 
-    //@OneToOne(() => ProductAvailable, productAvailable => productAvailable.id)
-    //productAvailable: ProductAvailable;
-
     @Column({type: 'boolean'})
     @IsBoolean({groups: ['create','update']})
     published: boolean;

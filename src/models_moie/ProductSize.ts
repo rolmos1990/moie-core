@@ -1,6 +1,5 @@
 import {Column, Entity, JoinColumn, ManyToOne, MoreThan, PrimaryGeneratedColumn} from "typeorm";
 import BaseModel from "../common/repositories/base.model";
-import {Product} from "./Product";
 import {Length, Min} from "class-validator";
 import {OriginalDatabaseName} from "../common/persistence";
 import {ProductWithNew} from "./ProductWithNew";
