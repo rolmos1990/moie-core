@@ -20,8 +20,8 @@ services:
       - /var/storage/pdf:/storage/pdf:rw
     ports:
       - "5000:5000"
-    depends_on:
-      - mysqldb
+    #depends_on:
+    #  - mysqldb
     networks:
       - app-tier
     environment:
@@ -52,8 +52,8 @@ services:
       - /var/storage/pdf:/storage/pdf:rw
     ports:
       - "5001:5001"
-    depends_on:
-      - mysqldb
+    #depends_on:
+    #  - mysqldb
     networks:
       - app-tier
     environment:
@@ -70,29 +70,29 @@ services:
       PUBLIC_URL: ${PUBLIC_URL}
       TZ: America/Bogota
 
-  mysqldb:
-    container_name: mysqldb
-    image: mysql
-    command: --default-authentication-plugin=mysql_native_password --sql_mode=""
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
-      MYSQL_USER: ${DB_USERNAME}
-      MYSQL_ROOT_HOST: '%'
-      DB_NAME: ${DB_DATABASE}
-    expose:
-      - "3306"
-    ports:
-      - "3306:3306"
-    networks:
-      - app-tier
-    volumes:
-      #- "./scripts/moie-v2-qa-bk.sql:/docker-entrypoint-initdb.d/1.sql"
-      #- "./scripts/schema.sql:/docker-entrypoint-initdb.d/1.sql"
-      #- "./scripts/data.sql:/docker-entrypoint-initdb.d/2.sql"
-      - /var/db:/var/lib/mysql
-      - ./etc/custom.cnf:/etc/my.cnf
+  #mysqldb:
+  #  container_name: mysqldb
+  #  image: mysql
+  #  command: --default-authentication-plugin=mysql_native_password --sql_mode=""
+  #  restart: always
+  #  environment:
+  #    MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+  #    MYSQL_PASSWORD: ${DB_PASSWORD}
+  #    MYSQL_USER: ${DB_USERNAME}
+  #    MYSQL_ROOT_HOST: '%'
+  #    DB_NAME: ${DB_DATABASE}
+  #  expose:
+  #    - "3306"
+  #  ports:
+  #    - "3306:3306"
+  #  networks:
+  #    - app-tier
+  #  volumes:
+  #    #- "./scripts/moie-v2-qa-bk.sql:/docker-entrypoint-initdb.d/1.sql"
+  #    #- "./scripts/schema.sql:/docker-entrypoint-initdb.d/1.sql"
+  #    #- "./scripts/data.sql:/docker-entrypoint-initdb.d/2.sql"
+  #    - /var/db:/var/lib/mysql
+  #    - ./etc/custom.cnf:/etc/my.cnf
 
   nginx:
     build: ./nginx
