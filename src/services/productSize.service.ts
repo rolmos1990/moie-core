@@ -1,5 +1,4 @@
 import {BaseService} from "../common/controllers/base.service";
-import {Category} from "../models/Category";
 import {getRepository} from "typeorm";
 import {ProductSize} from "../models/ProductSize";
 import {ProductSizeOriginal} from "../models_moie/ProductSize";

@@ -5,7 +5,7 @@ import {OriginalDatabaseName} from "../common/persistence";
 import {Size as SizeNew} from "../models/Size";
 
 @Entity({database: OriginalDatabaseName, name: 'talla', orderBy: {id: 'ASC'}, synchronize: false})
-export class Size extends BaseModel{
+export class SizeOriginal extends BaseModel{
 
     @PrimaryGeneratedColumn('increment')
     id: number;

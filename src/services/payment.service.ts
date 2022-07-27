@@ -14,7 +14,7 @@ export class PaymentService extends BaseService<Payment> {
     constructor(){
         super();
         this.newRepository = getRepository(Payment);
-        this.originalRepository = getRepository(PaymentOriginal);
+        this.originalRepository = getRepository(PaymentOriginal, MySQLMoiePersistenceConnection.name);
         this.orderRepository = getRepository(OrderNew);
     }
 

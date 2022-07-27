@@ -4,6 +4,7 @@ import {User as UserOriginal} from "../models_moie/User";
 import {User} from "../models/User";
 import {getPasswordAndSalt} from "../common/helper/helpers";
 import {serverConfig} from "../config/ServerConfig";
+import {MySQLMoiePersistenceConnection} from "../common/persistence";
 
 export class UserService extends BaseService<User> {
 
@@ -12,7 +13,7 @@ export class UserService extends BaseService<User> {
     constructor(){
         super();
         this.newRepository = getRepository(User);
-        this.originalRepository = getRepository(UserOriginal);
+        this.originalRepository = getRepository(UserOriginal, MySQLMoiePersistenceConnection.name);
     }
 
     /**

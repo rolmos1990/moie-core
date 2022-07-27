@@ -3,12 +3,11 @@ import {
     CreateDateColumn,
     Entity, JoinColumn,
     ManyToOne, OneToMany, OneToOne, PrimaryColumn,
-    PrimaryGeneratedColumn,
 } from "typeorm";
 import BaseModel from "../common/repositories/base.model";
 import {IsDate, IsDecimal, IsOptional, Length, MaxLength} from "class-validator";
 import {Type} from "class-transformer";
-import {Size} from "./Size";
+import {SizeOriginal} from "./Size";
 import {ProductSize} from "../models/ProductSize";
 import {OriginalDatabaseName} from "../common/persistence";
 import {Product as ProductNew} from '../models/Product';
@@ -46,7 +45,7 @@ export class ProductWithNew extends BaseModel{
     @IsDecimal({ decimal_digits: '2'}, {groups: ['create','update']})
     cost: number;
 
-    @ManyToOne(() => Size)
+    @ManyToOne(() => SizeOriginal)
     @JoinColumn({name: 'id_talla'})
     size: number;
 

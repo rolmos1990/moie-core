@@ -6,6 +6,7 @@ import {converters} from "../common/helper/converters";
 import {OrderDelivery} from "../models/OrderDelivery";
 import {serverConfig} from "../config/ServerConfig";
 import {getCalculateCosts} from "../common/helper/helpers";
+import {MySQLMoiePersistenceConnection} from "../common/persistence";
 
 export class OrderService extends BaseService<Order> {
 
@@ -16,7 +17,7 @@ export class OrderService extends BaseService<Order> {
     constructor(){
         super();
         this.newRepository = getRepository(Order);
-        this.originalRepository = getRepository(OrderOriginal);
+        this.originalRepository = getRepository(OrderOriginal, MySQLMoiePersistenceConnection.name);
         this.orderDeliveryRepository = getRepository(OrderDelivery);
     }
 

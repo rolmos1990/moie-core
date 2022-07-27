@@ -3,6 +3,7 @@ import {getRepository} from "typeorm";
 import {Customer as CustomerOriginal} from "../models_moie/Customer";
 import {Customer} from "../models/Customer";
 import {serverConfig} from "../config/ServerConfig";
+import {MySQLMoiePersistenceConnection} from "../common/persistence";
 
 export class CustomerService extends BaseService<Customer> {
 
@@ -12,7 +13,7 @@ export class CustomerService extends BaseService<Customer> {
     constructor(){
         super();
         this.newRepository = getRepository(Customer);
-        this.originalRepository = getRepository(CustomerOriginal);
+        this.originalRepository = getRepository(CustomerOriginal, MySQLMoiePersistenceConnection.name);
     }
 
     /**

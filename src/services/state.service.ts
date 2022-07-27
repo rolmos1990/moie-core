@@ -3,6 +3,7 @@ import {getRepository} from "typeorm";
 import {State as StateOriginal} from "../models_moie/State";
 import {State} from "../models/State";
 import {serverConfig} from "../config/ServerConfig";
+import {MySQLMoiePersistenceConnection} from "../common/persistence";
 
 export class StateService extends BaseService<State> {
 
@@ -11,7 +12,7 @@ export class StateService extends BaseService<State> {
     constructor(){
         super();
         this.newRepository = getRepository(State);
-        this.originalRepository = getRepository(StateOriginal);
+        this.originalRepository = getRepository(StateOriginal, MySQLMoiePersistenceConnection.name);
     }
 
     /**

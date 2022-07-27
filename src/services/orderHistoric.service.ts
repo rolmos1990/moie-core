@@ -4,6 +4,7 @@ import {OrderHistoric as OrderHistoricOriginal} from "../models_moie/OrderHistor
 import {OrderHistoric} from "../models/OrderHistoric";
 import {converters} from "../common/helper/converters";
 import {serverConfig} from "../config/ServerConfig";
+import {MySQLMoiePersistenceConnection} from "../common/persistence";
 
 export class OrderHistoricService extends BaseService<OrderHistoric> {
 
@@ -12,7 +13,7 @@ export class OrderHistoricService extends BaseService<OrderHistoric> {
     constructor(){
         super();
         this.newRepository = getRepository(OrderHistoric);
-        this.originalRepository = getRepository(OrderHistoricOriginal);
+        this.originalRepository = getRepository(OrderHistoricOriginal, MySQLMoiePersistenceConnection.name);
     }
 
     /**

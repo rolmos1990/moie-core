@@ -4,6 +4,7 @@ import {DeliveryLocality as DeliveryLocalityOriginal} from "../models_moie/Deliv
 import {DeliveryLocality} from "../models/DeliveryLocality";
 import {convertDeliveryType} from "../common/migrationUtility/singleConversors";
 import {serverConfig} from "../config/ServerConfig";
+import {MySQLMoiePersistenceConnection} from "../common/persistence";
 
 export class DeliveryLocalityService extends BaseService<DeliveryLocality> {
 
@@ -12,7 +13,7 @@ export class DeliveryLocalityService extends BaseService<DeliveryLocality> {
     constructor(){
         super();
         this.newRepository = getRepository(DeliveryLocality);
-        this.originalRepository = getRepository(DeliveryLocalityOriginal);
+        this.originalRepository = getRepository(DeliveryLocalityOriginal, MySQLMoiePersistenceConnection.name);
     }
 
     /**

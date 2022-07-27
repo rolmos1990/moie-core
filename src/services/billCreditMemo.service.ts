@@ -4,6 +4,7 @@ import {BillCreditMemo as BillCreditMemoOriginal} from "../models_moie/BillCredi
 import {BillCreditMemo} from "../models/BillCreditMemo";
 import {converters} from "../common/helper/converters";
 import {serverConfig} from "../config/ServerConfig";
+import {MySQLMoiePersistenceConnection} from "../common/persistence";
 
 export class BillCreditMemoService extends BaseService<BillCreditMemo> {
 
@@ -12,7 +13,7 @@ export class BillCreditMemoService extends BaseService<BillCreditMemo> {
     constructor(){
         super();
         this.newRepository = getRepository(BillCreditMemo);
-        this.originalRepository = getRepository(BillCreditMemoOriginal);
+        this.originalRepository = getRepository(BillCreditMemoOriginal, MySQLMoiePersistenceConnection.name);
     }
 
     /**

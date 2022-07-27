@@ -3,6 +3,7 @@ import {getRepository} from "typeorm";
 import {BillConfig as BillConfigOriginal} from "../models_moie/BillConfig";
 import {BillConfig} from "../models/BillConfig";
 import {serverConfig} from "../config/ServerConfig";
+import {MySQLMoiePersistenceConnection} from "../common/persistence";
 
 export class BillConfigService extends BaseService<BillConfig> {
 
@@ -11,7 +12,7 @@ export class BillConfigService extends BaseService<BillConfig> {
     constructor(){
         super();
         this.newRepository = getRepository(BillConfig);
-        this.originalRepository = getRepository(BillConfigOriginal);
+        this.originalRepository = getRepository(BillConfigOriginal, MySQLMoiePersistenceConnection.name);
     }
 
     /**

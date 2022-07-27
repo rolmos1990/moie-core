@@ -4,6 +4,7 @@ import {Office as OfficeOriginal} from "../models_moie/Office";
 import {Office} from "../models/Office";
 import {converters} from "../common/helper/converters";
 import {serverConfig} from "../config/ServerConfig";
+import {MySQLMoiePersistenceConnection} from "../common/persistence";
 
 export class OfficeService extends BaseService<Office> {
 
@@ -12,7 +13,7 @@ export class OfficeService extends BaseService<Office> {
     constructor(){
         super();
         this.newRepository = getRepository(Office);
-        this.originalRepository = getRepository(OfficeOriginal);
+        this.originalRepository = getRepository(OfficeOriginal, MySQLMoiePersistenceConnection.name);
     }
 
     /**
