@@ -8,7 +8,6 @@ import BaseModel from "../common/repositories/base.model";
 import {IsDate, IsDecimal, IsOptional, Length, MaxLength} from "class-validator";
 import {Type} from "class-transformer";
 import {SizeOriginal} from "./Size";
-import {ProductSize} from "../models/ProductSize";
 import {OriginalDatabaseName} from "../common/persistence";
 import {ProductWeb} from '../models_web/ProductWeb';
 
@@ -43,7 +42,7 @@ export class ProductOriginal extends BaseModel{
 
     @ManyToOne(() => SizeOriginal)
     @JoinColumn({name: 'id_talla'})
-    size: number;
+    size: SizeOriginal;
 
     @Column({name:'peso', type: 'decimal'})
     @IsDecimal({ decimal_digits: '2'}, {groups: ['create','update']})
@@ -58,9 +57,6 @@ export class ProductOriginal extends BaseModel{
     @Type(() => Date)
     @IsDate()
     createdAt: Date;
-
-    @OneToMany(() => ProductSize, productSize => productSize.product)
-    productSize: ProductSize[];
 
     @OneToOne(() => ProductWeb)
     @JoinColumn({name: "id"})

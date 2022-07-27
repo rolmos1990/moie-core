@@ -24,7 +24,6 @@ export class OrderDetailService extends BaseService<OrderDetail> {
 
         const query = this.originalRepository.createQueryBuilder("od")
             .leftJoinAndSelect("od.product", "p")
-            .leftJoinAndSelect("p.productSize", "ps")
             .leftJoinAndSelect("p.productNew", "pn")
             .leftJoinAndSelect("od.order", "o")
             .orderBy("p.id", "ASC")

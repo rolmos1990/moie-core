@@ -73,9 +73,9 @@ export class Product extends BaseModel{
     @IsOptional()
     providerReference: string;
 
-    @ManyToOne(() => Category, category => category.products)
     @JoinColumn({name:'category_id'})
-    category: Category;
+    @Column({name:'category_id', type: 'integer'})
+    category: number;
 
     @CreateDateColumn({name:'created_at'})
     @Type(() => Date)
@@ -87,9 +87,8 @@ export class Product extends BaseModel{
     @IsDate()
     updatedAt: Date;
 
-    @ManyToOne(() => Size)
-    @JoinColumn({name: 'size_id'})
-    size: Size;
+    @Column({name:'size_id', type: 'integer'})
+    size: number;
 
     @OneToMany(() => ProductSize, productSize => productSize.product)
     productSize: ProductSize[];
