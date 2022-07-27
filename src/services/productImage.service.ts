@@ -22,7 +22,6 @@ export class ProductImageService extends BaseService<ProductImage> {
         await this.newRepository.query("SET FOREIGN_KEY_CHECKS=0;");
 
         const query = this.newRepository.createQueryBuilder("p")
-            .leftJoinAndSelect("p.category", "category")
             .orderBy("p.id", "DESC")
             .skip(skip)
             .take(limit);
