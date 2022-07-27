@@ -13,7 +13,7 @@ export class ProductSizeOriginal extends BaseModel{
     @PrimaryGeneratedColumn('increment')
     id: number;
 
-    @ManyToOne(() => ProductWithNew, product => product.productSize)
+    @ManyToOne(() => ProductWithNew)
     @JoinColumn({name:'id_producto'})
     product: ProductWithNew;
 

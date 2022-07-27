@@ -26,8 +26,8 @@ import {CommentPostSaleService} from "../services/commentPostSale.service";
 @route('/migration')
 export class MigrationController {
     constructor(
-        private readonly categoryService: CategoryService,
         private readonly productService: ProductService,
+        private readonly categoryService: CategoryService,
         private readonly productImageService: ProductImageService,
         private readonly sizeService: SizeService,
         private readonly productSizeService: ProductSizeService,

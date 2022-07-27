@@ -42,7 +42,7 @@ app.use(cors(options));
 app.use(express.json());
 
 // Controllers
-createConnections([MySQLPersistenceConnection, MySQLMoiePersistenceConnection, MySQLMoieStorePersistenceConnection]).then(async connection => {
+createConnections([{...MySQLPersistenceConnection}, {...MySQLMoiePersistenceConnection}, {...MySQLMoieStorePersistenceConnection}]).then(async connection => {
     loadContainer(app);
 /*    app.use(Authorization); //disable validation*/
     app.use(loadControllers(

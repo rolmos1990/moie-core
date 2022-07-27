@@ -3,7 +3,10 @@ import {getRepository} from "typeorm";
 import {ProductSize} from "../models/ProductSize";
 import {ProductSizeOriginal} from "../models_moie/ProductSize";
 import {serverConfig} from "../config/ServerConfig";
-import {MySQLMoiePersistenceConnection} from "../common/persistence";
+import {
+    MySQLMoiePersistenceConnection,
+    MySQLPersistenceConnection
+} from "../common/persistence";
 
 export class ProductSizeService extends BaseService<ProductSize> {
 
@@ -11,8 +14,9 @@ export class ProductSizeService extends BaseService<ProductSize> {
     private readonly originalRepository;
     constructor(){
         super();
-        this.newRepository = getRepository(ProductSize);
+        this.newRepository = getRepository(ProductSize, MySQLPersistenceConnection.name);
         this.originalRepository = getRepository(ProductSizeOriginal, MySQLMoiePersistenceConnection.name);
+        console.log("asd");
     }
 
     /**
@@ -24,8 +28,8 @@ export class ProductSizeService extends BaseService<ProductSize> {
 
         const query = this.originalRepository.createQueryBuilder("p")
             .orderBy("p.id", "DESC")
-            .leftJoinAndSelect("p.product", "product")
-            .leftJoinAndSelect("product.productNew", "productNew")
+            .leftJoinAndSelect("p.product", "pr")
+            .leftJoinAndSelect("pr.productNew", "productNew")
             .skip(skip)
             .take(limit);
 

@@ -26,6 +26,8 @@ FLUSH PRIVILEGES;
 sudo scp -i ${dir_certificates}/lucy-modas.pem /Users/ramon/Backups/moie-lucy-v2.sql ubuntu@3.85.198.54:/var/mysql_backups
 mysql -u root -p moie-lucy-v2 < /var/mysql_backups/moie-lucy-v2.sql
 
+
+
 ------------------------------------
 3.1 Copy database from local to server
 

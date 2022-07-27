@@ -2,15 +2,14 @@ import {
     Column,
     CreateDateColumn,
     Entity, JoinColumn,
-    ManyToOne, OneToMany, OneToOne, PrimaryColumn,
+    ManyToOne, OneToOne, PrimaryColumn,
 } from "typeorm";
 import BaseModel from "../common/repositories/base.model";
 import {IsDate, IsDecimal, IsOptional, Length, MaxLength} from "class-validator";
 import {Type} from "class-transformer";
 import {SizeOriginal} from "./Size";
-import {ProductSize} from "../models/ProductSize";
-import {OriginalDatabaseName} from "../common/persistence";
-import {Product as ProductNew} from '../models/Product';
+import {NewDatabaseName, OriginalDatabaseName} from "../common/persistence";
+import {Product} from '../models/Product';
 
 /**
  * Product Versión Moie - Relacionado con los productos nuevos.
@@ -63,12 +62,9 @@ export class ProductWithNew extends BaseModel{
     @IsDate()
     createdAt: Date;
 
-    @OneToMany(() => ProductSize, productSize => productSize.product)
-    productSize: ProductSize[];
-
-    @OneToOne(() => ProductNew)
+    @OneToOne(() => Product)
     @JoinColumn({name: "id", referencedColumnName: "reference"})
-    productNew: ProductNew;
+    productNew: Product;
 
     isEmpty(): boolean {
         return (this.id == null);
