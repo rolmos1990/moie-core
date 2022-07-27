@@ -4,7 +4,7 @@ import {Payment as PaymentOriginal} from "../models_moie/Payment";
 import {Payment} from "../models/Payment";
 import {serverConfig} from "../config/ServerConfig";
 import {Order as OrderNew} from "../models/Order";
-import {MySQLMoiePersistenceConnection} from "../common/persistence";
+import {MySQLMoiePersistenceConnection, MySQLPersistenceConnection} from "../common/persistence";
 
 export class PaymentService extends BaseService<Payment> {
 
@@ -13,9 +13,9 @@ export class PaymentService extends BaseService<Payment> {
     private readonly orderRepository;
     constructor(){
         super();
-        this.newRepository = getRepository(Payment);
+        this.newRepository = getRepository(Payment, MySQLPersistenceConnection.name);
         this.originalRepository = getRepository(PaymentOriginal, MySQLMoiePersistenceConnection.name);
-        this.orderRepository = getRepository(OrderNew);
+        this.orderRepository = getRepository(OrderNew, MySQLPersistenceConnection.name);
     }
 
     /**

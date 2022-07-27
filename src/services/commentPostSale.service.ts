@@ -3,7 +3,7 @@ import {getRepository} from "typeorm";
 import {CommentPostSale as CommentOriginal} from "../models_moie/CommentPostSale";
 import {Comment} from "../models/Comments";
 import {serverConfig} from "../config/ServerConfig";
-import {MySQLMoiePersistenceConnection} from "../common/persistence";
+import {MySQLMoiePersistenceConnection, MySQLPersistenceConnection} from "../common/persistence";
 
 export class CommentPostSaleService extends BaseService<Comment> {
 
@@ -11,7 +11,7 @@ export class CommentPostSaleService extends BaseService<Comment> {
     private readonly originalRepository;
     constructor(){
         super();
-        this.newRepository = getRepository(Comment);
+        this.newRepository = getRepository(Comment, MySQLPersistenceConnection.name);
         this.originalRepository = getRepository(CommentOriginal, MySQLMoiePersistenceConnection.name);
     }
 
