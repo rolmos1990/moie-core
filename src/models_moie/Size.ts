@@ -2,7 +2,6 @@ import {Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn} from "type
 import BaseModel from "../common/repositories/base.model";
 import {Length} from "class-validator";
 import {OriginalDatabaseName} from "../common/persistence";
-import {Product as ProductWeb} from "../models_web/Product";
 import {Size as SizeNew} from "../models/Size";
 
 @Entity({database: OriginalDatabaseName, name: 'talla', orderBy: {id: 'ASC'}, synchronize: false})

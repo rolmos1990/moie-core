@@ -1,7 +1,7 @@
 import {MysqlConnectionOptions} from "typeorm/driver/mysql/MysqlConnectionOptions";
 
 export default <MysqlConnectionOptions> {
-    name: "moie-lucy",
+    name: "moie_lucy",
     type: "mysql",
     insecureAuth: true,
     debug: false,

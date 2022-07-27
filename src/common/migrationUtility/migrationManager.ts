@@ -3,6 +3,7 @@ import {BaseService} from "../controllers/base.service";
 import {PaymentService} from "../../services/payment.service";
 import {OrderService} from "../../services/order.service";
 import {serverConfig} from "../../config/ServerConfig";
+import {services} from "../../services/services";
 
 export class MigrationManager {
     private readonly service : BaseService<any>;
@@ -13,6 +14,11 @@ export class MigrationManager {
     async run(monitor = true) {
         let pointer = 0;
         const name = await this.service.processName();
+
+        if(name === services.Product){
+            console.log("");
+        }
+
         if(serverConfig.includeServices.length > 0 && !(serverConfig.includeServices.includes(name))){
             return;
         }

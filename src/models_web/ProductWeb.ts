@@ -9,10 +9,10 @@ import {IsDate, IsDecimal, MaxLength} from "class-validator";
 import {Type} from "class-transformer";
 import {CategoryWeb} from "./CategoryWeb";
 import {StoreDatabaseName} from "../common/persistence";
-import {Product as ProductOriginal} from '../models_moie/Product';
+import {ProductOriginal} from '../models_moie/Product';
 
 @Entity({database: StoreDatabaseName, name: 'producto', orderBy: {id: 'ASC'}, synchronize: false})
-export class Product extends BaseModel{
+export class ProductWeb extends BaseModel{
 
     @PrimaryColumn({name:'codigo', type: 'varchar', length: 255})
     @OneToOne(() => ProductOriginal)

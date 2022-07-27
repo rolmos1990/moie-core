@@ -3,7 +3,6 @@ import {
     CreateDateColumn,
     Entity, JoinColumn,
     ManyToOne, OneToMany, OneToOne, PrimaryColumn,
-    PrimaryGeneratedColumn,
 } from "typeorm";
 import BaseModel from "../common/repositories/base.model";
 import {IsDate, IsDecimal, IsOptional, Length, MaxLength} from "class-validator";
@@ -11,14 +10,13 @@ import {Type} from "class-transformer";
 import {Size} from "./Size";
 import {ProductSize} from "../models/ProductSize";
 import {OriginalDatabaseName} from "../common/persistence";
-import {Product as ProductWeb} from '../models_web/Product';
-import {Product as ProductNew} from '../models/Product';
+import {ProductWeb} from '../models_web/ProductWeb';
 
 /**
  * Producto Moie - Relacionado con el Producto Web (Categorias e Imagenes).
  */
 @Entity({database: OriginalDatabaseName, name: 'producto', orderBy: {id: 'ASC'}, synchronize: false})
-export class Product extends BaseModel{
+export class ProductOriginal extends BaseModel{
 
     @PrimaryColumn({name:'id', type: 'varchar', length: 20})
     id: string;

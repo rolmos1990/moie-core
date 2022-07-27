@@ -34,6 +34,9 @@ export class CustomerService extends BaseService<Customer> {
 
         const itemSaved: Customer[] = [];
 
+        const d = new Date();
+        d.setDate(d.getFullYear() - 7); // 7 Years ago
+
         await items.forEach(item => {
             const _item = new Customer();
 
@@ -47,6 +50,10 @@ export class CustomerService extends BaseService<Customer> {
             _item.hasNotification = true;
             _item.address = item.city;
             _item.createdAt = item.createdAt;
+
+            if(isNaN(item.createdAt.getTime())){
+                _item.createdAt = d;
+            }
 
             if(item.municipality) {
                 _item.state = item.municipality.municipalityNew.state;

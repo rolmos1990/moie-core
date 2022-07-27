@@ -9,5 +9,5 @@ export const serverConfig = {
     isFakeCounters: false,
     fakeCounterLimit: 5000,
     includeServices: [],
-    limitPerBatch: 15000,
+    limitPerBatch: 8000,
 };

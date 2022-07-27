@@ -1,7 +1,7 @@
-import { ConnectionOptions } from "typeorm";
 import {MysqlConnectionOptions} from "typeorm/driver/mysql/MysqlConnectionOptions";
 
 export default <MysqlConnectionOptions> {
+    name: "default",
     type: "mysql",
     insecureAuth: true,
     debug: false,

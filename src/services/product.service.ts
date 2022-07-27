@@ -1,12 +1,12 @@
 import {BaseService} from "../common/controllers/base.service";
 import {Product} from "../models/Product";
 import {Category as CategoryNew} from "../models/Category";
-import {Product as ProductWeb} from "../models_web/Product";
-import {Product as ProductOriginal} from "../models_moie/Product";
+import {ProductWeb} from "../models_web/ProductWeb";
+import {ProductOriginal} from "../models_moie/Product";
 import {getRepository} from "typeorm";
-import {ProductImage, SIZES} from "../models/ProductImage";
 import {Size} from "../models_moie/Size";
 import {serverConfig} from "../config/ServerConfig";
+import {MySQLMoieStorePersistenceConnection, MySQLPersistenceConnection} from "../common/persistence";
 
 interface CategoryI {
     id: number,
@@ -47,9 +47,9 @@ export class ProductService extends BaseService<Product> {
 
     constructor(){
         super();
-        this.newRepository = getRepository(Product);
-        this.storeRepository = getRepository(ProductWeb);
-        this.originalRepository = getRepository(ProductOriginal);
+        this.newRepository = getRepository(Product, MySQLPersistenceConnection.name);
+        this.originalRepository = getRepository(ProductOriginal, MySQLMoieStorePersistenceConnection.name);
+        this.storeRepository = getRepository(ProductWeb, MySQLMoieStorePersistenceConnection.name);
     }
 
     /**
@@ -64,7 +64,7 @@ export class ProductService extends BaseService<Product> {
             .leftJoinAndSelect("p.size", "size")
             .leftJoinAndSelect("size.sizeNew", "sizeNew")
             .leftJoinAndSelect("productWeb.category", "cat")
-            .leftJoinAndSelect("cat.categoryNew", "catnew")
+            //.leftJoinAndSelect("cat.category", "catnew")
             .orderBy("p.id", "DESC")
             .skip(skip)
             .take(limit);

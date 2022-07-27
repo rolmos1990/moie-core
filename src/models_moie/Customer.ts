@@ -48,24 +48,10 @@ export class Customer extends BaseModel{
     @JoinColumn({ name:'id_municipio' })
     municipality: Municipality | null;
 
-    @CreateDateColumn({name:'fecha_registro'})
+    @CreateDateColumn({name:'fecha_registro', nullable: true})
     @Type(() => Date)
     @IsDate()
-    createdAt: Date;
-
-    @OneToOne(() => ClientNew)
-    @JoinColumn({name: "id"})
-    clientNew: ClientNew;
-
-    equals(obj: any) {
-        if(obj instanceof Customer === false){
-            return false;
-        }
-        if(obj.id === this.id){
-            return true;
-        }
-        return false;
-    }
+    createdAt?: Date;
 
     toString(){
         return Customer.toString();

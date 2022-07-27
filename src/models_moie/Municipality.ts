@@ -7,7 +7,6 @@ import BaseModel from "../common/repositories/base.model";
 import {Length} from "class-validator";
 import {State} from "./State";
 import {OriginalDatabaseName} from "../common/persistence";
-import {Product as ProductWeb} from "../models_web/Product";
 import {Municipality as MunicipalityNew} from "../models/Municipality";
 
 @Entity({database: OriginalDatabaseName, name: 'municipio', orderBy: {id: 'ASC'}, synchronize: false})
