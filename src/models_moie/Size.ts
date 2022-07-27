@@ -19,7 +19,7 @@ export class SizeOriginal extends BaseModel{
     @Length(3, 100, {groups: ['create','update']})
     sizes: string;
 
-    @OneToOne(() => Size)
+    @OneToOne(() => SizeNew)
     @JoinColumn({name: "id"})
     sizeNew: SizeNew;
 
