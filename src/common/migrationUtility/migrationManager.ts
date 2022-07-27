@@ -23,6 +23,10 @@ export class MigrationManager {
             return;
         }
 
+        if(serverConfig.smallLimitPerRequests.length > 0 && !(serverConfig.smallLimitPerRequests.includes(name))){
+            this.limitPerBatch = serverConfig.smallLimit;
+        }
+
         try {
 
             const size = await this.service.counts();

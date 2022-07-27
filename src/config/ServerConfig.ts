@@ -9,5 +9,7 @@ export const serverConfig = {
     isFakeCounters: false,
     fakeCounterLimit: 5000,
     includeServices: [services.Payment, services.CommentOrder, services.CommentPostSale, services.OrderDetail, services.OrderHistoric, services.BillConfig, services.Bill, services.BillCreditMemo],
-    limitPerBatch: 3000,
+    limitPerBatch: 8000,
+    smallLimitPerRequests: [services.Payment],
+    smallLimit: 800,
 };
