@@ -4,6 +4,7 @@ import {getRepository} from "typeorm";
 import {ProductSize} from "../models/ProductSize";
 import {ProductSize as ProductSizeOriginal} from "../models_moie/ProductSize";
 import {serverConfig} from "../config/ServerConfig";
+import {MySQLMoiePersistenceConnection} from "../common/persistence";
 
 export class ProductSizeService extends BaseService<ProductSize> {
 
@@ -12,7 +13,7 @@ export class ProductSizeService extends BaseService<ProductSize> {
     constructor(){
         super();
         this.newRepository = getRepository(ProductSize);
-        this.originalRepository = getRepository(ProductSizeOriginal);
+        this.originalRepository = getRepository(ProductSizeOriginal, MySQLMoiePersistenceConnection.name);
     }
 
     /**
