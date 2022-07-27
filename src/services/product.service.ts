@@ -4,7 +4,7 @@ import {Category as CategoryNew} from "../models/Category";
 import {ProductWeb} from "../models_web/ProductWeb";
 import {ProductOriginal} from "../models_moie/Product";
 import {getRepository} from "typeorm";
-import {Size} from "../models_moie/Size";
+import {SizeOriginal} from "../models_moie/Size";
 import {serverConfig} from "../config/ServerConfig";
 import {MySQLMoieStorePersistenceConnection, MySQLPersistenceConnection} from "../common/persistence";
 
@@ -33,7 +33,7 @@ interface ProductMixedI {
     cost: number,
     weight: number,
     tags: string,
-    size: Size,
+    size: SizeOriginal,
     createdAt: Date,
     productWeb: ProductWebI,
     category: CategoryI
