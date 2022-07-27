@@ -2,7 +2,7 @@ import {BaseService} from "../common/controllers/base.service";
 import {Category} from "../models/Category";
 import {getRepository} from "typeorm";
 import {ProductSize} from "../models/ProductSize";
-import {ProductSize as ProductSizeOriginal} from "../models_moie/ProductSize";
+import {ProductSizeOriginal} from "../models_moie/ProductSize";
 import {serverConfig} from "../config/ServerConfig";
 import {MySQLMoiePersistenceConnection} from "../common/persistence";
 

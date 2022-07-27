@@ -8,7 +8,7 @@ import {ProductWithNew} from "./ProductWithNew";
  * Existencia de Productos.
  */
 @Entity({database: OriginalDatabaseName, name: 'existencia', orderBy: {id: 'ASC'}, synchronize: false})
-export class ProductSize extends BaseModel{
+export class ProductSizeOriginal extends BaseModel{
 
     @PrimaryGeneratedColumn('increment')
     id: number;
