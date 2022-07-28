@@ -1,0 +1,51 @@
+---- Migration Process ----- (En caso de fallar correr este script de migracion manual)
+
+1. Run the backup in production server
+
+mysqldump -u root -p --single-transaction moie-lucy > moie-lucy.sql
+mysqldump -u root -p --single-transaction moie-lucy > lucy_web.sql
+
+--------------------------------
+
+2. For Copy the Backups
+
+rm /var/migration/sql/moie-lucy.sql
+scp -i /var/migration/scripts/lucy-modas.pem ubuntu@44.192.20.154:/var/bk_mysql/moie-lucy.sql /var/migration/sql
+rm /var/migration/sql/lucy_web.sql
+scp -i /var/migration/scripts/lucy-modas.pem ubuntu@44.192.20.154:/var/bk_mysql/lucy_web.sql /var/migration/sql
+mysql -u root -p moie-lucy --password=Panama2018. < /var/migration/sql/moie-lucy.sql
+mysql -u root -p lucy_web --password=Panama2018. < /var/migration/sql/lucy_web.sql
+
+3. Run the migration commands
+
+export MYSQL_PWD="Panama2018."
+mysql -u root -p -D moie-lucy --password=Panama2018. -e "DROP DATABASE `moie-lucy`;"
+mysql -u root -p -D moie-lucy --password=Panama2018. -e "CREATE DATABASE `moie-lucy`;"
+mysql -u root -p moie-lucy --password=Panama2018. < /var/migration/sql/moie-lucy.sql
+
+mysql -u root -p -D moie-lucy --password=Panama2018. -e "DROP DATABASE lucy_web;"
+mysql -u root -p -D moie-lucy --password=Panama2018. -e "CREATE DATABASE lucy_web;"
+mysql -u root -p lucy_web --password=Panama2018. < /var/migration/sql/lucy_web.sql
+
+-----
+
+
+=================================
+
+
+
+Automatic command for migration
+
+COMANDO: run_migration
+
+
+sh /var/migration/scripts/migration.sh
+
+-- Esto generara un ambiente homologo para correr el script de migracion (automatico)
+
+
+
+=================================
+
+Correr sitio de migracion
+
