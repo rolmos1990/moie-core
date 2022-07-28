@@ -24,7 +24,7 @@ const _deliveryTypeConverter = (type) => {
     if(type === PREVIOUS_PAYMENT_COD){
         return 2;
     }
-    if(type === PREVIOUS_PAYMENT){
+    if(type === CHARGE_ON_DELIVERY){
         return 3;
     }
 
