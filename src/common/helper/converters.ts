@@ -50,12 +50,36 @@ const _statusConverter = (order: Order) => {
     }
 
     //ENVIADO
-    if((order.status === 'ENVIADO' && isPrevioPago) || (order.dateOfSale != null && order.status == 'ENVIADO')){
-        return STATUS.FINISHED;
+    const canBeNextFlow = (order, deliveryMethod) => (deliveryMethod === DELIVERY_METHOD.MENSAJERO && order.office.status === OLD_OFFICE_STATUS.FINALIZADO) || (deliveryMethod === DELIVERY_METHOD.INTERRAPIDISIMO || deliveryMethod === DELIVERY_METHOD.OTRO) && (order.postSale && order.postSale[0].tracking);
+
+    if(order.status === 'ENVIADO'){
+            const deliveryMethod = _deliveryMethodConverter_single(order.deliveryType);
+            if(isPrevioPago){
+                //FINALIZADO
+                if(canBeNextFlow(order, deliveryMethod)){
+                    return STATUS.FINISHED;
+                }
+
+            } else {
+                //FINALIZADO
+                if(canBeNextFlow(order, deliveryMethod)){
+
+                    if(order.dateOfSale == null){
+                        return STATUS.CONCILIED;
+                    } else {
+                        return STATUS.FINISHED;
+                    }
+                }
+            }
+
+            return STATUS.SENT;
     }
 
     //CONFIRMADA
     if(order.status === 'VENDIDO' && !isPrevioPago){
+        if(order.dateOfSale != null){
+            return STATUS.FINISHED;
+        }
         return STATUS.CONFIRMED;
     }
 
@@ -74,6 +98,11 @@ const DELIVERY_METHOD = {
     SERVIENTREGA: 4,
     PAYU: 5,
 };
+
+const OLD_OFFICE_STATUS = {
+    FINALIZADO: 'FINALIZADO',
+    PENDIENTE: 'PENDIENTE'
+}
 
 const _officeStatusConverter_single = (_status) => {
 
