@@ -54,7 +54,7 @@ export class ProductService extends BaseService<Product> {
             product.weight = item.weight;
             product.reference = item.id;
             product.tags = item.tags;
-            product.imagesQuantity = item.productWeb.imagenes;
+            product.imagesQuantity = 0;
             product.published = false;
 
             if(item.productWeb) {
