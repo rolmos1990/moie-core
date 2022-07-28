@@ -27,10 +27,10 @@ export class ProductService extends BaseService<Product> {
         await this.newRepository.query("SET FOREIGN_KEY_CHECKS=0;");
 
         const query = this.originalRepository.createQueryBuilder("p")
-            //.leftJoinAndSelect("p.productWeb", "productWeb")
+            .leftJoinAndSelect("p.productWeb", "productWeb")
             .leftJoinAndSelect("p.size", "size")
             //.leftJoinAndSelect("size.sizeNew", "sizeNew")
-            //.leftJoinAndSelect("productWeb.category", "cat")
+            .leftJoinAndSelect("productWeb.category", "cat")
             .orderBy("p.id", "DESC")
             .skip(skip)
             .take(limit);
@@ -54,7 +54,7 @@ export class ProductService extends BaseService<Product> {
             product.weight = item.weight;
             product.reference = item.id;
             product.tags = item.tags;
-            product.imagesQuantity = 0;
+            product.imagesQuantity = item.productWeb.imagenes;
             product.published = false;
 
             if(item.productWeb) {
