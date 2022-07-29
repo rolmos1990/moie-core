@@ -29,23 +29,46 @@ mysql -u root -p lucy_web --password=Panama2018. < /var/migration/sql/lucy_web.s
 
 -----
 
+4. For manually migration images
 
-=================================
+sudo nohup scp -rp -o HostKeyAlgorithms=+ssh-rsa -o PubkeyAcceptedKeyTypes=+ssh-rsa lucymodas@lucymodas.com:www/catalogo /var/storage/uploads > /var/logs/nohup.out 2>&1
 
 
 
-Automatic command for migration
 
-COMANDO: run_migration
 
+
+
+
+
+
+
+===============================================================
+
+AUTOMATIC COMMAND FOR MIGRATION
+
+==============================================================
+
+Prepare images
+
+---------------
+
+1. Run images
+
+sh /var/migration/scripts/migrate-images.sh
+
+"press control + z and type bg enter"
+
+Control + Z
+
+---------------
+
+2. Run on server
 
 sh /var/migration/scripts/migration.sh
 
--- Esto generara un ambiente homologo para correr el script de migracion (automatico)
+----------------
 
+3. Run the site migration - http://3.85.198.54:8086/migration
 
-
-=================================
-
-Correr sitio de migracion
 
