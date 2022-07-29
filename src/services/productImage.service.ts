@@ -38,7 +38,7 @@ export class ProductImageService extends BaseService<ProductImage> {
                 for(let imgNumber = 1; imgNumber <= item.imagesQuantity; imgNumber++) {
                     const image = new ProductImage();
                     image.filename = `${item.reference}_${imgNumber}_${SIZES.ORIGINAL}.jpg`;
-                    image.group = 1;
+                    image.group = imgNumber;
                     image.path = `uploads/${item.category}/${item.reference}_${imgNumber}_${SIZES.ORIGINAL}.jpg`;
                     image.thumbs = JSON.stringify({
                         "small": `uploads/${item.category}/${item.reference}_${imgNumber}_${SIZES.SMALL}.jpg`,
