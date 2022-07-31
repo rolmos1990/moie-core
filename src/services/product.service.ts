@@ -29,7 +29,6 @@ export class ProductService extends BaseService<Product> {
         const query = this.originalRepository.createQueryBuilder("p")
             .leftJoinAndSelect("p.productWeb", "productWeb")
             .leftJoinAndSelect("p.size", "size")
-            //.leftJoinAndSelect("size.sizeNew", "sizeNew")
             .leftJoinAndSelect("productWeb.category", "cat")
             .orderBy("p.id", "DESC")
             .skip(skip)
@@ -56,6 +55,10 @@ export class ProductService extends BaseService<Product> {
             product.tags = item.tags;
             product.imagesQuantity = 0;
             product.published = false;
+
+            //A,B,C..etc..
+            const referenceKey = item.id.slice(0, 2).replace(/[0-9]/g, '');
+            product.referenceKey = referenceKey;
 
             if(item.productWeb) {
                 const productWeb = item.productWeb;
