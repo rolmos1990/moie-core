@@ -36,18 +36,20 @@ export class ProductImageService extends BaseService<ProductImage> {
                  * Se agrega imagenes para cada producto recorrido.
                  */
                 for(let imgNumber = 1; imgNumber <= item.imagesQuantity; imgNumber++) {
-                    const image = new ProductImage();
-                    image.filename = `${item.reference}_${imgNumber}_${SIZES.ORIGINAL}.jpg`;
-                    image.group = imgNumber;
-                    image.path = `uploads/${item.category}/${item.reference}_${imgNumber}_${SIZES.ORIGINAL}.jpg`;
-                    image.thumbs = JSON.stringify({
-                        "small": `uploads/${item.category}/${item.reference}_${imgNumber}_${SIZES.SMALL}.jpg`,
-                        "medium": `uploads/${item.category}/${item.reference}_${imgNumber}_${SIZES.MEDIUM}.jpg`,
-                        "hight": `uploads/${item.category}/${item.reference}_${imgNumber}_${SIZES.HIGHT}.jpg`
-                    });
-                    image.product = item;
+                    try {
+                        const image = new ProductImage();
+                        image.filename = `${item.reference}_${imgNumber}_${SIZES.ORIGINAL}.jpg`;
+                        image.group = imgNumber;
+                        image.path = `uploads/${item.category}/${item.reference}_${imgNumber}_${SIZES.ORIGINAL}.jpg`;
+                        image.thumbs = JSON.stringify({
+                            "small": `uploads/${item.category}/${item.reference}_${imgNumber}_${SIZES.SMALL}.jpg`,
+                            "medium": `uploads/${item.category}/${item.reference}_${imgNumber}_${SIZES.MEDIUM}.jpg`,
+                            "hight": `uploads/${item.category}/${item.reference}_${imgNumber}_${SIZES.HIGHT}.jpg`
+                        });
+                        image.product = item;
 
-                    productImages.push(image);
+                        productImages.push(image);
+                    }catch(e){}
 
                 }
 
