@@ -55,11 +55,7 @@ Prepare images
 
 1. Run images
 
-sh /var/migration/scripts/migrate-images.sh
-
-"press control + z and type bg enter"
-
-Control + Z
+sh migrate-images.sh &
 
 ---------------
 

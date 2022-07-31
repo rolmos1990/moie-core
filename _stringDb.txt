@@ -108,6 +108,11 @@ replace again the collations...
 find . -type f | wc -l
 
 
+nohup sshpass -p "Ramiropalmar28" rsync --include="*.[Jj][Pp][Gg]" -avz -e "ssh -o HostKeyAlgorithms=+ssh-rsa -o PubkeyAcceptedKeyTypes=+ssh-rsa" --progress lucymodas@lucymodas.com:www/catalogo/ /var/storage/uploads > /var/logs/nohup.out 2>&1
+
+rsync -o HostKeyAlgorithms=+ssh-rsa -o PubkeyAcceptedKeyTypes=+ssh-rsa -av lucymodas@lucymodas.com:www/catalogo/ /var/storage/uploads
+
+
 
 
 
