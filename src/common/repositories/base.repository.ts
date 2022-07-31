@@ -18,11 +18,6 @@ export default abstract class BaseRepository<T> {
         const operators : OperationQuery = page.getOperation();
         if(operators.isOperator()) {
             const tableName = this.repositoryManager.metadata.tableName;
-            let select = "*";
-
-/*            if(operators.getGroups().length > 0){
-                select = operators.getOperator().join(",") + "," + operators.getGroups().join(",");
-            }*/
 
             const sum = this.repositoryManager
                 .createQueryBuilder(tableName)
@@ -41,8 +36,6 @@ export default abstract class BaseRepository<T> {
             } else {
                 sum.select(this.repositoryManager.metadata.columns.map(item => tableName + "." + item.databaseNameWithoutPrefixes).join(","))
             }
-            // 👇 Here is where you can modify the SQL for the query to suit your requirements
-            //query = query.replace(/ WITH \(UPDLOCK, ROWLOCK\) /, ' WITH (UPDLOCK, READPAST) ');
 
             const rawResults = await sum.getRawMany();
 

@@ -589,7 +589,7 @@ export class OrderController extends BaseController<Order> {
         if(isDetail) {
             return ['customer', 'deliveryMethod', 'user', 'customer.municipality', 'customer.state', 'orderDelivery', 'orderDelivery.deliveryLocality', 'bill'];
         } else {
-            return ['payment', 'customer', 'deliveryMethod', 'orderDetails', 'user', 'customer.municipality', 'customer.state', 'orderDelivery', 'bill'];
+            return ['payment', 'customer', 'deliveryMethod', 'user', 'orderDelivery', 'bill'];
         }
     }
 
