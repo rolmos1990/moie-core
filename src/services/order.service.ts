@@ -897,18 +897,22 @@ export class OrderService extends BaseService<Order> {
     }
 
 
-    async getReservedFromProducts(products: number[]){
-        return await this.orderDetailRepository.createQueryBuilder('od')
+    async getReservedFromProducts(products: number[]) : Promise<any>{
+        const reserved = await this.orderDetailRepository.createQueryBuilder('od')
             .select('p.id, SUM(od.quantity) as quantity')
             .leftJoinAndSelect('od.product', 'p')
             .where("p.id IN (:products)", {products: products})
             .andWhere("p.status = (:_status)", {_status: OrderStatus.PENDING})
             .groupBy("p.id")
             .getRawMany();
+        if(reserved.length === 0){
+            return [];
+        }
+        return reserved.map(_item => ({quantity: _item.quantity, id: _item.id}));
     }
 
-    async getCompletedFromProducts(products: number[]){
-        return await this.orderDetailRepository.createQueryBuilder('od')
+    async getCompletedFromProducts(products: number[]) : Promise<any>{
+        const completed = await this.orderDetailRepository.createQueryBuilder('od')
             .select('p.id, SUM(od.quantity) as quantity')
             .leftJoinAndSelect('od.order', 'o')
             .leftJoinAndSelect('od.product', 'p')
@@ -918,6 +922,11 @@ export class OrderService extends BaseService<Order> {
             .andWhere("d.deliveryType = (:_statusDelivery)", {_statusDelivery: 1})
             .groupBy("p.id")
             .getRawMany();
+
+        if(completed.length === 0){
+            return [];
+        }
+        return completed.map(_item => ({quantity: _item.quantity, id: _item.id}));
     }
 
     async getFinishedFromProducts(products: number[]){

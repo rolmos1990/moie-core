@@ -175,13 +175,18 @@ export class ProductSizeService extends BaseService<ProductSize> {
 
     }
 
-    async getAvailables(products: number[]){
-        return await this.productSizeRepository.createQueryBuilder('ps')
+    async getAvailables(products: number[]) : Promise<any>{
+        const availables = await this.productSizeRepository.createQueryBuilder('ps')
             .select('p.id, SUM(ps.quantity) as quantity')
             .leftJoinAndSelect('ps.product', 'p')
             .where("p.id IN (:products)", {products: products})
             .groupBy("p.id")
             .getRawMany();
+
+        if(availables.length === 0){
+            return [];
+        }
+        return availables.map(_item => ({quantity: _item.quantity, id: _item.id}));
     }
 
 }

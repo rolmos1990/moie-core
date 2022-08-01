@@ -63,9 +63,9 @@ export class ProductController extends BaseController<Product> {
                         item.productAvailable = new ProductAvailable();
                     }
 
-                    const _available = (availables.filter(item => item['id'] === item.id))[0];
-                    const _reserved = (reserved.filter(item => item['id'] === item.id))[0];
-                    const _completed = (completed.filter(item => item['id'] === item.id))[0];
+                    const _available = (availables.filter(_sub => _sub['id'] == item.id))[0];
+                    const _reserved = (reserved.filter(_sub => _sub['id'] == item.id))[0];
+                    const _completed = (completed.filter(_sub => _sub['id'] == item.id))[0];
 
                     item.productAvailable.available = _available ? parseInt(_available.quantity) : 0;
                     item.productAvailable.reserved = _reserved ? parseInt(_reserved.quantity) : 0;
