@@ -683,7 +683,9 @@ export class OrderService extends BaseService<Order> {
         orderRepository.andWhere("DATE(o.dateOfSale) >= :before");
         orderRepository.andWhere("DATE(o.dateOfSale) <= :after");
 
-        orderRepository.setParameters({before: dateFrom + " 00:00:00", after: dateTo + " 23:59:59"});
+        orderRepository.andWhere("o.status IN (:status)");
+
+        orderRepository.setParameters({before: dateFrom + " 00:00:00", after: dateTo + " 23:59:59", status: [OrderStatus.FINISHED, OrderStatus.PRINTED, OrderStatus.SENT]});
 
         orderRepository.groupBy("p.id")
         orderRepository.orderBy("cantidad", "DESC");
