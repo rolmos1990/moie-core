@@ -5,7 +5,6 @@ import {ProductSizeRepository} from "../repositories/productSize.repository";
 import {getRealInventary, getRealOrderDetail, isEmpty} from "../common/helper/helpers";
 import {Product} from "../models/Product";
 import {IProductSize} from "../common/interfaces/IProductSize";
-import {LIMIT_SAVE_BATCH} from "../common/persistence/mysql.persistence";
 import {OrderDetail} from "../models/OrderDetail";
 
 export class ProductSizeService extends BaseService<ProductSize> {
@@ -174,4 +173,15 @@ export class ProductSizeService extends BaseService<ProductSize> {
 
         return true;
 
-    }}
+    }
+
+    async getAvailables(products: number[]){
+        return await this.productSizeRepository.createQueryBuilder('ps')
+            .select('p.id, SUM(ps.quantity) as quantity')
+            .leftJoinAndSelect('ps.product', 'p')
+            .where("p.id IN (:products)", {products: products})
+            .groupBy("p.id")
+            .getRawMany();
+    }
+
+}

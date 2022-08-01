@@ -18,6 +18,7 @@ import {OrderService} from "../services/order.service";
 import {PageQuery} from "../common/controllers/page.query";
 import {OrderConditional} from "../common/enum/order.conditional";
 import {ProductImageService} from "../services/productImage.service";
+import {ProductAvailable} from "../models/ProductAvailable";
 
 @route('/product')
 export class ProductController extends BaseController<Product> {
@@ -34,6 +35,49 @@ export class ProductController extends BaseController<Product> {
     }
 
     protected afterUpdate(item: Object): void {
+    }
+
+    @GET()
+    public async index(req: Request, res: Response) {
+        try {
+            const query = req.query;
+            const parametersQuery = this.builderParamsPage(query);
+            const parametersOrders = this.builderOrder(query);
+            let page = new PageQuery(parametersQuery.limit,parametersQuery.pageNumber,parametersQuery.queryCondition, parametersQuery.operationQuery);
+
+            const response = await this.processPaginationIndex(page, parametersOrders, parametersQuery);
+
+            const products : Product[] = response.data as Product[];
+
+            //disponibilidad de productos
+            if(products.length > 0) {
+
+                const productsIds = products.map(item => item.id);
+
+                const availables = await this.productSizeService.getAvailables(productsIds);
+                const reserved = await this.orderService.getReservedFromProducts(productsIds);
+                const completed = await this.orderService.getCompletedFromProducts(productsIds);
+
+                products.map(item => {
+                    if (item.productAvailable === undefined) {
+                        item.productAvailable = new ProductAvailable();
+                    }
+
+                    const _available = (availables.filter(item => item['id'] === item.id))[0];
+                    const _reserved = (reserved.filter(item => item['id'] === item.id))[0];
+                    const _completed = (completed.filter(item => item['id'] === item.id))[0];
+
+                    item.productAvailable.available = _available ? parseInt(_available.quantity) : 0;
+                    item.productAvailable.reserved = _reserved ? parseInt(_reserved.quantity) : 0;
+                    item.productAvailable.completed = _completed ? parseInt(_completed.quantity) : 0;
+                });
+            }
+
+            res.json(response);
+        }catch(e){
+            this.handleException(e, res);
+            console.log("error", e);
+        }
     }
 
     protected async beforeCreate(item: Product): Promise<any> {
@@ -143,7 +187,7 @@ export class ProductController extends BaseController<Product> {
     }
 
     protected getDefaultRelations(): Array<string> {
-        return ['size','category','productImage', 'productSize', 'productAvailable'];
+        return ['size','category','productImage', 'productSize'];
     }
 
     getEntityTarget(): EntityTarget<Product> {
@@ -176,5 +220,7 @@ export class ProductController extends BaseController<Product> {
     protected customDefaultOrder(page: PageQuery) {
         page.addOrder('reference', OrderConditional.ASC);
     }
+
+    //DEBO LISTAR LOS RESULTADOS Y CONSULTAR MANUALMENTE LAS CANTIDADES DISPONIBLES Y RESERVADAS PARA ADJUNTARLOS EN EL ARREGLO DE SALIDA.
 
 }
