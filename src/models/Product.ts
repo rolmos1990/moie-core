@@ -121,6 +121,10 @@ export class Product extends BaseModel{
     @IsNumber()
     orden: number;
 
+    @Column({type: 'integer', default: 0})
+    @IsNumber()
+    available: number;
+
     isEmpty(): boolean {
         return (this.id == null);
     }

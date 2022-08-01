@@ -28,8 +28,10 @@ export class ProductSizeService extends BaseService<ProductSize> {
         await Promise.all(orderDetails.map(async item => {
             if(increase){
                 await this.productSizeRepository.increment(ProductSize, {color: item.color, name: item.size, product: item.product}, 'quantity', Math.abs(item.quantity));
+                await this.productSizeRepository.createQueryBuilder('d').connection.query('CALL `moie-lucy-v2`.`filterTodo`(' + item.product.id + ');');
             } else {
                 await this.productSizeRepository.decrement(ProductSize, {color: item.color, name: item.size, product: item.product}, 'quantity', Math.abs(item.quantity));
+                await this.productSizeRepository.createQueryBuilder('d').connection.query('CALL `moie-lucy-v2`.`filterTodo`(' + item.product.id + ');');
             }
         }));
     }
@@ -142,8 +144,11 @@ export class ProductSizeService extends BaseService<ProductSize> {
             delete orderDetail.product.productImage;
             if(quantity < 0){
                 await this.productSizeRepository.decrement(ProductSize, {color: orderDetail.color, name: orderDetail.size, product: orderDetail.product}, 'quantity', Math.abs(quantity));
+                await this.productSizeRepository.createQueryBuilder('d').connection.query('CALL `moie-lucy-v2`.`filterTodo`(' + orderDetail.product.id + ');');
+
             } else if(quantity > 0){
                 await this.productSizeRepository.increment(ProductSize, {color: orderDetail.color, name: orderDetail.size, product: orderDetail.product}, 'quantity', Math.abs(quantity));
+                await this.productSizeRepository.createQueryBuilder('d').connection.query('CALL `moie-lucy-v2`.`filterTodo`(' + orderDetail.product.id + ');');
             }
         }catch(e){
             throw new ApplicationException("No se ha encontrado producto {"+orderDetail.product.reference+"} en el Inventario");
