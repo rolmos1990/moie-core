@@ -901,7 +901,7 @@ export class OrderService extends BaseService<Order> {
         const reserved = await this.orderDetailRepository.createQueryBuilder('od')
             .select('p.id, SUM(od.quantity) as quantity')
             .leftJoinAndSelect('od.product', 'p')
-            .where("p.id IN (:products)", {products: products})
+            .andWhere("p.id IN (:products)", {products: products})
             .andWhere("p.status = (:_status)", {_status: OrderStatus.PENDING})
             .groupBy("p.id")
             .getRawMany();
@@ -917,7 +917,7 @@ export class OrderService extends BaseService<Order> {
             .leftJoinAndSelect('od.order', 'o')
             .leftJoinAndSelect('od.product', 'p')
             .leftJoinAndSelect('o.orderDelivery', 'd')
-            .where("p.id IN (:products)", {products: products})
+            .andWhere("p.id IN (:products)", {products: products})
             .andWhere("p.status IN (:_statuses)", {_statuses: [OrderStatus.FINISHED, OrderStatus.RECONCILED]})
             .andWhere("d.deliveryType = (:_statusDelivery)", {_statusDelivery: 1})
             .groupBy("p.id")
