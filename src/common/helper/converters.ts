@@ -36,8 +36,25 @@ const _statusConverter = (order: Order) => {
 
     //PENDIENTES
     if(order.status == 'PENDIENTE'){
+        if(isPrevioPago && order.dateOfSale != null){
+            return STATUS.CONCILIED;
+        }
+
+        if(isPrevioPago && order.prints > 0 && order.dateOfSale != null){
+            if(order.postSale[0].tracking){
+                return STATUS.FINISHED;
+            } else {
+                return STATUS.PRINT;
+            }
+        }
+
+        if(!isPrevioPago && order.confirmation != ""){
+            return STATUS.CONFIRMED;
+        }
+
         return STATUS.PENDING;
     }
+
 
     //CONCILIADOS
     if(isPrevioPago && order.status == 'VENDIDO'){
@@ -46,14 +63,54 @@ const _statusConverter = (order: Order) => {
 
     //IMPRESAS
     if(order.status === 'IMPRESA'){
-        return STATUS.PRINT;
+        const hasTracking = (order.postSale && order.postSale[0].tracking);
+
+        if(hasTracking){
+            if(order.dateOfSale == null){
+                return STATUS.SENT;
+            } else {
+                return STATUS.FINISHED;
+            }
+        } else {
+            return STATUS.PRINT;
+        }
+
+    }
+
+    const FiveDayAgo= (date) => {
+        const hour= 1000 * 60 * 60 * 24 * 5;
+        const hourago= Date.now() - hour;
+
+        return date > hourago;
     }
 
     //ENVIADO
     const canBeNextFlow = (order, deliveryMethod) => (deliveryMethod === DELIVERY_METHOD.MENSAJERO && order.office.status === OLD_OFFICE_STATUS.FINALIZADO) || (deliveryMethod === DELIVERY_METHOD.INTERRAPIDISIMO || deliveryMethod === DELIVERY_METHOD.OTRO) && (order.postSale && order.postSale[0].tracking);
 
     if(order.status === 'ENVIADO'){
-            const deliveryMethod = _deliveryMethodConverter_single(order.deliveryType);
+
+        const deliveryMethod = _deliveryMethodConverter_single(order.deliveryType);
+
+        if(isPrevioPago){
+            //FINALIZADO
+            if(canBeNextFlow(order, deliveryMethod)){
+                return STATUS.FINISHED;
+            } else {
+
+                if(order.dateOfSale && FiveDayAgo(order.dateOfSale)){
+                    /* Que la fecha de venta tenga mas de 5 dias actuales */
+                    return STATUS.FINISHED;
+                }
+            }
+        }
+        else{
+            if(order.dateOfSale == null){
+                return STATUS.SENT;
+            } else {
+                return STATUS.FINISHED;
+            }
+        }
+
             if(isPrevioPago){
                 //FINALIZADO
                 if(canBeNextFlow(order, deliveryMethod)){
@@ -65,7 +122,7 @@ const _statusConverter = (order: Order) => {
                 if(canBeNextFlow(order, deliveryMethod)){
 
                     if(order.dateOfSale == null){
-                        return STATUS.CONCILIED;
+                        return STATUS.SENT;
                     } else {
                         return STATUS.FINISHED;
                     }
@@ -77,10 +134,7 @@ const _statusConverter = (order: Order) => {
 
     //CONFIRMADA
     if(order.status === 'VENDIDO' && !isPrevioPago){
-        if(order.dateOfSale != null){
-            return STATUS.FINISHED;
-        }
-        return STATUS.CONFIRMED;
+        return STATUS.FINISHED;
     }
 
     if(order.status === 'ANULADO'){

@@ -27,6 +27,10 @@ export class ProductWeb extends BaseModel{
     @MaxLength(800, {groups: ['create','update']})
     imagenes: number;
 
+    @Column({name:'orden', type: 'integer'})
+    @MaxLength(800, {groups: ['create','update']})
+    orden: number;
+
     @Column({name:'descuento_especial', type: 'decimal', nullable: true, default: 0})
     @IsDecimal({ decimal_digits: '2'}, {groups: ['create','update']})
     discount: number;

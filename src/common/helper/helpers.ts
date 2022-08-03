@@ -47,7 +47,7 @@ export function getCalculateCosts(orderDetails: OrderDetail[]) {
             totalDiscount = 0;
         }
         totalAmount += Number(item.price) * Number(item.quantity);
-        const revenue = item.price - item.cost;
+        const revenue = item.price - item.cost - totalDiscount;
 
         totalRevenue += revenue;
     });

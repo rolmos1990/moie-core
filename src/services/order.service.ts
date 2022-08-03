@@ -69,8 +69,8 @@ export class OrderService extends BaseService<Order> {
                     //Calculate amount
                     _item.totalAmount = (costs.totalAmount - costs.totalDiscount) + item.deliveryAmount;
                     _item.subTotalAmount = costs.totalAmount;
-                    _item.totalWithDiscount = (costs.totalAmount - costs.totalDiscount);
                     _item.totalDiscount = costs.totalDiscount;
+                    _item.totalWithDiscount = (costs.totalAmount - costs.totalDiscount);
                     _item.totalWeight = costs.totalWeight;
                     _item.totalRevenue = costs.totalRevenue;
                     _item.quantity = item.orderDetail.reduce((s, p) => parseInt(p.quantity.toString()) + parseInt(s.toString()), 0);

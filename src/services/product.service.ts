@@ -55,6 +55,8 @@ export class ProductService extends BaseService<Product> {
             product.tags = item.tags;
             product.imagesQuantity = 0;
             product.published = false;
+            product.tags = item.tags;
+            product.sizeDescription = item.tags;
 
             //A,B,C..etc..
             const referenceKey = item.id.slice(0, 2).replace(/[0-9]/g, '');
@@ -68,6 +70,7 @@ export class ProductService extends BaseService<Product> {
                 product.discount = productWeb.discount;
                 product.description = productWeb.description;
                 product.imagesQuantity = productWeb.imagenes;
+                product.orden = productWeb.orden;
                 product.published = true;
 
                 if(productWeb.category){
