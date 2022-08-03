@@ -41,6 +41,9 @@ export class Customer extends BaseModel{
     @Column({name:'ciudad', type: 'varchar', length: 255})
     city: string;
 
+    @Column({name:'direccion', type: 'varchar', length: 2000})
+    address: string;
+
     @Column({name:'estado', type: 'varchar', length: 255})
     state: string;
 

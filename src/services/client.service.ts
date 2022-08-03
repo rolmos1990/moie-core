@@ -49,7 +49,7 @@ export class CustomerService extends BaseService<Customer> {
             _item.cellphone = item.cellphone;
             _item.phone = item.phone;
             _item.hasNotification = true;
-            _item.address = item.city;
+            _item.address = item.address;
             _item.createdAt = item.createdAt;
 
             if(isNaN(item.createdAt.getTime())){
