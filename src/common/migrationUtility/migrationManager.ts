@@ -58,6 +58,10 @@ export class MigrationManager {
             await this.service.down();
             process.exit(20);
         } finally {
+            if(typeof this.service.onFinish === 'function'){
+                console.log("--- Corriendo scripts adicionales ");
+                await this.service.onFinish();
+            }
             this.printFinish(name);
         }
     }

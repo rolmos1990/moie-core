@@ -1,6 +1,4 @@
-import {PageQuery} from "./page.query";
 import {IService} from "../interfaces/IService";
-import {classToClass} from "class-transformer";
 
 export abstract class BaseService<Entity> implements IService {
     abstract async up(limit, skip);
@@ -8,6 +6,7 @@ export abstract class BaseService<Entity> implements IService {
     abstract async counts();
     abstract async countsNew();
     abstract async processName();
+    abstract async onFinish?();
 
     static getName(){
         return BaseService.name;

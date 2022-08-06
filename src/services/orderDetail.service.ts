@@ -102,4 +102,8 @@ export class OrderDetailService extends BaseService<OrderDetail> {
     processName() {
         return OrderDetailService.name
     }
+
+    onFinish(){
+        await this.newRepository.query("UPDATE `order` SET total_revenue = (SELECT SUM(revenue * quantity) AS revenue FROM orderdetail WHERE order_id = `order`.id)");
+    }
 }
