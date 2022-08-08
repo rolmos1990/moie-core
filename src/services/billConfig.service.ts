@@ -91,4 +91,6 @@ export class BillConfigService extends BaseService<BillConfig> {
     processName() {
         return BillConfigService.name
     }
+
+    async onFinish(): Promise<any> {}
 }

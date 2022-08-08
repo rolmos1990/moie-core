@@ -147,4 +147,6 @@ export class OrderService extends BaseService<Order> {
     processName() {
         return OrderService.name
     }
+
+    async onFinish(): Promise<any> {}
 }

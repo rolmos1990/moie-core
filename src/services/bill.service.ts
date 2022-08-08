@@ -5,7 +5,6 @@ import {Bill} from "../models/Bill";
 import {converters} from "../common/helper/converters";
 import {serverConfig} from "../config/ServerConfig";
 import {MySQLMoiePersistenceConnection, MySQLPersistenceConnection} from "../common/persistence";
-import {OrderHistoric} from "../models/OrderHistoric";
 
 export class BillService extends BaseService<Bill> {
 
@@ -96,4 +95,6 @@ export class BillService extends BaseService<Bill> {
     processName() {
         return BillService.name
     }
+
+    async onFinish(): Promise<any> {}
 }

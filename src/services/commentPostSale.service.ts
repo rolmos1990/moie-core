@@ -92,4 +92,6 @@ export class CommentPostSaleService extends BaseService<Comment> {
     processName() {
         return CommentPostSaleService.name
     }
+
+    async onFinish(): Promise<any> {}
 }

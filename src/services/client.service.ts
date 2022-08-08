@@ -110,4 +110,6 @@ export class CustomerService extends BaseService<Customer> {
     processName() {
         return CustomerService.name
     }
+
+    async onFinish(): Promise<any> {}
 }
