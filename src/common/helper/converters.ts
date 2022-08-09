@@ -115,9 +115,9 @@ const _statusConverter = (order: Order) => {
                     return STATUS.FINISHED;
                 }
             }
-
-            return STATUS.PRINT;
         }
+
+        return STATUS.PRINT;
     }
 
     //ENVIADO
@@ -147,25 +147,7 @@ const _statusConverter = (order: Order) => {
             }
         }
 
-            if(isPrevioPago){
-                //FINALIZADO
-                if(canBeNextFlow(order, deliveryMethod)){
-                    return STATUS.FINISHED;
-                }
-
-            } else {
-                //FINALIZADO
-                if(canBeNextFlow(order, deliveryMethod)){
-
-                    if(order.dateOfSale == null){
-                        return STATUS.SENT;
-                    } else {
-                        return STATUS.FINISHED;
-                    }
-                }
-            }
-
-            return STATUS.SENT;
+        return STATUS.SENT;
     }
 
     //CONFIRMADA
