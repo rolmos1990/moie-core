@@ -9,10 +9,10 @@ const CHARGE_ON_DELIVERY = "CONTRA ENTREGA";
 
 const STATUS = {
     PENDING: 1,
-    CONCILIED: 2,
+    CONCILIED: 5,
     PRINT: 3,
     SENT: 4,
-    CONFIRMED: 5,
+    CONFIRMED: 2,
     FINISHED: 7,
     CANCELED: 6
 };
@@ -31,25 +31,53 @@ const _deliveryTypeConverter = (type) => {
     return 1;
 }
 
+const FiveDayAgo= (date) => {
+    const hour= 1000 * 60 * 60 * 24 * 5;
+    const hourago= Date.now() - hour;
+
+    return date > hourago;
+}
+
 const _statusConverter = (order: Order) => {
     const isPrevioPago = [PREVIOUS_PAYMENT, PREVIOUS_PAYMENT_COD].includes(order.deliveryType);
 
+    if(isPrevioPago && order.office && order.office.status === OLD_OFFICE_STATUS.FINALIZADO && order.deliveryMethod === OLD_DELIVERY_METHOD.MENSAJERO){
+        return STATUS.FINISHED;
+    }
+
     //PENDIENTES
     if(order.status == 'PENDIENTE'){
-        if(isPrevioPago && order.dateOfSale != null){
+        if(isPrevioPago && order.dateOfSale != null && order.prints <= 0){
             return STATUS.CONCILIED;
         }
 
-        if(isPrevioPago && order.prints > 0 && order.dateOfSale != null){
+        if(isPrevioPago && order.dateOfSale != null && order.prints > 0){
+            return STATUS.PRINT;
+        }
+
+        if(isPrevioPago && order.postSale[0].tracking){
+            return STATUS.FINISHED;
+        }
+
+
+        if(!isPrevioPago && order.prints > 0 && order.dateOfSale != null){
             if(order.postSale[0].tracking){
-                return STATUS.FINISHED;
+                return STATUS.SENT;
             } else {
                 return STATUS.PRINT;
             }
         }
 
+        if(!isPrevioPago && order.office && order.office.status === OLD_OFFICE_STATUS.FINALIZADO && order.deliveryMethod === OLD_DELIVERY_METHOD.MENSAJERO){
+            return STATUS.SENT;
+        }
+
         if(!isPrevioPago && order.confirmation != ""){
             return STATUS.CONFIRMED;
+        }
+
+        if(!isPrevioPago && order.dateOfSale != null){
+            return STATUS.FINISHED;
         }
 
         return STATUS.PENDING;
@@ -58,6 +86,15 @@ const _statusConverter = (order: Order) => {
 
     //CONCILIADOS
     if(isPrevioPago && order.status == 'VENDIDO'){
+
+        if(isPrevioPago && order.dateOfSale != null && order.prints > 0){
+            return STATUS.PRINT;
+        }
+
+        if(isPrevioPago && order.postSale[0].tracking && order.deliveryMethod !== OLD_DELIVERY_METHOD.MENSAJERO){
+            return STATUS.FINISHED;
+        }
+
         return STATUS.CONCILIED;
     }
 
@@ -65,23 +102,22 @@ const _statusConverter = (order: Order) => {
     if(order.status === 'IMPRESA'){
         const hasTracking = (order.postSale && order.postSale[0].tracking);
 
-        if(hasTracking){
+        if(hasTracking && order.deliveryMethod !== OLD_DELIVERY_METHOD.MENSAJERO ){
             if(order.dateOfSale == null){
                 return STATUS.SENT;
             } else {
                 return STATUS.FINISHED;
             }
         } else {
+
+            if(isPrevioPago){
+                if(FiveDayAgo(order.dateOfSale)){
+                    return STATUS.FINISHED;
+                }
+            }
+
             return STATUS.PRINT;
         }
-
-    }
-
-    const FiveDayAgo= (date) => {
-        const hour= 1000 * 60 * 60 * 24 * 5;
-        const hourago= Date.now() - hour;
-
-        return date > hourago;
     }
 
     //ENVIADO
@@ -151,6 +187,14 @@ const DELIVERY_METHOD = {
     OTRO: 3,
     SERVIENTREGA: 4,
     PAYU: 5,
+};
+
+const OLD_DELIVERY_METHOD = {
+    INTERRAPIDISIMO: 'INTERRAPIDISIMO',
+    MENSAJERO: 'MENSAJERO',
+    OTRO: 'OTRO',
+    SERVIENTREGA: 'SERVIENTREGA',
+    PAYU: 'PAYU',
 };
 
 const OLD_OFFICE_STATUS = {
