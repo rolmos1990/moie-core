@@ -55,13 +55,13 @@ const _statusConverter = (order: Order) => {
             return STATUS.PRINT;
         }
 
-        if(isPrevioPago && order.postSale[0].tracking){
+        if(isPrevioPago && order.getTracking()){
             return STATUS.FINISHED;
         }
 
 
         if(!isPrevioPago && order.prints > 0 && order.dateOfSale != null){
-            if(order.postSale[0].tracking){
+            if(order.getTracking()){
                 return STATUS.SENT;
             } else {
                 return STATUS.PRINT;
@@ -91,7 +91,7 @@ const _statusConverter = (order: Order) => {
             return STATUS.PRINT;
         }
 
-        if(isPrevioPago && order.postSale[0].tracking && order.deliveryMethod !== OLD_DELIVERY_METHOD.MENSAJERO){
+        if(isPrevioPago && order.getTracking() && order.deliveryMethod !== OLD_DELIVERY_METHOD.MENSAJERO){
             return STATUS.FINISHED;
         }
 
@@ -100,9 +100,8 @@ const _statusConverter = (order: Order) => {
 
     //IMPRESAS
     if(order.status === 'IMPRESA'){
-        const hasTracking = (order.postSale && order.postSale[0].tracking);
 
-        if(hasTracking && order.deliveryMethod !== OLD_DELIVERY_METHOD.MENSAJERO ){
+        if(order.getTracking() && order.deliveryMethod !== OLD_DELIVERY_METHOD.MENSAJERO ){
             if(order.dateOfSale == null){
                 return STATUS.SENT;
             } else {
@@ -121,7 +120,7 @@ const _statusConverter = (order: Order) => {
     }
 
     //ENVIADO
-    const canBeNextFlow = (order, deliveryMethod) => (deliveryMethod === DELIVERY_METHOD.MENSAJERO && order.office.status === OLD_OFFICE_STATUS.FINALIZADO) || (deliveryMethod === DELIVERY_METHOD.INTERRAPIDISIMO || deliveryMethod === DELIVERY_METHOD.OTRO) && (order.postSale && order.postSale[0].tracking);
+    const canBeNextFlow = (order, deliveryMethod) => (deliveryMethod === DELIVERY_METHOD.MENSAJERO && order.office.status === OLD_OFFICE_STATUS.FINALIZADO) || (deliveryMethod === DELIVERY_METHOD.INTERRAPIDISIMO || deliveryMethod === DELIVERY_METHOD.OTRO) && (order.getTracking());
 
     if(order.status === 'ENVIADO'){
 

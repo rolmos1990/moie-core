@@ -111,4 +111,12 @@ export class Order extends BaseModel{
     isEmpty(): boolean {
         return (this.id == null);
     }
+
+    getTracking(){
+        if((this.postSale && this.postSale[0].tracking)){
+            return (this.postSale && this.postSale[0].tracking);
+        }
+
+        return false;
+    }
 }
