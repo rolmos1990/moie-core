@@ -9,6 +9,11 @@ services:
   migration:
     image: 'rolmos/moie-lucy-api:${APP_VERSION}'
     command: 'npm run start'
+    logging:
+      driver: "json-file"
+      options:
+        max-file: 5
+        max-size: 10m
     deploy:
       restart_policy:
         condition: on-failure
