@@ -21,7 +21,7 @@ services:
         max_attempts: 3
         window: 120s
     ports:
-      - "6000:6000"
+      - "8086:8086"
     networks:
       - app-tier-migration
     environment:
