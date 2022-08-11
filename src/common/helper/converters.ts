@@ -230,19 +230,21 @@ const _orderDeliveryConverter = (order: Order) : OrderDelivery => {
     _orderDelivery.chargeOnDelivery = (order.deliveryType === CHARGE_ON_DELIVERY) ? true : false;
     _orderDelivery.deliveryMunicipality = municipality ? municipality.name : '';
     _orderDelivery.deliveryState = order.customer ? order.customer.state : null;
-    _orderDelivery.tracking = order.trackingNumber;
+    if(order.getTracking()) {
+        _orderDelivery.tracking = order.getTracking().toString();
+    }
     _orderDelivery.sync = false;
 
     _orderDelivery.deliveryDate = null;
     _orderDelivery.deliveryCurrentLocality = null;
     _orderDelivery.order = order ? order.id : null;
 
-    if(order.postSale[0]) {
+    if(order.getTracking()) {
         //order.postSale[0].payu
         _orderDelivery.deliveryCurrentLocality = order.postSale[0].deliveryCurrentLocality;
         _orderDelivery.deliveryDate = order.postSale[0].deliveryDate;
         _orderDelivery.deliveryStatus = order.postSale[0].deliveryStatus;
-        _orderDelivery.tracking = order.postSale[0].tracking;
+        _orderDelivery.tracking = order.getTracking().toString();
         _orderDelivery.deliveryStatusDate = order.postSale[0].deliveryStatusDate;
         _orderDelivery.sync = order.postSale[0].sync;
     }

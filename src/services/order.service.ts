@@ -148,5 +148,7 @@ export class OrderService extends BaseService<Order> {
         return OrderService.name
     }
 
-    async onFinish(): Promise<any> {}
+    async onFinish(): Promise<any> {
+        //UPDATE `moie-lucy-v2`.orderdelivery set tracking = null where tracking NOT REGEXP '^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$';
+    }
 }

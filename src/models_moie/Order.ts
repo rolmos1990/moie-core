@@ -113,7 +113,7 @@ export class Order extends BaseModel{
     }
 
     getTracking(){
-        if((this.postSale && this.postSale[0].tracking)){
+        if((this.postSale && this.postSale[0] && this.postSale[0].tracking)){
             return (this.postSale && this.postSale[0].tracking);
         }
 
