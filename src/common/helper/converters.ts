@@ -99,7 +99,7 @@ const _statusConverter = (order: Order) => {
     }
 
     //IMPRESAS
-    if(order.status === 'IMPRESA'){
+    if(order.status === 'IMPRESO'){
 
         if(order.getTracking() && order.deliveryMethod !== OLD_DELIVERY_METHOD.MENSAJERO ){
             if(order.dateOfSale == null){
@@ -120,7 +120,7 @@ const _statusConverter = (order: Order) => {
     }
 
     //ENVIADO
-    const canBeNextFlow = (order, deliveryMethod) => (deliveryMethod === DELIVERY_METHOD.MENSAJERO && order.office.status === OLD_OFFICE_STATUS.FINALIZADO) || (deliveryMethod === DELIVERY_METHOD.INTERRAPIDISIMO || deliveryMethod === DELIVERY_METHOD.OTRO) && (order.getTracking());
+    const canBeNextFlow = (order, deliveryMethod) => (deliveryMethod === OLD_DELIVERY_METHOD.MENSAJERO && order.office.status === OLD_OFFICE_STATUS.FINALIZADO) || (deliveryMethod === OLD_DELIVERY_METHOD.INTERRAPIDISIMO || deliveryMethod === OLD_DELIVERY_METHOD.OTRO) && (order.getTracking());
 
     if(order.status === 'ENVIADO'){
 
