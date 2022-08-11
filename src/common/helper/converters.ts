@@ -60,7 +60,7 @@ const _statusConverter = (order: Order) => {
         }
 
 
-        if(!isPrevioPago && order.prints > 0 && order.dateOfSale != null){
+        if(!isPrevioPago && order.prints > 0 && order.dateOfSale == null){
             if(order.getTracking()){
                 return STATUS.SENT;
             } else {
