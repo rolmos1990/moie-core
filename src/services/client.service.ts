@@ -26,7 +26,8 @@ export class CustomerService extends BaseService<Customer> {
         const query = this.originalRepository.createQueryBuilder("p")
             .leftJoinAndSelect("p.municipality", "municipality")
             .leftJoinAndSelect("municipality.municipalityNew", "municipalityNew")
-            .leftJoinAndSelect("municipalityNew.state", "state")
+            .leftJoinAndSelect("p.state", "state")
+            .leftJoinAndSelect("state.stateNew", "stateNew")
             .orderBy("p.id", "ASC")
             .skip(skip)
             .take(limit);
@@ -57,9 +58,12 @@ export class CustomerService extends BaseService<Customer> {
             }
 
             if(item.municipality) {
-                _item.state = item.municipality.municipalityNew.state;
                 _item.municipality = item.municipality.municipalityNew;
             }
+            if(item.state){
+                _item.state = item.state.stateNew;
+            }
+
             _item.status = true;
             itemSaved.push(_item);
         });

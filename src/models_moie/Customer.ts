@@ -8,8 +8,8 @@ import BaseModel from "../common/repositories/base.model";
 import {IsDate, IsEmail, Length} from "class-validator";
 import { Type } from 'class-transformer';
 import {Municipality} from "./Municipality";
+import {State} from "./State";
 import {OriginalDatabaseName} from "../common/persistence";
-import {Customer as ClientNew} from "../models/Customer";
 
 @Entity({database: OriginalDatabaseName, name: 'cliente', orderBy: {id: 'DESC'}, synchronize: false})
 export class Customer extends BaseModel{
@@ -44,8 +44,9 @@ export class Customer extends BaseModel{
     @Column({name:'direccion', type: 'varchar', length: 2000})
     address: string;
 
-    @Column({name:'estado', type: 'varchar', length: 255})
-    state: string;
+    @ManyToOne(() => State)
+    @JoinColumn({name:'state_id'})
+    state: State;
 
     @ManyToOne(() => Municipality, { nullable: true })
     @JoinColumn({ name:'id_municipio' })
