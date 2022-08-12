@@ -27,7 +27,7 @@ export class Municipality extends BaseModel{
     state: State;
 
     @OneToOne(() => MunicipalityNew)
-    @JoinColumn({name: "id"})
+    @JoinColumn({name: "id", referencedColumnName: "name"})
     municipalityNew: MunicipalityNew;
 
     equals(obj: any) {

@@ -229,7 +229,7 @@ const _orderDeliveryConverter = (order: Order) : OrderDelivery => {
     _orderDelivery.deliveryType = _deliveryTypeConverter(order.deliveryType);
     _orderDelivery.chargeOnDelivery = (order.deliveryType === CHARGE_ON_DELIVERY) ? true : false;
     _orderDelivery.deliveryMunicipality = municipality ? municipality.name : '';
-    _orderDelivery.deliveryState = order.customer ? order.customer.state : null;
+    _orderDelivery.deliveryState = order.customer && order.customer.state ? order.customer.state.id : null;
     if(order.getTracking()) {
         _orderDelivery.tracking = order.getTracking().toString();
     }
