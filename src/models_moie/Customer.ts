@@ -45,7 +45,7 @@ export class Customer extends BaseModel{
     address: string;
 
     @ManyToOne(() => State)
-    @JoinColumn({name:'state_id'})
+    @JoinColumn({name:'estado'})
     state: State;
 
     @ManyToOne(() => Municipality, { nullable: true })
