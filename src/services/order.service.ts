@@ -149,6 +149,7 @@ export class OrderService extends BaseService<Order> {
     }
 
     async onFinish(): Promise<any> {
-        //UPDATE `moie-lucy-v2`.orderdelivery set tracking = null where tracking NOT REGEXP '^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$';
+        //Actualizar los que deben ser refrescados con la sincronizacion
+        await this.newRepository.query("UPDATE `moie-lucy-v2`.OrderDelivery as OD INNER JOIN `moie-lucy`.postventa AS PV ON OD.id = PV.id_venta SET OD.sync = IF(PV.activo = 0, 0, 1);");
     }
 }
