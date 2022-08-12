@@ -35,7 +35,7 @@ const FiveDayAgo= (date) => {
     const hour= 1000 * 60 * 60 * 24 * 5;
     const hourago= Date.now() - hour;
 
-    return date > hourago;
+    return date < hourago;
 }
 
 const _statusConverter = (order: Order) => {
@@ -120,7 +120,8 @@ const _statusConverter = (order: Order) => {
     }
 
     //ENVIADO
-    const canBeNextFlow = (order, deliveryMethod) => (deliveryMethod === OLD_DELIVERY_METHOD.MENSAJERO && order.office.status === OLD_OFFICE_STATUS.FINALIZADO) || (deliveryMethod === OLD_DELIVERY_METHOD.INTERRAPIDISIMO || deliveryMethod === OLD_DELIVERY_METHOD.OTRO) && (order.getTracking());
+
+    const canBeNextFlow = (order, deliveryMethod) => (deliveryMethod === OLD_DELIVERY_METHOD.MENSAJERO && order.office.status === OLD_OFFICE_STATUS.FINALIZADO) || (OLD_DELIVERY_METHOD.MENSAJERO !== deliveryMethod) && (order.getTracking());
 
     if(order.status === 'ENVIADO'){
 
