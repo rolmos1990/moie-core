@@ -88,7 +88,7 @@ const _statusConverter = (order: Order) => {
     if(isPrevioPago && order.status == 'VENDIDO'){
 
         if(isPrevioPago && order.dateOfSale != null && order.prints > 0){
-            return STATUS.PRINT;
+            return STATUS.FINISHED;
         }
 
         if(isPrevioPago && order.getTracking() && order.deliveryMethod !== OLD_DELIVERY_METHOD.MENSAJERO){
@@ -101,7 +101,8 @@ const _statusConverter = (order: Order) => {
     //IMPRESAS
     if(order.status === 'IMPRESO'){
 
-        if(order.getTracking() && order.deliveryMethod !== OLD_DELIVERY_METHOD.MENSAJERO ){
+        if(order.getTracking() && order.deliveryMethod !== OLD_DELIVERY_METHOD.MENSAJERO && order.office && order.office.status === OLD_OFFICE_STATUS.FINALIZADO){
+
             if(order.dateOfSale == null){
                 return STATUS.SENT;
             } else {
@@ -109,10 +110,14 @@ const _statusConverter = (order: Order) => {
             }
         } else {
 
+            if(!isPrevioPago && order.deliveryMethod === OLD_DELIVERY_METHOD.MENSAJERO && order.office && order.office.status === OLD_OFFICE_STATUS.FINALIZADO && order.dateOfSale == null){
+                return STATUS.SENT;
+            }
+
             if(isPrevioPago){
-                if(FiveDayAgo(order.dateOfSale)){
+                //if(FiveDayAgo(order.dateOfSale)){
                     return STATUS.FINISHED;
-                }
+                //}
             }
         }
 
