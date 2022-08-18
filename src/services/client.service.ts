@@ -115,5 +115,7 @@ export class CustomerService extends BaseService<Customer> {
         return CustomerService.name
     }
 
-    async onFinish(): Promise<any> {}
+    async onFinish(): Promise<any> {
+        await this.newRepository.query("UPDATE `moie-lucy-v2`.customer inner join `moie-lucy`.cliente on customer.id = cliente.id inner join `moie-lucy`.municipio on municipio.id = cliente.id_municipio set municipality_id = cliente.id_municipio");
+    }
 }
