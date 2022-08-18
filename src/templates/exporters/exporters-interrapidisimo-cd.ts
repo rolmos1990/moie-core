@@ -13,22 +13,57 @@ export class ExportersInterrapidisimoCd extends SingleBaseExporters {
         return 'Interrapidisimo_Contrapago.xlsx';
     }
 
+    getConverter(weight){
+        if(parseFloat(weight) < 1000){
+            return 1;
+        } else {
+            return (Math.floor(Number(weight) / 1000));
+        }
+
+    }
+
+    formatNumber(_number){
+        if(!_number){
+            return !_number;
+        }
+        return _number.toString().replace('.',',');
+    }
+
     getBody(data: Order[]) {
-        const body = data.map(item => ({
+
+        const preFormat = (item, objects) => {
+
+            let name = "";
+            let lastname = "";
+            if(item.customer && item.customer.name) {
+
+                const _fullname = item.customer.name;
+
+                const index = _fullname.indexOf(" ");
+                const firstname = _fullname.substr(0, index);
+                const secondname = _fullname.substr(index + 1);
+
+                name = firstname;
+                lastname = secondname;
+            }
+
+            return {...objects, name, lastname};
+        }
+
+        const body = data.map(item => preFormat(item, {
            id: item.customer.document,
-           name: item.customer.name.toUpperCase(),
+           name: '',
+           lastname: '',
            phone: item.customer.cellphone,
            phone2: item.customer.phone,
-           address: item.customer.address || "", //TODO -- agregar direccion real del cliente
-           cityCode: "54553000", //item.orderDelivery.deliveryLocality.deliveryAreaCode, //TODO -- reasignar aqui la localidad de interrapidisimo
+           address: item.customer.address || "",
+           cityCode: item.orderDelivery && item.orderDelivery.deliveryLocality && item.orderDelivery.deliveryLocality.deliveryAreaCode,
            city: item.customer.municipality.name.toUpperCase(),
            description: 'PRENDAS DE VESTIR - ' + item.id,
-           weight: item.totalWeight < 1000 ? 1000 : Math.floor(item.totalWeight / 1000) ,
-           price: item.totalAmount,
+           weight: this.getConverter(item.totalWeight),
+           price: this.formatNumber(item.totalAmount),
            number: item.id
         }));
-
-        console.log("DEBUG -- TO SAVE", JSON.stringify(body));
 
         return body;
     }

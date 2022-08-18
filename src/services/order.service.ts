@@ -927,7 +927,7 @@ export class OrderService extends BaseService<Order> {
             .leftJoinAndSelect('od.product', 'p')
             .leftJoinAndSelect('o.orderDelivery', 'd')
             .andWhere("p.id IN (:products)", {products: products})
-            .andWhere("o.status IN (:_statuses)", {_statuses: [OrderStatus.FINISHED, OrderStatus.RECONCILED]})
+            .andWhere("o.status IN (:_statuses)", {_statuses: [OrderStatus.RECONCILED]})
             .andWhere("d.deliveryType = (:_statusDelivery)", {_statusDelivery: 1})
             .groupBy("p.id")
             .getRawMany();
