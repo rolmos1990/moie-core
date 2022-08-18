@@ -43,6 +43,7 @@ export class UserService extends BaseService<User> {
             _item.salt = _password.salt;
             _item.email = item.id + "@gmail.com";
             _item.name = item.name;
+            _item.lastname = ' ';
             _item.createdAt = new Date();
             _item.securityRol = 2;
             _item.status = true;
