@@ -16,7 +16,7 @@ import {NewDatabaseName} from "../common/persistence";
 export const SIZES = {
     SMALL: 67,
     MEDIUM: 238,
-    HIGHT: 400,
+    HIGH: 400,
     ORIGINAL: 800
 };
 

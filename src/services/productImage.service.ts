@@ -44,7 +44,7 @@ export class ProductImageService extends BaseService<ProductImage> {
                         image.thumbs = JSON.stringify({
                             "small": `uploads/${item.category}/${item.reference}_${imgNumber}_${SIZES.SMALL}.jpg`,
                             "medium": `uploads/${item.category}/${item.reference}_${imgNumber}_${SIZES.MEDIUM}.jpg`,
-                            "hight": `uploads/${item.category}/${item.reference}_${imgNumber}_${SIZES.HIGHT}.jpg`
+                            "high": `uploads/${item.category}/${item.reference}_${imgNumber}_${SIZES.HIGH}.jpg`
                         });
                         image.product = item;
 
