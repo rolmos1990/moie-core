@@ -1,8 +1,6 @@
-import {BaseExporters} from "./base.exporters";
 import {Order} from "../../models/Order";
 import {EXPORTER_POSTVENTA} from "./constants";
 import {OrderStatusNames} from '../../common/enum/orderStatus';
-import moment = require("moment");
 import {SingleBaseExporters} from "./single.base.exporters";
 import {customerLocality, toDateFormat, toFixed, toFloat, toUpper} from "./utilities";
 
