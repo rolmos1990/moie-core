@@ -64,6 +64,11 @@ const _statusConverter = (order: Order) => {
             if(order.getTracking()){
                 return STATUS.SENT;
             } else {
+
+                if(order.deliveryMethod === OLD_DELIVERY_METHOD.MENSAJERO && order.office && order.office.status === OLD_OFFICE_STATUS.FINALIZADO){
+                    return STATUS.SENT;
+                }
+
                 return STATUS.PRINT;
             }
         }
@@ -125,34 +130,9 @@ const _statusConverter = (order: Order) => {
     }
 
     //ENVIADO
-
-    const canBeNextFlow = (order, deliveryMethod) => (deliveryMethod === OLD_DELIVERY_METHOD.MENSAJERO && order.office.status === OLD_OFFICE_STATUS.FINALIZADO) || (OLD_DELIVERY_METHOD.MENSAJERO !== deliveryMethod) && (order.getTracking());
-
     if(order.status === 'ENVIADO'){
-
-        const deliveryMethod = _deliveryMethodConverter_single(order.deliveryType);
-
-        if(isPrevioPago){
-            //FINALIZADO
-            if(canBeNextFlow(order, deliveryMethod)){
-                return STATUS.FINISHED;
-            } else {
-
-                if(order.dateOfSale && FiveDayAgo(order.dateOfSale)){
-                    /* Que la fecha de venta tenga mas de 5 dias actuales */
-                    return STATUS.FINISHED;
-                }
-            }
-        }
-        else{
-            if(order.dateOfSale == null){
-                return STATUS.SENT;
-            } else {
-                return STATUS.FINISHED;
-            }
-        }
-
-        return STATUS.SENT;
+        //REGLA AJUSTADA QUE TODOS LOS PEDIDOS CON ESTADO ENVIADO EN EL MOIE VIEJO PASARIA A FINALIZADO EN EL NUEVO MOIE.
+        return STATUS.FINISHED;
     }
 
     //CONFIRMADA
