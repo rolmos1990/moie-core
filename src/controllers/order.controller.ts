@@ -43,6 +43,7 @@ import {OrderDeliveryService} from "../services/orderDelivery.service";
 import {DeliveryTypes} from "../common/enum/deliveryTypes";
 import {converterArrayToProductsObject} from "../common/helper/converters";
 import {Operator} from "../common/enum/operators";
+import {Comment} from "../models/Comment";
 
 
 @route('/order')
@@ -430,6 +431,13 @@ export class OrderController extends BaseController<Order> {
             const {dateFrom, dateTo, deliveryMethod, status} = req.query;
 
             const orders: Order[] = await this.orderService.findByDelivery(dateFrom, dateTo, deliveryMethod, status);
+
+            const comments : Comment[] = await this.commentService.getByOders(orders);
+            if(orders.length > 0) {
+                orders.map(item => {
+                    item.comments = comments.filter(_comment => parseInt(_comment.idRelated) == item.id);
+                });
+            }
 
             const exportable = new ExpotersPostventa();
 

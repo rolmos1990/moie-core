@@ -87,19 +87,21 @@ export default abstract class BaseRepository<T> {
             const subQueries = page.getWhereSubQuery();
             const where = page.getWhere();
 
-            return await this.repositoryManager.find({
+            const queryObject = {
                 ...page.get(),
                 join: { alias: tableName, leftJoin: page.getSubQueryInnerJoin(tableName) },
                 where: qb => {
                     qb.where(where);
                     subQueries.forEach(item => {
-                       qb.andWhere(item.query, item.search); // Filter related field
+                        qb.andWhere(item.query, item.search); // Filter related field
 
                     });
-                }
-            });
+                },
+            };
+            return await this.repositoryManager.find(queryObject);
         }
         else {
+            console.log(page.get());
             return await this.repositoryManager.find(page.get());
         }
     }

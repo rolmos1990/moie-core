@@ -23,6 +23,7 @@ import {Payment} from "./Payment";
 import {OrderStatus} from "../common/enum/orderStatus";
 import {DeliveryTypes} from "../common/enum/deliveryTypes";
 import {Bill} from "./Bill";
+import {Comment} from "./Comment";
 
 /**
  * El isImpress -> o Impreso seria un Estatus más,
@@ -152,6 +153,8 @@ export class Order extends BaseModel{
 
     @OneToOne(() => Bill, bill => bill.order)
     bill: Bill;
+
+    comments: Comment[];
 
     isEmpty(): boolean {
         return (this.id == null);

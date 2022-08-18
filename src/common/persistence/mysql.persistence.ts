@@ -10,7 +10,7 @@ export default <ConnectionOptions> {
     supportBigNumbers: true,
     bigNumberStrings: false,
     synchronize: false,
-    logging: false,
+    logging: true,
     entities: [
         `${__dirname}/../../models/**/*`
     ],

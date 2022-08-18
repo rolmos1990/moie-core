@@ -31,6 +31,6 @@ export const ProductOrderCreate = (product: any) => ({
 });
 
 export const ProductSizeShort = (productSize: any, reserved) => ({
-    id: productSize.id || null,
-    quantity: productSize.quantity ? parseInt(productSize.quantity) + parseInt(reserved) : 0
+    id: (productSize && productSize.id) || null,
+    quantity: (productSize && productSize.quantity) ? parseInt(productSize.quantity) + parseInt(reserved) : 0
 });

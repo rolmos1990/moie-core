@@ -21,4 +21,16 @@ export class CommentService extends BaseService<Comment> {
         ;
         return comments;
     }
+
+    async getByOders(order: Order[]){
+
+        let comments = await this.commentRepository.createQueryBuilder('c')
+            .where('idRelated IN (:orders)')
+            .andWhere('entity = :entity')
+            .orderBy('id', 'DESC')
+            .setParameters({entity: CommentEntities.ORDER, orders: order.map(item => item.id)})
+            .getMany();
+
+        return comments;
+    }
 }

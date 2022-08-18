@@ -19,17 +19,17 @@ export class ExpotersPostventa extends SingleBaseExporters {
     getBody(data: Order[]) {
         const body = data.map(item => ({
             deliveryDate: toDateFormat(item.orderDelivery.deliveryDate),
-            customerName: toUpper(item.customer.name),
+            customerName: item.customer ? toUpper(item.customer.name): '',
             orderId: item.id,
             status: OrderStatusNames[item.status].toUpperCase(),
-            deliveryMethod: toUpper(item.deliveryMethod.name),
-            tracking: item.orderDelivery.tracking,
-            deliveryStatus: toUpper(item.orderDelivery.deliveryStatus),
-            deliveryDateStatus: toDateFormat(item.orderDelivery.deliveryStatusDate),
-            deliveryState: item.orderDelivery.deliveryCurrentLocality,
+            deliveryMethod: item.deliveryMethod ? toUpper(item.deliveryMethod.name) : '',
+            tracking: item.orderDelivery && item.orderDelivery.tracking,
+            deliveryStatus: item.orderDelivery ? toUpper(item.orderDelivery.deliveryStatus) : '',
+            deliveryDateStatus: item.orderDelivery ? toDateFormat(item.orderDelivery.deliveryStatusDate) : '',
+            deliveryState: item.orderDelivery && item.orderDelivery.deliveryCurrentLocality,
             deliveryDestiny: customerLocality(item.customer),
             amount: toFixed(toFloat(item.totalAmount) + toFloat(item.orderDelivery.deliveryCost)),
-            observation: ""
+            observation: item.comments && item.comments[0] && item.comments[0].comment
         }));
 
         return body;

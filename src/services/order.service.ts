@@ -432,9 +432,12 @@ export class OrderService extends BaseService<Order> {
             .leftJoinAndSelect('c.state', 's')
             .leftJoinAndSelect('o.orderDelivery', 'd')
             .leftJoinAndSelect('o.deliveryMethod', 'i')
-            .andWhere("d.deliveryDate", Between(dateFrom, dateTo))
+            .andWhere("DATE(d.deliveryDate) >= :before", {before: toDateFormat(dateFrom)})
+            .andWhere("DATE(d.deliveryDate) <= :after", {after: toDateFormat(dateTo)})
             .andWhere("o.deliveryMethod = :deliveryMethod", {deliveryMethod: 1})
             .andWhere("o.status = :status", {status: status})
+            .orderBy('d.deliveryDate', 'ASC')
+            .limit(8000)
             .getMany();
     }
 

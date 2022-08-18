@@ -42,7 +42,7 @@ export function toUpper(item) {
 
 export function customerLocality(customer: Customer) {
     try {
-        return customer.state.name + " - " + customer.municipality.name;
+        return (customer.state && customer.state.name) + " - " + (customer.municipality && customer.municipality.name);
     }catch(e){
         return "";
     }

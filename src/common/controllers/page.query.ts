@@ -114,7 +114,16 @@ export class PageQuery {
         if(!(this.orders.length > 0)){
             return [];
         }
+
         const object = ArrayToObject(this.orders, 'field','value');
+
+        if(this.orders[0]['field'].includes('.')){
+            const search = this.orders[0]['field'].split('.');
+            return {[search[0]]: {
+                [search[1]] : this.orders[0]['value']
+            }};
+        }
+
         return object;
     }
 
