@@ -44,6 +44,7 @@ import {DeliveryTypes} from "../common/enum/deliveryTypes";
 import {converterArrayToProductsObject} from "../common/helper/converters";
 import {Operator} from "../common/enum/operators";
 import {Comment} from "../models/Comment";
+import {OrderTypes} from "../common/enum/orderTypes";
 
 
 @route('/order')
@@ -304,7 +305,7 @@ export class OrderController extends BaseController<Order> {
     }
 
     /**
-     * Obtener plantilla de impresión
+     * Obtener plantilla de impresión (sencilla)
      * @param req
      * @param res
      */
@@ -336,6 +337,92 @@ export class OrderController extends BaseController<Order> {
                     throw new InvalidArgumentException("No se ha podido generar el reporte");
                 }
                 return res.json({status: 200, html: template});
+            }
+        }catch(e){
+            this.handleException(e, res);
+            console.log("error", e);
+        }
+    }
+
+    /**
+     * Obtener plantilla de impresión (masiva)
+     * @param req
+     * @param res
+     */
+    @route('/batch/printRequest')
+    @GET()
+    public async printRequest(req: Request, res: Response) {
+        try {
+            const limitForQueries = 4000; //Limite para una petición
+
+            const query = req.query;
+            const conditional = query.conditional ? query.conditional + "" : null;
+
+            const queryCondition = ConditionalQuery.ConvertIntoConditionalParams(conditional);
+            const operationQuery = new OperationQuery(null, null);
+            let page = new PageQuery(limitForQueries,0,queryCondition, operationQuery);
+
+            page.setRelations(['orderDelivery', 'customer','customer.state','customer.municipality', 'user', 'deliveryMethod', 'orderDetails', 'orderDetails.product']);
+
+            let orders: Array<Order> = await this.orderService.all(page);
+
+            //let isImpress = true;
+
+            if(orders.length > 0){
+                let orderId = 0;
+                orders.forEach((item,index,_orders)  => {
+                    //Regla para poder ser impresa
+                    if(item.status <= OrderStatus.PENDING){
+                        //isImpress = false;
+                        orderId = item.id;
+                        _orders.splice(index, 1);
+                    }
+                });
+
+                //if(!isImpress){
+                    //throw new InvalidArgumentException("Orden : "+orderId+" No puede ser impresa");
+                //}
+                const qrBatch = [];
+                const result = await Promise.all(orders.map(async (order,index, _orders) => {
+                    qrBatch[order.id] = await QrBarImage(order.id);
+                    const deliveryShortType = getDeliveryShortType(order.orderDelivery.deliveryType);
+
+                    let comments = await this.commentService.getByOrder(order);
+
+                    const object = {
+                        order,
+                        qrBar: qrBatch[order.id],
+                        orderDetails: order.orderDetails,
+                        hasPayment: isPaymentMode(order.paymentMode) && (order.deliveryMethod.id === OrderTypes.MENSAJERO),
+                        isChargeOnDelivery: isChargeOnDelivery(order.orderDelivery),
+                        isCash: isCash(order.paymentMode),
+                        hasPiecesForChanges: (order.piecesForChanges && order.piecesForChanges > 0),
+                        deliveryShortType: deliveryShortType,
+                        hasComments: comments.length > 0,
+                        comments: comments
+                    };
+
+                    const template = await this.templateService.getTemplate(TemplatesRegisters.PRINT_ORDER, object);
+                    if(!template){
+                        throw new InvalidArgumentException("No se ha encontrado un resumen para esta orden");
+                    } else {
+                        return {order: order.id, html: template};
+                    }
+                }));
+
+                const user = await this.userService.find(req["user"]);
+
+                const save = await this.batchRequestService.createOrUpdate({
+                    body: result,
+                    type: BatchRequestTypes.IMPRESSION,
+                    status: BatchRequestTypesStatus.COMPLETED,
+                    user: UserShortDTO(user)
+                });
+
+                return res.json({status: 200, batch: {...save}});
+
+            } else {
+                return res.json({status: 400, error: "No se han encontrado registros"});
             }
         }catch(e){
             this.handleException(e, res);
@@ -477,93 +564,6 @@ export class OrderController extends BaseController<Order> {
                 this.handleException(new ApplicationException(), res);
 
             }
-        }
-    }
-
-    /**
-     * Obtener plantilla de impresión
-     * @param req
-     * @param res
-     */
-        @route('/batch/printRequest')
-    @GET()
-    public async printRequest(req: Request, res: Response) {
-        try {
-            const limitForQueries = 5000; //Limite para una petición
-
-            const query = req.query;
-            const conditional = query.conditional ? query.conditional + "" : null;
-
-            const queryCondition = ConditionalQuery.ConvertIntoConditionalParams(conditional);
-            const operationQuery = new OperationQuery(null, null);
-            let page = new PageQuery(limitForQueries,0,queryCondition, operationQuery);
-
-            const countRegisters = await this.orderService.count(page);
-
-            page.setRelations(['orderDelivery', 'customer','customer.state','customer.municipality', 'user', 'deliveryMethod', 'orderDetails', 'orderDetails.product']);
-
-            let orders: Array<Order> = await this.orderService.all(page);
-
-            let isImpress = true;
-
-            if(orders.length > 0){
-                let orderId = 0;
-                orders.forEach(item  => {
-                    //Regla para poder ser impresa
-                    if(item.status <= OrderStatus.PENDING){
-                        isImpress = false;
-                        orderId = item.id;
-                    }
-                });
-
-                if(!isImpress){
-                    throw new InvalidArgumentException("Orden : "+orderId+" No puede ser impresa");
-                }
-                const qrBatch = [];
-                const result = await Promise.all(orders.map(async order => {
-                    qrBatch[order.id] = await QrBarImage(order.id);
-                    const deliveryShortType = getDeliveryShortType(order.orderDelivery.deliveryType);
-
-                    let comments = await this.commentService.getByOrder(order);
-
-                    const object = {
-                        order,
-                        qrBar: qrBatch[order.id],
-                        orderDetails: order.orderDetails,
-                        hasPayment: isPaymentMode(order.paymentMode),
-                        isChargeOnDelivery: isChargeOnDelivery(order.orderDelivery),
-                        isCash: isCash(order.paymentMode),
-                        hasPiecesForChanges: (order.piecesForChanges && order.piecesForChanges > 0),
-                        deliveryShortType: deliveryShortType,
-                        hasComments: comments.length > 0,
-                        comments: comments
-                    };
-
-                    const template = await this.templateService.getTemplate(TemplatesRegisters.PRINT_ORDER, object);
-                    if(!template){
-                        throw new InvalidArgumentException("No se ha encontrado un resumen para esta orden");
-                    }
-
-                    return {order: order.id, html: template};
-                }));
-
-                const user = await this.userService.find(req["user"]);
-
-                const save = await this.batchRequestService.createOrUpdate({
-                    body: result,
-                    type: BatchRequestTypes.IMPRESSION,
-                    status: BatchRequestTypesStatus.COMPLETED,
-                    user: UserShortDTO(user)
-                });
-
-                return res.json({status: 200, batch: {...save}});
-
-            } else {
-                return res.json({status: 400, error: "No se han encontrado registros"});
-            }
-        }catch(e){
-            this.handleException(e, res);
-            console.log("error", e);
         }
     }
 
