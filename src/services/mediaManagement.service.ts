@@ -22,6 +22,7 @@ export const CONFIG_MEDIA = {
     PDF_PATH: '/pdf',
     STORAGE_PATH: '../storage/uploads',
     STORAGE_PDF_PATH: '../storage/pdf',
+    ATTACHMENT_PATH: '../storage/attachments',
     PICTURES_FOLDERS: '/users',
     RESOLUTIONS: [67,238,400,800]
 };
@@ -51,6 +52,27 @@ export class MediaManagementService extends UtilService {
         }
         this.ensureDirectoryExistence(dirname);
         mkdirSync(dirname);
+    }
+
+    getDefaultPaths() {
+        return CONFIG_MEDIA;
+    }
+
+    getExtension(_file, fileName) {
+        const file = decodeBase64Image(_file);
+        if(file instanceof Error){
+            throw  new InvalidFileException("No es posible reconocer el archivo");
+        }
+        let fileType = extension(file.type);
+        if(!fileType && fileName){
+            return fileName
+                .split('.')
+                .filter(Boolean) // removes empty extensions (e.g. `filename...txt`)
+                .slice(1)
+                .join('.');
+        }
+
+        return fileType;
     }
 
     createImageFile(folder = "", name, _file) : ImageResource {
@@ -113,6 +135,35 @@ export class MediaManagementService extends UtilService {
         });
 
         return response;
+    }
+
+    /**
+     *
+     * @param folder = /var/example
+     * @param name fileName
+     * @param _file binaryFile
+     */
+    addFileFromBinary(folder = CONFIG_MEDIA.ATTACHMENT_PATH, name, _file){
+        const file = decodeBase64Image(_file);
+
+        if(file instanceof Error){
+            return false;
+        }
+
+        /**
+         * Saving original image
+         */
+        const fileName =  `${name}`;
+        const imageBuffer = file.data;
+        const filePath = folder + fileName;
+
+        if (!existsSync(folder)) {
+            mkdirSync(folder);
+        }
+
+        writeFileSync(filePath, imageBuffer, 'utf8');
+
+        return true;
     }
 
     /**
