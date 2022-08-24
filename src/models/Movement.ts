@@ -1,12 +1,11 @@
 import {
-    Column, CreateDateColumn,
+    Column,
     Entity, OneToMany,
     PrimaryGeneratedColumn,
 } from "typeorm";
 import BaseModel from "../common/repositories/base.model";
 import {IsDate, IsDecimal, Length} from "class-validator";
 import {Type} from "class-transformer";
-import {OrderDetail} from "./OrderDetail";
 import {Attachment} from "./Attachment";
 
 @Entity({name: 'Movement'})
