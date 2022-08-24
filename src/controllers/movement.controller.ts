@@ -84,7 +84,7 @@ export class MovementController extends BaseController<Movement> {
         const _newFileName = _attachment.id + '.' + fileType;
 
         try {
-            this.mediaManagementService.addFileFromBinary(defaultPaths.ATTACHMENT_PATH, _newFileName, file);
+            this.mediaManagementService.addFileFromBinary(defaultPaths.STORAGE_ATTACHMENT_PATH, _newFileName, file);
         }catch(e){
             await this.attachmentService.delete(_attachment.id);
             this.handleException(e, res);

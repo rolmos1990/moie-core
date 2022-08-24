@@ -34,6 +34,7 @@ app.use('/css', express.static('css'));
 app.use('/public', express.static('public'));
 app.use('/uploads', express.static('../storage/uploads'));
 app.use('/pdf', express.static('../storage/pdf'));
+app.use('/attachments', express.static('../storage/attachments'));
 
 //Blocked use for this directories
 

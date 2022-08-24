@@ -1,5 +1,6 @@
 import {Attachment} from "../../models/Attachment";
 import {Movement} from "../../models/Movement";
+import {CONFIG_MEDIA} from "../../services/mediaManagement.service";
 
 export const MovementListDTO = (item: Movement) => ({
     id: item ? item.id : null,
@@ -21,6 +22,6 @@ export const AttachmentDTO = (item: Attachment) => ({
     id: item.id,
     type: item.type,
     description: item.description,
-    filename: 'test.png',
-    fileUrl: 'test.png'
+    filename: item.id + '.' + item.type,
+    fileUrl: CONFIG_MEDIA.LOCAL_PATH + CONFIG_MEDIA.ATTACHMENT_PATH + "/" + item.id + '.' + item.type
 });

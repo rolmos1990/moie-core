@@ -20,9 +20,10 @@ export const CONFIG_MEDIA = {
     DEFAULT_IMAGE: process.env.PUBLIC_URL + "/public/icons/image_not_found.png",
     IMAGE_PATH: './uploads',
     PDF_PATH: '/pdf',
+    ATTACHMENT_PATH: '/attachments',
     STORAGE_PATH: '../storage/uploads',
     STORAGE_PDF_PATH: '../storage/pdf',
-    ATTACHMENT_PATH: '../storage/attachments',
+    STORAGE_ATTACHMENT_PATH: '../storage/attachments',
     PICTURES_FOLDERS: '/users',
     RESOLUTIONS: [67,238,400,800]
 };
@@ -143,7 +144,7 @@ export class MediaManagementService extends UtilService {
      * @param name fileName
      * @param _file binaryFile
      */
-    addFileFromBinary(folder = CONFIG_MEDIA.ATTACHMENT_PATH, name, _file){
+    addFileFromBinary(folder = CONFIG_MEDIA.STORAGE_ATTACHMENT_PATH, name, _file){
         const file = decodeBase64Image(_file);
 
         if(file instanceof Error){
