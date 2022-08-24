@@ -12,7 +12,7 @@ export class Attachment extends BaseModel {
     @PrimaryGeneratedColumn('increment')
     id: number;
 
-    @JoinColumn({name:'id_movimiento'})
+    @Column({name:'id_movimiento', type: 'int'})
     movement: number;
 
     @Column({name: 'tipo', type: 'varchar', length: 255})

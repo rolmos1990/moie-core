@@ -10,8 +10,8 @@ import {Length} from "class-validator";
 export class Attachment extends BaseModel {
     @PrimaryGeneratedColumn('increment')
     id: number;
-
-    @JoinColumn({name:'movement_id'})
+    
+    @Column({name:'movement_id', type: 'int'})
     movement: number;
 
     @Column({type: 'varchar', length: 255})
