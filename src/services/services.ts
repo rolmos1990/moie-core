@@ -20,5 +20,6 @@ export const services = {
     Size: 'SizeService',
     State: 'StateService',
     User: 'UserService',
-
+    Movement: 'MovementService',
+    Attachment: 'AttachmentService',
 };

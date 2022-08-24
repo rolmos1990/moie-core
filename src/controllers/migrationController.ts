@@ -22,6 +22,8 @@ import {BillConfigService} from "../services/billConfig.service";
 import {BillService} from "../services/bill.service";
 import {BillCreditMemoService} from "../services/billCreditMemo.service";
 import {CommentPostSaleService} from "../services/commentPostSale.service";
+import {MovementService} from "../services/movement.service";
+import {AttachmentService} from "../services/attachment.service";
 
 @route('/migration')
 export class MigrationController {
@@ -47,6 +49,8 @@ export class MigrationController {
         private readonly billConfigService: BillConfigService,
         private readonly billService: BillService,
         private readonly billCreditMemoService: BillCreditMemoService,
+        private readonly movementService: MovementService,
+        private readonly attachmentService: AttachmentService,
     ){
     };
     @GET()
@@ -168,6 +172,16 @@ export class MigrationController {
         console.log("20. Migrando Facturas");
         const migrationBillCreditMemo = new MigrationManager(this.billCreditMemoService);
         await migrationBillCreditMemo.run();
+
+        console.log("########################");
+        console.log("21. Migrando Billetera");
+        const migrationWalletCreditMemo = new MigrationManager(this.movementService);
+        await migrationWalletCreditMemo.run();
+
+        console.log("########################");
+        console.log("22. Migrando Adjuntos");
+        const migrationAttachmentCreditMemo = new MigrationManager(this.attachmentService);
+        await migrationAttachmentCreditMemo.run();
 
         const dateEnd = new Date();
 
