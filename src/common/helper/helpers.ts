@@ -1,9 +1,8 @@
-import {Any} from "typeorm";
 import {DeliveryTypes, DeliveryWebService} from "../enum/deliveryTypes";
-import {InvalidArgumentException} from "../exceptions";
 import {OrderDetail} from "../../models/OrderDetail";
 import {ProductSize} from "../../models/ProductSize";
 const bwipjs = require('bwip-js');
+const FormData = require('form-data');
 
 
 export interface DecodeDataObj {
@@ -173,4 +172,12 @@ export function getRealInventary(productSizes: ProductSize[], _orderDetails: Ord
         }
         return item;
     });
+}
+
+export function toFormData(items) {
+    let datos = new FormData();
+    for (let i in items){
+        datos.append( i, items[i] );
+    }
+    return datos;
 }

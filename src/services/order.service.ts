@@ -47,8 +47,12 @@ export class OrderService extends BaseService<Order> {
         super(orderRepository);
     }
 
-    async findFull(id: any){
-        const _order = await this.find(parseInt(id), ['orderDetails','orderDelivery', 'deliveryMethod', 'customer', 'user']);
+    async findFull(id: any, addRelations = []){
+        let relations = ['orderDetails','orderDelivery', 'deliveryMethod', 'customer', 'user'];
+        if(addRelations && addRelations.length > 0){
+            relations = relations.concat(addRelations);
+        }
+        const _order = await this.find(parseInt(id), relations);
         const _orderDetails = await this.getDetails(_order);
         _order.orderDetails = _orderDetails;
         return _order;

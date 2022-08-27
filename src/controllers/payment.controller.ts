@@ -1,4 +1,4 @@
-import {DELETE, POST, route} from 'awilix-express';
+import {DELETE, GET, POST, route} from 'awilix-express';
 import {PaymentService} from "../services/payment.service";
 import {BaseController} from "../common/controllers/base.controller";
 import {Payment} from "../models/Payment";
@@ -14,6 +14,9 @@ import {OrderHistoricService} from "../services/orderHistoric.service";
 import {UserService} from "../services/user.service";
 import {DeliveryTypes} from "../common/enum/deliveryTypes";
 import {PaymentStatus} from "../common/enum/paymentStatus";
+import {PayuI} from "../common/interfaces/PayuI";
+import {PayuRequest} from "../common/requesters/deliveries/PayuRequest";
+import {DeliveryStatusImpl, TrackingDelivery} from "../common/requesters/deliveries/DeliveryStatusImpl";
 
 @route('/payment')
 export class PaymentController extends BaseController<Payment> {
@@ -105,6 +108,90 @@ export class PaymentController extends BaseController<Payment> {
             }
         }
     }
+
+    @route('/gateway/generate/payu/:id')
+    @GET()
+    protected async generatePayu(req: Request, res: Response){
+        try {
+        const id = req.params.id;
+        const order = await this.orderService.findFull(parseInt(id), ['customer.state', 'customer.municipality']);
+        const customer = order.customer;
+        const totalAmount = order.totalWithDiscount + order.orderDelivery.deliveryCost;
+        const isTest = 1;
+
+        const customerMunicipality = customer.municipality ? customer.municipality.name : '';
+        const customerState = customer.state ? customer.state.name  : '';
+
+        const payload : PayuI = {
+            id_venta: order.id,
+            monto: totalAmount,
+            nombre_cliente: customer.name,
+            ci_cliente: customer.document,
+            telefono_cliente: customer.cellphone,
+            direccion: customer.address,
+            ciudad: customerMunicipality + ' ' + customerState,
+            sandbox: isTest,
+        };
+
+        const requested = new PayuRequest(payload);
+        const urlResponse = await requested.call();
+        return res.json({status: 200, url: urlResponse } );
+
+        } catch(e){
+            console.log(e.message);
+            if (e.name === InvalidArgumentException.name || e.name === "EntityNotFound") {
+                this.handleException(new InvalidArgumentException("Orden no ha sido encontrada"), res);
+            }
+            this.handleException(new ApplicationException(), res);
+        }
+
+
+    }
+
+    @route('/gateway/payu/register')
+    @POST()
+    protected async registerPayu(req: Request, res: Response){
+        try {
+            const {
+                order, //order_id
+                date, //fecha
+                value, //monto
+                confirmacion, //confirmation code,
+                name, //nombre
+                email, //email
+                phone, //phone
+                cc_number, //cc_number
+                authorization_code, //codigo de autorizacion
+                error_code_bank, //codigo de error de banco
+            } = req.body || [];
+
+            const orderObj = await this.orderService.findFull(order);
+            if (order) {
+                const payment = new Payment();
+                payment.order = orderObj;
+                payment.createdAt = date;
+                payment.email = email;
+                payment.name = name;
+                payment.phone = phone;
+                payment.type = 'Payu';
+                payment.consignmentAmount = value;
+                payment.consignmentNumber = confirmacion;
+
+                const _newPayment = await this.paymentService.createOrUpdate(payment);
+
+                orderObj.status = OrderStatus.RECONCILED;
+                orderObj.payment = _newPayment.id;
+
+                await this.orderService.createOrUpdate(orderObj);
+
+                return res.json({status: 200});
+            }
+        }catch(e){
+            this.handleException(new ApplicationException(), res);
+        }
+
+    }
+
 
     protected beforeCreate(item: Payment){}
     protected afterCreate(item: Object): void {}
