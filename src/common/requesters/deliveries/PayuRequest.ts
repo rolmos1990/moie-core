@@ -13,7 +13,7 @@ export class PayuRequest extends BaseRequester {
     }
 
     getUrl(): any {
-        return `http://lucymodas.com/checkout/generar_link_pago`;
+        return `${process.env.WEBSITE_URL}/checkout/generar_link_pago`;
     }
 
     async call(): Promise<TrackingDelivery> {
