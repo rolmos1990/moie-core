@@ -18,6 +18,7 @@ import {TemplatesRegisters} from "../common/enum/templatesTypes";
 import {CONFIG_MEDIA, MEDIA_FORMAT_OUTPUT, MediaManagementService} from "../services/mediaManagement.service";
 import {ProductCatalogViewService} from "../services/productCatalogView.service";
 import {CategoryCreateDTO, CategoryUpdateDTO} from "./parsers/category";
+import {getCatalogImage} from "../common/helper/helpers";
 
 @route('/category')
 export class CategoryController extends BaseController<Category> {
@@ -94,18 +95,9 @@ export class CategoryController extends BaseController<Category> {
             if(products.length > 0){
 
                 const onlyReference = false;
-                const defaultImage = CONFIG_MEDIA.DEFAULT_IMAGE;
-                const defaultUrl = CONFIG_MEDIA.LOCAL_PATH;
                 const _products = products.map(item => {
-                    try {
-                            const _image1 = item.firstImage ? defaultUrl + "/" + ((JSON.parse(item.firstImage))['high']) : defaultImage;
-                            const _image2 = item.secondImage ? defaultUrl + "/" + ((JSON.parse(item.secondImage))['small']) : defaultImage;
-                            item['imagePrimary'] = _image1;
-                            item['imageSecondary'] = _image2;
-                    }catch(e){
-                        item['imagePrimary'] = defaultImage;
-                        item['imageSecondary'] = defaultImage;
-                    }
+                item['imagePrimary'] = getCatalogImage(item, 'firstImage', 'high');
+                item['imageSecondary'] = getCatalogImage(item, 'secondImage', 'small');
                     return item;
                 });
 
@@ -178,41 +170,23 @@ export class CategoryController extends BaseController<Category> {
             page.setRelations(['productSize', 'category', 'productImage']);
 
             let products = await this.productCatalogViewService.all(page);
-            const defaultImage = CONFIG_MEDIA.DEFAULT_IMAGE;
-            const defaultUrl = CONFIG_MEDIA.LOCAL_PATH;
 
             if(products.length > 0){
 
                 const _products = products.map(item => {
-                    try {
-                        const _image1 = item.firstImage ? defaultUrl + "/" + ((JSON.parse(item.firstImage))['high']) : defaultImage;
-                        const _image2 = item.secondImage ? defaultUrl + "/" + ((JSON.parse(item.secondImage))['small']) : defaultImage;
 
-
-                        item.productSize = item.productSize.map(_sizeItem => {
+                        item.productSize = item.productSize && item.productSize.length > 0 ? item.productSize.map(_sizeItem => {
                           if(_sizeItem.name.toUpperCase() == "UNICA"){
                               _sizeItem['sizeDesc'] = item.sizeDescription;
                           }
                           return _sizeItem;
-                        });
+                        }) : [];
 
-                        item['imagePrimary'] = _image1;
-                        item['imageSecondary'] = _image2;
-
-                        return item;
-                    }catch(e){
-                        item['imagePrimary'] = defaultImage;
-                        item['imageSecondary'] = defaultImage;
-
-                        item.productSize = item.productSize.map(_sizeItem => {
-                            if(_sizeItem.name.toUpperCase() == "UNICA"){
-                                 _sizeItem['sizeDesc'] = item.sizeDescription;
-                            }
-                            return _sizeItem;
-                        });
+                        item['imagePrimary'] = getCatalogImage(item, 'firstImage', 'high');
+                        item['imageSecondary'] = getCatalogImage(item, 'secondImage', 'small');
 
                         return item;
-                    }
+
                 });
 
                 const object = {

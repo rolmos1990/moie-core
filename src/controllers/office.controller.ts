@@ -366,7 +366,7 @@ export class OfficeController extends BaseController<Office> {
     }
 
     protected getDefaultRelations(): Array<string> {
-        return ['deliveryMethod', 'user'];
+        return ['deliveryMethod', 'user', 'viewOrders'];
     }
     getGroupRelations(): Array<string> {
         return [];

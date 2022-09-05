@@ -15,6 +15,7 @@ import {Size} from "./Size";
 import {Category} from "./Category";
 import {ProductImage} from "./ProductImage";
 import {ProductAvailable} from "./ProductAvailable";
+import {ViewAvailables} from "./ViewAvailables";
 
 @Entity({name: 'Product'})
 export class Product extends BaseModel{
@@ -124,6 +125,10 @@ export class Product extends BaseModel{
     @Column({type: 'integer', default: 0})
     @IsNumber()
     available: number;
+
+    //view product availables
+    @OneToOne(() => ViewAvailables, viewAvailables => viewAvailables.product)
+    viewAvailables: ViewAvailables;
 
     isEmpty(): boolean {
         return (this.id == null);

@@ -10,7 +10,8 @@ export const OfficeListDTO = (item: Office) => ({
     deliveryMethod: DeliveryMethodListDTO(item.deliveryMethod),
     description: item ? item.description : null,
     user: item ? UserShortDTO(item.user) : null,
-    status: item.status
+    status: item.status,
+    viewOrders: item.viewOrders || {}
 });
 
 export const OfficeCreateDTO = (item: Office) => ({

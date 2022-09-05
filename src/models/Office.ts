@@ -1,9 +1,11 @@
-import {Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
+import {Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn} from "typeorm";
 import BaseModel from "../common/repositories/base.model";
 import {IsDate, IsNumber, IsOptional, Length} from "class-validator";
 import {DeliveryMethod, DeliveryTypes} from "./DeliveryMethod";
 import {Type} from "class-transformer";
 import {User} from "./User";
+import {ViewOfficeOrders} from "./ViewOfficeOrders";
+import {ProductAvailable} from "./ProductAvailable";
 
 //Equivalente a (despachos)
 @Entity({name: 'Office'})
@@ -39,6 +41,9 @@ export class Office extends BaseModel{
     @Column({name:'status', type: 'integer'})
     @IsNumber()
     status: number;
+
+    @OneToOne(() => ViewOfficeOrders, officeOrders => officeOrders.id)
+    viewOrders: ViewOfficeOrders;
 
     isEmpty(): boolean {
         return (this.id == null);

@@ -680,11 +680,11 @@ export class OrderService extends BaseService<Order> {
         const orderRepository = this.orderDetailRepository.createQueryBuilder('od');
 
         orderRepository.addSelect("p.reference", "id");
-        orderRepository.addSelect("od.quantity", "cantidad");
-        orderRepository.addSelect("pa.available", "existencia");
+        orderRepository.addSelect("SUM(od.quantity)", "cantidad");
+        orderRepository.addSelect("pa.quantity", "existencia");
 
         orderRepository.leftJoin("od.product", "p");
-        orderRepository.leftJoin("p.productAvailable", "pa");
+        orderRepository.leftJoin("p.viewAvailables", "pa");
         orderRepository.leftJoin("od.order", "o");
 
         orderRepository.andWhere("DATE(o.dateOfSale) >= :before");

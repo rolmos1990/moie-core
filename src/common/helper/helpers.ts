@@ -1,6 +1,8 @@
 import {DeliveryTypes, DeliveryWebService} from "../enum/deliveryTypes";
 import {OrderDetail} from "../../models/OrderDetail";
 import {ProductSize} from "../../models/ProductSize";
+import {ProductCatalogView} from "../../models/ProductCatalogView";
+import {CONFIG_MEDIA} from "../../services/mediaManagement.service";
 const bwipjs = require('bwip-js');
 const FormData = require('form-data');
 
@@ -180,4 +182,27 @@ export function toFormData(items) {
         datos.append( i, items[i] );
     }
     return datos;
+}
+
+//resolution -> (high, medium, small)
+export function getCatalogImage(p: ProductCatalogView, _image, resolution) {
+
+    const defaultImage = CONFIG_MEDIA.DEFAULT_IMAGE;
+    const defaultUrl = CONFIG_MEDIA.LOCAL_PATH;
+
+    if(p[_image]){
+        var metaImages = false;
+        try {
+            metaImages = JSON.parse(JSON.parse(p[_image]));
+        }catch(e){
+            metaImages = JSON.parse(p[_image]);
+        }
+
+        if(metaImages){
+            return defaultUrl + "/" + (metaImages[resolution]);
+        } else {
+            return defaultImage;
+        }
+    }
+
 }
