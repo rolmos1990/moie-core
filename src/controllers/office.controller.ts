@@ -341,6 +341,7 @@ export class OfficeController extends BaseController<Office> {
                 const tracking = context.filter(i => item.id === parseInt(i.id));
                 if(tracking && tracking[0]) {
                     item.orderDelivery.tracking = tracking[0].trackingNumber;
+                    item.orderDelivery.deliveryDate = deliveryDate;
                     ordersToUpdate.push(item);
                 }
                 return {id: item.orderDelivery.id, tracking: item.orderDelivery.tracking, deliveryDate: new Date(), deliveryStatus: DeliveryStatus.PENDING, sync: true};
@@ -349,7 +350,8 @@ export class OfficeController extends BaseController<Office> {
             const registers = await this.orderDeliveryService.createOrUpdate(orderDeliveries, {chunk: LIMIT_SAVE_BATCH});
 
             //update status
-            await Promise.all(ordersToUpdate.map(async item => {
+            await Promise.all(ordersToUpdate.map(async (item : Order) => {
+                item.postSaleDate = deliveryDate;
                 await this.orderService.updateNextStatusFromModule(item, user, Modules.PostVenta);
             }));
 

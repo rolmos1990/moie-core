@@ -313,10 +313,14 @@ export class OrderService extends BaseService<Order> {
 
     async getOrderDetailByProductIdAndStatuses(productId, orderStatus: any) {
         return await this.orderDetailRepository.createQueryBuilder('orderDetail')
+            .addSelect('SUM(orderDetail.quantity)', 'quantity')
+            .leftJoinAndSelect('orderDetail.product', 'p')
             .leftJoinAndSelect('orderDetail.order', 'o')
             .leftJoinAndSelect('o.customer', 'c')
             .where('orderDetail.product = :product', {product: productId})
             .andWhere('o.status IN (:orderStatus)', {orderStatus: orderStatus})
+            .addGroupBy('o.id')
+            .addGroupBy('p.id')
             .getMany();
     }
 
@@ -786,7 +790,8 @@ export class OrderService extends BaseService<Order> {
 
         orderRepository.setParameters({origen: "%WHATSAPP%", before: dateFrom + " 00:00:00", after: dateTo + " 23:59:59"});
         orderRepository.groupBy("o.origen");
-        orderRepository.orderBy('o.origen');
+        orderRepository.addOrderBy('LENGTH(o.origen)', 'ASC');
+        orderRepository.addOrderBy('o.origen', 'ASC');
 
         const rows = await orderRepository.getRawMany();
 

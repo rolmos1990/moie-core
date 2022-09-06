@@ -156,6 +156,12 @@ export class Order extends BaseModel{
 
     comments: Comment[];
 
+    @Column({name:'post_sale_date', nullable: true})
+    @Type(() => Date)
+    @IsDate()
+    @IsOptional()
+    postSaleDate: Date;
+
     isEmpty(): boolean {
         return (this.id == null);
     }

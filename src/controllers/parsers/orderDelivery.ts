@@ -8,7 +8,8 @@ export const OrderDeliveryListDTO = (orderDelivery: OrderDelivery) => ({
     deliveryCost: orderDelivery ? orderDelivery.deliveryCost : 0,
     deliveryType:  orderDelivery ? orderDelivery.deliveryType : null,
     deliveryStatus: orderDelivery ? orderDelivery.deliveryStatus : null,
-    deliveryLocality: orderDelivery ? DeliveryLocalityListDTO(orderDelivery.deliveryLocality) : null
+    deliveryLocality: orderDelivery ? DeliveryLocalityListDTO(orderDelivery.deliveryLocality) : null,
+    syncDate: orderDelivery ? orderDelivery.syncDate : null
 });
 
 export const OrderDeliveryShortListDTO = (orderDelivery: OrderDelivery) => ({

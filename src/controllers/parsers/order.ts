@@ -240,7 +240,8 @@ export const OrderListDTO = (order: OrderModel) => ({
     user: UserShortDTO(order.user),
     office: order.office,
     payment: order.payment,
-    bill: order.bill
+    bill: order.bill,
+    postSaleDate: order.postSaleDate
 });
 
 export const OrderListShortDTO = (order: OrderModel) => ({

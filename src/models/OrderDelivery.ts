@@ -82,6 +82,12 @@ export class OrderDelivery extends BaseModel{
     @IsOptional()
     updatedAt: Date;
 
+    @Column({name:'sync_date', nullable: true})
+    @Type(() => Date)
+    @IsDate()
+    @IsOptional()
+    syncDate: Date;
+
     isEmpty(): boolean {
         return (this.id == null);
     }

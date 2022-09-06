@@ -88,7 +88,7 @@ export class DeliveryMethodService extends BaseService<DeliveryMethod> {
 
         let updates = 0;
         let failed = 0;
-
+        const syncDate = new Date();
         await Promise.all(orders.map(async item => {
             try {
             const requested = new DeliveryStatusImpl(item);
@@ -96,6 +96,7 @@ export class DeliveryMethodService extends BaseService<DeliveryMethod> {
                 item.orderDelivery.deliveryStatusDate = tracking.date;
                 item.orderDelivery.deliveryStatus = tracking.status;
                 item.orderDelivery.sync = tracking.sync;
+                item.orderDelivery.syncDate = syncDate;
                 item.orderDelivery.deliveryCurrentLocality = tracking.locality;
                 await this.orderDeliveryService.createOrUpdate(item.orderDelivery);
                 updates++;
