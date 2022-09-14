@@ -1,20 +1,27 @@
 import BaseRepository from "../common/repositories/base.repository";
 import {getRepository, Repository} from "typeorm";
 import {Product} from "../models/Product";
-import {Size} from "../models/Size";
 import {InvalidArgumentException} from "../common/exceptions";
 import {FieldOption} from "../models/FieldOption";
 import {FIELD_OPTIONS} from "../common/enum/fieldOptions";
 import {Category} from "../models/Category";
+import {PageQuery} from "../common/controllers/page.query";
+import {ViewProductByReference} from "../models/ViewProductByReference";
 
-export class ProductRepository<T> extends BaseRepository<Product>{
-    protected readonly repositoryManager : Repository<Product>;
+export class ProductRepository<T> extends BaseRepository<Product|ViewProductByReference>{
+    protected repositoryManager : Repository<Product|ViewProductByReference>;
     protected readonly fieldOptionsRepositoryManager : Repository<FieldOption>;
 
     constructor(){
         super();
         this.repositoryManager = getRepository(Product);
         this.fieldOptionsRepositoryManager = getRepository(FieldOption);
+    }
+
+    async all(page: PageQuery = new PageQuery()){
+        this.repositoryManager = getRepository(ViewProductByReference);
+        const products = await super.all(page);
+        return products;
     }
 
     async getNextOrderFromCategory(category: Category){

@@ -1,4 +1,4 @@
-import {DELETE, GET, POST, PUT, route} from "awilix-express";
+import {GET, POST, route} from "awilix-express";
 import {BaseController} from "../common/controllers/base.controller";
 import {Product} from "../models/Product";
 import {EntityTarget} from "typeorm";
@@ -218,9 +218,8 @@ export class ProductController extends BaseController<Product> {
     }
 
     protected customDefaultOrder(page: PageQuery) {
-        page.addOrder('reference', OrderConditional.ASC);
+        return true;
     }
-
     //DEBO LISTAR LOS RESULTADOS Y CONSULTAR MANUALMENTE LAS CANTIDADES DISPONIBLES Y RESERVADAS PARA ADJUNTARLOS EN EL ARREGLO DE SALIDA.
 
 }
