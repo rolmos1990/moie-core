@@ -136,8 +136,6 @@ export class Order extends BaseModel{
 
     @Column({name:'post_sale_date', nullable: true})
     @Type(() => Date)
-    @IsDate()
-    @IsOptional()
     postSaleDate: Date;
 
     //@Column({name:'bill_id', type: 'integer'})
