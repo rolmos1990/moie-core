@@ -87,6 +87,11 @@ export class OrderService extends BaseService<Order> {
                 //relations (internal)
                 _item.orderDelivery = converters._orderDeliveryConverter(item);
 
+                //add order delivery date
+                if(_item.orderDelivery.deliveryDate){
+                    _item.postSaleDate = _item.orderDelivery.deliveryDate;
+                }
+
                 _item.user = item.user ? item.user.idNumeric : null;
                 _item.office = item.office ? item.office.id : null;
 

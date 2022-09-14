@@ -134,6 +134,12 @@ export class Order extends BaseModel{
     @Column({name:'payment_id', type: 'integer', default: 0})
     payment: number;
 
+    @Column({name:'post_sale_date', nullable: true})
+    @Type(() => Date)
+    @IsDate()
+    @IsOptional()
+    postSaleDate: Date;
+
     //@Column({name:'bill_id', type: 'integer'})
     //bill: number;
 
