@@ -17,7 +17,7 @@ export class UserService extends BaseService<User> {
     }
 
     /**
-     * Levantar migración de datos
+     * Levantar migración de datos (user)
      */
     async up(limit, skip = 0){
 
