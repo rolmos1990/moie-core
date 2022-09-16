@@ -4,7 +4,8 @@ FROM surnet/alpine-node-wkhtmltopdf:14.16.0-0.12.6-full
 WORKDIR /src
 COPY ./package*.json /src/
 
-RUN yarn
+RUN npm install ts-node --save-dev npm install typescript -g  npm install typescript --save-dev
+
 
 COPY ./ /src/
 
