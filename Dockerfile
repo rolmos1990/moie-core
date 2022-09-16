@@ -1,10 +1,10 @@
-FROM surnet/alpine-node-wkhtmltopdf:14.16.0-0.12.6-full
+FROM node:14.18.0-alpine
 
 #deployment
 WORKDIR /src
 COPY ./package*.json /src/
 
-RUN npm install --save @types/node@latest ts-node@latest --force
+RUN npm install
 
 COPY ./ /src/
 
