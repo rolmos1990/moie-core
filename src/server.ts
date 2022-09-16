@@ -1,5 +1,5 @@
 import { app } from './app';
-const PORT = process.env.PORT || 8086;
+const PORT = process.env.PORT;
 const HOST = process.env.HOST;
 
 app.listen(PORT, () => {

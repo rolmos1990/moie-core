@@ -25,7 +25,7 @@ import {CommentPostSaleService} from "./services/commentPostSale.service";
 import {AttachmentService} from "./services/attachment.service";
 import {MovementService} from "./services/movement.service";
 
-export default (app): void => {
+export default (app: express.Application): void => {
     const container = createContainer({
         injectionMode: 'CLASSIC'
     });
