@@ -4,7 +4,7 @@ FROM surnet/alpine-node-wkhtmltopdf:14.16.0-0.12.6-full
 WORKDIR /src
 COPY ./package*.json /src/
 
-RUN npm install && npm install --save @types/express
+RUN npm install --save @types/node@latest ts-node@latest --force
 
 COPY ./ /src/
 
