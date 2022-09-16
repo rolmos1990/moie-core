@@ -4,7 +4,7 @@ FROM surnet/alpine-node-wkhtmltopdf:14.16.0-0.12.6-full
 WORKDIR /src
 COPY ./package*.json /src/
 
-RUN npm i --save-dev @types/node
+RUN npm i --save-dev
 
 
 COPY ./ /src/
