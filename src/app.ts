@@ -3,14 +3,10 @@ import dotenv = require('dotenv');
 import express = require('express');
 import { loadControllers } from 'awilix-express';
 import loadContainer from './container';
-//import loadPersistence from './persistence';
-import {createConnection, createConnections} from "typeorm";
-import MySQLPersistence from "./common/persistence/mysql.persistence";
+import {createConnections} from "typeorm";
 import {Authorization} from './middlewares/authorization';
 import * as cors from 'cors';
-import {loadModules} from "awilix/lib/load-modules";
-import {load} from "dotenv";
-import {RunSeed} from "./seeds/run.seed";
+
 import {
     MySQLMoiePersistenceConnection,
     MySQLMoieStorePersistenceConnection,
@@ -33,7 +29,7 @@ const options: cors.CorsOptions = {
     preflightContinue: false,
 };
 
-const app: express.Application = express();
+const app = express();
 
 //use cors middleware
 app.use(cors(options));
