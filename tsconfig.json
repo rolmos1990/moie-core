@@ -2,8 +2,7 @@
    "compilerOptions": {
       "lib": [
         "es5",
-        "es6",
-        "dom"
+        "es6"
       ],
       "target": "es5",
       "module": "commonjs",
@@ -11,6 +10,7 @@
       "outDir": "./build",
       "emitDecoratorMetadata": true,
       "experimentalDecorators": true,
-      "sourceMap": true
+      "sourceMap": true,
+      "skipLibCheck": true
    }
 }
