@@ -6,7 +6,7 @@ import loadContainer from './container';
 import {createConnections} from "typeorm";
 import {Authorization} from './middlewares/authorization';
 import * as cors from 'cors';
-
+//test
 import {
     MySQLMoiePersistenceConnection,
     MySQLMoieStorePersistenceConnection,
