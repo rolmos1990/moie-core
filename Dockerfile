@@ -1,10 +1,10 @@
-FROM node:14.18.0-alpine
+FROM dporganizer/alpine-node-yarn:14.16.0
 
 #deployment
 WORKDIR /src
 COPY ./package*.json /src/
 
-RUN npm install
+RUN yarn
 
 COPY ./ /src/
 
