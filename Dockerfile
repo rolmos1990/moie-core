@@ -1,4 +1,4 @@
-FROM dporganizer/alpine-node-yarn:14.16.0
+FROM surnet/alpine-node-wkhtmltopdf:14.16.0-0.12.6-full
 
 #deployment
 WORKDIR /src
