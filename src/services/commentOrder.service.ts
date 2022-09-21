@@ -91,6 +91,4 @@ export class CommentOrderService extends BaseService<Comment> {
     processName() {
         return CommentOrderService.name
     }
-
-    async onFinish(): Promise<any> {}
 }

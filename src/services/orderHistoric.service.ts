@@ -99,6 +99,4 @@ export class OrderHistoricService extends BaseService<OrderHistoric> {
     processName() {
         return OrderHistoricService.name
     }
-
-    async onFinish(): Promise<any> {}
 }

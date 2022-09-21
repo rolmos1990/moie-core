@@ -87,6 +87,4 @@ export class CategoryService extends BaseService<Category> {
     processName() {
         return CategoryService.name
     }
-
-    async onFinish(): Promise<any> {}
 }

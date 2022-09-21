@@ -84,6 +84,4 @@ export class SizeService extends BaseService<SizeService> {
     processName() {
         return SizeService.name
     }
-
-    async onFinish(): Promise<any> {}
 }

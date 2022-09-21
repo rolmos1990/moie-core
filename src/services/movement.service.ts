@@ -87,6 +87,4 @@ export class MovementService extends BaseService<Movement> {
     processName() {
         return MovementService.name
     }
-
-    async onFinish(): Promise<any> {}
 }

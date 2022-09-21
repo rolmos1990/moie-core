@@ -87,5 +87,4 @@ export class AttachmentService extends BaseService<Attachment> {
         return AttachmentService.name
     }
 
-    async onFinish(): Promise<any> {}
 }

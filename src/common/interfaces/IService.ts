@@ -3,5 +3,6 @@ export interface IService{
     down: Function,
     counts: Function,
     countsNew: Function,
-    processName: Function
+    processName: Function,
+    onFinish?: Function
 };

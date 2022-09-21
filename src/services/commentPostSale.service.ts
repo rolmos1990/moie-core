@@ -93,5 +93,4 @@ export class CommentPostSaleService extends BaseService<Comment> {
         return CommentPostSaleService.name
     }
 
-    async onFinish(): Promise<any> {}
 }

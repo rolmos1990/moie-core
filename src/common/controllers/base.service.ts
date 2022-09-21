@@ -6,7 +6,6 @@ export abstract class BaseService<Entity> implements IService {
     abstract async counts();
     abstract async countsNew();
     abstract async processName();
-    abstract async onFinish?();
 
     static getName(){
         return BaseService.name;

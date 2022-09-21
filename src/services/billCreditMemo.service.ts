@@ -90,6 +90,4 @@ export class BillCreditMemoService extends BaseService<BillCreditMemo> {
     processName() {
         return BillCreditMemoService.name
     }
-
-    async onFinish(): Promise<any> {}
 }

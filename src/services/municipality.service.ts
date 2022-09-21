@@ -90,6 +90,4 @@ export class MunicipalityService extends BaseService<Municipality> {
     processName() {
         return MunicipalityService.name
     }
-
-    async onFinish(): Promise<any> {}
 }

@@ -131,6 +131,4 @@ export class PaymentService extends BaseService<Payment> {
     processName() {
         return PaymentService.name
     }
-
-    async onFinish(): Promise<any> {}
 }

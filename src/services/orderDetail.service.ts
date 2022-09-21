@@ -104,6 +104,6 @@ export class OrderDetailService extends BaseService<OrderDetail> {
     }
 
     async onFinish(){
-        await this.newRepository.query("UPDATE `order` SET total_revenue = (SELECT SUM(revenue * quantity) AS revenue FROM orderdetail WHERE order_id = `order`.id)");
+        return await this.newRepository.query("UPDATE `order` SET total_revenue = (SELECT SUM(revenue * quantity) AS revenue FROM orderdetail WHERE order_id = `order`.id)");
     }
 }

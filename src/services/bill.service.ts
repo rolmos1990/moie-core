@@ -95,6 +95,4 @@ export class BillService extends BaseService<Bill> {
     processName() {
         return BillService.name
     }
-
-    async onFinish(): Promise<any> {}
 }

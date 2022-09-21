@@ -94,6 +94,4 @@ export class ProductImageService extends BaseService<ProductImage> {
     processName() {
         return ProductImageService.name
     }
-
-    async onFinish(): Promise<any> {}
 }

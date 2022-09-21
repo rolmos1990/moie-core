@@ -116,6 +116,6 @@ export class CustomerService extends BaseService<Customer> {
     }
 
     async onFinish(): Promise<any> {
-        await this.newRepository.query("UPDATE `moie-lucy-v2`.customer inner join `moie-lucy`.cliente on customer.id = cliente.id inner join `moie-lucy`.municipio on municipio.id = cliente.id_municipio set municipality_id = cliente.id_municipio");
+        return await this.newRepository.query("UPDATE `moie-lucy-v2`.customer inner join `moie-lucy`.cliente on customer.id = cliente.id inner join `moie-lucy`.municipio on municipio.id = cliente.id_municipio set municipality_id = cliente.id_municipio");
     }
 }

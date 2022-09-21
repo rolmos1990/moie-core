@@ -90,6 +90,4 @@ export class DeliveryLocalityService extends BaseService<DeliveryLocality> {
     processName() {
         return DeliveryLocalityService.name
     }
-
-    async onFinish(): Promise<any> {}
 }
