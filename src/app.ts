@@ -37,10 +37,15 @@ app.use(express.json());
 // Controllers
 createConnections([{...MySQLPersistenceConnection}, {...MySQLMoiePersistenceConnection}, {...MySQLMoieStorePersistenceConnection}]).then(async connection => {
     loadContainer(app);
+    app.use(Authorization); //disable validation
     app.use(loadControllers(
         'controllers/*.ts',
         { cwd: __dirname }
     ));
+    app.use(Authorization, express.static('storage'));
+    //if(process.env.SEED_DB) {
+    //    new RunSeed();
+    //}
 });
 
 export { app };
