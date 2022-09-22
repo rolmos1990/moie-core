@@ -55,7 +55,7 @@ export class MigrationController {
     };
     @GET()
     @route("/")
-    public index(req: Request, res: Response): void {
+    public index(req: Request, res): void {
         this.runMigration();
         res.json({success:true});
     }
