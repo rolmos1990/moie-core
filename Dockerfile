@@ -8,4 +8,5 @@ COPY ./ /src/
 
 RUN npm install
 
-CMD [ "npm", "start" ]
+EXPOSE 8080
+CMD [ "node", "server.ts" ]
