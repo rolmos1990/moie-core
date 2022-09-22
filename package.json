@@ -5,6 +5,8 @@
    "main": "index.ts",
    "scripts": {
       "start": "ts-node src/server.ts",
+      "build": "tsc -p .",
+      "prod": "ts-node build/app.js",
       "test": "echo \"Error: no test specified\" && exit 1",
       "typeorm": "NODE_ENV=env ts-node ./node_modules/typeorm/cli.js",
       "typeorm:migrate": "npm run typeorm migration:generate -- -n newMigration --config src/common/persistence/mysql.persistence.ts --dir src/migration",
