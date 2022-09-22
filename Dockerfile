@@ -1,14 +1,14 @@
-FROM surnet/alpine-node-wkhtmltopdf:14.16.0-0.12.6-full
+FROM node:14.18.0-alpine
 
 #deployment
 WORKDIR /src
 COPY ./package*.json /src/
-COPY ./tsconfig.json /src/
-COPY ./yarn.lock /src/
+#COPY ./tsconfig.json /src/
+#COPY ./yarn.lock /src/
+
 COPY ./ /src/
 
-RUN yarn install
-RUN npm install
+RUN yarn
 
+CMD [ "npm", "start" ]
 EXPOSE 8080
-CMD [ "node", "server.ts" ]
