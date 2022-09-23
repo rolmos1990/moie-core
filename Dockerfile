@@ -1,14 +1,10 @@
-FROM node:14.18.1-alpine
+FROM surnet/alpine-node-wkhtmltopdf:14.16.0-0.12.6-full
 
 #deployment
 WORKDIR /src
-
-COPY package*.json ./
+COPY ./package*.json /src/
 RUN npm install
-COPY . .
 
-RUN npm i -g ts-node@3.3.0
-RUN npm i -g typescript@3.3.3333
+COPY ./ /src/
 
-CMD [ "npm", "run", "start" ]
-EXPOSE 8080
+CMD npm start
