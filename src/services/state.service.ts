@@ -85,4 +85,7 @@ export class StateService extends BaseService<State> {
     processName() {
         return StateService.name
     }
+
+    onFinish() {
+    }
 }

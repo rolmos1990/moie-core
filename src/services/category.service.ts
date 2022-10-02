@@ -87,4 +87,7 @@ export class CategoryService extends BaseService<Category> {
     processName() {
         return CategoryService.name
     }
+
+    onFinish() {
+    }
 }

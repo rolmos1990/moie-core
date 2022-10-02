@@ -94,4 +94,7 @@ export class ProductImageService extends BaseService<ProductImage> {
     processName() {
         return ProductImageService.name
     }
+
+    onFinish() {
+    }
 }

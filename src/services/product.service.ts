@@ -129,4 +129,7 @@ export class ProductService extends BaseService<Product> {
     processName() {
         return ProductService.name
     }
+
+    onFinish() {
+    }
 }

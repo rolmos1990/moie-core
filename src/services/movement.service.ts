@@ -87,4 +87,7 @@ export class MovementService extends BaseService<Movement> {
     processName() {
         return MovementService.name
     }
+
+    onFinish() {
+    }
 }

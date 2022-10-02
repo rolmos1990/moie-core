@@ -93,4 +93,6 @@ export class CommentPostSaleService extends BaseService<Comment> {
         return CommentPostSaleService.name
     }
 
+    onFinish() {
+    }
 }

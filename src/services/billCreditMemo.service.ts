@@ -90,4 +90,7 @@ export class BillCreditMemoService extends BaseService<BillCreditMemo> {
     processName() {
         return BillCreditMemoService.name
     }
+
+    onFinish() {
+    }
 }

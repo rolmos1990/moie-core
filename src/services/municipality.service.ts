@@ -90,4 +90,7 @@ export class MunicipalityService extends BaseService<Municipality> {
     processName() {
         return MunicipalityService.name
     }
+
+    onFinish() {
+    }
 }

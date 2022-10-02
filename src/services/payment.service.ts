@@ -131,4 +131,7 @@ export class PaymentService extends BaseService<Payment> {
     processName() {
         return PaymentService.name
     }
+
+    onFinish() {
+    }
 }

@@ -95,4 +95,7 @@ export class UserService extends BaseService<User> {
     processName() {
         return UserService.name
     }
+
+    onFinish() {
+    }
 }

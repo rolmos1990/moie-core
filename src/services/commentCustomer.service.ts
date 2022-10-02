@@ -91,4 +91,7 @@ export class CommentCustomerService extends BaseService<Comment> {
     processName() {
         return CommentCustomerService.name
     }
+
+    onFinish() {
+    }
 }

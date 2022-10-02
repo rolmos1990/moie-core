@@ -90,4 +90,7 @@ export class DeliveryLocalityService extends BaseService<DeliveryLocality> {
     processName() {
         return DeliveryLocalityService.name
     }
+
+    onFinish() {
+    }
 }

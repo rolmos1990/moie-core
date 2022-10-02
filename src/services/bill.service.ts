@@ -95,4 +95,7 @@ export class BillService extends BaseService<Bill> {
     processName() {
         return BillService.name
     }
+
+    onFinish() {
+    }
 }

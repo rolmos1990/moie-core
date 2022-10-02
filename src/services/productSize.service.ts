@@ -93,4 +93,7 @@ export class ProductSizeService extends BaseService<ProductSize> {
     processName() {
         return ProductSizeService.name
     }
+
+    onFinish() {
+    }
 }

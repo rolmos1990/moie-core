@@ -99,4 +99,7 @@ export class OrderHistoricService extends BaseService<OrderHistoric> {
     processName() {
         return OrderHistoricService.name
     }
+
+    onFinish() {
+    }
 }

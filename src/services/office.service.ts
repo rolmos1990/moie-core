@@ -92,4 +92,7 @@ export class OfficeService extends BaseService<Office> {
     processName() {
         return OfficeService.name
     }
+
+    onFinish() {
+    }
 }

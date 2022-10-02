@@ -1,11 +1,12 @@
 import {IService} from "../interfaces/IService";
 
 export abstract class BaseService<Entity> implements IService {
-    abstract async up(limit, skip);
-    abstract async down();
-    abstract async counts();
-    abstract async countsNew();
-    abstract async processName();
+    abstract up(limit, skip);
+    abstract down();
+    abstract counts();
+    abstract countsNew();
+    abstract processName();
+    abstract onFinish?();
 
     static getName(){
         return BaseService.name;
