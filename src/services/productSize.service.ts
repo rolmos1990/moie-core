@@ -82,7 +82,7 @@ export class ProductSizeService extends BaseService<ProductSize> {
     }
 
     /**
-     * Cantidad nueva para verificar si coincide con la migración
+     * Cantidad nueva para verificar si coincide con la migración (t)
      */
     async countsNew(){
         const {count} = await this.newRepository.createQueryBuilder("p")
