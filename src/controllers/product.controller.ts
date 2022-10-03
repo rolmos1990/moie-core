@@ -134,6 +134,10 @@ export class ProductController extends BaseController<Product> {
             if (id) {
                 const product : Product = await this.productService.find(parseInt(id), ['size']);
                 await this.productSizeService.changeProductSize(product, sizesValues);
+
+                //check is void
+                await this.productSizeService.checkIsPublishedProduct(product);
+
                 return res.json({status: 200 } );
             } else {
                 throw new InvalidArgumentException();

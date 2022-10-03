@@ -150,6 +150,10 @@ export class ProductSizeService extends BaseService<ProductSize> {
                 await this.productSizeRepository.increment(ProductSize, {color: orderDetail.color, name: orderDetail.size, product: orderDetail.product}, 'quantity', Math.abs(quantity));
                 await this.productSizeRepository.createQueryBuilder('d').connection.query('CALL `moie-lucy-v2`.`filterTodo`(' + orderDetail.product.id + ');');
             }
+
+            //check is void
+            await this.checkIsPublishedProduct(orderDetail.product);
+
         }catch(e){
             throw new ApplicationException("No se ha encontrado producto {"+orderDetail.product.reference+"} en el Inventario");
         }
@@ -192,6 +196,25 @@ export class ProductSizeService extends BaseService<ProductSize> {
             return [];
         }
         return availables.map(_item => ({quantity: _item.quantity, id: _item.id}));
+    }
+
+    async checkIsPublishedProduct(product: Product){
+        const productSizes = await this.findByProduct(product.id);
+
+        let isVoid = true;
+
+        if(productSizes.length > 0) {
+            const products = productSizes.filter(item => item.quantity > 0);
+            if (products.length > 0) {
+                isVoid = false;
+            }
+        }
+
+        //make disabled the product size
+        if(isVoid){
+            product.published = false;
+            await this.createOrUpdate(product);
+        }
     }
 
 }
