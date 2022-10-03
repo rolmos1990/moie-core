@@ -19,7 +19,7 @@ export class ProductWeb extends BaseModel{
     @JoinColumn({name: "codigo"})
     codigo: string;
 
-    @Column({name:'observaciones', type: 'varchar', length: 800, nullable: true})
+    @Column({name:'tipo', type: 'varchar', length: 800, nullable: true})
     @MaxLength(800, {groups: ['create','update']})
     description: string;
 
