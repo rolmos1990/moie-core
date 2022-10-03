@@ -224,6 +224,5 @@ export class ProductController extends BaseController<Product> {
     protected customDefaultOrder(page: PageQuery) {
         return true;
     }
-    //DEBO LISTAR LOS RESULTADOS Y CONSULTAR MANUALMENTE LAS CANTIDADES DISPONIBLES Y RESERVADAS PARA ADJUNTARLOS EN EL ARREGLO DE SALIDA.
 
 }
