@@ -130,6 +130,7 @@ export class ProductService extends BaseService<Product> {
         return ProductService.name
     }
 
-    onFinish() {
+    async onFinish(): Promise<any> {
+        await this.newRepository.query("UPDATE `moie-lucy-v2`.Product as P INNER JOIN `moie-lucy-v2`.availables AS AV ON P.id = AV.product_id SET P.published = IF(AV.quantity > 0, 1, 0);");
     }
 }
