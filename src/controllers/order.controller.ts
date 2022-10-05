@@ -326,7 +326,7 @@ export class OrderController extends BaseController<Order> {
                     orderDetails: order.orderDetails,
                     hasPayment: isPaymentMode(order.paymentMode),
                     isCash: isCash(order.paymentMode),
-                    isMensajero: o.deliveryMethod.id === OrderTypes.MENSAJERO,
+                    isMensajero: order.deliveryMethod.id === OrderTypes.MENSAJERO,
                     isChargeOnDelivery: isChargeOnDelivery(order.orderDelivery),
                     hasPiecesForChanges: (order.piecesForChanges && order.piecesForChanges > 0),
                     deliveryShortType: deliveryShortType,
