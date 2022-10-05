@@ -519,6 +519,10 @@ export class OrderController extends BaseController<Order> {
 
             const orders: Order[] = await this.orderService.findByDelivery(dateFrom, dateTo, deliveryMethod, status);
 
+            if(orders.length == 0){
+                return res.json({status: 200, data: "", name: null } );
+            }
+
             const comments : Comment[] = await this.commentService.getByOders(orders);
             if(orders.length > 0) {
                 orders.map(item => {
