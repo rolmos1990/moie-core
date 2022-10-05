@@ -15,10 +15,11 @@ import {UserService} from "../services/user.service";
 import {BatchRequestService} from "../services/batchRequest.service";
 import {UserShortDTO} from "./parsers/user";
 import {TemplatesRegisters} from "../common/enum/templatesTypes";
-import {CONFIG_MEDIA, MEDIA_FORMAT_OUTPUT, MediaManagementService} from "../services/mediaManagement.service";
+import {MEDIA_FORMAT_OUTPUT, MediaManagementService} from "../services/mediaManagement.service";
 import {ProductCatalogViewService} from "../services/productCatalogView.service";
 import {CategoryCreateDTO, CategoryUpdateDTO} from "./parsers/category";
 import {getCatalogImage} from "../common/helper/helpers";
+import {OrderConditional} from "../common/enum/order.conditional";
 
 @route('/category')
 export class CategoryController extends BaseController<Category> {
@@ -166,6 +167,8 @@ export class CategoryController extends BaseController<Category> {
             /** Hacer aqui un arreglo para que obtenga por ids y mande los IDS */
             const operationQuery = new OperationQuery(null, null);
             let page = new PageQuery(limitForQueries,0,queryCondition, operationQuery);
+
+            page.addOrder('orden', OrderConditional.ASC);
 
             page.setRelations(['productSize', 'category', 'productImage']);
 
