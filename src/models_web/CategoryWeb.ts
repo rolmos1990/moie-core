@@ -8,7 +8,7 @@ import {
     PrimaryGeneratedColumn
 } from "typeorm";
 import BaseModel from "../common/repositories/base.model";
-import {IsDate} from "class-validator";
+import {IsDate, MaxLength} from "class-validator";
 import {Type} from "class-transformer";
 import {ProductWeb} from "./ProductWeb";
 import {Category} from "../models/Category";
@@ -22,6 +22,9 @@ export class CategoryWeb extends BaseModel{
 
     @Column({name:'nombre', type: 'varchar', length: 100, unique: true})
     name: string;
+
+    @Column({name:'descuento', type: 'integer'})
+    discountPercent: number;
 
     @OneToMany(() => ProductWeb, product => product.category)
     products: ProductWeb[];

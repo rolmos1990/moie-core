@@ -38,6 +38,7 @@ export class CategoryService extends BaseService<Category> {
             category.updatedAt = new Date();
             category.filename = `../${item.id}/config/portada.png?2022073102`;
             category.filenameBanner = `../${item.id}/config/encabezado.jpg?2022073102`;
+            category.discountPercent = item.discountPercent;
             category.status = true;
             categories.push(category);
         });
