@@ -115,6 +115,10 @@ export class ProductCatalogView extends BaseModel{
     @IsNumber()
     quantity: number;
 
+    @Column({type: 'integer', default: 0})
+    @IsNumber()
+    orden: number;
+
     @Column({name:'price_discount', type: 'decimal'})
     @IsDecimal({ decimal_digits: '2'}, {groups: ['create','update']})
     priceDiscount: number;
