@@ -31,18 +31,19 @@ export class CustomerService extends BaseService<Customer> {
     }
 
 
-    async getOrdersFinishedForCustomers(customers: Customer[]){
+    async getOrdersFinishedForCustomers(customers: any){
 
         const params = {
             status: OrderStatus.FINISHED,
-            customers: customers.map(item => item.id)
+            customers: customers
         };
 
         const query = this.orderRepository.createQueryBuilder("o")
             .select("COUNT(o.id) as qty, c.id as id, c.name as name")
             .leftJoin('o.customer', 'c')
-            .andWhere("o.customer IN (:customers)")
+            .where("c.id IN (:customers)")
             .andWhere("o.status = :status")
+            .groupBy('c.id')
             .setParameters(params);
 
         const result = await query.getRawMany();

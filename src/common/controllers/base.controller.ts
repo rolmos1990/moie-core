@@ -77,8 +77,6 @@ export abstract class BaseController<Parse> {
             page.addOrder('id', OrderConditional.DESC);
         }
 
-        const countRegisters = await this.service.count(page);
-
         /** Relations by Default */
         if(this.getDefaultRelations(false)){
             page.setRelations(this.getDefaultRelations(false));
@@ -88,7 +86,9 @@ export abstract class BaseController<Parse> {
         if(this.getGroupRelations() && !parametersQuery.hasGroup){
             page.setRelations(this.getGroupRelations());
         }
+
         let items: Array<Object> = await this.service.all(page);
+        const countRegisters = await this.service.count(page);
 
         if((items && items.length) > 0){
             items = await Promise.all(items.map(async item => await this.getParseGET(<Parse> item, false)));

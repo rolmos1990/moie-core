@@ -27,7 +27,9 @@ export class ExpotersPostventa extends SingleBaseExporters {
             deliveryState: item.orderDelivery && item.orderDelivery.deliveryCurrentLocality,
             deliveryDestiny: customerLocality(item.customer),
             amount: toFixed(toFloat(item.totalAmount) + toFloat(item.orderDelivery.deliveryCost)),
-            observation: item.comments && item.comments[0] && item.comments[0].comment
+            observation: item.comments && item.comments[0] && item.comments[0].comment,
+            origen: item.origen,
+            phone: item.customer ? item.customer.cellphone : ""
         }));
 
         return body;
@@ -47,7 +49,9 @@ export class ExpotersPostventa extends SingleBaseExporters {
             { header: 'UBICACION ESTATUS ENVIO', key: 'deliveryState'},
             { header: 'DESTINO', key: 'deliveryDestiny'},
             { header: 'MONTO', key: 'amount'},
-            { header: 'OBSERVACIONES', key: 'observation'}
+            { header: 'OBSERVACIONES', key: 'observation'},
+            { header: 'ORIGEN DEL PEDIDO', key: 'origen'},
+            { header: 'TELEFONO CLIENTE', key: 'phone'}
         ];;
         return headers;
     }

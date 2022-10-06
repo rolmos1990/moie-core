@@ -11,7 +11,95 @@ export default abstract class BaseRepository<T> {
     protected readonly repositoryManager : Repository<T>;
 
     async count(page: PageQuery = new PageQuery()){
-        return await this.repositoryManager.count(page.get());
+
+        const operators : OperationQuery = page.getOperation();
+        if(operators.isOperator()) {
+            const tableName = this.repositoryManager.metadata.tableName;
+
+            const sum = this.repositoryManager
+                .createQueryBuilder(tableName)
+                .where(page.getWhere())
+                .groupBy(operators.getGroups().map(item => tableName + "." + item).join(","))
+                .setLock('pessimistic_write');
+
+            if(page.getRelations().length > 0){
+                page.getRelations().forEach(item => {
+                    sum.leftJoinAndSelect( tableName + "." + item, item);
+                });
+            }
+            if(operators.getGroups().length > 0){
+                sum.addSelect(operators.getOperator().map(item => item.operator + " AS " + tableName + "_" + item.alias).join(","));
+                sum.addSelect(operators.getGroups().join(","));
+            } else {
+                sum.select(this.repositoryManager.metadata.columns.map(item => tableName + "." + item.databaseNameWithoutPrefixes).join(","))
+            }
+
+            const rawResults = await sum.getRawMany();
+
+            const queryRunner =  this.repositoryManager.manager.connection.createQueryRunner();
+
+            const relationIdLoader = new RelationIdLoader(
+                this.repositoryManager.manager.connection,
+                queryRunner,
+                sum.expressionMap.relationIdAttributes,
+            );
+
+            const relationCountLoader = new RelationCountLoader(
+                this.repositoryManager.manager.connection,
+                queryRunner,
+                sum.expressionMap.relationCountAttributes,
+            );
+
+            const rawRelationIdResults = await relationIdLoader.load(rawResults);
+            const rawRelationCountResults = await relationCountLoader.load(rawResults);
+
+
+            const transformer = new RawSqlResultsToEntityTransformer(
+                sum.expressionMap,
+                this.repositoryManager.manager.connection.driver,
+                rawRelationIdResults,
+                rawRelationCountResults,
+                queryRunner,
+            );
+            const result = transformer.transform(rawResults, sum.expressionMap.mainAlias);
+            return result.length;
+        }
+        else if(operators.isGroup()){
+            const tableName = this.repositoryManager.metadata.tableName;
+            const sum = await this.repositoryManager
+                .createQueryBuilder(tableName)
+                .where(page.getWhere())
+                .groupBy(operators.getGroups().map(item => tableName + "." +item).join(","));
+            if(page.getRelations().length > 0){
+                page.getRelations().forEach(item => {
+                    sum.leftJoinAndSelect( tableName + "." + item, item);
+                });
+            }
+            return sum.getCount();
+        }
+        else if(page.hasSubQuery()){
+
+            const tableName = this.repositoryManager.metadata.tableName;
+
+            const subQueries = page.getWhereSubQuery();
+            const where = page.getWhere();
+
+            const queryObject = {
+                ...page.get(),
+                join: { alias: tableName, leftJoin: page.getSubQueryInnerJoin(tableName) },
+                where: qb => {
+                    qb.where(where);
+                    subQueries.forEach(item => {
+                        qb.andWhere(item.query, item.search); // Filter related field
+
+                    });
+                },
+            };
+            return await this.repositoryManager.count(queryObject);
+        }
+        else {
+            return await this.repositoryManager.count(page.getWhere());
+        }
     }
 
     async all(page: PageQuery = new PageQuery()){

@@ -49,9 +49,8 @@ export class CustomerController extends BaseController<Customer> {
     async salesFinished(req: Request, res: Response){
         try {
             const {customers} = req.body;
-            const customersEntities = await this.customerService.whereIn(customers);
-            if (customers && customersEntities.length > 0) {
-                const orders = await this.customerService.getOrdersFinishedForCustomers(customersEntities);
+            if (customers && customers.length > 0) {
+                const orders = await this.customerService.getOrdersFinishedForCustomers(customers);
                 res.json(orders);
             } else {
                 res.json([]);
