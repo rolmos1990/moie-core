@@ -182,7 +182,7 @@ export class CategoryController extends BaseController<Category> {
                           if(_sizeItem.name.toUpperCase() == "UNICA" && item.sizeDescription){
                                   _sizeItem['sizeDesc'] = item.sizeDescription;
                           } else {
-                              _sizeItem['sizeDesc'] = null;
+                              _sizeItem['sizeDesc'] = "";
                           }
                           return _sizeItem;
                         }) : [];
