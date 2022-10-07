@@ -20,6 +20,7 @@ import {ProductCatalogViewService} from "../services/productCatalogView.service"
 import {CategoryCreateDTO, CategoryUpdateDTO} from "./parsers/category";
 import {getCatalogImage} from "../common/helper/helpers";
 import {OrderConditional} from "../common/enum/order.conditional";
+import {ProductSize} from "../models/ProductSize";
 
 @route('/category')
 export class CategoryController extends BaseController<Category> {
@@ -97,6 +98,22 @@ export class CategoryController extends BaseController<Category> {
 
                 const onlyReference = false;
                 const _products = products.map(item => {
+
+                const uniqueDescription = [];
+                item.productSize = item.productSize && item.productSize.length > 0 ? item.productSize.map(_sizeItem => {
+                    if(_sizeItem.name.toUpperCase() == "UNICA" && item.sizeDescription) {
+                        const ps = new ProductSize();
+                        ps.id = item.id + 1;
+                        ps.name = item.sizeDescription;
+                        uniqueDescription.push(ps);
+                    }
+                    return _sizeItem;
+                }) : [];
+
+                if(uniqueDescription.length > 0) {
+                    item.productSize.push(uniqueDescription[0]);
+                }
+
                 item['imagePrimary'] = getCatalogImage(item, 'firstImage', 'high');
                 item['imageSecondary'] = getCatalogImage(item, 'secondImage', 'small');
                     return item;
@@ -177,15 +194,20 @@ export class CategoryController extends BaseController<Category> {
             if(products.length > 0){
 
                 const _products = products.map(item => {
-
+                        const uniqueDescription = [];
                         item.productSize = item.productSize && item.productSize.length > 0 ? item.productSize.map(_sizeItem => {
-                          if(_sizeItem.name.toUpperCase() == "UNICA" && item.sizeDescription){
-                                  _sizeItem['sizeDesc'] = item.sizeDescription;
-                          } else {
-                              _sizeItem['sizeDesc'] = "";
+                          if(_sizeItem.name.toUpperCase() == "UNICA" && item.sizeDescription) {
+                              const ps = new ProductSize();
+                              ps.id = item.id + 1;
+                              ps.name = item.sizeDescription;
+                              uniqueDescription.push(ps);
                           }
                           return _sizeItem;
                         }) : [];
+
+                        if(uniqueDescription.length > 0) {
+                            item.productSize.push(uniqueDescription[0]);
+                        }
 
                         item['imagePrimary'] = getCatalogImage(item, 'firstImage', 'high');
                         item['imageSecondary'] = getCatalogImage(item, 'secondImage', 'small');
