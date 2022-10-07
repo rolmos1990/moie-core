@@ -8,6 +8,7 @@ import * as path from "path";
 import {InvalidFileException} from "../common/exceptions";
 const Excel = require('exceljs')
 import moment = require("moment");
+import {Worksheet} from "exceljs";
 
 const wkhtmltopdf = require('wkhtmltopdf');
 wkhtmltopdf.command = "/bin/wkhtmltopdf";
@@ -217,6 +218,21 @@ export class MediaManagementService extends UtilService {
         }catch(e){
             console.log("error log", e.message);
         }
+    }
+
+    /**
+     * Obtener la información de un archivo excel
+     * Entregar un Formato Base64 y Devolver un archivo Excel
+     * Retorna una Hoja de Calculo de Excel
+     */
+    async readExcel(b64string){
+
+        var buf = Buffer.from(b64string, 'base64'); // Ta-da
+        const workbook = new Excel.Workbook();
+        const _excel = await workbook.xlsx.load(buf);
+        const sheet : Worksheet = _excel.getWorksheet(1);
+
+        return sheet;
     }
 
     /**
