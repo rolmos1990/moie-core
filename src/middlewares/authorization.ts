@@ -11,6 +11,7 @@ const PublicServices = [
     "/office/gen/officePdfReport/12",
     "/category/39/test/printTestRequest",
     "/category/38/test/printTestRequest",
+    "/category/36/test/printTestRequest",
     "/deliveryMethod/cron/updateDeliveryStatus",
     "/template/checkTimeZone",
 ];;
