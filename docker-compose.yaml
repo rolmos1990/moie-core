@@ -23,6 +23,7 @@ services:
     volumes:
       - /var/storage/uploads:/storage/uploads:rw
       - /var/storage/pdf:/storage/pdf:rw
+      - /var/storage/attachments:/storage/attachments:rw
     ports:
       - "5000:5000"
     networks:
@@ -59,6 +60,7 @@ services:
     volumes:
       - /var/storage/uploads:/storage/uploads:rw
       - /var/storage/pdf:/storage/pdf:rw
+      - /var/storage/attachments:/storage/attachments:rw
     ports:
       - "5001:5001"
     networks:
