@@ -225,13 +225,14 @@ export class MediaManagementService extends UtilService {
      */
     async createPDF(html, format = MEDIA_FORMAT_OUTPUT.b64storage, options = { format: 'Legal', margin: {top: '80px'} }){
         try {
-            if(format === MEDIA_FORMAT_OUTPUT.b64storage){
                 const filename = "CATALOG_"+moment().unix()+".pdf";
                 const url = `${CONFIG_MEDIA.PDF_PATH}/${filename}`;
                 wkhtmltopdf(html, { spawnOptions:{shell: true}, output: `${CONFIG_MEDIA.STORAGE_PDF_PATH}/${filename}` });
-                return {data: "", url: url };
-            }
-
+                const response = {
+                    data: "",
+                    url: url
+                }
+                return response;
         }catch(e){
             console.log("error", e.message);
         }

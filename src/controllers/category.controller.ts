@@ -214,7 +214,7 @@ export class CategoryController extends BaseController<Category> {
                     user: UserShortDTO(user)
                 };
                 await this.batchRequestService.createOrUpdate(batch);
-                batch.body = response.data;
+                batch.body = null;
 
                 return res.json({status: 200, batch });
 
