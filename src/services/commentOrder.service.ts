@@ -84,7 +84,10 @@ export class CommentOrderService extends BaseService<Comment> {
      */
     async countsNew(){
         const {count} = await this.newRepository.createQueryBuilder("p")
-            .select("COUNT(p.id)", "count").getRawOne();
+            .select("COUNT(p.id)", "count")
+            .where("p.entity = :type")
+            .parameters({type: "order"})
+            .getRawOne();
         return count;
     }
 

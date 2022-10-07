@@ -41,7 +41,7 @@ export class CommentPostSaleService extends BaseService<Comment> {
             _item.comment = item.message;
             _item.createdAt = item.createdAt;
             _item.user = item.user ? item.user.idNumeric : 1;
-            _item.entity = 'order';
+            _item.entity = 'postsale';
             _item.idRelated = item.orderPostSale && item.orderPostSale.order && item.orderPostSale.order.id ? item.orderPostSale.order.id.toString() : null;
 
             itemSaved.push(_item);
@@ -85,7 +85,10 @@ export class CommentPostSaleService extends BaseService<Comment> {
      */
     async countsNew(){
         const {count} = await this.newRepository.createQueryBuilder("p")
-            .select("COUNT(p.id)", "count").getRawOne();
+            .select("COUNT(p.id)", "count")
+            .where("p.entity = :type")
+            .parameters({type: "postsale"})
+            .getRawOne();
         return count;
     }
 
@@ -93,6 +96,7 @@ export class CommentPostSaleService extends BaseService<Comment> {
         return CommentPostSaleService.name
     }
 
-    onFinish() {
+    async onFinish(): Promise<any> {
+        return await this.newRepository.query("UPDATE `moie-lucy-v2`.Comment as CO SET CO.entity = 'order' where CO.entity = 'postsale'");
     }
 }

@@ -8,7 +8,7 @@ export const serverConfig = {
     jwtSecret: process.env.JWT_SECRET || "test",
     isFakeCounters: false,
     fakeCounterLimit: 5000,
-    includeServices: [],
+    includeServices: [services.CommentCustomer, services.CommentOrder, services.CommentPostSale],
     limitPerBatch: 15000,
     smallLimitPerRequests: [],
     smallLimit: 18000,
