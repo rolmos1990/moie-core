@@ -5,7 +5,6 @@ import {compile, registerHelper, registerPartial} from 'handlebars';
 import {TemplateRepository} from "../repositories/template.repository";
 import {OfficePDFCss, PrintHeaderCss} from "../templates/styles/catalogHeader";
 import {CatalogHeaderCss} from "../templates/styles/catalogHeaderCss";
-import {ProductImage} from "../models/ProductImage";
 const moment = require("moment");
 
 export class TemplateService extends BaseService<Template> {

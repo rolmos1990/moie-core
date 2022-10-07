@@ -11,7 +11,7 @@ export class DefaultController {
     };
     @GET()
     public async index(req: Request, res: Response) {
-        await this.mediaManagementService.createHTML();
+        //await this.mediaManagementService.createHTML();
         res.send("Running...");
     }
 }

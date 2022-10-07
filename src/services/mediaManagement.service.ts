@@ -1,17 +1,14 @@
 import {decodeBase64Image} from "../common/helper/helpers";
-import {readFileSync, writeFile, createWriteStream, writeFileSync, existsSync, mkdirSync, unlinkSync} from "fs";
+import {readFileSync, writeFile, writeFileSync, existsSync, mkdirSync, unlinkSync} from "fs";
 import {UtilService} from "../common/controllers/util.service";
 import {extension} from 'mime-types';
 import ResizeImg = require("resize-img");
-import {compile, Exception} from 'handlebars';
+import {Exception} from 'handlebars';
 import * as path from "path";
-import {Worksheet} from "exceljs";
 import {InvalidFileException} from "../common/exceptions";
-const createHTML = require('create-html');
 const Excel = require('exceljs')
 import moment = require("moment");
 
-const html_to_pdf = require('html-pdf-node');//disabled
 const wkhtmltopdf = require('wkhtmltopdf');
 wkhtmltopdf.command = "/bin/wkhtmltopdf";
 
@@ -222,61 +219,13 @@ export class MediaManagementService extends UtilService {
         }
     }
 
-    async createHTML(){
-        try {
-
-            const data = {
-                name: "Ramon",
-                lastname: "Olmos",
-                order:{
-                    id: 123,
-                    status: 2
-                }
-            };
-
-            var templateHtml = readFileSync(path.join(process.cwd(), '/src/templates/report.html'), 'utf8');
-            var template = compile(templateHtml)(data);
-
-            let document = {
-                template:  template,
-                context: {
-                    name: "Hello",
-                    order:{
-                        id: 123
-                    }
-                },
-                path: "./src/storage/tmp/test-"+Math.random()+".html"
-            }
-
-            var html = createHTML({
-                title: 'report.html',
-                body: template
-            })
-
-            await writeFile("./src/storage/tmp/test-"+Math.random()+".html", html, function(err){
-                if (err) console.log(err)
-            });
-
-        }catch(e){
-            console.log("error", e.message);
-        }
-    }
-
     /**
      * Generar un fichero PDF
      * Genera un fichero PDF indicando la plantilla y el objeto de entrada
      */
-    async createPDF(html, format = MEDIA_FORMAT_OUTPUT.b64, options = { format: 'Legal', margin: {top: '80px'} }){
+    async createPDF(html, format = MEDIA_FORMAT_OUTPUT.b64storage, options = { format: 'Legal', margin: {top: '80px'} }){
         try {
-            let file = { content: html };
-
-            if(format === MEDIA_FORMAT_OUTPUT.binary){
-                const pdfBuffer = await html_to_pdf.generatePdf(file, options);
-                return pdfBuffer;
-            } else if(format === MEDIA_FORMAT_OUTPUT.b64){
-                const pdfBuffer = await html_to_pdf.generatePdf(file, options);
-                return pdfBuffer.toString('base64');
-            } else if(format === MEDIA_FORMAT_OUTPUT.b64storage){
+            if(format === MEDIA_FORMAT_OUTPUT.b64storage){
                 const filename = "CATALOG_"+moment().unix()+".pdf";
                 const url = `${CONFIG_MEDIA.PDF_PATH}/${filename}`;
                 wkhtmltopdf(html, { spawnOptions:{shell: true}, output: `${CONFIG_MEDIA.STORAGE_PDF_PATH}/${filename}` });
@@ -286,21 +235,6 @@ export class MediaManagementService extends UtilService {
         }catch(e){
             console.log("error", e.message);
         }
-    }
-
-    /**
-     * Obtener la información de un archivo excel
-     * Entregar un Formato Base64 y Devolver un archivo Excel
-     * Retorna una Hoja de Calculo de Excel
-     */
-    async readExcel(b64string){
-
-        var buf = Buffer.from(b64string, 'base64'); // Ta-da
-        const workbook = new Excel.Workbook();
-        const _excel = await workbook.xlsx.load(buf);
-        const sheet : Worksheet = _excel.getWorksheet(1);
-
-        return sheet;
     }
 
     createWorkSheet(exportable: any, workbook: any, data) : void{
