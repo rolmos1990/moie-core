@@ -36,7 +36,6 @@ export class CommentCustomerService extends BaseService<Comment> {
         await items.forEach(item => {
 
             const _item = new Comment();
-            _item.id = item.id;
             _item.comment = item.message;
             _item.createdAt = item.createdAt;
             _item.user = item.user ? item.user.idNumeric : 1;
