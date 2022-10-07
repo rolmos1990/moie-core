@@ -187,8 +187,6 @@ export class CategoryController extends BaseController<Category> {
                           return _sizeItem;
                         }) : [];
 
-                        item.productSize.filter(item => item.sizeDe)
-
                         item['imagePrimary'] = getCatalogImage(item, 'firstImage', 'high');
                         item['imageSecondary'] = getCatalogImage(item, 'secondImage', 'small');
 
