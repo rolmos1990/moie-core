@@ -179,11 +179,15 @@ export class CategoryController extends BaseController<Category> {
                 const _products = products.map(item => {
 
                         item.productSize = item.productSize && item.productSize.length > 0 ? item.productSize.map(_sizeItem => {
-                          if(_sizeItem.name.toUpperCase() == "UNICA"){
-                              _sizeItem['sizeDesc'] = item.sizeDescription;
+                          if(_sizeItem.name.toUpperCase() == "UNICA" && item.sizeDescription){
+                                  _sizeItem['sizeDesc'] = item.sizeDescription;
+                          } else {
+                              _sizeItem['sizeDesc'] = null;
                           }
                           return _sizeItem;
                         }) : [];
+
+                        item.productSize.filter(item => item.sizeDe)
 
                         item['imagePrimary'] = getCatalogImage(item, 'firstImage', 'high');
                         item['imageSecondary'] = getCatalogImage(item, 'secondImage', 'small');
