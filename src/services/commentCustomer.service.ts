@@ -86,7 +86,7 @@ export class CommentCustomerService extends BaseService<Comment> {
         const {count} = await this.newRepository.createQueryBuilder("p")
             .select("COUNT(p.id)", "count")
             .where("p.entity = :type")
-            .parameters({type: "customer"})
+            .setParameters({type: "customer"})
             .getRawOne();
         return count;
     }
