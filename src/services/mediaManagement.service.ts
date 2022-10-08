@@ -155,7 +155,7 @@ export class MediaManagementService extends UtilService {
          */
         const fileName =  `${name}`;
         const imageBuffer = file.data;
-        const filePath = folder + fileName;
+        const filePath = folder + '/' + fileName;
 
         console.log('added to filePath: ', filePath);
 
