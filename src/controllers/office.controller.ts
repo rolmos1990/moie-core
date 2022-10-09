@@ -197,6 +197,10 @@ export class OfficeController extends BaseController<Office> {
 
             if(orders.length > 0){
 
+                orders.sort(function(a, b) {
+                    return a.id - b.id;
+                });
+
                 let batchHtml : any = [];
 
                 const result = orders.map(async order => {
