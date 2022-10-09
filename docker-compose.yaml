@@ -89,7 +89,7 @@ services:
         max-size: 10m
     build: ./nginx
     ports:
-      - '18210:18210'
+      - '80:80'
     networks:
       - app-tier-shared
     depends_on:
