@@ -19,6 +19,7 @@ services:
       - /var/storage/uploads:/storage/uploads:rw
       - /var/storage/pdf:/storage/pdf:rw
       - /var/storage/attachments:/storage/attachments:rw
+      - /var/storage/attachments:/storage/users:rw
     ports:
       - "5000:5000"
     networks:
@@ -56,6 +57,7 @@ services:
       - /var/storage/uploads:/storage/uploads:rw
       - /var/storage/pdf:/storage/pdf:rw
       - /var/storage/attachments:/storage/attachments:rw
+      - /var/storage/attachments:/storage/users:rw
     ports:
       - "5001:5001"
     networks:
@@ -89,7 +91,7 @@ services:
         max-size: 10m
     build: ./nginx
     ports:
-      - '80:80'
+      - '18210:18210'
     networks:
       - app-tier-shared
     depends_on:

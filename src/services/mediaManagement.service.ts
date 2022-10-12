@@ -22,7 +22,7 @@ export const CONFIG_MEDIA = {
     STORAGE_PATH: '../storage/uploads',
     STORAGE_PDF_PATH: '../storage/pdf',
     STORAGE_ATTACHMENT_PATH: '../storage/attachments',
-    PICTURES_FOLDERS: '/users',
+    PICTURES_FOLDERS: '../storage/users',
     RESOLUTIONS: [67,238,400,800]
 };
 
