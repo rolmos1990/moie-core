@@ -112,7 +112,7 @@ export class ProductController extends BaseController<Product> {
     protected async getProductPendings(req: Request, res: Response){
         const id = req.params.id;
         try {
-            let products = await this.orderService.getOrderDetailByProductIdAndStatuses(id, [1,2]);
+            let products = await this.orderService.getOrderDetailByProductIdAndStatuses(id, [1]);
             return res.json({status: 200, products: products.map(item => ProductPendingsDTO(item)) } );
         }catch(e){
             if (e.name === InvalidArgumentException.name || e.name === "EntityNotFound") {

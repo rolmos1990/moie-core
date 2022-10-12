@@ -485,23 +485,23 @@ export class OrderService extends BaseService<Order> {
 
         switch(group) {
             case StatTimeTypes.DAILY:
-                orderRepository.select('SUM(o.totalWithDiscount) as monto, SUM(o.totalRevenue) as ganancia, SUM(o.quantity) as piezas, concat_ws("-",day(o.dateOfSale),month(o.dateOfSale),year(o.dateOfSale)) as fecha');
+                orderRepository.select('SUM(o.totalWithDiscount) as monto, SUM(o.totalRevenue) as ganancia, SUM(o.quantity) as piezas, concat_ws("-",day(o.dateOfSale),month(o.dateOfSale),year(o.dateOfSale)) as fecha, DATE(o.dateOfSale) as dateOrder');
                 orderRepository.addGroupBy("year(o.dateOfSale)")
                 orderRepository.addGroupBy("month(o.dateOfSale)")
                 orderRepository.addGroupBy("day(o.dateOfSale)");
                 break;
             case StatTimeTypes.WEEKLY:
-                orderRepository.select('SUM(o.totalWithDiscount) as monto, SUM(o.totalRevenue) as ganancia, SUM(o.quantity) as piezas, concat_ws("-",week(o.dateOfSale,1),year(o.dateOfSale)) as fecha');
+                orderRepository.select('SUM(o.totalWithDiscount) as monto, SUM(o.totalRevenue) as ganancia, SUM(o.quantity) as piezas, concat_ws("-",week(o.dateOfSale,1),year(o.dateOfSale)) as fecha, week(o.dateOfSale) as dateOrder');
                 orderRepository.addGroupBy("year(o.dateOfSale)")
                 orderRepository.addGroupBy("week(o.dateOfSale,1)");
                 break;
             case StatTimeTypes.MONTHLY:
-                orderRepository.select('SUM(o.totalWithDiscount) as monto, SUM(o.totalRevenue) as ganancia, SUM(o.quantity) as piezas, concat_ws("-",month(o.dateOfSale),year(o.dateOfSale)) as fecha');
+                orderRepository.select('SUM(o.totalWithDiscount) as monto, SUM(o.totalRevenue) as ganancia, SUM(o.quantity) as piezas, concat_ws("-",month(o.dateOfSale),year(o.dateOfSale)) as fecha, MONTH(o.dateOfSale) as dateOrder');
                 orderRepository.addGroupBy("year(o.dateOfSale)")
                 orderRepository.addGroupBy("month(o.dateOfSale)");
                 break;
             case StatTimeTypes.YEARLY:
-                orderRepository.select('SUM(o.totalWithDiscount) as monto, SUM(o.totalRevenue) as ganancia, SUM(o.quantity) as piezas, year(o.dateOfSale) as fecha');
+                orderRepository.select('SUM(o.totalWithDiscount) as monto, SUM(o.totalRevenue) as ganancia, SUM(o.quantity) as piezas, year(o.dateOfSale) as fecha, DATE(o.dateOfSale) as dateOrder, YEAR(o.dateOfSale) as dateOrder');
                 orderRepository.addGroupBy("year(o.dateOfSale)");
                 break;
         }
@@ -512,11 +512,12 @@ export class OrderService extends BaseService<Order> {
                 .andWhere("DATE(o.dateOfSale) >= :before")
                 .andWhere("DATE(o.dateOfSale) <= :after")
                 .addGroupBy('o.user')
+                .addOrderBy('dateOrder', 'ASC')
                 .setParameters({before: dateFrom, after: dateTo, user: user['id']});
         } else {
             orderRepository.andWhere("DATE(o.dateOfSale) >= :before");
             orderRepository.andWhere("DATE(o.dateOfSale) <= :after");
-
+            orderRepository.addOrderBy('dateOrder', 'ASC');
             orderRepository.setParameters({before: dateFrom + " 00:00:00", after: dateTo + " 23:59:59"});
         }
 
@@ -531,6 +532,12 @@ export class OrderService extends BaseService<Order> {
                ganancia: parseFloat(item["ganancia"]),
                piezas: parseFloat(item["piezas"])
            });
+        });
+
+        rows.sort(function(a, b) {
+            var x = a['dateOrder'];
+            var y = b['dateOrder'];
+            return ((x < y) ? -1 : ((x > y) ? 1 : 0));
         });
 
         return results;
@@ -554,12 +561,15 @@ export class OrderService extends BaseService<Order> {
         switch(group) {
             case StatTimeTypes.DAILY:
                 orderRepository.addSelect("CONCAT_WS('-',day(o.dateOfSale),month(o.dateOfSale),year(o.dateOfSale))", 'fecha');
+                orderRepository.addSelect("DATE(o.dateOfSale)", 'dateOrder');
                 orderRepository.addGroupBy("YEAR(o.dateOfSale)")
                 orderRepository.addGroupBy("MONTH(o.dateOfSale)")
                 orderRepository.addGroupBy("DAY(o.dateOfSale)");
+                orderRepository.addOrderBy("DATE(o.dateOfSale)");
                 break;
             case StatTimeTypes.WEEKLY:
                 orderRepository.addSelect("WEEK(o.dateOfSale,1) as semana, year(o.dateOfSale) as ano, CONCAT_WS('-',week(o.dateOfSale,1),year(o.dateOfSale))", 'fecha');
+                orderRepository.addSelect("CONCAT_WS('-',week(o.dateOfSale,1),year(o.dateOfSale))", 'dateOrder');
                 orderRepository.addGroupBy("YEAR(o.dateOfSale)")
                 orderRepository.addGroupBy("WEEK(o.dateOfSale,1)");
                 orderRepository.addOrderBy("YEAR(o.dateOfSale)");
@@ -567,6 +577,7 @@ export class OrderService extends BaseService<Order> {
                 break;
             case StatTimeTypes.MONTHLY:
                 orderRepository.addSelect("CONCAT_WS('-',month(o.dateOfSale),year(o.dateOfSale))", 'fecha');
+                orderRepository.addSelect("CONCAT_WS('-',month(o.dateOfSale),year(o.dateOfSale))", 'dateOrder');
                 orderRepository.addGroupBy("YEAR(o.dateOfSale)")
                 orderRepository.addGroupBy("MONTH(o.dateOfSale)");
                 orderRepository.addOrderBy("YEAR(o.dateOfSale)");
@@ -574,6 +585,7 @@ export class OrderService extends BaseService<Order> {
                 break;
             case StatTimeTypes.YEARLY:
                 orderRepository.addSelect("YEAR(o.dateOfSale)", 'fecha');
+                orderRepository.addSelect("YEAR(o.dateOfSale)", 'dateOrder');
                 orderRepository.groupBy("YEAR(o.dateOfSale)")
                 orderRepository.orderBy("YEAR(o.dateOfSale)");
                 break;
@@ -606,6 +618,12 @@ export class OrderService extends BaseService<Order> {
                 ...modified
             })
 
+        });
+
+        rows.sort(function(a, b) {
+            var x = a['dateOrder'];
+            var y = b['dateOrder'];
+            return ((x < y) ? -1 : ((x > y) ? 1 : 0));
         });
 
         return results;
@@ -699,7 +717,7 @@ export class OrderService extends BaseService<Order> {
         orderRepository.setParameters({before: dateFrom + " 00:00:00", after: dateTo + " 23:59:59", status: [OrderStatus.FINISHED, OrderStatus.PRINTED, OrderStatus.SENT]});
 
         orderRepository.groupBy("p.id")
-        orderRepository.orderBy("cantidad", "DESC");
+        orderRepository.addOrderBy("SUM(od.quantity)", "DESC");
         orderRepository.limit(20);
 
         const rows = await orderRepository.getRawMany();
@@ -823,6 +841,8 @@ export class OrderService extends BaseService<Order> {
             orderRepository.andWhere("DATE(o.dateOfSale) <= :after");
 
             orderRepository.groupBy("c.state");
+
+            orderRepository.addOrderBy('s.name', 'ASC');
 
             orderRepository.setParameters({before: dateFrom + ' 00:00:00', after: dateTo + ' 23:59:59'});
 
