@@ -19,10 +19,11 @@ export const CONFIG_MEDIA = {
     IMAGE_PATH: './uploads',
     PDF_PATH: '/pdf',
     ATTACHMENT_PATH: '/attachments',
+    USER_PATH: './users',
     STORAGE_PATH: '../storage/uploads',
     STORAGE_PDF_PATH: '../storage/pdf',
     STORAGE_ATTACHMENT_PATH: '../storage/attachments',
-    PICTURES_FOLDERS: '../storage/users',
+    STORAGE_USER_PATH: '../storage/users',
     RESOLUTIONS: [67,238,400,800]
 };
 
@@ -84,8 +85,8 @@ export class MediaManagementService extends UtilService {
 
         const ext = extension(file.type) || "jpeg";
         const fileName =  `${name}.${ext}`;
-        const writeFilePath = `${CONFIG_MEDIA.STORAGE_PATH}/${folder ? folder + '/' : ''}${fileName}`;
-        const readFilePath = `${CONFIG_MEDIA.IMAGE_PATH}${folder ? folder + '/' : ''}${fileName}`;
+        const writeFilePath = `${CONFIG_MEDIA.STORAGE_USER_PATH}/${fileName}`;
+        const readFilePath = `${folder}/${fileName}`;
         const imageBuffer = file.data;
 
         this.ensureDirectoryExistence(writeFilePath);
