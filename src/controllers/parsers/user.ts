@@ -12,6 +12,7 @@ export const UserListDTO = (user: User) => ({
     lastLogin: user.lastLogin,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
+    photo: user.photo,
     securityRol: SecurityRolArrayShortDTO(user.securityRol || {})
 });
 
@@ -42,5 +43,6 @@ export const UserUpdateDTO = (user: User) => ({
 
 export const UserShortDTO = (user: User) => ({
     id: user ? user.id : null,
-    name: user ? user.name + " " + user.lastname : null
+    name: user ? user.name + " " + user.lastname : null,
+    photo: user.photo,
 });
