@@ -19,7 +19,7 @@ export const CONFIG_MEDIA = {
     IMAGE_PATH: './uploads',
     PDF_PATH: '/pdf',
     ATTACHMENT_PATH: '/attachments',
-    USER_PATH: '/users',
+    USER_PATH: 'users',
     STORAGE_PATH: '../storage/uploads',
     STORAGE_PDF_PATH: '../storage/pdf',
     STORAGE_ATTACHMENT_PATH: '../storage/attachments',
