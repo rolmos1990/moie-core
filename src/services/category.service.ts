@@ -2,6 +2,7 @@ import {BaseService} from "../common/controllers/base.service";
 import {Category} from "../models/Category";
 import {CategoryRepository} from "../repositories/category.repository";
 import {MediaManagementService} from "./mediaManagement.service";
+import {getRepository} from "typeorm";
 
 export class CategoryService extends BaseService<Category> {
     constructor(
@@ -31,5 +32,9 @@ export class CategoryService extends BaseService<Category> {
             console.log("error imagen", e.message);
             throw Error("No se pudo guardar la imagen");
         }
+    }
+
+    async resetOrderCategory(categoryId){
+        await this.categoryRepository.resetOrderCategory(categoryId);
     }
 }

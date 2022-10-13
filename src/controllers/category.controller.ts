@@ -1,4 +1,4 @@
-import {GET, PUT, route} from "awilix-express";
+import {GET, POST, PUT, route} from "awilix-express";
 import {BaseController} from "../common/controllers/base.controller";
 import {Category} from "../models/Category";
 import {EntityTarget} from "typeorm";
@@ -245,6 +245,19 @@ export class CategoryController extends BaseController<Category> {
             } else {
                 return res.json({status: 400, error: "No se han encontrado registros"});
             }
+        }catch(e){
+            this.handleException(e, res);
+            console.log("error", e);
+        }
+    }
+
+    @route('/resetOrder/:id')
+    @GET()
+    public async resetOrder(req: Request, res: Response){
+        try {
+            const id = req.params.id;
+            await this.categoryService.resetOrderCategory(id);
+            return res.json({status: 200});
         }catch(e){
             this.handleException(e, res);
             console.log("error", e);
