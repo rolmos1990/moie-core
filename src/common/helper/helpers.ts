@@ -40,12 +40,12 @@ export function getCalculateCosts(orderDetails: OrderDetail[]) {
     let totalDiscount = 0;
     let totalRevenue = 0;
     orderDetails.map(item => {
+        let tempTotalDiscount = 0;
         totalWeight += item.product ? Number(item.product.weight || 0) * Number(item.quantity) : 0;
         if (item.adjustment > 0) {
-            totalDiscount += ((Number(item.price) * Number(item.adjustment)) / 100) * Number(item.quantity);
-        } else {
-            totalDiscount = 0;
+            tempTotalDiscount = ((Number(item.price) * Number(item.adjustment)) / 100) * Number(item.quantity);
         }
+        totalDiscount += tempTotalDiscount;
         totalAmount += Number(item.price) * Number(item.quantity);
         const revenue = item.price - item.cost - totalDiscount;
 
