@@ -114,6 +114,7 @@ export class OrderService extends BaseService<Order> {
      */
     async down(){
         try {
+            await this.newRepository.query("SET FOREIGN_KEY_CHECKS=0;");
             await this.newRepository.query('DELETE FROM `Order`');
             await this.newRepository.query('ALTER TABLE `Order` AUTO_INCREMENT = 1');
 
