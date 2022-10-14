@@ -158,7 +158,7 @@ export class ProductController extends BaseController<Product> {
     protected async reorder(req: Request, res: Response){
         const id = req.params.id;
         try {
-            //orden -> order requested
+            //orden -> order requested (order: 1, currentOrder: 6)
             const {orden, category} = req.body;
             if(orden){
                 const product : Product = await this.productService.find(parseInt(id));
@@ -171,10 +171,15 @@ export class ProductController extends BaseController<Product> {
 
                 let productsAffected = await this.productService.getAffectedByOrden(orderPointer, category);
 
-                console.log('productAffected', productsAffected);
                 let recount = 1;
 
                 productsAffected = productsAffected.map(item => {
+
+                    //skip the orden requested
+                    if(recount == orden){
+                        recount++;
+                    }
+
                     if(item.id != parseInt(id)) {
                         item.orden = recount;
                         recount++;
