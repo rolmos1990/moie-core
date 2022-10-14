@@ -30,6 +30,14 @@ export class ProductService extends BaseService<Product> {
         }
     }
 
+    public async getAffectedByOrden(orden, category) : Promise<Product[]>{
+        try {
+            return await this.productRepository.getAffectedByOrden(orden, category);
+        }catch(e){
+            throw new InvalidArgumentException();
+        }
+    }
+
     public async getDashboardStat(){
         const products = await this.productAvailableViewRepository.createQueryBuilder('pav')
             .select('COUNT(id) as qty, SUM(available) as available, SUM(reserved) as reserved, SUM(completed) as completed')

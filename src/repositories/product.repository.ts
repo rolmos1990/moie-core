@@ -1,5 +1,5 @@
 import BaseRepository from "../common/repositories/base.repository";
-import {getRepository, Repository} from "typeorm";
+import {getRepository, LessThanOrEqual, Repository} from "typeorm";
 import {Product} from "../models/Product";
 import {InvalidArgumentException} from "../common/exceptions";
 import {FieldOption} from "../models/FieldOption";
@@ -36,6 +36,17 @@ export class ProductRepository<T> extends BaseRepository<Product|ViewProductByRe
         }
 
         return 1;
+    }
+
+
+    async getAffectedByOrden(orden: number, category: Category){
+
+        const product = await this.repositoryManager
+            .createQueryBuilder('p')
+            .where({ category: category, orden: LessThanOrEqual(orden)})
+            .addOrderBy('orden', 'ASC').getMany();
+
+        return product;
     }
 
     /**

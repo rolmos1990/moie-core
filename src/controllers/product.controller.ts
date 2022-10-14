@@ -1,7 +1,7 @@
 import {GET, POST, route} from "awilix-express";
 import {BaseController} from "../common/controllers/base.controller";
 import {Product} from "../models/Product";
-import {EntityTarget} from "typeorm";
+import {EntityTarget, LessThan, LessThanOrEqual} from "typeorm";
 import {ProductService} from "../services/product.service";
 import {
     ProductCreateDTO,
@@ -158,21 +158,35 @@ export class ProductController extends BaseController<Product> {
     protected async reorder(req: Request, res: Response){
         const id = req.params.id;
         try {
+            //orden -> order requested
             const {orden, category} = req.body;
             if(orden){
                 const product : Product = await this.productService.find(parseInt(id));
-                const productAffected : Product = (await this.productService.findByObject({orden: orden, category: category}))[0];
+                const currentOrder = product.orden;
 
-                //if exists some product affected
-                if(productAffected){
-                    productAffected.orden = product.orden || 0;
-                    await this.productService.createOrUpdate(productAffected);
+                let orderPointer = currentOrder;
+                if(orden > currentOrder){
+                    orderPointer = orden;
                 }
 
-                product.orden = orden;
-                await this.productService.createOrUpdate(product);
+                let productsAffected = await this.productService.getAffectedByOrden(orderPointer, category);
 
+                console.log('productAffected', productsAffected);
+                let recount = 1;
+
+                productsAffected = productsAffected.map(item => {
+                    if(item.id != parseInt(id)) {
+                        item.orden = recount;
+                        recount++;
+                    } else {
+                        item.orden = orden;
+                    }
+                    return item;
+                });
+
+                await this.productService.createOrUpdate(productsAffected);
                 return res.json({status: 200 } );
+
             } else {
                 throw new InvalidArgumentException();
             }
