@@ -250,7 +250,7 @@ export class MediaManagementService extends UtilService {
         try {
                 const filename = "CATALOG_"+moment().unix()+".pdf";
                 const url = `${CONFIG_MEDIA.PDF_PATH}/${filename}`;
-                wkhtmltopdf(html, { zoom: 1.2, spawnOptions:{shell: true}, output: `${CONFIG_MEDIA.STORAGE_PDF_PATH}/${filename}` });
+                wkhtmltopdf(html, { zoom: 1.1, spawnOptions:{shell: true}, output: `${CONFIG_MEDIA.STORAGE_PDF_PATH}/${filename}` });
                 const response = {
                     data: "",
                     url: url
