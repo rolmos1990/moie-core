@@ -941,8 +941,6 @@ export class OrderService extends BaseService<Order> {
             .groupBy("p.id")
             .getRawMany();
 
-        console.log('reserved: ', reserved);
-
         if(reserved.length === 0){
             return [];
         }

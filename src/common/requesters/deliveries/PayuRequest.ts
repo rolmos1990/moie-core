@@ -22,7 +22,6 @@ export class PayuRequest extends BaseRequester {
 
             const response = await axios.post(this.getUrl(), payload);
             const body = response.data;
-            console.log('response', response);
             const parse : any = this.getContext(body);
             return parse;
         }catch(e){

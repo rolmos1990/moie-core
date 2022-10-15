@@ -147,7 +147,7 @@ export class MediaManagementService extends UtilService {
         const file = decodeBase64Image(_file);
 
         if(file instanceof Error){
-            console.log('error on save file', file);
+            console.log('error on save file');
             return false;
         }
 
@@ -158,14 +158,9 @@ export class MediaManagementService extends UtilService {
         const imageBuffer = file.data;
         const filePath = folder + '/' + fileName;
 
-        console.log('added to filePath: ', filePath);
-
         if (!existsSync(folder)) {
             mkdirSync(folder);
         }
-
-        console.log('added image buffer: ', imageBuffer);
-        console.log('added filePath: ', filePath);
 
         writeFileSync(filePath, imageBuffer, 'utf8');
 

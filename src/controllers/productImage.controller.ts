@@ -77,7 +77,6 @@ export class ProductImageController extends BaseController<ProductImage> {
                         //await this.productImageService.removeProductImage(product.productImage[number]);
                     }catch(e){
                         console.log("cannot delete files");
-                        console.log("message: ", e.message);
                     }
 
                     product.productImage[number].thumbs = thumbs;

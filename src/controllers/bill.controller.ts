@@ -75,7 +75,6 @@ export class BillController extends BaseController<Bill> {
                 bill.status = BillStatus.SEND;
                 await this.billService.createOrUpdate(bill);
             }catch(e){
-                console.log("error to send: ", e.message);
 
                 if(e instanceof InvalidMunicipalityException){
                     bill.status = BillStatus.NO_MUNICIPALITY

@@ -138,7 +138,6 @@ export class PaymentController extends BaseController<Payment> {
         return res.json({status: 200, url: urlResponse } );
 
         } catch(e){
-            console.log(e.message);
             if (e.name === InvalidArgumentException.name || e.name === "EntityNotFound") {
                 this.handleException(new InvalidArgumentException("Orden no ha sido encontrada"), res);
             }

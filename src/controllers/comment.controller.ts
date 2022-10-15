@@ -83,8 +83,6 @@ export class CommentController extends BaseController<Comment> {
             let entity = await this.parseObject(this.getInstance(), req.body);
             entity = this.getParsePOST(entity);
 
-            console.log("entity", entity);
-
             const errors = await this.validateEntity(entity, [GROUPS.POST]);
 
             if(errors && errors.length > 0){

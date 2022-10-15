@@ -13,7 +13,6 @@ export class ImporterImpl extends BaseImporters{
             case IMPORTER_INTERRAPIDISIMO:
                 this.importer = new ImportersInterrapidisimo();
                 this.importer.addRows(ws);
-                console.log(this.importer);
             break;
             default:
                 throw new InvalidFileException("Tipo de archivo no puede ser procesado");

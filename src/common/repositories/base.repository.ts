@@ -189,7 +189,6 @@ export default abstract class BaseRepository<T> {
             return await this.repositoryManager.find(queryObject);
         }
         else {
-            console.log('tableName :::: ', this.repositoryManager);
             return await this.repositoryManager.find(page.get());
         }
     }
