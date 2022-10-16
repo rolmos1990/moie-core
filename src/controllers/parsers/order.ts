@@ -219,8 +219,8 @@ export class OrderUpdate {
 
 export const OrderListDTO = (order: OrderModel) => ({
     id: order ? order.id : null,
-    deliveryMethod: DeliveryMethodListDTO(order.deliveryMethod),
-    orderDelivery: OrderDeliveryListDTO(order.orderDelivery),
+    deliveryMethod: order ? DeliveryMethodListDTO(order.deliveryMethod) : null,
+    orderDelivery: order ? OrderDeliveryListDTO(order.orderDelivery) : null,
     deliveryLocality: order.orderDelivery && order.orderDelivery.deliveryLocality ? DeliveryLocalityListDTO(order.orderDelivery.deliveryLocality) : null,
     origen: order.origen,
     totalAmount: order.totalAmount,
@@ -236,8 +236,8 @@ export const OrderListDTO = (order: OrderModel) => ({
     updatedAt: order.updatedAt,
     status: order.status,
     quantity: order.quantity,
-    customer: CustomerShortDTO(order.customer),
-    user: UserShortDTO(order.user),
+    customer: order ? CustomerShortDTO(order.customer) : null,
+    user: order ? UserShortDTO(order.user) : null,
     office: order.office,
     payment: order.payment,
     bill: order.bill,
@@ -246,23 +246,23 @@ export const OrderListDTO = (order: OrderModel) => ({
 
 export const OrderListShortDTO = (order: OrderModel) => ({
     id: order ? order.id : null,
-    deliveryMethod: DeliveryMethodShortListDTO(order.deliveryMethod),
-    orderDelivery: OrderDeliveryShortListDTO(order.orderDelivery),
+    deliveryMethod: order ? DeliveryMethodShortListDTO(order.deliveryMethod) : null,
+    orderDelivery: order ? OrderDeliveryShortListDTO(order.orderDelivery) : null,
     deliveryLocality: order.orderDelivery && order.orderDelivery.deliveryLocality ? DeliveryLocalityListShortDTO(order.orderDelivery.deliveryLocality) : null,
     totalAmount: order.totalAmount,
     totalWithDiscount: order.totalWithDiscount,
     createdAt: order.createdAt,
     status: order.status,
     quantity: order.quantity,
-    customer: CustomerListShortDTO(order.customer),
-    user: UserShortDTO(order.user)
+    customer: order ? CustomerListShortDTO(order.customer) : null,
+    user: order ? UserShortDTO(order.user) : null
 });
 
 
 export const OrderShowDTO = (order: OrderModel) => ({
     id: order.id,
-    deliveryMethod: DeliveryMethodListDTO(order.deliveryMethod),
-    orderDelivery: OrderDeliveryShowDTO(order.orderDelivery),
+    deliveryMethod: order ? DeliveryMethodListDTO(order.deliveryMethod) : null,
+    orderDelivery: order ? OrderDeliveryShowDTO(order.orderDelivery) : null,
     deliveryLocality: order.orderDelivery && order.orderDelivery.deliveryLocality ? DeliveryLocalityListDTO(order.orderDelivery.deliveryLocality) : null,
     origen: order.origen,
     totalAmount: order.totalAmount,
@@ -281,8 +281,8 @@ export const OrderShowDTO = (order: OrderModel) => ({
     status: order.status,
     quantity: order.quantity,
     orderDetails: order.orderDetails && order.orderDetails.map(item => OrderDetailShowDTO(item)),
-    customer: CustomerListDTO(order.customer),
-    user: UserShortDTO(order.user),
+    customer: order ? CustomerListDTO(order.customer) : null,
+    user: order ? UserShortDTO(order.user) : null,
     office: order.office,
     payment: order.payment,
     prints: order.prints || 0,
@@ -304,19 +304,19 @@ export const OrderDetailShowDTO = (orderDetail: OrderDetail | any) => ({
     price: orderDetail.price,
     weight: orderDetail.weight,
     discountPercent: orderDetail.discountPercent,
-    product: ProductShortDTO(orderDetail.product),
-    productSize: ProductSizeShort(orderDetail.productSize, orderDetail.quantity)
+    product: orderDetail ? ProductShortDTO(orderDetail.product) : null,
+    productSize: orderDetail ? ProductSizeShort(orderDetail.productSize, orderDetail.quantity) : null
 });
 
 
 export const OrderPaymentShowDTO = (order: Order | any) => ({
     id: order.id,
     status: order.status,
-    customer: CustomerListDTO(order.customer),
+    customer: order ? CustomerListDTO(order.customer) : null,
     createdAt: order.createdAt,
     quantity: order.quantity,
     totalAmount: order.totalAmount,
     totalWithDiscount: order.totalWithDiscount,
     subTotalAmount: order.subTotalAmount,
-    orderDelivery: OrderDeliveryListDTO(order.orderDelivery)
+    orderDelivery: order ? OrderDeliveryListDTO(order.orderDelivery) : null
 });
