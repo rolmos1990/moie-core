@@ -37,6 +37,7 @@ app.use('/uploads', express.static('../storage/uploads'));
 app.use('/pdf', express.static('../storage/pdf'));
 app.use('/attachments', express.static('../storage/attachments'));
 app.use('/users', express.static('../storage/users'));
+app.use('/loaderio-f308d2b83e3c02cf93098a33059ed07d.txt', express.static('public/loaderio-f308d2b83e3c02cf93098a33059ed07d.txt'));
 
 //Blocked use for this directories
 
