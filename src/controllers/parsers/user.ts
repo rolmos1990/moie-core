@@ -12,7 +12,7 @@ export const UserListDTO = (user: User) => ({
     lastLogin: user.lastLogin,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
-    photo: user?.photo,
+    photo: user.photo,
     securityRol: SecurityRolArrayShortDTO(user.securityRol || {})
 });
 
