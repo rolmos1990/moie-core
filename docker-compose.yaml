@@ -37,6 +37,8 @@ services:
       DIAN_PASSWORD: ${DIAN_PASSWORD}
       PUBLIC_URL: ${PUBLIC_URL}
       WEBSITE_URL: ${WEBSITE_URL}
+      NEW_RELIC_LICENSE_KEY: ${$NEW_RELIC_LICENSE_KEY}
+      NEW_RELIC_APP_NAME: ${NEW_RELIC_APP_NAME}
       TZ: America/Bogota
 
   api2:
@@ -75,6 +77,8 @@ services:
       DIAN_PASSWORD: ${DIAN_PASSWORD}
       PUBLIC_URL: ${PUBLIC_URL}
       WEBSITE_URL: ${WEBSITE_URL}
+      NEW_RELIC_LICENSE_KEY: ${$NEW_RELIC_LICENSE_KEY}
+      NEW_RELIC_APP_NAME: ${NEW_RELIC_APP_NAME}
       TZ: America/Bogota
 
   nginx:

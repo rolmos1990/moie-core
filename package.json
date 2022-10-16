@@ -38,7 +38,8 @@
       "to-xml": "^0.1.7",
       "typeorm": "0.2.31",
       "typeorm-revisions": "0.0.5",
-      "wkhtmltopdf": "^0.4.0"
+      "wkhtmltopdf": "^0.4.0",
+      "newrelic": "latest"
    },
    "devDependencies": {
       "@types/bcryptjs": "^2.4.2",

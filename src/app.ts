@@ -8,6 +8,7 @@ import MySQLPersistence from "./common/persistence/mysql.persistence";
 import {Authorization} from './middlewares/authorization';
 import * as cors from 'cors';
 import {RunSeed} from "./seeds/run.seed";
+require('newrelic');
 
 //options for cors midddleware
 const options: cors.CorsOptions = {

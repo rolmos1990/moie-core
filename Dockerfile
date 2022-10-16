@@ -7,4 +7,6 @@ RUN npm install
 
 COPY ./ /src/
 
+ENV NEW_RELIC_NO_CONFIG_FILE=true
+
 CMD npm start
