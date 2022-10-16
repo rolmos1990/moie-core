@@ -32,3 +32,9 @@ export const ProductImageShortDTO = (productImage: ProductImage) => ({
     filename: productImage.filename,
     path: productImage.path
 });
+
+export const ProductImagePathDTO = (productImage: ProductImage) => ({
+    group: productImage.group,
+    thumbs: productImage.thumbs,
+    path: productImage.path
+});

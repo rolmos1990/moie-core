@@ -17,10 +17,11 @@ import {UserShortDTO} from "./parsers/user";
 import {TemplatesRegisters} from "../common/enum/templatesTypes";
 import {MEDIA_FORMAT_OUTPUT, MediaManagementService} from "../services/mediaManagement.service";
 import {ProductCatalogViewService} from "../services/productCatalogView.service";
-import {CategoryCreateDTO, CategoryUpdateDTO} from "./parsers/category";
+import {CategoryCreateDTO, CategoryListDTO, CategoryUpdateDTO} from "./parsers/category";
 import {getCatalogImage} from "../common/helper/helpers";
 import {OrderConditional} from "../common/enum/order.conditional";
 import {ProductSize} from "../models/ProductSize";
+import {Customer} from "../models/Customer";
 
 @route('/category')
 export class CategoryController extends BaseController<Category> {
@@ -67,8 +68,12 @@ export class CategoryController extends BaseController<Category> {
         return new Category();
     }
 
-    getParseGET(entity: Category): Object {
-        return entity;
+    getParseGET(entity: Category, isDetail: boolean): Object {
+        if(isDetail) {
+            return entity;
+        } else {
+            return CategoryListDTO(entity);
+        }
     }
 
     getParsePOST(entity: Category): Object {

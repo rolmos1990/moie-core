@@ -10,6 +10,13 @@ export const CategoryCreateDTO = (category: Category) => ({
     filenameBanner: category.filenameBanner
 });
 
+export const CategoryListDTO = (category: Category) => ({
+    id: category.id,
+    name: category.name,
+    createdAt: category.createdAt,
+    status: category.status,
+});
+
 export const CategoryUpdateDTO = (category: Category) => ({
     id: category.id,
     name: category.name,
@@ -19,4 +26,10 @@ export const CategoryUpdateDTO = (category: Category) => ({
     discountPercent: category.discountPercent ? parseFloat(category.discountPercent.toString()) : null,
     filename: category.filename,
     filenameBanner: category.filenameBanner
+});
+
+export const CategoryShortDTO = (category: Category) => ({
+    id: category.id,
+    name: category.name,
+    discountPercent: category.discountPercent ? parseFloat(category.discountPercent.toString()) : null,
 });

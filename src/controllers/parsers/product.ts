@@ -1,7 +1,8 @@
 import {Product} from "../../models/Product";
-import {ProductImageShortDTO} from "./productImage";
+import {ProductImagePathDTO, ProductImageShortDTO} from "./productImage";
 import {ProductAvailableDTO} from "./productAvailable";
 import {CustomerShortDTO} from "./customer";
+import {CategoryShortDTO} from "./category";
 
 export const ProductListDTO = (product: Product) => ({
     id: product.id,
@@ -10,17 +11,17 @@ export const ProductListDTO = (product: Product) => ({
     material: product.material,
     provider: product.provider,
     providerReference: product.providerReference,
-    category: product.category,
+    category: product.category ? CategoryShortDTO(product.category) : {},
     description: product.description || "",
     price: product.price,
     discount: product.discount || 0,
-    weight: product.weight,
+    //weight: product.weight,
     published: product.published,
     tags: product.tags || null,
-    createdAt: product.createdAt,
-    updatedAt: product.updatedAt,
+    //createdAt: product.createdAt,
+    //updatedAt: product.updatedAt,
     status: product.status,
-    productImage: product.productImage,
+    productImage: ProductImagePath(product.productImage),
     productAvailable: product.productAvailable && ProductAvailableDTO(product.productAvailable),
     productSize: product.productSize,
     sizeDescription: product.sizeDescription,
@@ -93,6 +94,8 @@ export const ProductUpdateDTO = (product: Product) => ({
     sizeDescription: product.sizeDescription || null,
     orden: product.orden || 0,
 });
+
+export const ProductImagePath = (productImages) => productImages && productImages.length > 0 ? productImages.map(image => ProductImagePathDTO(image)) : [];
 
 export const ProductQuoteDTO = (products) => products.map(product => ({
     id: product.id,
