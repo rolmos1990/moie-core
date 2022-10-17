@@ -77,6 +77,7 @@ export class CustomerService extends BaseService<Customer> {
      */
     async down(){
         try {
+            await this.newRepository.query("SET FOREIGN_KEY_CHECKS=0;");
             await this.newRepository.query(`DELETE FROM Customer`);
             await this.newRepository.query(`ALTER TABLE Customer AUTO_INCREMENT = 1`);
 
