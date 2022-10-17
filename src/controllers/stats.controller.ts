@@ -9,6 +9,7 @@ import {isValidStatTimes} from "../common/enum/statsTimeTypes";
 import {InvalidArgumentException} from "../common/exceptions";
 import {ProductService} from "../services/product.service";
 import {CustomerService} from "../services/customer.service";
+import {CachedService} from "../services/cached.service";
 
 @route('/stats')
 export class StatsController extends BaseController<Size> {
@@ -17,6 +18,7 @@ export class StatsController extends BaseController<Size> {
         private readonly orderService: OrderService,
         private readonly productService: ProductService,
         private readonly customerService: CustomerService,
+        private readonly cachedService: CachedService,
         protected readonly userService: UserService
     ){
         super(orderService);
@@ -191,17 +193,44 @@ export class StatsController extends BaseController<Size> {
     }
 
 
+    @route("/estadistica/save_dashboard")
+    @GET()
+    public async estadistica_save_dashboard(req: Request, res: Response) {
+        try {
+            const products = await this.productService.getDashboardStat();
+            const orders = await this.orderService.getStatDashboard();
+            const customers = await this.customerService.getStatDashboard();
+
+            const data = {
+                products,
+                orders,
+                customers
+            };
+
+            const cached = await this.cachedService.find('STATS_DASHBOARD');
+            cached.json = JSON.stringify(data);
+
+            await this.cachedService.createOrUpdate(cached);
+
+            return res.json({status: 200});
+
+        }catch(e){
+            console.log('error e: ', e.message);
+            this.handleException(e, res);
+        }
+    }
+
 
     @route("/estadistica/dashboard")
     @GET()
     public async estadistica_dashboard(req: Request, res: Response) {
         try {
-            const products = await this.productService.getDashboardStat();
-            const orders = await this.orderService.getStatDashboard();
-            const customers = await this.customerService.getStatDashboard();
-            return res.json({products, orders, customers});
+            const data = await this.cachedService.find('STATS_DASHBOARD');
+            const payload = JSON.parse(data.json);
+            return res.json({...payload});
 
         }catch(e){
+            console.log('error e: ', e.message);
             this.handleException(e, res);
         }
     }

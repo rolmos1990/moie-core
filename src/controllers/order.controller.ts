@@ -704,4 +704,21 @@ export class OrderController extends BaseController<Order> {
             console.log("error", e);
         }
     }
+
+    /** Generar las facturas de ordenes */
+    @route('/confirm/received')
+    @POST()
+    public async markReceived(req: Request, res: Response) {
+        const body = req.body;
+        const {order} = body;
+        try {
+            const entity = await this.orderService.findFull(order);
+            entity.manualReceived = true;
+            await this.orderService.createOrUpdate(entity);
+            return res.json({order: entity, status: 200}).status(200);
+        }catch(e){
+            this.handleException(e, res);
+            console.log("error", e);
+        }
+    }
 }

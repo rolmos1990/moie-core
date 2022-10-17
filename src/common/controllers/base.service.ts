@@ -22,7 +22,7 @@ export abstract class BaseService<Entity> implements IService {
         return this.baseRepository.all(pageQuery);
     }
 
-    public find(id: number, relations = []): Promise<Entity> {
+    public find(id: number|string, relations = []): Promise<Entity> {
         return this.baseRepository.find(id, relations);
     }
 

@@ -162,6 +162,10 @@ export class Order extends BaseModel{
     @IsOptional()
     postSaleDate: Date;
 
+    @Column({name:'manual_received', type: 'boolean', nullable: true})
+    @IsBoolean()
+    manualReceived: boolean;
+
     isEmpty(): boolean {
         return (this.id == null);
     }

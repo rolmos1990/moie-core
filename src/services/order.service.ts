@@ -220,7 +220,7 @@ export class OrderService extends BaseService<Order> {
     async registerOrder(_order: Order, parse: OrderParserCreate | OrderParserUpdate, user: User){
 
         const isNew = _order.isEmpty();
-        const deliveryCost = (parse.deliveryCost != undefined ? parse.deliveryCost : 0)  || _order.orderDelivery.deliveryCost;
+        const deliveryCost = (parse.deliveryCost !== undefined && parse.deliveryCost >= 0) ? parse.deliveryCost : _order.orderDelivery.deliveryCost;
         const customer = parse.customer ? await this.customerService.findFull(parse.customer) : _order.customer;
 
         const deliveryMethod = parse.deliveryMethod ? await this.deliveryMethodService.findByCode(parse.deliveryMethod) : _order.deliveryMethod;

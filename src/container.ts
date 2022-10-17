@@ -62,6 +62,8 @@ import {MovementRepository} from "./repositories/movement.repository";
 import {MovementService} from "./services/movement.service";
 import {AttachmentRepository} from "./repositories/attachment.repository";
 import {AttachmentService} from "./services/attachment.service";
+import {CachedRepository} from "./repositories/cached.repository";
+import {CachedService} from "./services/cached.service";
 
 export default (app: express.Application): void => {
     const container = createContainer({
@@ -101,6 +103,7 @@ export default (app: express.Application): void => {
         productAvailableViewRepository: asClass(ProductAvailableViewRepository).scoped(),
         movementRepository: asClass(MovementRepository).scoped(),
         attachmentRepository: asClass(AttachmentRepository).scoped(),
+        cachedRepository: asClass(CachedRepository).scoped(),
         // services
         userService: asClass(UserService).scoped(),
         customerService: asClass(CustomerService).scoped(),
@@ -131,7 +134,8 @@ export default (app: express.Application): void => {
         securityRolService: asClass(SecurityRolService).scoped(),
         securityPermissionService: asClass(SecurityPermissionService).scoped(),
         movementService: asClass(MovementService).scoped(),
-        attachmentService: asClass(AttachmentService).scoped()
+        attachmentService: asClass(AttachmentService).scoped(),
+        cachedService: asClass(CachedService).scoped()
     });
 
     app.use(scopePerRequest(container));
