@@ -209,6 +209,7 @@ export class StatsController extends BaseController<Size> {
 
             const cached = await this.cachedService.find('STATS_DASHBOARD');
             cached.json = JSON.stringify(data);
+            cached.updatedAt = new Date();
 
             await this.cachedService.createOrUpdate(cached);
 
