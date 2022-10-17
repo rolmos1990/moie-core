@@ -45,7 +45,7 @@ export const CustomerListDTO = (customer: Customer) => ({
     id: customer.id,
     name: customer.name,
     email: customer.email,
-    //document: customer.document,
+    document: customer.document,
     phone:converterPhoneInColombianFormat(customer.phone),
     cellphone: converterPhoneInColombianFormat(customer.cellphone),
     isMayorist: customer.isMayorist ? true : false,
