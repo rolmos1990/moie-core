@@ -14,7 +14,11 @@ export const CategoryListDTO = (category: Category) => ({
     id: category.id,
     name: category.name,
     createdAt: category.createdAt,
+    updatedAt: category.updatedAt,
     status: category.status,
+    filename: category.filename,
+    discountPercent: category.discountPercent ? parseFloat(category.discountPercent.toString()) : null,
+    filenameBanner: category.filenameBanner
 });
 
 export const CategoryUpdateDTO = (category: Category) => ({
