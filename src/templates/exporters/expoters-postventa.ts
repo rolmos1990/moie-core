@@ -3,6 +3,7 @@ import {EXPORTER_POSTVENTA} from "./constants";
 import {OrderStatusNames} from '../../common/enum/orderStatus';
 import {SingleBaseExporters} from "./single.base.exporters";
 import {customerLocality, toDateFormat, toFixed, toFloat, toUpper} from "./utilities";
+import {formatPrice} from "../../common/helper/helpers";
 
 export class ExpotersPostventa extends SingleBaseExporters {
 
@@ -26,7 +27,7 @@ export class ExpotersPostventa extends SingleBaseExporters {
             deliveryDateStatus: item.orderDelivery ? toDateFormat(item.orderDelivery.deliveryStatusDate) : '',
             deliveryState: item.orderDelivery && item.orderDelivery.deliveryCurrentLocality,
             deliveryDestiny: customerLocality(item.customer),
-            amount: toFixed(toFloat(item.totalAmount) + toFloat(item.orderDelivery.deliveryCost)),
+            amount: formatPrice(toFloat(item.totalAmount) + toFloat(item.orderDelivery.deliveryCost)),
             observation: item.comments && item.comments[0] && item.comments[0].comment,
             origen: item.origen,
             phone: item.customer ? item.customer.cellphone : ""

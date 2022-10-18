@@ -2,6 +2,7 @@ import {Order} from "../../models/Order";
 import {EXPORTER_POSTVENTA} from "./constants";
 import moment = require("moment");
 import {SingleBaseExporters} from "./single.base.exporters";
+import {formatPrice} from "../../common/helper/helpers";
 
 export class ExportersConciliates extends SingleBaseExporters {
 
@@ -18,7 +19,7 @@ export class ExportersConciliates extends SingleBaseExporters {
             id: item.id,
             dateOfSale: moment(item.dateOfSale).format("DD-MM-YYYY"),
             deliveryMethod: item.deliveryMethod.name,
-            amount: item.totalAmount + item.orderDelivery.deliveryCost,
+            amount: formatPrice(item.totalAmount + item.orderDelivery.deliveryCost),
             document: item.customer.document
         }));
 

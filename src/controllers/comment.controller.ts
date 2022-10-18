@@ -7,17 +7,19 @@ import {Request, Response} from "express";
 import {InvalidArgumentException} from "../common/exceptions";
 import {CustomerService} from "../services/customer.service";
 import {OrderService} from "../services/order.service";
-import BaseModel from "../common/repositories/base.model";
 import {CommentListDTO} from "./parsers/comment";
+import {User} from "../models/User";
+import {UserService} from "../services/user.service";
 
 @route('/comment')
 export class CommentController extends BaseController<Comment> {
     constructor(
-        private readonly commentService: CommentService,
+        protected readonly commentService: CommentService,
+        protected readonly userService: UserService,
         private readonly customerService: CustomerService,
         private readonly orderService: OrderService
     ){
-        super(commentService);
+        super(commentService, userService);
     };
     protected afterCreate(item: Object): void {
     }
@@ -77,8 +79,9 @@ export class CommentController extends BaseController<Comment> {
                 throw new InvalidArgumentException();
             }
 
+            const user = await this.getUser(req);
             body.idRelated = _entity.id;
-            body.user = 1; //Temporalmente..
+            body.user = user.id; //Temporalmente..
 
             let entity = await this.parseObject(this.getInstance(), req.body);
             entity = this.getParsePOST(entity);
@@ -99,6 +102,14 @@ export class CommentController extends BaseController<Comment> {
 
         }catch(e){
             this.handleException(e, res);
+        }
+    }
+
+    async getUser(req: Request) : Promise<User>{
+        if(this.userService && req['user'] && req['user'].id) {
+            const userIdFromSession = req['user'].id;
+            const user = await this.userService.find(userIdFromSession);
+            return user;
         }
     }
 

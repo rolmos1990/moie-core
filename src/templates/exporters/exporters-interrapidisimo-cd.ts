@@ -2,6 +2,7 @@ import {BaseExporters} from "./base.exporters";
 import {Order} from "../../models/Order";
 import {EXPORTER_INTERRAPIDISIMO_CD} from "./constants";
 import {SingleBaseExporters} from "./single.base.exporters";
+import {formatPrice} from "../../common/helper/helpers";
 
 export class ExportersInterrapidisimoCd extends SingleBaseExporters {
 
@@ -20,13 +21,6 @@ export class ExportersInterrapidisimoCd extends SingleBaseExporters {
             return (Math.floor(Number(weight) / 1000));
         }
 
-    }
-
-    formatNumber(_number){
-        if(!_number){
-            return !_number;
-        }
-        return _number.toString().replace('.',',');
     }
 
     getBody(data: Order[]) {
@@ -51,17 +45,17 @@ export class ExportersInterrapidisimoCd extends SingleBaseExporters {
         }
 
         const body = data.map(item => preFormat(item, {
-           id: item.customer.document,
+           id: item.customer && item.customer.document,
            name: '',
            lastname: '',
-           phone: item.customer.cellphone,
+           phone: item.customer && item.customer.cellphone,
            phone2: item.customer.phone,
            address: item.customer.address || "",
            cityCode: item.orderDelivery && item.orderDelivery.deliveryLocality && item.orderDelivery.deliveryLocality.deliveryAreaCode,
-           city: item.customer.municipality.name.toUpperCase(),
+           city: item.customer && item.customer.municipality && item.customer.municipality.name.toUpperCase(),
            description: 'PRENDAS DE VESTIR - ' + item.id,
            weight: this.getConverter(item.totalWeight),
-           price: this.formatNumber(item.totalAmount),
+           price: formatPrice(item.totalAmount),
            number: item.id
         }));
 

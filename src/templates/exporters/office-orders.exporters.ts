@@ -1,6 +1,8 @@
 import {Order} from "../../models/Order";
 import {EXPORTER_OFFICES} from "./constants";
 import {SingleBaseExporters} from "./single.base.exporters";
+import {toDateFormat} from "./utilities";
+import {formatPrice} from "../../common/helper/helpers";
 
 export class ExportersOfficeCd extends SingleBaseExporters {
 
@@ -14,10 +16,12 @@ export class ExportersOfficeCd extends SingleBaseExporters {
 
     getBody(data: Order[]) {
         const body = data.map(item => ({
-            date: item.dateOfSale,
+            date: toDateFormat(item.office.batchDate),
             order: item.id,
-            amount: item.totalAmount
+            amount: formatPrice(item.totalAmount)
         }));
+
+        console.log(body);
 
         return body;
     }

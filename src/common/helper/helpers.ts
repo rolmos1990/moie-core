@@ -206,3 +206,8 @@ export function getCatalogImage(p: ProductCatalogView, _image, resolution) {
     }
 
 }
+
+export function formatPrice(_number) {
+    const numberFormat = new Intl.NumberFormat('es-CO', {minimumFractionDigits:1, maximumFractionDigits:2});
+    return numberFormat.format(_number)
+}

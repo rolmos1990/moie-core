@@ -2,6 +2,8 @@ import {Order} from "../../models/Order";
 import {EXPORTER_OFFICES_MENSAJERO} from "./constants";
 import {SingleBaseExporters} from "./single.base.exporters";
 import {getPaymentModeLabel, PaymentModes} from "../../common/enum/paymentModes";
+import {toDateFormat} from "./utilities";
+import {formatPrice} from "../../common/helper/helpers";
 
 export class ExportersOfficeMensajeroCd extends SingleBaseExporters {
 
@@ -15,14 +17,16 @@ export class ExportersOfficeMensajeroCd extends SingleBaseExporters {
 
     getBody(data: Order[]) {
         const body = data.map(item => ({
-            date: item.dateOfSale,
+            date: toDateFormat(item.office.batchDate),
             order: item.id,
-            amount: item.totalAmount,
+            amount: formatPrice(item.totalAmount),
             paymentMode: getPaymentModeLabel(item.paymentMode),
             piecesForChanges: item.piecesForChanges ? item.piecesForChanges : 0,
             observation: "",
             observationMensajero: ""
         }));
+
+        console.log(body);
 
         return body;
     }
