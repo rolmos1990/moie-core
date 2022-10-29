@@ -55,7 +55,7 @@ export class ExportersInterrapidisimoCd extends SingleBaseExporters {
            city: item.customer && item.customer.municipality && item.customer.municipality.name.toUpperCase(),
            description: 'PRENDAS DE VESTIR - ' + item.id,
            weight: this.getConverter(item.totalWeight),
-           price: formatPrice(item.totalAmount),
+           price: item.deliveryMethod.code === 'PAYU' ? formatPrice(15000.00) : formatPrice(item.totalAmount),
            number: item.id
         }));
 

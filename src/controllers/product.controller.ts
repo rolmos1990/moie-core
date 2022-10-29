@@ -101,6 +101,28 @@ export class ProductController extends BaseController<Product> {
         }
     }
 
+    @route('/:id')
+    @GET()
+    public async find(req: Request, res: Response) {
+        try {
+            const query = req.params;
+            const id = query.id;
+            const relations = this.getDefaultRelations();
+            let item;
+            if(isNaN(parseInt(id))){
+                item = await this.productService.findByObject({reference: id}, relations);
+                item = item[0];
+            }else{
+                item = await this.productService.find(id, relations);
+            }
+            const result = await this.getParseGET(item, true);
+            res.json(result);
+        }catch(e){
+            this.handleException(e, res);
+            console.log("error", e);
+        }
+    }
+
     @route('/:id/productPendings')
     @GET()
     /**

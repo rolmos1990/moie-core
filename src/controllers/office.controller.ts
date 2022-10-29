@@ -248,7 +248,7 @@ export class OfficeController extends BaseController<Office> {
         try {
             const id = req.params.id;
             const office: Office = await this.officeService.find(parseInt(id));
-            const orders: Order[] = await this.orderService.findByObject({office: office}, ['customer', 'customer.municipality', 'orderDelivery', 'orderDelivery.deliveryLocality']); //TODO -- Agregar orderDelivery.deliveryLocality'
+            const orders: Order[] = await this.orderService.findByObject({office: office}, ['customer', 'customer.municipality', 'orderDelivery', 'orderDelivery.deliveryLocality', 'deliveryMethod']); //TODO -- Agregar orderDelivery.deliveryLocality'
             const exportable = new ExportersInterrapidisimoCd();
 
             const base64File = await this.mediaManagementService.createExcel(exportable, orders, res, MEDIA_FORMAT_OUTPUT.b64);
