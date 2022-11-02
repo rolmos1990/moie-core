@@ -59,6 +59,7 @@ export class Order {
         this.chargeOnDelivery = this.isChargeOnDelivery();
         this.prints = props.prints;
         this.photos = props.photos;
+        this.otherMethod = props.otherMethod;
 
     }
 
@@ -115,6 +116,10 @@ export class Order {
     @IsOptional()
     tracking: string;
 
+    @IsString()
+    @IsOptional()
+    otherMethod: string;
+
     products: OrderProduct[]
 }
 
@@ -149,6 +154,7 @@ export class OrderUpdate {
         this.tracking = props.tracking;
         this.prints = props.prints;
         this.photos = props.photos;
+        this.otherMethod = props.otherMethod;
     }
 
     isChargeOnDelivery() : boolean {
@@ -215,6 +221,10 @@ export class OrderUpdate {
     @IsNumber()
     @IsOptional()
     photos: number;
+
+    @IsString()
+    @IsOptional()
+    otherMethod: string;
 }
 
 export const OrderListDTO = (order: OrderModel) => ({

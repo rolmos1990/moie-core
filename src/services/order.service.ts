@@ -242,6 +242,7 @@ export class OrderService extends BaseService<Order> {
         _order.orderDelivery.chargeOnDelivery = parse.isChargeOnDelivery();
         _order.orderDelivery.deliveryType = parse.deliveryType || _order.orderDelivery.deliveryType;
         _order.orderDelivery.deliveryCost = deliveryCost || 0;
+        _order.orderDelivery.deliveryOtherDescription = parse.otherMethod;
         _order.deliveryMethod = deliveryMethod;
         _order.orderDelivery.tracking = parse.tracking || _order.orderDelivery.tracking || null;
         _order.paymentMode = parse.paymentMode || _order.paymentMode || null;

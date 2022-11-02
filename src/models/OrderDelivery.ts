@@ -88,6 +88,11 @@ export class OrderDelivery extends BaseModel{
     @IsOptional()
     syncDate: Date;
 
+    @Column({name:'delivery_other_description', type: 'varchar', length: 100, nullable: true})
+    @Length(0,100, {groups: ['create','update']})
+    @IsOptional()
+    deliveryOtherDescription: string;
+
     isEmpty(): boolean {
         return (this.id == null);
     }

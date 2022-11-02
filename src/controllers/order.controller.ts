@@ -330,6 +330,8 @@ export class OrderController extends BaseController<Order> {
                     isChargeOnDelivery: isChargeOnDelivery(order.orderDelivery),
                     hasPiecesForChanges: (order.piecesForChanges && order.piecesForChanges > 0),
                     deliveryShortType: deliveryShortType,
+                    isOther: order.orderDelivery.deliveryOtherDescription ? true : false,
+                    deliveryOther: order.orderDelivery.deliveryOtherDescription || '',
                     hasComments: comments.length > 0,
                     comments: comments
                 };
@@ -400,6 +402,8 @@ export class OrderController extends BaseController<Order> {
                         isMensajero: order.deliveryMethod.id === OrderTypes.MENSAJERO,
                         hasPiecesForChanges: (order.piecesForChanges && order.piecesForChanges > 0),
                         deliveryShortType: deliveryShortType,
+                        isOther: order.orderDelivery.deliveryOtherDescription ? true : false,
+                        deliveryOther: order.orderDelivery.deliveryOtherDescription || '',
                         hasComments: comments.length > 0,
                         comments: comments
                     };

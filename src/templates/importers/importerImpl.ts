@@ -1,5 +1,5 @@
 import {Worksheet} from "exceljs";
-import {IMPORTER_INTERRAPIDISIMO} from "./constants";
+import {IMPORTER_INTERRAPIDISIMO, IMPORTER_PAYU} from "./constants";
 import {InvalidFileException} from "../../common/exceptions";
 import {BaseImporters} from "./base.impoters";
 import {ImportersInterrapidisimo} from "./impoters-interrapidisimo";
@@ -14,6 +14,10 @@ export class ImporterImpl extends BaseImporters{
                 this.importer = new ImportersInterrapidisimo();
                 this.importer.addRows(ws);
             break;
+            case IMPORTER_PAYU:
+                this.importer = new ImportersInterrapidisimo();
+                this.importer.addRows(ws);
+                break;
             default:
                 throw new InvalidFileException("Tipo de archivo no puede ser procesado");
         }
