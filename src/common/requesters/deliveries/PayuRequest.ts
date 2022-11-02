@@ -13,6 +13,7 @@ export class PayuRequest extends BaseRequester {
     }
 
     getUrl(): any {
+        // add some comment
         return `${process.env.WEBSITE_URL}/checkout/generar_link_pago`;
     }
 
