@@ -117,7 +117,7 @@ export class PaymentController extends BaseController<Payment> {
         const order = await this.orderService.findFull(parseInt(id), ['customer.state', 'customer.municipality']);
         const customer = order.customer;
         const totalAmount = order.totalWithDiscount + order.orderDelivery.deliveryCost;
-        const isTest = 1;
+        const isTest = 0;
 
         const customerMunicipality = customer.municipality ? customer.municipality.name : '';
         const customerState = customer.state ? customer.state.name  : '';
