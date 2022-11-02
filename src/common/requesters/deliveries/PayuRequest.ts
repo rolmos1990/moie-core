@@ -19,7 +19,7 @@ export class PayuRequest extends BaseRequester {
     async call(): Promise<TrackingDelivery> {
         try {
             const payload = this.payu;
-
+            console.log('generating payment: ', this.getUrl());
             const response = await axios.post(this.getUrl(), payload);
             const body = response.data;
             const parse : any = this.getContext(body);
