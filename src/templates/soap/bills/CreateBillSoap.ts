@@ -25,7 +25,7 @@ export class CreateBillSoap extends BaseSoapTemplate {
     getData() {
 
         const bill : Bill = this.bill;
-        const billNumber = 36; //bill.id;
+        const billNumber = bill.id;
 
         const order = bill.order;
 

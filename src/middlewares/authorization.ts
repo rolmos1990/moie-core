@@ -15,7 +15,8 @@ const PublicServices = [
     "/deliveryMethod/cron/updateDeliveryStatus",
     "/template/checkTimeZone",
     '/stats/estadistica/save_dashboard',
-    '/payment/gateway/payu/register'
+    '/payment/gateway/payu/register',
+    '/refresh/all/orderDelivery'
 ];;
 
 export const Authorization = (req: Request, res: Response, next: NextFunction) => {
