@@ -67,7 +67,7 @@ export class StatusManagerController {
                 this.setStatus(OrderStatus.PRINTED);
             }
             else if (order.isPrinted()) {
-                if (_orderType.isMensajero() || _orderType.isOtro() || _orderType.isInterrapidisimo()) {
+                if (_orderType.isMensajero() || _orderType.isOtro() || _orderType.isInterrapidisimo() || _orderType.isPayu()) {
                     this.setStatus(OrderStatus.SENT);
                     this.setStatus(OrderStatus.FINISHED);
                 }
