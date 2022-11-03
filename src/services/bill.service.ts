@@ -82,11 +82,11 @@ export class BillService extends BaseService<Bill> {
         }
     }
 
-    async findByStatus(status : BillStatus) : Promise<Bill[]>{
+    async findByStatus(status : BillStatus, limit = 10) : Promise<Bill[]>{
         const bills = await this.billRepository.findByObjectWithLimit({
             status: status
         }, ['order', 'order.orderDetails', 'order.customer', 'order.orderDelivery', 'billConfig', 'order.customer.state', 'order.customer.municipality'],
-            20
+            limit
             );
         return bills;
     }
@@ -147,6 +147,7 @@ export class BillService extends BaseService<Bill> {
         };
 
         this.clientManagementService.addHeaders("Authorization", auth);
+
         const res = await this.clientManagementService.callSoapClient(options);
 
         if(res["RecepcionXmlFromERPResult"]){

@@ -23,7 +23,16 @@ export class ClientsManagementService extends UtilService {
     private headers : Object[] = [];
 
     addHeaders(key,value){
-        this.headers.push({ key, value });
+
+        const hasKey = this.headers.filter(item => (item['key'] === key))
+
+        if(!hasKey[0]) {
+            this.headers.push({key, value});
+        }
+    }
+
+    getHeaders(){
+        return this.headers;
     }
 
     async callSoapClient(options : SoapOptions) : Promise<SoapResult|any>{
@@ -55,7 +64,9 @@ export class ClientsManagementService extends UtilService {
 
                 });
             });
-            return request;
+
+            const requestResult = await request;
+            return requestResult;
 
         }catch(e){
             console.log(e);
