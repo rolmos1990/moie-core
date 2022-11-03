@@ -23,7 +23,11 @@ export class PayuRequest extends BaseRequester {
             console.log('generating payment: ', this.getUrl());
             console.log('payload: ', payload);
             const response = await axios.post(this.getUrl(), payload);
+
+            console.log('response', response);
+
             const body = response.data;
+
             const parse : any = this.getContext(body);
             return parse;
         }catch(e){
