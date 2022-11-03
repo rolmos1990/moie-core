@@ -140,7 +140,7 @@ export class BillService extends BaseService<Bill> {
         const soapBody = new CreateBillSoap(bill, type, creditMemo);
 
         const options = {
-            url: 'https://www.febtw.co:8087/ServiceBTW/FEServicesBTW.svc?wsdl',
+            url: 'https://www.febtw.co:8097/ServiceBTW/FEServicesBTW.svc?wsdl',
             headerOptions: {Authorization: auth},
             body: soapBody,
             callMethod: "RecepcionXmlFromERP"
