@@ -14,7 +14,8 @@ const PublicServices = [
     "/category/36/test/printTestRequest",
     "/deliveryMethod/cron/updateDeliveryStatus",
     "/template/checkTimeZone",
-    '/stats/estadistica/save_dashboard'
+    '/stats/estadistica/save_dashboard',
+    '/payment/gateway/payu/register'
 ];;
 
 export const Authorization = (req: Request, res: Response, next: NextFunction) => {
