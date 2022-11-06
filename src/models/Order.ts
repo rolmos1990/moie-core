@@ -283,4 +283,17 @@ export class Order extends BaseModel{
     getHashProducts(){
         return this.orderDetails.map(item => item.toHash()).join("");
     }
+
+    getDeliveryCost(){
+        if(!this.orderDelivery){
+            return 0;
+        }
+        return Number(this.orderDelivery.deliveryCost) || 0;
+    }
+    getTotalWithDiscount(){
+        if(!this.totalWithDiscount){
+            return 0;
+        }
+        return Number(this.totalWithDiscount) || 0;
+    }
 }

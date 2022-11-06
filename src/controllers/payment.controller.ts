@@ -116,7 +116,9 @@ export class PaymentController extends BaseController<Payment> {
         const id = req.params.id;
         const order = await this.orderService.findFull(parseInt(id), ['customer.state', 'customer.municipality']);
         const customer = order.customer;
-        const totalAmount = order.totalWithDiscount + order.orderDelivery.deliveryCost;
+
+        const totalAmount = order.getTotalWithDiscount() + order.getDeliveryCost()
+
         const isTest = 0;
 
         const customerMunicipality = customer.municipality ? customer.municipality.name : '';
@@ -168,13 +170,14 @@ export class PaymentController extends BaseController<Payment> {
             if (order) {
                 const payment = new Payment();
                 payment.order = orderObj;
-                payment.createdAt = date;
+                payment.createdAt = new Date();
                 payment.email = email;
                 payment.name = name;
                 payment.phone = phone;
                 payment.type = 'Payu';
                 payment.consignmentAmount = value;
                 payment.consignmentNumber = confirmacion;
+                payment.status = PaymentStatus.CONCILIED;
 
                 const _newPayment = await this.paymentService.createOrUpdate(payment);
 

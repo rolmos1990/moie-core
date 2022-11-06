@@ -236,7 +236,10 @@ export class OrderService extends BaseService<Order> {
         _order.expiredDate = new Date();
         _order.remember = _order.remember || false;
         _order.createdAt = _order.createdAt || new Date();
-        _order.office = null;
+
+        if(!hasTrackingChanged) {
+            _order.office = null;
+        }
 
         /** Delivery Information in Order */
         _order.orderDelivery.chargeOnDelivery = parse.isChargeOnDelivery();
