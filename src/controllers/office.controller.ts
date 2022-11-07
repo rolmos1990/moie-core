@@ -29,6 +29,7 @@ import {TemplatesRegisters} from "../common/enum/templatesTypes";
 import {ExportersOfficeMensajeroCd} from "../templates/exporters/office-orders-mensajero.exporters";
 import {DeliveryMethodService} from "../services/deliveryMethod.service";
 import {Modules} from "../common/enum/modules";
+import {OrderStatus} from "../common/enum/orderStatus";
 
 @route('/office')
 export class OfficeController extends BaseController<Office> {
@@ -356,6 +357,9 @@ export class OfficeController extends BaseController<Office> {
             //update status
             await Promise.all(ordersToUpdate.map(async (item : Order) => {
                 item.postSaleDate = deliveryDate;
+                if(item.status === OrderStatus.SENT){
+                    await this.orderService.createOrUpdate(item);
+                }
                 await this.orderService.updateNextStatusFromModule(item, user, Modules.PostVenta);
             }));
 
