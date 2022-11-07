@@ -6,10 +6,12 @@ import {getRealInventary, getRealOrderDetail, isEmpty} from "../common/helper/he
 import {Product} from "../models/Product";
 import {IProductSize} from "../common/interfaces/IProductSize";
 import {OrderDetail} from "../models/OrderDetail";
+import {ProductRepository} from "../repositories/product.repository";
 
 export class ProductSizeService extends BaseService<ProductSize> {
     constructor(
         private readonly productSizeRepository: ProductSizeRepository<ProductSize>,
+        private readonly productRepository: ProductRepository<Product>,
     ){
         super(productSizeRepository);
     }
@@ -29,6 +31,9 @@ export class ProductSizeService extends BaseService<ProductSize> {
             if(increase){
                 await this.productSizeRepository.increment(ProductSize, {color: item.color, name: item.size, product: item.product}, 'quantity', Math.abs(item.quantity));
                 await this.productSizeRepository.createQueryBuilder('d').connection.query('CALL `moie-lucy-v2`.`filterTodo`(' + item.product.id + ');');
+                //actualizar inventario de producto
+                item.product.published = true;
+                await this.productRepository.save(item.product);
             } else {
                 await this.productSizeRepository.decrement(ProductSize, {color: item.color, name: item.size, product: item.product}, 'quantity', Math.abs(item.quantity));
                 await this.productSizeRepository.createQueryBuilder('d').connection.query('CALL `moie-lucy-v2`.`filterTodo`(' + item.product.id + ');');
@@ -121,15 +126,6 @@ export class ProductSizeService extends BaseService<ProductSize> {
         }
     }
 
-    public async findByOrderDetail(orderDetail: OrderDetail) : Promise<ProductSize>{
-        const productSize = await this.findByObject({
-            name: orderDetail.size,
-            color: orderDetail.color,
-            product: orderDetail.product
-        }, ['product']);
-        return productSize[0];
-    }
-
     public async findByProduct(id: number, relations = []) : Promise<ProductSize[] | null>{
         if(!id){
             throw new InvalidArgumentException();
@@ -149,6 +145,9 @@ export class ProductSizeService extends BaseService<ProductSize> {
             } else if(quantity > 0){
                 await this.productSizeRepository.increment(ProductSize, {color: orderDetail.color, name: orderDetail.size, product: orderDetail.product}, 'quantity', Math.abs(quantity));
                 await this.productSizeRepository.createQueryBuilder('d').connection.query('CALL `moie-lucy-v2`.`filterTodo`(' + orderDetail.product.id + ');');
+                //actualizar inventario de producto
+                orderDetail.product.published = true;
+                await this.productRepository.save(orderDetail.product);
             }
 
             //check is void
@@ -201,19 +200,22 @@ export class ProductSizeService extends BaseService<ProductSize> {
     async checkIsPublishedProduct(product: Product){
         const productSizes = await this.findByProduct(product.id);
 
-        let isVoid = true;
+        let hasProducts = true;
 
         if(productSizes.length > 0) {
-            const products = productSizes.filter(item => item.quantity > 0);
+            const products = productSizes.filter(item => item.quantity <= 0);
             if (products.length > 0) {
-                isVoid = false;
+                hasProducts = false;
             }
         }
 
         //make disabled the product size
-        if(isVoid){
+        if(hasProducts){
+            product.published = true;
+            await this.productRepository.save(product);
+        } else {
             product.published = false;
-            await this.createOrUpdate(product);
+            await this.productRepository.save(product);
         }
     }
 

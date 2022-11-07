@@ -320,6 +320,10 @@ export class OrderController extends BaseController<Order> {
 
                 let comments = await this.commentService.getByOrder(order);
 
+                if(order.orderDetails){
+                    order.sortOrderDetail();
+                }
+
                 const object = {
                     order,
                     qrBar,
@@ -335,7 +339,8 @@ export class OrderController extends BaseController<Order> {
                     hasComments: comments.length > 0,
                     comments: comments
                 };
-                const template = await this.templateService.getTemplate(TemplatesRegisters.PRINT_ORDER, object);
+                console.log('template: ', TemplatesRegisters.PRINT_ORDER_TEST);
+                const template = await this.templateService.getTemplate(TemplatesRegisters.PRINT_ORDER_TEST, object);
                 if(!template){
                     throw new InvalidArgumentException("No se ha podido generar el reporte");
                 }
@@ -374,8 +379,8 @@ export class OrderController extends BaseController<Order> {
             if(orders.length > 0){
                 let orderId = 0;
                 orders.forEach((item,index,_orders)  => {
-                    //Regla para poder ser impresa
-                    if(item.status <= OrderStatus.PENDING){
+                    //Regla para poder ser impresa (Se eliminan las pendientes, se eliminan las que han sido impresas)
+                    if(item.status <= OrderStatus.PENDING || item.prints > 0){
                         //isImpress = false;
                         orderId = item.id;
                         _orders.splice(index, 1);
@@ -391,6 +396,10 @@ export class OrderController extends BaseController<Order> {
                     const deliveryShortType = getDeliveryShortType(order.orderDelivery.deliveryType);
 
                     let comments = await this.commentService.getByOrder(order);
+
+                    if(order.orderDetails){
+                        order.sortOrderDetail();
+                    }
 
                     const object = {
                         order,

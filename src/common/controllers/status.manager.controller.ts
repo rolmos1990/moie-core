@@ -112,7 +112,8 @@ export class StatusManagerController {
     }
 
     async restart() {
-        this.order.status = OrderStatus.PENDING;
+        const hasReconcilied = this.historyService.getIsHasReconcilied(this.order);
+        this.order.status = hasReconcilied ? OrderStatus.RECONCILED : OrderStatus.PENDING;
         if(this.historyService) {
             //add history
             const _history = new OrderHistoric();

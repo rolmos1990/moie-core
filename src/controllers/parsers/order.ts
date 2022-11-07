@@ -252,7 +252,8 @@ export const OrderListDTO = (order: OrderModel) => ({
     payment: order.payment,
     bill: order.bill,
     postSaleDate: order.postSaleDate,
-    manualReceived: order.manualReceived
+    manualReceived: order.manualReceived,
+    prints: order.prints
 });
 
 export const OrderListShortDTO = (order: OrderModel) => ({

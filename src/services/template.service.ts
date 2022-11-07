@@ -103,6 +103,15 @@ export class TemplateService extends BaseService<Template> {
             options.data.root[varName] = varValue;
         });
 
+        registerHelper('addGrayStyle', function (quantity) {
+            console.log('quantity: ', quantity);
+            if(parseInt(quantity) > 1){
+                return 'background-color:#adb5bd';
+            } else {
+                return '';
+            }
+        });
+
         //Use comparatives in template
         registerHelper('ifCond', function (v1, operator, v2, options) {
 

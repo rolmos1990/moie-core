@@ -296,4 +296,10 @@ export class Order extends BaseModel{
         }
         return Number(this.totalWithDiscount) || 0;
     }
+
+    sortOrderDetail(){
+        this.orderDetails.sort((a, b) => {
+            return a.product.reference.toString().localeCompare(b.product.reference.toString(), 'en', { numeric: true })
+        });
+    }
 }
