@@ -61,7 +61,7 @@ export class OrderDetail extends BaseModel{
     weight: number;
 
     @Column({name:'discountPercent', type: 'decimal'})
-    @IsDecimal({ decimal_digits: '2'}, {groups: ['create','update']})
+    @IsDecimal({ decimal_digits: '4'}, {groups: ['create','update']})
     discountPercent: number;
 
     isEmpty(): boolean {
