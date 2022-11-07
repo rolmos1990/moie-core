@@ -339,8 +339,7 @@ export class OrderController extends BaseController<Order> {
                     hasComments: comments.length > 0,
                     comments: comments
                 };
-                console.log('template: ', TemplatesRegisters.PRINT_ORDER_TEST);
-                const template = await this.templateService.getTemplate(TemplatesRegisters.PRINT_ORDER_TEST, object);
+                const template = await this.templateService.getTemplate(TemplatesRegisters.PRINT_ORDER, object);
                 if(!template){
                     throw new InvalidArgumentException("No se ha podido generar el reporte");
                 }
