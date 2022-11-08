@@ -104,7 +104,6 @@ export class TemplateService extends BaseService<Template> {
         });
 
         registerHelper('addGrayStyle', function (quantity) {
-            console.log('quantity: ', quantity);
             if(parseInt(quantity) > 1){
                 return 'background-color:#adb5bd';
             } else {
@@ -140,29 +139,6 @@ export class TemplateService extends BaseService<Template> {
                     return options.inverse(this);
             }
         });
-
-        /* registerHelper('getImage', function (productImages: ProductImage[], imageNumber, quality) {
-                if(!productImages) return null;
-
-                const image = productImages[imageNumber];
-                if(!image) return null;
-
-                const path = process.env.HOST + "/uploads";
-
-                let result = imgData.path;
-                if (!imgData.thumbs) {
-                    return `${path}${result}`;
-                }
-                try {
-                    const thumbs = JSON.parse(imgData.thumbs);
-                    if (thumbs[quality]) {
-                        result = thumbs[quality];
-                    }
-                } catch (e) {
-                    console.error('Error: ' + imgData.thumbs, e);
-                }
-                return `${path}${result}`;
-        });   */
 
         /** ############################ */
         /** Puede registrar aqui parciales que son plantillas usadas en el templates */

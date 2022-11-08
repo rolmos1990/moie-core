@@ -52,8 +52,8 @@ export class OrderHistoricService extends BaseService<OrderHistoric> {
     }
 
     async getIsHasReconcilied(order: Order){
-        const hasReconcilied = await this.orderHistoricRepository.findByObject({order: order, status: OrderStatus.RECONCILED});
-        if(hasReconcilied.length > 0){
+        const hasReconcilied = await this.orderHistoricRepository.findOneByObject({order: order, status: OrderStatus.RECONCILED});
+        if(hasReconcilied){
             return true;
         }
         return false;

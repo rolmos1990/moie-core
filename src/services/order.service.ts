@@ -167,7 +167,7 @@ export class OrderService extends BaseService<Order> {
         //restart order to initial status
         if(trackStatus) {
             const _statusManager = new StatusManagerController(updatedOrder, this.orderRepository, user, this.orderHistoricService);
-            await _statusManager.start();
+            await _statusManager.restart();
         }
 
         return await this.recalculateCosts(updatedOrder);

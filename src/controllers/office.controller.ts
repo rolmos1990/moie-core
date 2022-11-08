@@ -359,8 +359,9 @@ export class OfficeController extends BaseController<Office> {
                 item.postSaleDate = deliveryDate;
                 if(item.status === OrderStatus.SENT){
                     await this.orderService.createOrUpdate(item);
+                } else {
+                    await this.orderService.updateNextStatusFromModule(item, user, Modules.PostVenta);
                 }
-                await this.orderService.updateNextStatusFromModule(item, user, Modules.PostVenta);
             }));
 
             return res.json({status: 200, data: {registers: registers} } );

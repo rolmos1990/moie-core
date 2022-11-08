@@ -31,7 +31,11 @@ export class StatusManagerController {
         this.order.modifiedDate = new Date();
         this.order.payment = null;
         this.order.office = null;
-        this.setStatus(OrderStatus.PENDING);
+
+        const hasReconcilied = await this.historyService.getIsHasReconcilied(this.order);
+        const orderStatus = (hasReconcilied) ? OrderStatus.RECONCILED : OrderStatus.PENDING;
+
+        this.setStatus(orderStatus);
 
         await this.save();
     }
@@ -112,9 +116,15 @@ export class StatusManagerController {
     }
 
     async restart() {
-        //const hasReconcilied = this.historyService.getIsHasReconcilied(this.order);
-        //this.order.status = hasReconcilied ? OrderStatus.RECONCILED : OrderStatus.PENDING;
-        this.order.status = OrderStatus.PENDING;
+
+        const hasReconcilied = await this.historyService.getIsHasReconcilied(this.order);
+        const orderStatus = (hasReconcilied) ? OrderStatus.RECONCILED : OrderStatus.PENDING;
+
+        this.order.status = orderStatus;
+        this.order.office = null;
+        this.order.modifiedDate = new Date();
+        this.order.payment = null;
+
         if(this.historyService) {
             //add history
             const _history = new OrderHistoric();
