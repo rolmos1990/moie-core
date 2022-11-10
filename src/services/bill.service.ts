@@ -76,7 +76,8 @@ export class BillService extends BaseService<Bill> {
             bill.billConfig = getLastNumberInfo.config;
             bill.status = BillStatus.PENDING;
 
-            return await this.createOrUpdate(bill);
+            const billresult = await this.createOrUpdate(bill);
+            return billresult;
         } else {
             throw new InvalidArgumentException("Orden: " + order.id + ", contiene una factura vigente");
         }

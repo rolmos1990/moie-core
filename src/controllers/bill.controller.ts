@@ -51,9 +51,13 @@ export class BillController extends BaseController<Bill> {
             if(ids.length > 0 ) {
                 /** Buscar las ordenes relacionadas para armar facturas */
                 const orders = await this.orderService.findByIdsWithFullRelations(ids);
-                const orderBills = await Promise.all(orders.map(item => {
-                    return this.billService.generateBill(item);
-                }));
+
+                let orderBills = [];
+                for (const bill of orders) {
+                    const billResult = await this.billService.generateBill(bill);
+                    orderBills.push(billResult);
+                }
+
                 return res.json({status: 200, bills: orderBills});
             } else {
                 return res.json({status: 400, error: "No se han encontrado registros"});
