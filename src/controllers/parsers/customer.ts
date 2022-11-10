@@ -49,7 +49,7 @@ export const CustomerListDTO = (customer: Customer) => ({
     phone:converterPhoneInColombianFormat(customer.phone),
     cellphone: converterPhoneInColombianFormat(customer.cellphone),
     isMayorist: customer.isMayorist ? true : false,
-    //status: customer.status ? true : false,
+    status: customer.status ? true : false,
     state: StateShortDTO(customer.state) || null,
     municipality: MunicipalityShortDTO(customer.municipality) || null,
     temporalAddress: converterFirstArrayObject(customer.temporalAddress),

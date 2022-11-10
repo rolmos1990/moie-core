@@ -111,6 +111,16 @@ export class TemplateService extends BaseService<Template> {
             }
         });
 
+        registerHelper('applyDisccount', function (price,discountPercent) {
+
+            const discount = (price * discountPercent / 100);
+            const priceWithDiscount = price - discount;
+
+            const numberFormat = new Intl.NumberFormat('es-CO', {minimumFractionDigits: 2});
+            return numberFormat.format(priceWithDiscount)
+
+        });
+
         //Use comparatives in template
         registerHelper('ifCond', function (v1, operator, v2, options) {
 

@@ -377,14 +377,14 @@ export class OrderController extends BaseController<Order> {
 
             if(orders.length > 0){
                 let orderId = 0;
-                orders.forEach((item,index,_orders)  => {
-                    //Regla para poder ser impresa (Se eliminan las pendientes, se eliminan las que han sido impresas)
-                    if(item.status <= OrderStatus.PENDING || item.prints > 0){
-                        //isImpress = false;
-                        orderId = item.id;
-                        _orders.splice(index, 1);
-                    }
-                });
+
+
+                orders = orders.filter(item => item.status > OrderStatus.PENDING && item.prints <= 0);
+
+                if(orders.length <= 0){
+                    throw new InvalidArgumentException("No se ha encontrado un resumen para esta orden");
+                    //return res.json({status: 400, error: "No se han encontrado registros"});
+                }
 
                 //if(!isImpress){
                     //throw new InvalidArgumentException("Orden : "+orderId+" No puede ser impresa");

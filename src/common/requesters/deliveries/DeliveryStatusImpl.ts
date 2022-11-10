@@ -23,6 +23,9 @@ export class DeliveryStatusImpl extends BaseRequester{
             case "INTERRAPIDISIMO":
                 this.caller = new DeliveryStatusInterrapidisimo(this.order);
                 break;
+            case "PAYU":
+                this.caller = new DeliveryStatusInterrapidisimo(this.order);
+                break;
             default:
                 throw new InvalidFileException("La orden no puede ser procesada o no se consiguio un tipo asociado");
         }

@@ -68,7 +68,7 @@ export class BillController extends BaseController<Bill> {
     @route('/reload/dian')
     @GET()
     public async reloadBills(req: Request, res: Response){
-        const bills = await this.billService.findByStatus(BillStatus.PENDING, 10);
+        const bills = await this.billService.findByStatus(BillStatus.PENDING, 1);
         await Promise.all(bills.map(async bill => {
             try {
                 await this.billService.sendElectronicBill(bill, EBillType.INVOICE, false);

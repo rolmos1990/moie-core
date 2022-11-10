@@ -16,7 +16,7 @@ const PublicServices = [
     "/template/checkTimeZone",
     '/stats/estadistica/save_dashboard',
     '/payment/gateway/payu/register',
-    '/refresh/all/orderDelivery'
+    '/order/refresh/all/orderDelivery'
 ];;
 
 export const Authorization = (req: Request, res: Response, next: NextFunction) => {
