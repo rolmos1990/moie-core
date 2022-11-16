@@ -204,7 +204,9 @@ export class ProductSizeService extends BaseService<ProductSize> {
 
         if(productSizes.length > 0) {
             const products = productSizes.filter(item => item.quantity <= 0);
-            if (products.length > 0) {
+
+            //If has not any available in all disponibility
+            if ((products.length == productSizes.length) && products.length > 0) {
                 hasProducts = false;
             }
         }
