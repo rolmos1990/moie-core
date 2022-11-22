@@ -13,7 +13,7 @@ import {
 } from "./parsers/customer";
 import { PageQuery } from "../common/controllers/page.query";
 import {Request, Response} from "express";
-import {InvalidArgumentException} from "../common/exceptions";
+import {ApplicationException, InvalidArgumentException} from "../common/exceptions";
 import {getAllStatus} from "../common/enum/orderStatus";
 import moment = require("moment");
 
@@ -30,7 +30,12 @@ export class CustomerController extends BaseController<Customer> {
     protected afterUpdate(item: Object): void {
     }
 
-    protected beforeCreate(item: Object): void {
+    protected async beforeCreate(item: Object): Promise<void> {
+        const document = item['document'];
+        const documentExists = await this.customerService.findByObject({document: document});
+        if(documentExists && documentExists.length > 0){
+            throw new ApplicationException('doc_exists');
+        }
     }
 
     protected beforeUpdate(item: Object): void {
