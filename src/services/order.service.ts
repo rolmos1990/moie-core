@@ -385,7 +385,7 @@ export class OrderService extends BaseService<Order> {
         }
 
         if(order && order.customer) {
-            if (mayoristHistory > 0 && updateEntity) {
+            if (mayoristHistory > 1 && updateEntity) {
                 order.customer.isMayorist = true;
                 await this.customerService.createOrUpdate(order.customer);
             } else {

@@ -37,4 +37,9 @@ export class CategoryService extends BaseService<Category> {
     async resetOrderCategory(categoryId){
         await this.categoryRepository.resetOrderCategory(categoryId);
     }
+
+    async getPiecesUnpublished(categoryId){
+        return await this.categoryRepository.getPiecesUnblishedByCategory(categoryId);
+    }
+
 }

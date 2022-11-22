@@ -6,7 +6,8 @@ export const MovementListDTO = (item: Movement) => ({
     id: item ? item.id : null,
     description: item ? item.description : null,
     amount: item ? item.amount : null,
-    date: item ? item.date : null
+    date: item ? item.date : null,
+    canceled: item.canceled
 });
 
 export const MovementDetailDTO = (item: Movement) => ({
@@ -15,7 +16,8 @@ export const MovementDetailDTO = (item: Movement) => ({
     amount: item ? item.amount : null,
     date: item ? item.date : null,
     comment: item ? item.comment : null,
-    attachments: item.attachments && item.attachments.length > 0 ? item.attachments.map(item => AttachmentDTO(item)) : []
+    attachments: item.attachments && item.attachments.length > 0 ? item.attachments.map(item => AttachmentDTO(item)) : [],
+    canceled: item.canceled
 });
 
 export const AttachmentDTO = (item: Attachment) => ({

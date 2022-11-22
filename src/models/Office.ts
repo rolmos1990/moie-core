@@ -31,7 +31,7 @@ export class Office extends BaseModel{
     deliveryMethod: DeliveryMethod;
 
     @Column({name:'description', type: 'varchar', length: 150})
-    @Length(3, 150, {groups: ['create','update']})
+    @Length(0, 150, {groups: ['create','update']})
     description: string;
 
     @ManyToOne(() => User)

@@ -53,6 +53,7 @@ export class ProductImageController extends BaseController<ProductImage> {
 
             return res.json({status: 200});
         }catch(e){
+            console.log('message: ', e.message);
             this.handleException(e, res);
         }
     }

@@ -3,6 +3,7 @@ import {Order} from "../../models/Order";
 import {EXPORTER_INTERRAPIDISIMO_CD} from "./constants";
 import {SingleBaseExporters} from "./single.base.exporters";
 import {formatPrice} from "../../common/helper/helpers";
+import {toUpper} from "./utilities";
 
 export class ExportersInterrapidisimoCd extends SingleBaseExporters {
 
@@ -37,8 +38,8 @@ export class ExportersInterrapidisimoCd extends SingleBaseExporters {
                 const firstname = _fullname.substr(0, index);
                 const secondname = _fullname.substr(index + 1);
 
-                name = firstname;
-                lastname = secondname;
+                name = toUpper(firstname);
+                lastname = toUpper(secondname);
             }
 
             return {...objects, name, lastname};

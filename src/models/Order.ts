@@ -268,7 +268,9 @@ export class Order extends BaseModel{
             o.deliveryMethod !== this.deliveryMethod ||
             o.orderDelivery.deliveryType !== this.orderDelivery.deliveryType ||
             o.orderDelivery.deliveryMunicipality !== this.orderDelivery.deliveryMunicipality ||
-            o.orderDelivery.chargeOnDelivery !== this.orderDelivery.chargeOnDelivery
+            o.orderDelivery.chargeOnDelivery !== this.orderDelivery.chargeOnDelivery,
+            o.orderDelivery.deliveryCost !== this.orderDelivery.deliveryCost ||
+            o.orderDelivery.deliveryLocality !== this.orderDelivery.deliveryLocality
         ){
             return true;
         }

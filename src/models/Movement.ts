@@ -4,7 +4,7 @@ import {
     PrimaryGeneratedColumn,
 } from "typeorm";
 import BaseModel from "../common/repositories/base.model";
-import {IsDate, IsDecimal, Length} from "class-validator";
+import {IsDate, IsDecimal, IsOptional, Length} from "class-validator";
 import {Type} from "class-transformer";
 import {Attachment} from "./Attachment";
 
@@ -32,6 +32,10 @@ export class Movement extends BaseModel {
 
     @OneToMany(() => Attachment, attachments => attachments.movement)
     attachments: Attachment[];
+
+    @Column({type: 'boolean'})
+    @IsOptional()
+    canceled: boolean;
 
     isEmpty() : boolean{
         return (this.id == null);

@@ -200,7 +200,12 @@ export class CategoryController extends BaseController<Category> {
 
                 const _products = products.map(item => {
                         const uniqueDescription = [];
-                        item.productSize = item.productSize && item.productSize.length > 0 ? item.productSize.map(_sizeItem => {
+                        item.productSize = item.productSize && item.productSize.length > 0 ? item.productSize.filter(item => {
+                            if(item.quantity > 0){
+                                return true;
+                            }
+                            return false;
+                        }).map(_sizeItem => {
                           if(_sizeItem.name.toUpperCase() == "UNICA" && item.sizeDescription) {
                               const ps = new ProductSize();
                               ps.id = item.id + 1;
@@ -219,6 +224,11 @@ export class CategoryController extends BaseController<Category> {
 
                         return item;
 
+                }).filter(item => {
+                    if(item.firstImage != null && item.quantity > 0){
+                        return true;
+                    }
+                    return false;
                 });
 
                 const object = {
@@ -263,6 +273,22 @@ export class CategoryController extends BaseController<Category> {
             const id = req.params.id;
             await this.categoryService.resetOrderCategory(id);
             return res.json({status: 200});
+        }catch(e){
+            this.handleException(e, res);
+            console.log("error", e);
+        }
+    }
+
+    @route('/piecesunpublished/:id')
+    @GET()
+    public async getPiecesUnpublished(req: Request, res: Response){
+        try {
+            const id = req.params.id;
+            let pieces = await this.categoryService.getPiecesUnpublished(id);
+            if(pieces && pieces.length > 0){
+                pieces = pieces.map(item => item.reference);
+            }
+            return res.json({status: 200, pieces});
         }catch(e){
             this.handleException(e, res);
             console.log("error", e);

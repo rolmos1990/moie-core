@@ -71,6 +71,20 @@ export class TemplateService extends BaseService<Template> {
             }
         });
 
+        registerHelper('touppercase', function (text) {
+            if(text){
+              return text.toUpperCase();
+            }
+            return text;
+        });
+
+        registerHelper('tolowercase', function (text) {
+            if(text){
+                return text.toLowerCase();
+            }
+            return text;
+        });
+
         registerHelper('normalizeWeight', function (weight) {
 
             if(parseFloat(weight) < 1000){

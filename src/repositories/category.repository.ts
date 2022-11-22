@@ -16,4 +16,18 @@ export class CategoryRepository<T> extends BaseRepository<Category>{
         await this.repositoryManager.manager.query('DELETE FROM ORDER_PRODUCTS');
         await this.repositoryManager.manager.query('TRUNCATE ORDER_PRODUCTS');
     }
+
+    //obtener piezas no publiciadas
+    async getPiecesUnblished(categoryId){
+        return await this.repositoryManager.manager.query(
+            'SELECT product.reference, sum(quantity) as quantity from productsize inner join product on product.id = productsize.product_id where quantity > 0 and published = 0 group by product_id;'
+        );
+    }
+
+    //obtener piezas no publicadas por categoria
+    async getPiecesUnblishedByCategory(categoryId){
+        return await this.repositoryManager.manager.query(
+            `SELECT product.reference, sum(quantity) as quantity from productsize inner join product on product.id = productsize.product_id where quantity > 0 and published = 0 and product.category_id = "${categoryId}" group by product_id;`
+        );
+    }
 }

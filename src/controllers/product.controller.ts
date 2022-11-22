@@ -19,6 +19,7 @@ import {PageQuery} from "../common/controllers/page.query";
 import {OrderConditional} from "../common/enum/order.conditional";
 import {ProductImageService} from "../services/productImage.service";
 import {ProductAvailable} from "../models/ProductAvailable";
+import {OrderStatus} from "../common/enum/orderStatus";
 
 @route('/product')
 export class ProductController extends BaseController<Product> {
@@ -134,7 +135,7 @@ export class ProductController extends BaseController<Product> {
     protected async getProductPendings(req: Request, res: Response){
         const id = req.params.id;
         try {
-            let products = await this.orderService.getOrderDetailByProductIdAndStatuses(id, [1]);
+            let products = await this.orderService.getOrderDetailByProductIdAndStatuses(id, [OrderStatus.PENDING, OrderStatus.CONFIRMED, OrderStatus.RECONCILED]);
             return res.json({status: 200, products: products.map(item => ProductPendingsDTO(item)) } );
         }catch(e){
             if (e.name === InvalidArgumentException.name || e.name === "EntityNotFound") {

@@ -44,9 +44,11 @@ export class ProductImageService extends BaseService<Product> {
                 await this.mediaManagementService.addImageFromBinary(folder, filename, image);
                 await this.productImageRepository.save(productImage);
             } else {
+                console.log('error: ', 'error con allPaths');
                 throw new InvalidArgumentException();
             }
         }catch(e){
+            console.log('error desconocido: ', e.message);
             throw new InvalidArgumentException();
         }
     }
