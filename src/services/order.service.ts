@@ -900,11 +900,17 @@ export class OrderService extends BaseService<Order> {
             .getRawOne();
 
 
-            const weekEnd = moment().format('YYYY-MM-DD');
-            const weekStart = moment().subtract(1, 'week').format('YYYY-MM-DD');
+            const weekStart = moment().clone().weekday(0).format('YYYY-MM-DD');
+            const weekEnd = moment().clone().weekday(6).format('YYYY-MM-DD');
 
-            const weekPastEnd = moment().subtract(1, 'week').format('YYYY-MM-DD');
-            const weekPastStart = moment().subtract(2, 'week').format('YYYY-MM-DD');
+            //const weekEnd = moment().format('YYYY-MM-DD');
+            //const weekStart = moment().subtract(1, 'week').format('YYYY-MM-DD');
+
+            const weekPastEnd = moment().clone().weekday(-7).format('YYYY-MM-DD');
+            const weekPastStart = moment().clone().weekday(-1).format('YYYY-MM-DD');
+
+            //const weekPastEnd = moment().subtract(1, 'week').format('YYYY-MM-DD');
+            //const weekPastStart = moment().subtract(2, 'week').format('YYYY-MM-DD');
 
             statWeeklyFirst = await this.orderRepository.createQueryBuilder('o')
             .addSelect("COUNT(o.id)", "totalQty")
