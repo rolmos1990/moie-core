@@ -48,7 +48,7 @@ export class OrderService extends BaseService<Order> {
     }
 
     async findFull(id: any, addRelations = []){
-        let relations = ['orderDetails','orderDelivery', 'deliveryMethod', 'customer', 'user'];
+        let relations = ['orderDetails','orderDelivery', 'orderDelivery.deliveryLocality', 'deliveryMethod', 'customer', 'user'];
         if(addRelations && addRelations.length > 0){
             relations = relations.concat(addRelations);
         }
@@ -229,7 +229,13 @@ export class OrderService extends BaseService<Order> {
         const customer = parse.customer ? await this.customerService.findFull(parse.customer) : _order.customer;
 
         const deliveryMethod = parse.deliveryMethod ? await this.deliveryMethodService.findByCode(parse.deliveryMethod) : _order.deliveryMethod;
-        const deliveryLocality = parse.deliveryLocality ? await this.deliveryLocalityService.find(parse.deliveryLocality) : _order.orderDelivery.deliveryLocality;
+
+        let deliveryLocality = parse.deliveryLocality ? await this.deliveryLocalityService.find(parse.deliveryLocality) : _order.orderDelivery.deliveryLocality;
+
+        if(parse.deliveryLocality === null){
+            deliveryLocality = null;
+        }
+
         const hasTrackingChanged = (_order.orderDelivery.tracking !== parse.tracking) && parse.tracking;
         const hasChangeDeliveryCost = (_order.orderDelivery.deliveryCost !== deliveryCost);
 

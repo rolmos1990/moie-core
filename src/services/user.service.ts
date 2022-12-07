@@ -20,9 +20,15 @@ export class UserService extends BaseService<User> {
             }
 
             const user = await this.userRepository.findByUsername(usernameOrEmail);
+
             if (user.isEmpty() || !this.validatePassword(password, user.password)) {
                 throw new InvalidArgumentException("Usuario y/o contraseña invalidos");
             }
+
+            if(!user.status){
+                throw new InvalidArgumentException("Usuario se encuentra bloqueado");
+            }
+
             const token = this.generateToken(user);
             return {
                 user: UserListDTO(user),

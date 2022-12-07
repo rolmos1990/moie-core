@@ -151,7 +151,7 @@ export class ProductSizeService extends BaseService<ProductSize> {
             }
 
             //check is void
-            await this.checkIsPublishedProduct(orderDetail.product);
+            await this.checkIsPublishedProduct(orderDetail.product, true);
 
         }catch(e){
             throw new ApplicationException("No se ha encontrado producto {"+orderDetail.product.reference+"} en el Inventario");
@@ -197,7 +197,7 @@ export class ProductSizeService extends BaseService<ProductSize> {
         return availables.map(_item => ({quantity: _item.quantity, id: _item.id}));
     }
 
-    async checkIsPublishedProduct(product: Product){
+    async checkIsPublishedProduct(product: Product, skipImageValidation = false){
         const productSizes = await this.findByProduct(product.id);
 
         let hasProducts = true;
@@ -213,7 +213,9 @@ export class ProductSizeService extends BaseService<ProductSize> {
 
         //make disabled the product size
         if(hasProducts){
-            product.published = true;
+            if((product && product.productImage && product.productImage.length > 0) || skipImageValidation) {
+                product.published = true;
+            }
             await this.productRepository.save(product);
         } else {
             product.published = false;

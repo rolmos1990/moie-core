@@ -155,7 +155,7 @@ export class ProductController extends BaseController<Product> {
         try {
             const sizesValues: Array<IProductSize> = req.body || [];
             if (id) {
-                const product : Product = await this.productService.find(parseInt(id), ['size']);
+                const product : Product = await this.productService.find(parseInt(id), ['size', 'productImage']);
                 await this.productSizeService.changeProductSize(product, sizesValues);
 
                 //check is void

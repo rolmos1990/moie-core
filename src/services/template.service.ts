@@ -47,6 +47,14 @@ export class TemplateService extends BaseService<Template> {
             return numberFormat.format(number)
         });
 
+        registerHelper('scurrencyt', function currencyFormat(number){
+            if(!number){
+                return "";
+            }
+            const numberFormat = new Intl.NumberFormat('es-CO', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+            return numberFormat.format(Math.round(number));
+        });
+
         //Custom dateFormat
         registerHelper('dateFormat', function (date, options) {
             const formatToUse = (arguments[1] && arguments[1].hash && arguments[1].hash.format) || "DD/MM/YYYY"
