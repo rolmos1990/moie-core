@@ -967,7 +967,7 @@ export class OrderService extends BaseService<Order> {
         }
         return reserved.map(_item => ({quantity: _item.quantity, id: _item.id}));
     }
-
+//test
     async getCompletedFromProducts(products: number[]) : Promise<any>{
         const completed = await this.orderDetailRepository.createQueryBuilder('od')
             .select('p.id, SUM(od.quantity) as quantity')
