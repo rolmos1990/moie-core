@@ -18,7 +18,7 @@ import {DeliveryTypes, getDeliveryType} from "../common/enum/deliveryTypes";
 import {DeliveryMethodService} from "./deliveryMethod.service";
 import {Office} from "../models/Office";
 import {DeliveryLocalityService} from "./deliveryLocality.service";
-import {Between, IsNull, Not} from "typeorm";
+import {IsNull, Not} from "typeorm";
 import {isSell, OrderStatus} from "../common/enum/orderStatus";
 import {FieldOptionService} from "./fieldOption.service";
 import {StatTimeTypes} from "../common/enum/statsTimeTypes";
@@ -28,9 +28,9 @@ import {Modules} from "../common/enum/modules";
 import {builderOrderTypes} from "../common/enum/orderTypes";
 import {toDateFormat} from "../templates/exporters/utilities";
 import {converterPreOrderProductInOrderDetail} from "../common/helper/converters";
-import moment = require("moment");
 import {OrderConditional} from "../common/enum/order.conditional";
 import {Customer} from "../models/Customer";
+import moment = require("moment");
 
 export class OrderService extends BaseService<Order> {
     constructor(
@@ -975,7 +975,7 @@ export class OrderService extends BaseService<Order> {
             .leftJoinAndSelect('od.product', 'p')
             .leftJoinAndSelect('o.orderDelivery', 'd')
             .andWhere("p.id IN (:products)", {products: products})
-            .andWhere("o.status IN (:_statuses)", {_statuses: [OrderStatus.RECONCILED]})
+            .andWhere("o.status IN (:_statuses)", {_statuses: [OrderStatus.RECONCILED, OrderStatus.CONFIRMED]})
             .andWhere("d.deliveryType = (:_statusDelivery)", {_statusDelivery: 1})
             .groupBy("p.id")
             .getRawMany();

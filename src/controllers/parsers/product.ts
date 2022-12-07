@@ -116,7 +116,8 @@ export const ProductPendingsDTO = (product: any) => ({
         id: product.order.id,
         status: product.order.status,
         createdAt: product.order.createdAt,
-        updatedAt: product.order.updatedAt
+        updatedAt: product.order.updatedAt,
+        modifiedDate: product.order.modifiedDate
     },
     customer: CustomerShortDTO(product.order.customer)
 });
