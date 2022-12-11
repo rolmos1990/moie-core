@@ -23,7 +23,7 @@ const options: cors.CorsOptions = {
     credentials: true,
     methods: 'GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE',
     origin: "*",
-    optionsSuccessStatus: 200,
+    //optionsSuccessStatus: 200,
     preflightContinue: false
 };
 
@@ -33,9 +33,9 @@ const app: express.Application = express();
 
 //use cors middleware
 //use cors middleware
-//app.use(cors(options));
-//app.use(express.json({limit: '100mb'}));
-//app.use(express.urlencoded({limit: '100mb', extended: true}));
+app.use(cors(options));
+app.use(express.json({limit: '100mb'}));
+app.use(express.urlencoded({limit: '100mb', extended: true}));
 
 app.use('/css', express.static('css'));
 app.use('/public', express.static('public'));
@@ -46,9 +46,9 @@ app.use('/users', express.static('../storage/users'));
 app.use('/loaderio-f308d2b83e3c02cf93098a33059ed07d.txt', express.static('public/loaderio-f308d2b83e3c02cf93098a33059ed07d.txt'));
 
 //use cors middleware
-app.use(express.json({limit: "50mb"}));
-app.use(express.urlencoded({limit: "50mb", extended: true, parameterLimit:913566363}));
-app.use(cors(options));
+//app.use(express.json({limit: "50mb"}));
+//app.use(express.urlencoded({limit: "50mb", extended: true, parameterLimit:913566363}));
+//app.use(cors(options));
 
 //Blocked use for this directories
 
