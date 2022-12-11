@@ -23,15 +23,25 @@ const options: cors.CorsOptions = {
     credentials: true,
     methods: 'GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE',
     origin: "*",
+    optionsSuccessStatus: 200,
     preflightContinue: false,
 };
 
 const app: express.Application = express();
 
+
+
 //use cors middleware
+const bodyParser = require('body-parser');
 app.use(cors(options));
-app.use(express.json({limit: '100mb'}));
-app.use(express.urlencoded({limit: '100mb', extended: true}));
+app.use(bodyParser.json({ limit: '20mb' }));
+app.use(bodyParser.urlencoded({ extended: true, limit: '20mb' }));
+app.use(express.json());
+
+//use cors middleware
+//app.use(cors(options));
+//app.use(express.json({limit: '100mb'}));
+//app.use(express.urlencoded({limit: '100mb', extended: true}));
 
 app.use('/css', express.static('css'));
 app.use('/public', express.static('public'));
