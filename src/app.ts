@@ -32,12 +32,6 @@ const app: express.Application = express();
 
 
 //use cors middleware
-const bodyParser = require('body-parser');
-app.use(cors(options));
-app.use(bodyParser.json({ limit: '20mb' }));
-app.use(bodyParser.urlencoded({ extended: true, limit: '20mb' }));
-app.use(express.json());
-
 //use cors middleware
 //app.use(cors(options));
 //app.use(express.json({limit: '100mb'}));
@@ -51,10 +45,16 @@ app.use('/attachments', express.static('../storage/attachments'));
 app.use('/users', express.static('../storage/users'));
 app.use('/loaderio-f308d2b83e3c02cf93098a33059ed07d.txt', express.static('public/loaderio-f308d2b83e3c02cf93098a33059ed07d.txt'));
 
+//use cors middleware
+var bodyParser = require('body-parser');
+app.use(cors(options));
+app.use(bodyParser.json({limit: "50mb"}));
+app.use(bodyParser.urlencoded({limit: "50mb", extended: true, parameterLimit:50000}));
+
 //Blocked use for this directories
 
 // JSON Support
-app.use(express.json());
+//app.use(express.json());
 
 // Controllers
 createConnection(MySQLPersistence).then(async connection => {
