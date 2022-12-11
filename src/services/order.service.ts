@@ -912,8 +912,8 @@ export class OrderService extends BaseService<Order> {
             //const weekEnd = moment().format('YYYY-MM-DD');
             //const weekStart = moment().subtract(1, 'week').format('YYYY-MM-DD');
 
-            const weekPastEnd = moment().clone().weekday(-7).format('YYYY-MM-DD');
-            const weekPastStart = moment().clone().weekday(-1).format('YYYY-MM-DD');
+            const weekPastStart = moment().clone().weekday(-7).format('YYYY-MM-DD');
+            const weekPastEnd = moment().clone().weekday(-1).format('YYYY-MM-DD');
 
             //const weekPastEnd = moment().subtract(1, 'week').format('YYYY-MM-DD');
             //const weekPastStart = moment().subtract(2, 'week').format('YYYY-MM-DD');
