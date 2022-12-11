@@ -89,7 +89,7 @@ export class ExpotersEletronicBill extends MultisheetBaseExporters {
                     nit: bill.order.customer.document || '222222222',
                     detail: bill.order.customer.municipality.name,
                     type: type,
-                    value: value ? value : "",
+                    value: value ? parseFloat(value.toFixed(2)) : 0,
                     base: base ? base : "",
                     costCenter: 1001,
                     transExt: '',
@@ -108,11 +108,11 @@ export class ExpotersEletronicBill extends MultisheetBaseExporters {
             /** Registro de Facturas */
             billAdaptor.getData().bills.map(bill => {
 
-                const montoTotal = bill.monto_con_iva + bill.flete
+                let montoTotal = bill.monto_con_iva + parseFloat(bill.flete);
 
                 report1.push(getFormat(bill, '41352401', 2, bill.monto_sin_iva, 0));
                 report1.push(getFormat(bill, '24080501', 2, bill.monto_iva, bill.monto_sin_iva));
-                report1.push(getFormat(bill, '424540', 2, bill.flete, 0));
+                report1.push(getFormat(bill, '424540', 2, parseFloat(bill.flete) || 0, 0));
                 report1.push(getFormat(bill, '13050501', 1,montoTotal, 0));
             });
 

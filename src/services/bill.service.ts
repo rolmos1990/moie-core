@@ -196,6 +196,7 @@ export class BillService extends BaseService<Bill> {
                 .leftJoinAndSelect('o.customer', 'c')
                 .leftJoinAndSelect('c.municipality', 'm')
                 .leftJoinAndSelect('b.creditMemo', 'cm')
+                .leftJoinAndSelect('o.orderDelivery', 'od')
                 .where("cm.createdAt >= :dateFrom", { dateFrom: dateFrom })
                 .andWhere("cm.createdAt <= :dateTo", { dateTo: dateTo })
                 .getMany();
@@ -206,6 +207,7 @@ export class BillService extends BaseService<Bill> {
                 .leftJoinAndSelect('o.customer', 'c')
                 .leftJoinAndSelect('c.municipality', 'm')
                 .leftJoinAndSelect('b.creditMemo', 'cm')
+                .leftJoinAndSelect('o.orderDelivery', 'od')
                 .where({
                     createdAt: Between(dateFrom, dateTo)
                 })
