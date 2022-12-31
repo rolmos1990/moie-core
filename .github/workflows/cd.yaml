@@ -24,7 +24,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - uses: benjlevesque/short-sha@v1.2
-      - uses: elgohr/Publish-Docker-Github-Action@master
+      - uses: elgohr/Publish-Docker-Github-Action@v5
         name: Publish to Github Packages Registry
         with:
           name: ${{ secrets.DOCKER_REPOSITORY }}
