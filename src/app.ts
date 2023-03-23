@@ -38,7 +38,7 @@ app.use(express.json({limit: '100mb'}));
 app.use(express.urlencoded({limit: '100mb', extended: true}));
 app.use('/css', express.static('css'));
 app.use('/public', express.static('public'));
-app.use('/uploads', express.static('./storage/uploads'));
+app.use('/uploads', express.static('../storage/uploads'));
 app.use('/pdf', express.static('../storage/pdf'));
 app.use('/attachments', express.static('../storage/attachments'));
 app.use('/users', express.static('../storage/users'));
