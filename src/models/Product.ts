@@ -130,6 +130,14 @@ export class Product extends BaseModel{
     @OneToOne(() => ViewAvailables, viewAvailables => viewAvailables.product)
     viewAvailables: ViewAvailables;
 
+    @Column({name:'template_id', type: 'integer', default: 1})
+    @IsNumber()
+    template: number;
+
+
+    @Column({name:'catalog_url', type: 'varchar', length: 400})
+    catalogUrl: string;
+
     isEmpty(): boolean {
         return (this.id == null);
     }

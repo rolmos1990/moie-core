@@ -3,13 +3,19 @@ import {Template} from "../models/Template";
 import {ApplicationException} from "../common/exceptions";
 import {compile, registerHelper, registerPartial} from 'handlebars';
 import {TemplateRepository} from "../repositories/template.repository";
+import {TemplateCatalogRepository} from "../repositories/templateCatalog.repository";
 import {OfficePDFCss, PrintHeaderCss} from "../templates/styles/catalogHeader";
 import {CatalogHeaderCss} from "../templates/styles/catalogHeaderCss";
+import {TemplateCatalog} from "../models/templateCatalog";
+import puppeteer from "puppeteer";
+import {CONFIG_MEDIA} from "./mediaManagement.service";
+import {existsSync, mkdirSync} from "fs";
 const moment = require("moment");
 
 export class TemplateService extends BaseService<Template> {
     constructor(
-        private readonly templateRepository: TemplateRepository<Template>
+        private readonly templateRepository: TemplateRepository<Template>,
+        private readonly templateCatalogRepository: TemplateCatalogRepository<TemplateCatalog>
     ){
         super(templateRepository);
         this.helpersForTpl(); //Initialize helpers for tpl
@@ -204,5 +210,59 @@ export class TemplateService extends BaseService<Template> {
             console.log("error generado", e.message);
             throw new ApplicationException("Ha ocurrido un problema con la plantilla - " + templateName);
         }
+    }
+
+    async getTemplateCatalogs(){
+        return await this.templateCatalogRepository.all();
+    }
+
+
+    async getTemplateCatalogHtml(id, objects){
+        let template = await this.templateCatalogRepository.find(id);
+        let html = template.minified;
+        Object.keys(objects).forEach(key => {
+            html = html.replace(new RegExp('{{'+key+'}}', 'g'), objects[key]);
+        });
+        return html;
+    }
+
+    async generateCatalog(_html, reference){
+        try {
+            const folder = 'catalogs';
+            const fileName = reference + '.jpg';
+            const buffer = await this.convertHtmlInImage(_html);
+            const fs = require('fs');
+            if (!existsSync(CONFIG_MEDIA.STORAGE_PATH + "/" + folder)) {
+                mkdirSync(CONFIG_MEDIA.STORAGE_PATH + "/" + folder);
+            }
+            const filePath = CONFIG_MEDIA.STORAGE_PATH + "/"+folder+"/" + fileName;
+            fs.writeFileSync(filePath, buffer);
+
+            return CONFIG_MEDIA.IMAGE_PATH + "/" + folder +"/" + fileName;
+
+        }catch(e){
+            console.log('no pudo ser generado por...', e.message);
+        }
+    }
+
+    private async convertHtmlInImage(_html){
+        const browser = await puppeteer.launch({ args: ['--no-sandbox'] });
+        const page = await browser.newPage();
+
+        await page.goto('https://developer.chrome.com/');
+
+        // Configuración de la página
+        const width = 788; // Ancho de la imagen en px
+        const height = 1200; // Alto de la imagen en px
+        const deviceScaleFactor = 2; // Escala de la imagen
+        const format = 'png'; // Formato de la imagen
+        await page.setViewport({width, height, deviceScaleFactor});
+
+        // Cargar el HTML
+        await page.setContent(_html);
+        const screenshotBuffer = await page.screenshot({type: format});
+        await browser.close();
+        // Devolver la imagen como buffer
+        return screenshotBuffer;
     }
 }

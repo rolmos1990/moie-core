@@ -11,7 +11,8 @@
       "typeorm:run": "NODE_ENV=env npm run typeorm migration:run",
       "typeorm:revert": "NODE_ENV=env npm run typeorm migration:revert",
       "seed:generate": "ts-node typeorm migration:generate -c seed -n ",
-      "seed:run": "ts-node typeorm migration:run -c seed"
+      "seed:run": "ts-node typeorm migration:run -c seed",
+      "start:dev": "ts-node-dev src/server.ts"
    },
    "keywords": [],
    "author": "Ramon Olmos - (ramon.olmos90@gmail.com)",
@@ -32,14 +33,15 @@
       "mime-types": "^2.1.29",
       "moment": "^2.29.1",
       "mysql2": "^2.3.3",
+      "newrelic": "latest",
+      "puppeteer": "^19.7.5",
       "resize-img": "^2.0.0",
       "soap": "^0.42.0",
       "strong-soap": "^3.3.1",
       "to-xml": "^0.1.7",
       "typeorm": "0.2.31",
       "typeorm-revisions": "0.0.5",
-      "wkhtmltopdf": "^0.4.0",
-      "newrelic": "latest"
+      "wkhtmltopdf": "^0.4.0"
    },
    "devDependencies": {
       "@types/bcryptjs": "^2.4.2",

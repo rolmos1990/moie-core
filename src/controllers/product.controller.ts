@@ -35,7 +35,35 @@ export class ProductController extends BaseController<Product> {
     protected async afterCreate(item: Object): Promise<any> {
     }
 
-    protected afterUpdate(item: Object): void {
+    protected async afterUpdate(item: Product) {
+        await this.productService.createCatalogForProduct(item.id, true);
+    }
+
+    @route('/public/all')
+    @GET()
+    public async getPublicProduct(req: Request, res: Response) {
+        return this.index(req, res);
+    }
+
+    @route('/public/product')
+    @GET()
+    public async getProduct(req: Request, res: Response) {
+        try {
+            const id = req.query.id + '';
+            const relations = this.getDefaultRelations();
+            let item;
+            if(isNaN(parseInt(id))){
+                item = await this.productService.findByObject({reference: id}, relations);
+                item = item[0];
+            }else{
+                item = await this.productService.find(id, relations);
+            }
+            const result = await this.getParseGET(item, true);
+            res.json(result);
+        }catch(e){
+            this.handleException(e, res);
+            console.log("error", e);
+        }
     }
 
     @GET()

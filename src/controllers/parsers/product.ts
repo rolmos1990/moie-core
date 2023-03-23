@@ -26,7 +26,7 @@ export const ProductListDTO = (product: Product) => ({
     productSize: product.productSize,
     sizeDescription: product.sizeDescription,
     cost: product.cost,
-    orden: product.orden || 0,
+    orden: product.orden || 0
 });
 
 export const ProductDetailDTO = (product: Product) => ({
@@ -51,7 +51,9 @@ export const ProductDetailDTO = (product: Product) => ({
     size: product.size,
     productSize: product.productSize,
     productAvailable: product.productAvailable && ProductAvailableDTO(product.productAvailable),
-    sizeDescription: product.sizeDescription || null
+    sizeDescription: product.sizeDescription || null,
+    template: product.template || 0,
+    catalogUrl: product.catalogUrl || null,
 });
 
 export const ProductCreateDTO = (product: Product) => ({
@@ -71,7 +73,9 @@ export const ProductCreateDTO = (product: Product) => ({
     status: product.status,
     tags: product.tags || null,
     referenceKey: product.referenceKey,
-    sizeDescription: product.sizeDescription || null
+    sizeDescription: product.sizeDescription || null,
+    template: product.template || 0,
+    catalogUrl: product.catalogUrl || null,
 });
 
 export const ProductUpdateDTO = (product: Product) => ({
@@ -93,6 +97,8 @@ export const ProductUpdateDTO = (product: Product) => ({
     tags: product.tags || null,
     sizeDescription: product.sizeDescription || null,
     orden: product.orden || 0,
+    template: product.template || 0,
+    catalogUrl: product.catalogUrl || null,
 });
 
 export const ProductImagePath = (productImages) => productImages && productImages.length > 0 ? productImages.map(image => ProductImagePathDTO(image)) : [];

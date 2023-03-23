@@ -1,21 +1,21 @@
 import {BaseController} from "../common/controllers/base.controller";
 import {ProductImage} from "../models/ProductImage";
 import {EntityTarget} from "typeorm";
-import {DELETE, PUT, route} from "awilix-express";
+import {DELETE, GET, POST, PUT, route} from "awilix-express";
 import {ProductImageService} from "../services/productImage.service";
 import {ProductImageCreateDTO, ProductImageListDTO, ProductImageUpdateDTO} from "./parsers/productImage";
 import {Request, Response} from "express";
-import {isArray} from "util";
 import {ApplicationException, InvalidArgumentException} from "../common/exceptions";
-import {ProductImageCreate} from "../common/interfaces/Product";
 import {ProductService} from "../services/product.service";
 import {Product} from "../models/Product";
+import {TemplateService} from "../services/template.service";
 
 @route('/changeProductImage')
 export class ProductImageController extends BaseController<ProductImage> {
     constructor(
         private readonly productImageService: ProductImageService,
-        private readonly productService: ProductService
+        private readonly productService: ProductService,
+        private readonly templateService: TemplateService
     ){
         super(productImageService);
     };
@@ -29,6 +29,18 @@ export class ProductImageController extends BaseController<ProductImage> {
     }
 
     protected beforeUpdate(item: Object): void {
+    }
+
+
+
+    @route('/generate/catalogImage')
+    @GET()
+    public async generateCatalogImage(req: Request, res: Response){
+
+        const productId = 1496;
+        const generated = await this.productService.createCatalogForProduct(productId, true);
+        return res.json({status: 200});
+
     }
 
     @route('/:id')
@@ -47,6 +59,9 @@ export class ProductImageController extends BaseController<ProductImage> {
                 const filename = product.reference + "_" + item.group;
                 await this.productImageService.addProductImages(product, item.group, filename ,item.file);
             });
+
+            //update my product images also my catalog image
+            await this.productService.createCatalogForProduct(product.id, true);
 
 
             await Promise.all(result);

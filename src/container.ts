@@ -64,6 +64,8 @@ import {AttachmentRepository} from "./repositories/attachment.repository";
 import {AttachmentService} from "./services/attachment.service";
 import {CachedRepository} from "./repositories/cached.repository";
 import {CachedService} from "./services/cached.service";
+import {TemplateCatalogRepository} from "./repositories/templateCatalog.repository";
+import {TemplateCatalogService} from "./services/templateCatalog.service";
 
 export default (app: express.Application): void => {
     const container = createContainer({
@@ -101,6 +103,7 @@ export default (app: express.Application): void => {
         securityRolRepository: asClass(SecurityRolRepository).scoped(),
         securityPermissionRepository: asClass(SecurityPermissionRepository).scoped(),
         productAvailableViewRepository: asClass(ProductAvailableViewRepository).scoped(),
+        templateCatalogRepository: asClass(TemplateCatalogRepository).scoped(),
         movementRepository: asClass(MovementRepository).scoped(),
         attachmentRepository: asClass(AttachmentRepository).scoped(),
         cachedRepository: asClass(CachedRepository).scoped(),
@@ -133,6 +136,7 @@ export default (app: express.Application): void => {
         productCatalogViewService: asClass(ProductCatalogViewService).scoped(),
         securityRolService: asClass(SecurityRolService).scoped(),
         securityPermissionService: asClass(SecurityPermissionService).scoped(),
+        templateCatalogService: asClass(TemplateCatalogService).scoped(),
         movementService: asClass(MovementService).scoped(),
         attachmentService: asClass(AttachmentService).scoped(),
         cachedService: asClass(CachedService).scoped()

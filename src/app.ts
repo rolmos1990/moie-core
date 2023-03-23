@@ -8,7 +8,7 @@ import MySQLPersistence from "./common/persistence/mysql.persistence";
 import {Authorization} from './middlewares/authorization';
 import * as cors from 'cors';
 import {RunSeed} from "./seeds/run.seed";
-require('newrelic');
+//require('newrelic');
 
 //options for cors midddleware
 const options: cors.CorsOptions = {
@@ -36,13 +36,13 @@ const app: express.Application = express();
 app.use(cors(options));
 app.use(express.json({limit: '100mb'}));
 app.use(express.urlencoded({limit: '100mb', extended: true}));
-
 app.use('/css', express.static('css'));
 app.use('/public', express.static('public'));
-app.use('/uploads', express.static('../storage/uploads'));
+app.use('/uploads', express.static('./storage/uploads'));
 app.use('/pdf', express.static('../storage/pdf'));
 app.use('/attachments', express.static('../storage/attachments'));
 app.use('/users', express.static('../storage/users'));
+app.use('/catalogs', express.static('../storage/catalogs'));
 app.use('/loaderio-f308d2b83e3c02cf93098a33059ed07d.txt', express.static('public/loaderio-f308d2b83e3c02cf93098a33059ed07d.txt'));
 
 //use cors middleware

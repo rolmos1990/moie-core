@@ -211,3 +211,12 @@ export function formatPrice(_number) {
     const numberFormat = new Intl.NumberFormat('es-CO', {minimumFractionDigits:1, maximumFractionDigits:2});
     return numberFormat.format(_number)
 }
+
+export function formatPriceWithoutDecimals(_number) {
+    const numberFormat = new Intl.NumberFormat('es-CO', {minimumFractionDigits:0});
+    return numberFormat.format(_number)
+}
+
+export function getRandomArbitrary(min, max) {
+    return Math.random() * (max - min) + min;
+}

@@ -21,6 +21,12 @@ export class CategoryService extends BaseService<Category> {
                 category.filenameBanner = _filename + ".jpg";
                 await this.mediaManagementService.addImageFromBinary(folder, _filename, fileBinary);
                 await this.categoryRepository.save(category);
+            } else if(_type == 'catalog') {
+                const folder = "categories/";
+                const _filename = "category_catalog_" + category.id;
+                category.filenameCatalog = _filename + ".jpg";
+                await this.mediaManagementService.addImageFromBinary(folder, _filename, fileBinary);
+                await this.categoryRepository.save(category);
             } else {
                 const folder = "categories/";
                 const _filename = "category_" + category.id;

@@ -45,6 +45,9 @@ export class CategoryController extends BaseController<Category> {
         if(body.fileBanner) {
             await this.categoryService.updateImage(item, body.fileBanner, 'banner');
         }
+        if(body.fileCatalog) {
+            await this.categoryService.updateImage(item, body.fileCatalog, 'catalog');
+        }
         if(body.file) {
             await this.categoryService.updateImage(item, body.file, 'portada');
         }
@@ -82,6 +85,12 @@ export class CategoryController extends BaseController<Category> {
 
     getParsePUT(entity: Category): Object {
         return CategoryUpdateDTO(entity);
+    }
+
+    @route('/public/all')
+    @GET()
+    public async getPublicCategory(req: Request, res: Response) {
+        return this.index(req, res);
     }
 
     /** Test templates */
@@ -157,6 +166,26 @@ export class CategoryController extends BaseController<Category> {
             }
 
             await this.categoryService.updateImage(category, body.file, 'portada');
+
+            return res.json({status: 200});
+        }catch(e){
+            this.handleException(e, res);
+        }
+    }
+
+    @route('updateCatalogImage/:id')
+    @PUT()
+    public async updateCatalogImage(req: Request, res: Response) {
+        try {
+            const id = req.params.id;
+            const body = req.body;
+            const category = await this.categoryService.find(parseInt(id));
+
+            if(!category){
+                throw new InvalidArgumentException();
+            }
+
+            await this.categoryService.updateImage(category, body.file, 'catalog');
 
             return res.json({status: 200});
         }catch(e){

@@ -7,7 +7,8 @@ export const CategoryCreateDTO = (category: Category) => ({
     status: category.status,
     discountPercent: category.discountPercent ? parseFloat(category.discountPercent.toString()) : null,
     filename: category.filename,
-    filenameBanner: category.filenameBanner
+    filenameBanner: category.filenameBanner,
+    filenameCatalog: category.filenameCatalog
 });
 
 export const CategoryListDTO = (category: Category) => ({
@@ -18,7 +19,8 @@ export const CategoryListDTO = (category: Category) => ({
     status: category.status,
     filename: category.filename,
     discountPercent: category.discountPercent ? parseFloat(category.discountPercent.toString()) : null,
-    filenameBanner: category.filenameBanner
+    filenameBanner: category.filenameBanner,
+    filenameCatalog: category.filenameCatalog
 });
 
 export const CategoryUpdateDTO = (category: Category) => ({
@@ -29,7 +31,8 @@ export const CategoryUpdateDTO = (category: Category) => ({
     status: category.status,
     discountPercent: category.discountPercent ? parseFloat(category.discountPercent.toString()) : null,
     filename: category.filename,
-    filenameBanner: category.filenameBanner
+    filenameBanner: category.filenameBanner,
+    filenameCatalog: category.filenameCatalog
 });
 
 export const CategoryShortDTO = (category: Category) => ({

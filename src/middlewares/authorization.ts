@@ -17,8 +17,12 @@ const PublicServices = [
     "/template/checkTimeZone",
     '/stats/estadistica/save_dashboard',
     '/payment/gateway/payu/register',
-    '/order/refresh/all/orderDelivery'
-];;
+    '/order/refresh/all/orderDelivery',
+    '/category/public/all',
+    '/product/public/all',
+    '/product/public/product',
+    '/changeProductImage/generate/catalogImage'
+];
 
 export const Authorization = (req: Request, res: Response, next: NextFunction) => {
     //req.header("Authorization") == 'test'
