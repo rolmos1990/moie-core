@@ -1,5 +1,5 @@
 import {BaseController} from "../common/controllers/base.controller";
-import {TemplateCatalog} from "../models/templateCatalog";
+import {TemplateCatalog} from "../models/TemplateCatalog";
 import {EntityTarget} from "typeorm";
 import {TemplateCatalogService} from "../services/templateCatalog.service";
 import {route} from "awilix-express";

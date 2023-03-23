@@ -6,7 +6,7 @@ import {TemplateRepository} from "../repositories/template.repository";
 import {TemplateCatalogRepository} from "../repositories/templateCatalog.repository";
 import {OfficePDFCss, PrintHeaderCss} from "../templates/styles/catalogHeader";
 import {CatalogHeaderCss} from "../templates/styles/catalogHeaderCss";
-import {TemplateCatalog} from "../models/templateCatalog";
+import {TemplateCatalog} from "../models/TemplateCatalog";
 import puppeteer from "puppeteer";
 import {CONFIG_MEDIA} from "./mediaManagement.service";
 import {existsSync, mkdirSync} from "fs";
