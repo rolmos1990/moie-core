@@ -38,7 +38,7 @@ export class ProductImageController extends BaseController<ProductImage> {
     public async generateCatalogImage(req: Request, res: Response){
 
         const productId = 1496;
-        const generated = await this.productService.createCatalogForProduct(productId, true);
+        const generated = await this.productService.createCatalogForProduct(productId);
         return res.json({status: 200});
 
     }
@@ -61,7 +61,7 @@ export class ProductImageController extends BaseController<ProductImage> {
             });
 
             //update my product images also my catalog image
-            await this.productService.createCatalogForProduct(product.id, true);
+            await this.productService.createCatalogForProduct(product.id);
 
 
             await Promise.all(result);
