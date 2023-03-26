@@ -54,7 +54,7 @@ export class ProductService extends BaseService<Product> {
             completed: products['completed']};
     }
 
-    public async createCatalogForProduct(productId){
+    public async createCatalogForProduct(productId:any){
 
         const product = await this.find(productId, ['category', 'productImage', 'productSize']);
         const images = product.productImage;

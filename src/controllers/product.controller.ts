@@ -16,8 +16,6 @@ import {ProductSizeService} from "../services/productSize.service";
 import {Request, Response} from "express";
 import {OrderService} from "../services/order.service";
 import {PageQuery} from "../common/controllers/page.query";
-import {OrderConditional} from "../common/enum/order.conditional";
-import {ProductImageService} from "../services/productImage.service";
 import {ProductAvailable} from "../models/ProductAvailable";
 import {OrderStatus} from "../common/enum/orderStatus";
 
@@ -27,7 +25,6 @@ export class ProductController extends BaseController<Product> {
         private readonly productService: ProductService,
         private readonly productSizeService: ProductSizeService,
         private readonly orderService: OrderService,
-        private readonly productImageService: ProductImageService,
     ){
         super(productService, productSizeService);
     };
@@ -36,7 +33,11 @@ export class ProductController extends BaseController<Product> {
     }
 
     protected async afterUpdate(item: Product) {
-        await this.productService.createCatalogForProduct(item.id );
+        try{
+            await this.productService.createCatalogForProduct(item.id);
+        } catch(e){
+            console.log('no se pudo actualizar el catalogo');
+        }
     }
 
     @route('/public/all')
