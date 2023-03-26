@@ -36,7 +36,7 @@ export class ProductController extends BaseController<Product> {
     }
 
     protected async afterUpdate(item: Product) {
-        await this.productService.createCatalogForProduct(item.id, true);
+        await this.productService.createCatalogForProduct(item.id );
     }
 
     @route('/public/all')
