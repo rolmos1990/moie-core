@@ -3,6 +3,7 @@ import {ProductImagePathDTO, ProductImageShortDTO} from "./productImage";
 import {ProductAvailableDTO} from "./productAvailable";
 import {CustomerShortDTO} from "./customer";
 import {CategoryShortDTO} from "./category";
+import {CONFIG_MEDIA} from "../../services/mediaManagement.service";
 
 export const ProductListDTO = (product: Product) => ({
     id: product.id,
@@ -54,6 +55,7 @@ export const ProductDetailDTO = (product: Product) => ({
     sizeDescription: product.sizeDescription || null,
     template: product.template || 0,
     catalogUrl: product.catalogUrl || null,
+    catalogUrlFullPath: (CONFIG_MEDIA.LOCAL_PATH + '/' + product.catalogUrl) || null,
 });
 
 export const ProductCreateDTO = (product: Product) => ({

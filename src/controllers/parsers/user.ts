@@ -13,7 +13,8 @@ export const UserListDTO = (user: User) => ({
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
     photo: user.photo,
-    securityRol: SecurityRolArrayShortDTO(user.securityRol || {})
+    securityRol: SecurityRolArrayShortDTO(user.securityRol || {}),
+    whatsapps: user.whatsapps
 });
 
 export const UserCreateDTO = (user: User, salt = Bcrypt.genSaltSync()) => ({
@@ -27,7 +28,8 @@ export const UserCreateDTO = (user: User, salt = Bcrypt.genSaltSync()) => ({
     lastLogin: null,
     createdAt: new Date(),
     updatedAt: null,
-    securityRol: user.securityRol && user.securityRol.id
+    securityRol: user.securityRol && user.securityRol.id,
+    whatsapps: user.whatsapps
 });
 
 export const UserUpdateDTO = (user: User) => ({
@@ -38,11 +40,13 @@ export const UserUpdateDTO = (user: User) => ({
     username: user.username,
     status: user.status,
     updatedAt: new Date(),
-    securityRol: user.securityRol && user.securityRol.id
+    securityRol: user.securityRol && user.securityRol.id,
+    whatsapps: user.whatsapps
 });
 
 export const UserShortDTO = (user: User) => ({
     id: user ? user.id : null,
     name: user ? user.name + " " + user.lastname : null,
     photo: user ? user.photo : null,
+    whatsapps: user.whatsapps
 });

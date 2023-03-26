@@ -54,7 +54,7 @@ export class ProductService extends BaseService<Product> {
             completed: products['completed']};
     }
 
-    public async createCatalogForProduct(productId, isHightQuality = true){
+    public async createCatalogForProduct(productId){
 
         const product = await this.find(productId, ['category', 'productImage', 'productSize']);
         const images = product.productImage;
@@ -62,12 +62,13 @@ export class ProductService extends BaseService<Product> {
         if(images && images.length > 0 && product.template) {
 
             const imagesArray = images.map(item => {
-                let regularImage = item.path ? CONFIG_MEDIA.LOCAL_PATH + '/' + item.path : '';
-                if (!isHightQuality) {
-                    const imageJson = JSON.parse(item.thumbs);
-                    regularImage = imageJson.high ? CONFIG_MEDIA.LOCAL_PATH + '/' + item.product : '';
-                }
-                return regularImage;
+                 const imageJson = JSON.parse(item.thumbs);
+
+                    const big = item.path;
+                    const high =  imageJson.high;
+                    const medium = imageJson.medium;
+
+                return {big, high, medium};
             });
 
             const templateCatalogId = product.template;
@@ -97,6 +98,22 @@ export class ProductService extends BaseService<Product> {
                 return _sizeItem;
             }) : [];
 
+            const renderImage = (item, index, dimension) => {
+                if(item) {
+                    if (item && item[index] && item[index][dimension]) {
+                        return CONFIG_MEDIA.LOCAL_PATH + '/' + item[index][dimension];
+                    } else if (item && item[index - 2] && item[index - 2][dimension]) {
+                        return CONFIG_MEDIA.LOCAL_PATH + '/' + item[index - 2][dimension];
+                    } else if (item && item[index - 1] && item[index - 1][dimension]) {
+                        return CONFIG_MEDIA.LOCAL_PATH + '/' + item[index - 1][dimension];
+                    } else {
+                        return ''; //not image preset
+                    }
+                } else {
+                    return '';
+                }
+            }
+
             const catalogInfo = {
                 category: product.category ? product.category.name : '',
                 price: '$' + formatPriceWithoutDecimals(Math.ceil(priceWithDiscount)),
@@ -104,14 +121,26 @@ export class ProductService extends BaseService<Product> {
                 oldprice: '$' + formatPriceWithoutDecimals(Math.ceil(product.price)),
                 material: product.material,
                 size: sizes.join(' '),
-                image1: imagesArray ? imagesArray[0] : '',
-                image2: imagesArray ? imagesArray[1] ? imagesArray[1] : imagesArray[0] : '',
-                image3: imagesArray ? imagesArray[3] ? imagesArray[3] : imagesArray[0] : '',
+
+                image1_big: renderImage(imagesArray,0 ,'big'),
+                image2_big: renderImage(imagesArray,1 ,'big'),
+                image3_big: renderImage(imagesArray,2 ,'big'),
+
+                image1_high: renderImage(imagesArray,0 ,'high'),
+                image2_high: renderImage(imagesArray,1 ,'high'),
+                image3_high: renderImage(imagesArray,2 ,'high'),
+
+                image1_medium: renderImage(imagesArray,0 ,'medium'),
+                image2_medium: renderImage(imagesArray,1 ,'medium'),
+                image3_medium: renderImage(imagesArray,2 ,'medium'),
+
                 text: "Hay " + getRandomArbitrary(5,20) + " personas viendo este producto",
                 text2: "Se ha vendido " + getRandomArbitrary(5,20) + " veces en las últimas 24 horas",
                 text3: "Este producto está muy solicitado",
                 host: 'http://localhost:18210'
             };
+
+            console.log('catalogInfo: ', catalogInfo);
 
             const html = await this.templateService.getTemplateCatalogHtml(templateCatalogId, catalogInfo);
             const fullPath = await this.templateService.generateCatalog(html, product.reference);

@@ -73,6 +73,10 @@ export class User extends BaseModel{
     @OneToMany(() => Notification, notifications => notifications.user)
     notifications: Notification[];
 
+    @Column({type: 'varchar', length: 500})
+    @Length(4, 500, {groups: ['create']})
+    whatsapps: string;
+
     equals(obj: any) {
         if(obj instanceof User === false){
             return false;
