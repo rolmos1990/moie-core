@@ -48,5 +48,5 @@ export const UserShortDTO = (user: User) => ({
     id: user ? user.id : null,
     name: user ? user.name + " " + user.lastname : null,
     photo: user ? user.photo : null,
-    whatsapps: user.whatsapps
+    whatsapps: user ? user.whatsapps : null
 });
