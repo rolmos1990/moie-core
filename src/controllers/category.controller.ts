@@ -93,6 +93,27 @@ export class CategoryController extends BaseController<Category> {
         return this.index(req, res);
     }
 
+    @route('/public/category')
+    @GET()
+    public async getProduct(req: Request, res: Response) {
+        try {
+            const id = req.query.id + '';
+            const relations = this.getDefaultRelations();
+            let item;
+            if(isNaN(parseInt(id))){
+                item = await this.categoryService.findByObject({id}, relations);
+                item = item[0];
+            }else{
+                item = await this.categoryService.find(id, relations);
+            }
+            const result = await this.getParseGET(item, true);
+            res.json(result);
+        }catch(e){
+            this.handleException(e, res);
+            console.log("error", e);
+        }
+    }
+
     /** Test templates */
 
     /**

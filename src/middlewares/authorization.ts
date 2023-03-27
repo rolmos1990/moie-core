@@ -19,6 +19,7 @@ const PublicServices = [
     '/payment/gateway/payu/register',
     '/order/refresh/all/orderDelivery',
     '/category/public/all',
+    '/category/public/category',
     '/product/public/all',
     '/product/public/product',
     '/changeProductImage/generate/catalogImage',

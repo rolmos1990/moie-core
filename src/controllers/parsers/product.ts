@@ -56,6 +56,7 @@ export const ProductDetailDTO = (product: Product) => ({
     template: product.template || 0,
     catalogUrl: product.catalogUrl || null,
     catalogUrlFullPath: (CONFIG_MEDIA.LOCAL_PATH + '/' + product.catalogUrl) || null,
+    video: product.video || null,
 });
 
 export const ProductCreateDTO = (product: Product) => ({
@@ -78,6 +79,7 @@ export const ProductCreateDTO = (product: Product) => ({
     sizeDescription: product.sizeDescription || null,
     template: product.template || 0,
     catalogUrl: product.catalogUrl || null,
+    video: product.video || null,
 });
 
 export const ProductUpdateDTO = (product: Product) => ({
@@ -101,6 +103,7 @@ export const ProductUpdateDTO = (product: Product) => ({
     orden: product.orden || 0,
     template: product.template || 0,
     catalogUrl: product.catalogUrl || null,
+    video: product.video || null,
 });
 
 export const ProductImagePath = (productImages) => productImages && productImages.length > 0 ? productImages.map(image => ProductImagePathDTO(image)) : [];
