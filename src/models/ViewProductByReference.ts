@@ -152,6 +152,11 @@ export class ViewProductByReference extends BaseModel{
     @Column({name:'catalog_url', type: 'varchar', length: 400})
     catalogUrl: string;
 
+    @Column({name:'video', type: 'varchar', length: 400, nullable: true})
+    @MaxLength(12, {groups: ['create','update']})
+    @IsOptional()
+    video: string;
+
     isEmpty(): boolean {
         return (this.id == null);
     }
