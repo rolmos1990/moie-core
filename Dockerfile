@@ -5,33 +5,12 @@ WORKDIR /src
 COPY ./package*.json /src/
 RUN npm install
 
-# Install dependencies
-RUN apk upgrade
-RUN apk --update \
-    add build-base \
-    git \
-    tzdata \
-    nodejs \
-    nodejs-npm \
-    bash \
-    curl \
-    yarn \
-    gzip \
-    postgresql-client \
-    postgresql-dev \
-    imagemagick \
-    imagemagick-dev \
-    imagemagick-libs \
-    chromium \
-    chromium-chromedriver \
-    ncurses \
-    less \
-    dpkg=1.19.7-r0 \
-    chromium \
-    chromium-chromedriver
+RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm && \
+    yum install -y google-chrome-stable_current_x86_64.rpm
 
-RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_i386.deb
-RUN dpkg -i google-chrome-stable_current_i386.deb
+RUN CHROME_DRIVER_VERSION=`curl -sS https://chromedriver.storage.googleapis.com/LATEST_RELEASE` && \
+    wget -O /tmp/chromedriver.zip https://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/chromedriver_linux64.zip && \
+    unzip /tmp/chromedriver.zip chromedriver -d /usr/local/bin/
 
 COPY ./ /src/
 
