@@ -30,7 +30,6 @@ RUN apk --update \
     chromium \
     chromium-chromedriver
 
-RUN dpkg --add-architecture amd64
 RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_i386.deb
 RUN dpkg -i google-chrome-stable_current_i386.deb
 
