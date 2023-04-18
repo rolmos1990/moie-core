@@ -121,6 +121,7 @@ export class ProductService extends BaseService<Product> {
                 oldprice: '$' + formatPriceWithoutDecimals(Math.ceil(product.price)),
                 material: product.material,
                 size: sizes.join(' '),
+                description: product.description,
 
                 image1_big: renderImage(imagesArray,0 ,'big'),
                 image2_big: renderImage(imagesArray,1 ,'big'),
@@ -134,8 +135,8 @@ export class ProductService extends BaseService<Product> {
                 image2_medium: renderImage(imagesArray,1 ,'medium'),
                 image3_medium: renderImage(imagesArray,2 ,'medium'),
 
-                text: "Hay " + getRandomArbitrary(5,20) + " personas viendo este producto",
-                text2: "Se ha vendido " + getRandomArbitrary(5,20) + " veces en las últimas 24 horas",
+                text: "Hay " + parseInt(getRandomArbitrary(5,20)) + " personas viendo este producto",
+                text2: "Se ha vendido " + parseInt(getRandomArbitrary(5,20)) + " veces en las últimas 24 horas",
                 text3: "Este producto está muy solicitado",
                 host: 'http://localhost:18210'
             };

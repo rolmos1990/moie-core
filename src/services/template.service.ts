@@ -7,9 +7,7 @@ import {TemplateCatalogRepository} from "../repositories/templateCatalog.reposit
 import {OfficePDFCss, PrintHeaderCss} from "../templates/styles/catalogHeader";
 import {CatalogHeaderCss} from "../templates/styles/catalogHeaderCss";
 import {TemplateCatalog} from "../models/TemplateCatalog";
-import puppeteer from "puppeteer";
 import {CONFIG_MEDIA} from "./mediaManagement.service";
-import {existsSync, mkdirSync} from "fs";
 const moment = require("moment");
 
 export class TemplateService extends BaseService<Template> {
@@ -217,7 +215,7 @@ export class TemplateService extends BaseService<Template> {
     }
 
 
-    async getTemplateCatalogHtml(id, objects){
+    async getTemplateCatalogHtml(id, objects) : Promise<string>{
         let template = await this.templateCatalogRepository.find(id);
         let html = template.minified;
         Object.keys(objects).forEach(key => {
@@ -230,13 +228,13 @@ export class TemplateService extends BaseService<Template> {
         try {
             const folder = 'catalogs';
             const fileName = reference + '.jpg';
-            const buffer = await this.convertHtmlInImage(_html);
-            const fs = require('fs');
-            if (!existsSync(CONFIG_MEDIA.STORAGE_PATH + "/" + folder)) {
-                mkdirSync(CONFIG_MEDIA.STORAGE_PATH + "/" + folder);
-            }
-            const filePath = CONFIG_MEDIA.STORAGE_PATH + "/"+folder+"/" + fileName;
-            fs.writeFileSync(filePath, buffer);
+
+            const axios = require('axios');
+
+            await axios.post('http://moie.lucymodas.com:5007/', {
+               html: _html,
+               name: fileName
+            });
 
             return CONFIG_MEDIA.IMAGE_PATH + "/" + folder +"/" + fileName;
 
@@ -245,24 +243,48 @@ export class TemplateService extends BaseService<Template> {
         }
     }
 
-    private async convertHtmlInImage(_html){
-        const browser = await puppeteer.launch({ args: ['--no-sandbox'] });
+/*    private async convertHtmlInImage2(_html) {
+        const browser = await getBrowser();
         const page = await browser.newPage();
 
-        await page.goto('https://developer.chrome.com/');
-
-        // Configuración de la página
         const width = 788; // Ancho de la imagen en px
         const height = 1200; // Alto de la imagen en px
         const deviceScaleFactor = 2; // Escala de la imagen
-        const format = 'png'; // Formato de la imagen
         await page.setViewport({width, height, deviceScaleFactor});
 
-        // Cargar el HTML
-        await page.setContent(_html);
-        const screenshotBuffer = await page.screenshot({type: format});
-        await browser.close();
-        // Devolver la imagen como buffer
-        return screenshotBuffer;
-    }
+
+
+        await page.setContent(_html, { waitUntil: "load" });
+        const screenShoot = await page.screenshot({
+            type: "png"
+        });
+        await page.close();
+        return screenShoot;
+    }*/
+
+/*    private async convertHtmlInImage(_html){
+        try {
+            const browser = await puppeteer.launch({args: ['--no-sandbox']});
+            const page = await browser.newPage();
+
+            await page.goto('https://developer.chrome.com/');
+
+            // Configuración de la página
+            const width = 788; // Ancho de la imagen en px
+            const height = 1200; // Alto de la imagen en px
+            const deviceScaleFactor = 2; // Escala de la imagen
+            const format = 'png'; // Formato de la imagen
+            await page.setViewport({width, height, deviceScaleFactor});
+
+            // Cargar el HTML
+            await page.setContent(_html);
+            const screenshotBuffer = await page.screenshot({type: format});
+            await browser.close();
+            // Devolver la imagen como buffer
+            return screenshotBuffer;
+        }catch(e){
+            console.log('error conviertiendo la imagen...');
+            return false;
+        }
+    }*/
 }

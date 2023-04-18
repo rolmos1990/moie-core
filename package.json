@@ -34,7 +34,6 @@
       "moment": "^2.29.1",
       "mysql2": "^2.3.3",
       "newrelic": "latest",
-      "puppeteer": "^19.7.5",
       "resize-img": "^2.0.0",
       "soap": "^0.42.0",
       "strong-soap": "^3.3.1",

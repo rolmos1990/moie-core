@@ -1,0 +1,25 @@
+version: '3.6'
+
+services:
+  api:
+    image: 'rolmos/png-converter:latest'
+    command: 'npm run start'
+    logging:
+      driver: "json-file"
+      options:
+        max-file: 5
+        max-size: 10m
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    volumes:
+      - /var/storage/uploads/catalogs:/src/catalogs:rw
+    ports:
+      - "5007:5007"
+    environment:
+      PORT: 5007
+      HOST: http://localhost
+      TZ: America/Bogota
