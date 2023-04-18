@@ -138,7 +138,7 @@ export class ProductService extends BaseService<Product> {
                 text: "Hay " + parseInt(getRandomArbitrary(5,20)) + " personas viendo este producto",
                 text2: "Se ha vendido " + parseInt(getRandomArbitrary(5,20)) + " veces en las últimas 24 horas",
                 text3: "Este producto está muy solicitado",
-                host: 'http://localhost:18210'
+                host: 'http://moie.lucymodas.com:18210'
             };
 
             console.log('catalogInfo: ', catalogInfo);
