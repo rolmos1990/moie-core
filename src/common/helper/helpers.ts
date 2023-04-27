@@ -122,13 +122,23 @@ export function currencyFormat(number, currency = "COP", locale = 'es-CO'){
     return new Intl.NumberFormat('es-CO', { style: 'currency', currency: currency }).format(number)
 }
 
-export function roundDecimals(number, outputString = false){
+export function roundDecimals(number, outputString = false, allwaysPositive = false){
     //return number;
     const _round = number.toFixed(2);
     if(outputString){
         return _round;
     }
+    if(allwaysPositive){
+        return positiveDecimal(parseFloat(_round));
+    }
     return parseFloat(_round);
+}
+
+export function positiveDecimal(number){
+    if(number < 0){
+        return 0.00;
+    }
+    return number;
 }
 
 

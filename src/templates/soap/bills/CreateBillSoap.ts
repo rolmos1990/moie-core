@@ -4,7 +4,7 @@ import {EBillType} from "../../../common/enum/eBill";
 import moment = require("moment");
 import {BillCreditMemo} from "../../../models/BillCreditMemo";
 import {urlencoded} from "express";
-import {roundDecimals} from "../../../common/helper/helpers";
+import {positiveDecimal, roundDecimals} from "../../../common/helper/helpers";
 const toXML = require("to-xml").toXML;
 
 export class CreateBillSoap extends BaseSoapTemplate {
@@ -118,10 +118,10 @@ export class CreateBillSoap extends BaseSoapTemplate {
                 'PartNumPartDescription' : producto.id + ' - ' + producto.size + ' - ' + producto.color,
                 'SellingShipQty' : producto.quantity,
                 'SalesUM' : 94,
-                'UnitPrice' : roundDecimals(producto['valor_unitario'], false),
-                'DocUnitPrice' : roundDecimals(producto['valor_unitario'], false),
-                'DocExtPrice' : roundDecimals(producto['valor_total'], false),
-                'DspDocExtPrice' : roundDecimals(producto['valor_total'], false),
+                'UnitPrice' : roundDecimals(producto['valor_unitario'], false, true),
+                'DocUnitPrice' : roundDecimals(producto['valor_unitario'], false, true),
+                'DocExtPrice' : roundDecimals(producto['valor_total'], false, true),
+                'DspDocExtPrice' : roundDecimals(producto['valor_total'], false, true),
                 'DiscountPercent' : 0,
                 'Discount' : 0,
                 'DocDiscount' : 0,
@@ -136,9 +136,9 @@ export class CreateBillSoap extends BaseSoapTemplate {
                     'InvoiceLine' : (index + 1),
                     'CurrencyCode' : moneda,
                     'RateCode' : 'IVA 19',
-                    'DocTaxableAmt' : roundDecimals(producto['valor_total'], false),
-                    'TaxAmt' : roundDecimals(producto['valor_iva'], false),
-                    'DocTaxAmt' : roundDecimals(producto['valor_iva'], false),
+                    'DocTaxableAmt' : roundDecimals(producto['valor_total'], false, true),
+                    'TaxAmt' : roundDecimals(producto['valor_iva'], false, true),
+                    'DocTaxAmt' : roundDecimals(producto['valor_iva'], false, true),
                     'Percent' : parseFloat(bill.tax.toString()),
                     'WithholdingTax_c' : false
             });
@@ -293,11 +293,14 @@ export class CreateBillSoap extends BaseSoapTemplate {
             }
         });
 
-        //format result for invoice
+        //format result for in
+        // voice
         const result = {
             prmInvoiceType: this.type,
             prmXmlARInvoice: toXML(data, null, false)
         };
+
+        console.log(result);
 
         return result;
     }
