@@ -23,7 +23,8 @@ const PublicServices = [
     '/product/public/all',
     '/product/public/product',
     '/changeProductImage/generate/catalogImage',
-    '/template/38'
+    '/template/38',
+    '/changeProductImage/generateAllSync/generate'
 ];
 
 export const Authorization = (req: Request, res: Response, next: NextFunction) => {

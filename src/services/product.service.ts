@@ -8,14 +8,19 @@ import {Category} from "../models/Category";
 import {CONFIG_MEDIA} from "./mediaManagement.service";
 import {formatPriceWithoutDecimals, getRandomArbitrary} from "../common/helper/helpers";
 import {TemplateService} from "./template.service";
+import {getRepository, Repository} from "typeorm";
 
 export class ProductService extends BaseService<Product> {
+
+    protected readonly repositoryManager : Repository<Product>;
+
     constructor(
         private readonly productRepository: ProductRepository<Product>,
         private readonly productAvailableViewRepository: ProductAvailableViewRepository<ProductAvailable>,
-        private readonly templateService: TemplateService
+        private readonly templateService: TemplateService,
     ){
         super(productRepository);
+        this.repositoryManager = getRepository(Product);
     }
 
     public async getReference(referenceKey: string){
@@ -54,12 +59,12 @@ export class ProductService extends BaseService<Product> {
             completed: products['completed']};
     }
 
-    public async createCatalogForProduct(productId:any){
+    public async createCatalogForProduct(productId:any, defaultTemplate = -1){
 
         const product = await this.find(productId, ['category', 'productImage', 'productSize']);
         const images = product.productImage;
-
-        if(images && images.length > 0 && product.template) {
+        const hasDefault = (images && images.length > 0 && defaultTemplate != -1);
+        if(images && images.length > 0 && product.template || hasDefault) {
 
             const imagesArray = images.map(item => {
                  const imageJson = JSON.parse(item.thumbs);
@@ -71,7 +76,7 @@ export class ProductService extends BaseService<Product> {
                 return {big, high, medium};
             });
 
-            const templateCatalogId = product.template;
+            const templateCatalogId = (hasDefault) ? defaultTemplate : product.template;
 
             let discount = 0;
             if (product.discount > 0) {
@@ -154,6 +159,12 @@ export class ProductService extends BaseService<Product> {
             return false;
         }
 
+    }
+
+    async getProductWithSizes(){
+        return await this.repositoryManager.manager.query(
+            'SELECT product.id AS id from productsize inner join product on productsize.product_id = product.id where productsize.quantity > 0 group by productsize.product_id'
+        );
     }
 }
 

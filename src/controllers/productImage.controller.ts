@@ -8,14 +8,12 @@ import {Request, Response} from "express";
 import {ApplicationException, InvalidArgumentException} from "../common/exceptions";
 import {ProductService} from "../services/product.service";
 import {Product} from "../models/Product";
-import {TemplateService} from "../services/template.service";
 
 @route('/changeProductImage')
 export class ProductImageController extends BaseController<ProductImage> {
     constructor(
         private readonly productImageService: ProductImageService,
-        private readonly productService: ProductService,
-        private readonly templateService: TemplateService
+        private readonly productService: ProductService
     ){
         super(productImageService);
     };
@@ -29,6 +27,23 @@ export class ProductImageController extends BaseController<ProductImage> {
     }
 
     protected beforeUpdate(item: Object): void {
+    }
+
+    @route('/generateAllSync/generate')
+    @GET()
+    public async createCatalogPerProduct(req: Request, res: Response){
+        const allProducts = await this.productService.getProductWithSizes();
+
+
+        for(let i=0;i<allProducts.length;i++)
+        {
+            const templateNumber = (i % 5) + 1;
+            //console.log('id: ', allProducts[i]['id'], templateNumber);
+            await this.productService.createCatalogForProduct(allProducts[i]['id'], templateNumber);
+        }
+
+        return res.json({status: 200});
+        //update my product images also my catalog image
     }
 
 
