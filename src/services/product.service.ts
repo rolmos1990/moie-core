@@ -95,10 +95,12 @@ export class ProductService extends BaseService<Product> {
                         sizes.push(_sizeItem.name.toUpperCase() + ': ');
                         sizes.push(product.sizeDescription);
                     } else {
-                        sizes.push(_sizeItem.name.toUpperCase());
+                            sizes.push(_sizeItem.name.toUpperCase());
                     }
                 } else {
-                    sizes.push(_sizeItem.name.toUpperCase());
+                    if(_sizeItem.quantity > 0) {
+                        sizes.push(_sizeItem.name.toUpperCase());
+                    }
                 }
                 return _sizeItem;
             }) : [];
