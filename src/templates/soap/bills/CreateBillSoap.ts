@@ -300,8 +300,6 @@ export class CreateBillSoap extends BaseSoapTemplate {
             prmXmlARInvoice: toXML(data, null, false)
         };
 
-        console.log(result);
-
         return result;
     }
 }

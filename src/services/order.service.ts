@@ -89,7 +89,7 @@ export class OrderService extends BaseService<Order> {
             }
         }
         else if(_module === Modules.PostVenta){
-            if((_orderType.isInterrapidisimo() || _orderType.isPayu()) && order.isPrinted()){
+            if((_orderType.isServientrega() || _orderType.isInterrapidisimo() || _orderType.isPayu()) && order.isPrinted()){
                 if(order.status === OrderStatus.SENT){
                     //Si ya esta enviado, se mantiene enviado
                     return;

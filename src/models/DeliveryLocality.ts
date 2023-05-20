@@ -39,6 +39,10 @@ export class DeliveryLocality extends BaseModel{
     @IsBoolean({groups: ['create','update']})
     status: boolean;
 
+    @Column({name:'delivery_method_id',type: 'integer'})
+    @IsInt({groups: ['create','update']})
+    deliveryMethodId: number;
+
     equals(obj: any) {
         if(obj instanceof DeliveryLocality === false){
             return false;

@@ -30,6 +30,7 @@ import {ExportersOfficeMensajeroCd} from "../templates/exporters/office-orders-m
 import {DeliveryMethodService} from "../services/deliveryMethod.service";
 import {Modules} from "../common/enum/modules";
 import {OrderStatus} from "../common/enum/orderStatus";
+import {ExportersServientregaCd} from "../templates/exporters/exporters-servientrega-cd";
 
 @route('/office')
 export class OfficeController extends BaseController<Office> {
@@ -248,9 +249,14 @@ export class OfficeController extends BaseController<Office> {
     protected async getTemplate(req: Request, res: Response){
         try {
             const id = req.params.id;
-            const office: Office = await this.officeService.find(parseInt(id));
+            const office: Office = await this.officeService.find(parseInt(id), ['deliveryMethod']);
             const orders: Order[] = await this.orderService.findByObject({office: office}, ['customer', 'customer.municipality', 'orderDelivery', 'orderDelivery.deliveryLocality', 'deliveryMethod']); //TODO -- Agregar orderDelivery.deliveryLocality'
-            const exportable = new ExportersInterrapidisimoCd();
+
+            let exportable = new ExportersInterrapidisimoCd();
+
+            if(office.deliveryMethod.code === 'SERVIENTREGA'){
+                exportable = new ExportersServientregaCd();
+            }
 
             const base64File = await this.mediaManagementService.createExcel(exportable, orders, res, MEDIA_FORMAT_OUTPUT.b64);
             return res.json({status: 200, data: base64File, name: exportable.getFileName() } );

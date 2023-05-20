@@ -71,7 +71,7 @@ export class StatusManagerController {
                 this.setStatus(OrderStatus.PRINTED);
             }
             else if (order.isPrinted()) {
-                if (_orderType.isMensajero() || _orderType.isOtro() || _orderType.isInterrapidisimo() || _orderType.isPayu()) {
+                if (_orderType.isMensajero() || _orderType.isOtro() || _orderType.isInterrapidisimo() || _orderType.isServientrega()  || _orderType.isPayu()) {
                     this.setStatus(OrderStatus.SENT);
                     this.setStatus(OrderStatus.FINISHED);
                 }
@@ -86,7 +86,7 @@ export class StatusManagerController {
         /*** Contra Pago */
         if (!order.isPreviousPayment()) {
             if (order.isSent()) {
-                if (_orderType.isInterrapidisimo() || _orderType.isMensajero()) {
+                if (_orderType.isServientrega() || _orderType.isInterrapidisimo() || _orderType.isMensajero()) {
                     this.order.dateOfSale = new Date();
                     this.setStatus(OrderStatus.RECONCILED);
                     this.setStatus(OrderStatus.FINISHED);
@@ -100,7 +100,7 @@ export class StatusManagerController {
                 this.setStatus(OrderStatus.PRINTED);
             }
             else if (order.isPrinted()) {
-                if (_orderType.isMensajero() || _orderType.isInterrapidisimo()) {
+                if (_orderType.isMensajero() || _orderType.isInterrapidisimo() || _orderType.isServientrega()) {
                     this.setStatus(OrderStatus.SENT);
                 }  else if(_orderType.isOtro()){
                     this.order.dateOfSale = new Date();

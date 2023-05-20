@@ -25,10 +25,15 @@ const isOtro = (o: Order) => {
     return o.deliveryMethod.id === OrderTypes.OTRO;
 }
 
+const isServientrega = (o: Order) => {
+    return o.deliveryMethod.id === OrderTypes.SERVIENTREGA;
+}
+
 export const builderOrderTypes = (o: Order) => {
     return {
         isPayu : () => isPayu(o),
         isInterrapidisimo : () => isInterrapidisimo(o),
+        isServientrega : () => isServientrega(o),
         isMensajero : () => isMensajero(o),
         isOtro : () => isOtro(o)
     };

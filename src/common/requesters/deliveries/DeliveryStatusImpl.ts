@@ -2,6 +2,7 @@ import {BaseRequester} from "../BaseRequester";
 import {Order} from "../../../models/Order";
 import {DeliveryStatusInterrapidisimo} from "./DeliveryStatusInterrapidisimo";
 import {InvalidFileException} from "../../exceptions";
+import {DeliveryStatusServientrega} from "./DeliveryStatusServientrega";
 const axios = require('axios');
 
 
@@ -22,6 +23,9 @@ export class DeliveryStatusImpl extends BaseRequester{
         switch(order.deliveryMethod.code){
             case "INTERRAPIDISIMO":
                 this.caller = new DeliveryStatusInterrapidisimo(this.order);
+                break;
+            case "SERVIENTREGA":
+                this.caller = new DeliveryStatusServientrega(this.order);
                 break;
             case "PAYU":
                 this.caller = new DeliveryStatusInterrapidisimo(this.order);
@@ -49,4 +53,5 @@ export class DeliveryStatusImpl extends BaseRequester{
             return e;
         }
     }
+
 }
