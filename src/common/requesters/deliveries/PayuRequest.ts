@@ -38,4 +38,16 @@ export class PayuRequest extends BaseRequester {
         return data;
     }
 
+    getHeaders() : any {
+        return null;
+    }
+
+    getMethod() : any {
+        return null;
+    }
+
+    getBody() : any {
+        return null;
+    }
+
 }

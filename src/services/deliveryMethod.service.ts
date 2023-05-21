@@ -90,20 +90,20 @@ export class DeliveryMethodService extends BaseService<DeliveryMethod> {
         let failed = 0;
         const syncDate = new Date();
         await Promise.all(orders.map(async item => {
-            try {
-            const requested = new DeliveryStatusImpl(item);
-                const tracking: TrackingDelivery = await requested.call();
-                item.orderDelivery.deliveryStatusDate = tracking.date;
-                item.orderDelivery.deliveryStatus = tracking.status;
-                item.orderDelivery.sync = tracking.sync;
-                item.orderDelivery.syncDate = syncDate;
-                item.orderDelivery.deliveryCurrentLocality = tracking.locality;
-                await this.orderDeliveryService.createOrUpdate(item.orderDelivery);
-                updates++;
-            }catch(e){
-                failed++;
-                console.log("no se ha podido actualizar la orden");
-            }
+                try {
+                    const requested = new DeliveryStatusImpl(item);
+                    const tracking: TrackingDelivery = await requested.call();
+                    item.orderDelivery.deliveryStatusDate = tracking.date;
+                    item.orderDelivery.deliveryStatus = tracking.status;
+                    item.orderDelivery.sync = tracking.sync;
+                    item.orderDelivery.syncDate = syncDate;
+                    item.orderDelivery.deliveryCurrentLocality = tracking.locality;
+                    await this.orderDeliveryService.createOrUpdate(item.orderDelivery);
+                    updates++;
+                } catch (e) {
+                    failed++;
+                    console.log("no se ha podido actualizar la orden");
+                }
         }));
 
         return {failed, updates};

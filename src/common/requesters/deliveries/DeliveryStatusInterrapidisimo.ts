@@ -38,4 +38,16 @@ export class DeliveryStatusInterrapidisimo extends BaseRequester {
         return tracking;
     }
 
+    getHeaders() : any {
+        return null;
+    }
+
+    getMethod() : any {
+        return null;
+    }
+
+    getBody() : any {
+        return null;
+    }
+
 }
