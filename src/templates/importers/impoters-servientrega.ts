@@ -21,7 +21,11 @@ export class ImportersServientrega extends BaseImporters {
                 rows.map(item => {
                     const trackingNumber = item.getCell(positionTrackingId).toString();
                     let id : any = item.getCell(positionOrderId).toString();
-                    this.collection.push({id, trackingNumber});
+                    id = id.split("-");
+                    if(id && id[1]) {
+                        id = id[1].replace(/ /g, '');
+                        this.collection.push({id, trackingNumber});
+                    }
                 });
             }catch(e){
                 console.log("error", e.message);

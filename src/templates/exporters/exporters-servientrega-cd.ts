@@ -9,7 +9,7 @@ import {DeliveryLocality} from "../../models/DeliveryLocality";
 export class ExportersServientregaCd extends SingleBaseExporters {
 
     getSheetName(): String {
-        return "Worksheet";
+        return "Envios";
     }
 
     getFileName(){
@@ -35,49 +35,30 @@ export class ExportersServientregaCd extends SingleBaseExporters {
 
     getBody(data: Order[]) {
 
-        const preFormat = (item, objects) => {
-
-            let name = "";
-            let lastname = "";
-            if(item.customer && item.customer.name) {
-
-                const _fullname = item.customer.name;
-
-                const index = _fullname.indexOf(" ");
-                const firstname = _fullname.substr(0, index);
-                const secondname = _fullname.substr(index + 1);
-
-                name = toUpper(firstname);
-                lastname = toUpper(secondname);
-            }
-
-            return {...objects, name, lastname};
-        }
-
-        const body = data.map(item => preFormat(item, {
+        const body = data.map(item => ({
            customer: item.customer && item.customer.document,
-           name: '',
+           name: item.customer && item.customer.name,
            address: item.customer.address || "",
            city: item.orderDelivery && this.getLocality(item.orderDelivery.deliveryLocality).city,
            state: item.orderDelivery && this.getLocality(item.orderDelivery.deliveryLocality).state,
            phone: item.customer && item.customer.cellphone,
-           number: item.id,
-           price: item.deliveryMethod.code === 'PAYU' ? formatPrice(15000.00) : formatPrice(item.totalAmount),
-           weight: this.getConverter(item.totalWeight),
+           number: 'Prendas de vestir -' + item.id,
+           price: Math.round(item.totalAmount),
+           weight: 3, //this.getConverter(item.totalWeight),
 
            alto: 30,
            ancho: 20,
            largo: 20,
            idProducto: 2,
            tipoDuracionTrayecto: 1,
-           formaPago: 1,
+           formaPago: 2,
            unidadLongitud:'CM',
            unidadPeso: 'KG',
-           piezas: item.quantity,
+           piezas: 1, //item.quantity,
            tipoDocumento: 2,
            medioTransporte: 1,
-           unidadEmpaque: 'GENERICO',
-           numValorDeclarado: item.deliveryMethod.code === 'PAYU' ? formatPrice(15000.00) : formatPrice(item.totalAmount),
+           unidadEmpaque: 'GENERICA',
+           numValorDeclarado: Math.round(item.totalAmount),
            guia: '',
            estado: 1,
         }));
@@ -110,8 +91,8 @@ export class ExportersServientregaCd extends SingleBaseExporters {
             { header: 'Des_MedioTransporte', key: 'medioTransporte' },
             { header: 'Nom_UnidadEmpaque', key: 'unidadEmpaque' },
             { header: 'Num_ValorDeclarado', key: 'numValorDeclarado' },
-            { header: 'Detalle', key: 'guia' },
-            { header: 'Estado', key: 'estado' },
+            //{ header: 'Detalle', key: 'guia' },
+            //{ header: 'Estado', key: 'estado' },
         ];
         return headers;
     }
