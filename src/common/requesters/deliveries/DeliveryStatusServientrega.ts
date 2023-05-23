@@ -32,7 +32,7 @@ export class DeliveryStatusServientrega extends BaseRequester {
                         const estatus = guia['Estado_Envio'] || 'Pendiente';
                         const fecha = guia['Fecha_entrega'];
 
-                        const stopStatus = ['ANULADA', 'PENDIENTE POR BORRAR','EN ARCHIVO','ENTREGADO', 'ENTREGADO A REMITENTE'];
+                        const stopStatus = ['ANULADA', 'PENDIENTE POR BORRAR','EN ARCHIVO','ENTREGADO', 'ENTREGADO A REMITENTE', 'REPORTADO ENTREGADO', 'ENTREGA VERIFICADA'];
                         const shouldStop = stopStatus.includes(estatus.toLowerCase());
 
                         const tracking : TrackingDelivery = {
