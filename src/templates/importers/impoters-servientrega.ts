@@ -19,7 +19,7 @@ export class ImportersServientrega extends BaseImporters {
             const rows = this.ws.getRows(this.startBy, this.ws.actualRowCount);
             try {
                 rows.map(item => {
-                    const trackingNumber = item.getCell(positionTrackingId).toString();
+                    let trackingNumber = item.getCell(positionTrackingId).toString();
                     if(trackingNumber){
                         trackingNumber.replace(/ /g, '');
                         trackingNumber.replace(':', '');
