@@ -20,17 +20,15 @@ export class ImportersServientrega extends BaseImporters {
             try {
                 rows.map(item => {
                     let trackingNumber = item.getCell(positionTrackingId).toString();
-                    if(trackingNumber){
-                        trackingNumber.replace(/ /g, '');
-                        trackingNumber.replace(':', '');
-                        trackingNumber.replace('Guía', '');
-                        trackingNumber.replace('Guia', '');
-                    }
-                    let id : any = item.getCell(positionOrderId).toString();
-                    id = id.split("-");
-                    if(id && id[1]) {
-                        id = id[1].replace(/ /g, '');
-                        this.collection.push({id, trackingNumber});
+                    if(trackingNumber) {
+                        trackingNumber = trackingNumber.replace("Guía:", '');
+                        trackingNumber = trackingNumber.replace(/ /g, '');
+                        let id: any = item.getCell(positionOrderId).toString();
+                        id = id.split("-");
+                        if (id && id[1]) {
+                            id = id[1].replace(/ /g, '');
+                            this.collection.push({id, trackingNumber});
+                        }
                     }
                 });
             }catch(e){
