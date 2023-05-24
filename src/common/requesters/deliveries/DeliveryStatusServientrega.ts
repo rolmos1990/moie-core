@@ -21,33 +21,36 @@ export class DeliveryStatusServientrega extends BaseRequester {
 
     getContext(res): any {
 
-        if(res["EstadoGuiaResult"]){
-            if(res["EstadoGuiaResult"]["diffgram"]){
-                const newDataSet = res["EstadoGuiaResult"]["diffgram"]["NewDataSet"];
-                if(newDataSet){
-                    if(newDataSet['EstadosGuias']){
-                        const guia = newDataSet['EstadosGuias'];
+        if(res['ConsultarGuiaResult']){
+            if(res['ConsultarGuiaResult']['Mov']){
+                const movimientos = res['ConsultarGuiaResult']['Mov'];
+                var guia = movimientos['InformacionMov'].pop();
+                if(guia['NomMov']){
 
-                        const ubicacion = guia['Novedad'];
-                        const estatus = guia['Estado_Envio'] || 'Pendiente';
-                        const fecha = guia['Fecha_entrega'];
+                    const fecha = guia['Fecha_entrega'];
+                    const estatus = guia['NomMov'] || 'Pendiente';
+                    const ubicacion = guia['OriMov'];
 
-                        const stopStatus = ['ANULADA', 'PENDIENTE POR BORRAR','EN ARCHIVO','ENTREGADO', 'ENTREGADO A REMITENTE', 'REPORTADO ENTREGADO', 'ENTREGA VERIFICADA'];
-                        const shouldStop = stopStatus.includes(estatus.toLowerCase());
+                    const stopStatus = ['REPORTADO ENTREGADO', 'ENTREGA VERIFICADA'];
+                    let shouldStop = stopStatus.includes(estatus.toLowerCase());
 
-                        const tracking : TrackingDelivery = {
-                            date: moment(fecha).toDate(),
-                            status: estatus,
-                            locality: ubicacion,
-                            sync: !shouldStop
-                        }
-
-                        return tracking;
-
+                    const stopIntStatus = [4,5,9,10,11];
+                    //estados que no continuan
+                    if(stopIntStatus.includes(parseInt(guia['IdEstAct']))){
+                        shouldStop = true;
                     }
+
+                    const tracking : TrackingDelivery = {
+                        date: moment(fecha).toDate(),
+                        status: estatus,
+                        locality: ubicacion,
+                        sync: !shouldStop
+                    }
+
+                    return tracking;
+
                 }
             }
-
         }
 
     }
@@ -57,7 +60,7 @@ export class DeliveryStatusServientrega extends BaseRequester {
     }
 
     getMethod() : any {
-        return "EstadoGuia";
+        return "ConsultarGuia";
     }
 
     getBody(order: Order) : any {
