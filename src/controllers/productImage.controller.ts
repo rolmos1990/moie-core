@@ -8,12 +8,15 @@ import {Request, Response} from "express";
 import {ApplicationException, InvalidArgumentException} from "../common/exceptions";
 import {ProductService} from "../services/product.service";
 import {Product} from "../models/Product";
+import {FieldOptionService} from "../services/fieldOption.service";
+import * as moment from "moment";
 
 @route('/changeProductImage')
 export class ProductImageController extends BaseController<ProductImage> {
     constructor(
         private readonly productImageService: ProductImageService,
-        private readonly productService: ProductService
+        private readonly productService: ProductService,
+        private readonly fieldOptionService: FieldOptionService
     ){
         super(productImageService);
     };
@@ -28,6 +31,27 @@ export class ProductImageController extends BaseController<ProductImage> {
 
     protected beforeUpdate(item: Object): void {
     }
+
+    @route('/updateCatalogVersion/sync')
+    @GET()
+    public async createCatalogPerProduct(req: Request, res: Response){
+
+        const allProducts = await this.productService.getProductWithSizes();
+
+        res.json({status: 200});
+
+        for(let i=0;i<allProducts.length;i++)
+        {
+            await this.productService.createCatalogForProduct(allProducts[i]['id']);
+        }
+
+        //replace version catalog
+        const catalogVersion = await this.fieldOptionService.findByName('CATALOG_VERSION');
+        catalogVersion.value =  moment().format("YYYY-MM-DD-H-mm");
+        await this.fieldOptionService.createOrUpdate(catalogVersion);
+
+    }
+
 
     @route('/generateAllSync/generate')
     @GET()
