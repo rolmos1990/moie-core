@@ -34,7 +34,7 @@ export class ProductImageController extends BaseController<ProductImage> {
 
     @route('/updateCatalogVersion/sync')
     @GET()
-    public async createCatalogPerProduct(req: Request, res: Response){
+    public async updateCatalogVersion(req: Request, res: Response){
 
         const allProducts = await this.productService.getProductWithSizes();
 
