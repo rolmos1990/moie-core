@@ -27,12 +27,12 @@ export class DeliveryStatusServientrega extends BaseRequester {
                 var guia = movimientos['InformacionMov'].pop();
                 if(guia['NomMov']){
 
-                    const fecha = guia['Fecha_entrega'];
+                    const fecha = guia['FecMov'];
                     const estatus = guia['NomMov'] || 'Pendiente';
                     const ubicacion = guia['OriMov'];
 
                     const stopStatus = ['REPORTADO ENTREGADO', 'ENTREGA VERIFICADA'];
-                    let shouldStop = stopStatus.includes(estatus.toLowerCase());
+                    let shouldStop = stopStatus.includes(estatus.toUpperCase());
 
                     const stopIntStatus = [4,5,9,10,11];
                     //estados que no continuan
