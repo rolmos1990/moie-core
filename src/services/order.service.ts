@@ -494,44 +494,50 @@ export class OrderService extends BaseService<Order> {
 
 
     /** Obtener estadisticas de Ventas por Dia/Mes/Semana */
-    async getStatsDay(dateFrom, dateTo, group, user){
+    async getStatsDay(dateFrom, dateTo, group, user, typeDate = 'sales'){
 
         const orderRepository = this.orderRepository.createQueryBuilder('o');
 
+        if(typeDate === 'created'){
+            typeDate = 'createdAt';
+        } else {
+            typeDate = 'dateOfSale';
+        }
+
         switch(group) {
             case StatTimeTypes.DAILY:
-                orderRepository.select('SUM(o.totalWithDiscount) as monto, SUM(o.totalRevenue) as ganancia, SUM(o.quantity) as piezas, concat_ws("-",day(o.dateOfSale),month(o.dateOfSale),year(o.dateOfSale)) as fecha, DATE(o.dateOfSale) as dateOrder');
-                orderRepository.addGroupBy("year(o.dateOfSale)")
-                orderRepository.addGroupBy("month(o.dateOfSale)")
-                orderRepository.addGroupBy("day(o.dateOfSale)");
+                orderRepository.select(`SUM(o.totalWithDiscount) as monto, SUM(o.totalRevenue) as ganancia, SUM(o.quantity) as piezas, concat_ws("-",day(o.${typeDate}),month(o.${typeDate}),year(o.${typeDate})) as fecha, DATE(o.${typeDate}) as dateOrder`);
+                orderRepository.addGroupBy(`year(o.${typeDate})`)
+                orderRepository.addGroupBy(`month(o.${typeDate})`)
+                orderRepository.addGroupBy(`day(o.${typeDate})`);
                 break;
             case StatTimeTypes.WEEKLY:
-                orderRepository.select('SUM(o.totalWithDiscount) as monto, SUM(o.totalRevenue) as ganancia, SUM(o.quantity) as piezas, concat_ws("-",week(o.dateOfSale,1),year(o.dateOfSale)) as fecha, week(o.dateOfSale) as dateOrder');
-                orderRepository.addGroupBy("year(o.dateOfSale)")
-                orderRepository.addGroupBy("week(o.dateOfSale,1)");
+                orderRepository.select(`SUM(o.totalWithDiscount) as monto, SUM(o.totalRevenue) as ganancia, SUM(o.quantity) as piezas, concat_ws("-",week(o.${typeDate},1),year(o.${typeDate})) as fecha, week(o.${typeDate}) as dateOrder`);
+                orderRepository.addGroupBy(`year(o.${typeDate})`)
+                orderRepository.addGroupBy(`week(o.${typeDate},1)`);
                 break;
             case StatTimeTypes.MONTHLY:
-                orderRepository.select('SUM(o.totalWithDiscount) as monto, SUM(o.totalRevenue) as ganancia, SUM(o.quantity) as piezas, concat_ws("-",month(o.dateOfSale),year(o.dateOfSale)) as fecha, MONTH(o.dateOfSale) as dateOrder');
-                orderRepository.addGroupBy("year(o.dateOfSale)")
-                orderRepository.addGroupBy("month(o.dateOfSale)");
+                orderRepository.select(`SUM(o.totalWithDiscount) as monto, SUM(o.totalRevenue) as ganancia, SUM(o.quantity) as piezas, concat_ws("-",month(o.${typeDate}),year(o.${typeDate})) as fecha, MONTH(o.${typeDate}) as dateOrder`);
+                orderRepository.addGroupBy(`year(o.${typeDate})`)
+                orderRepository.addGroupBy(`month(o.${typeDate})`);
                 break;
             case StatTimeTypes.YEARLY:
-                orderRepository.select('SUM(o.totalWithDiscount) as monto, SUM(o.totalRevenue) as ganancia, SUM(o.quantity) as piezas, year(o.dateOfSale) as fecha, DATE(o.dateOfSale) as dateOrder, YEAR(o.dateOfSale) as dateOrder');
-                orderRepository.addGroupBy("year(o.dateOfSale)");
+                orderRepository.select(`SUM(o.totalWithDiscount) as monto, SUM(o.totalRevenue) as ganancia, SUM(o.quantity) as piezas, year(o.${typeDate}) as fecha, DATE(o.${typeDate}) as dateOrder, YEAR(o.${typeDate}) as dateOrder`);
+                orderRepository.addGroupBy(`year(o.${typeDate})`);
                 break;
         }
 
         if(user != null){
             orderRepository.leftJoinAndSelect('o.user', 'u')
                 .where("u.id = :user")
-                .andWhere("DATE(o.dateOfSale) >= :before")
-                .andWhere("DATE(o.dateOfSale) <= :after")
+                .andWhere(`DATE(o.${typeDate}) >= :before`)
+                .andWhere(`DATE(o.${typeDate}) <= :after`)
                 .addGroupBy('o.user')
                 .addOrderBy('dateOrder', 'ASC')
                 .setParameters({before: dateFrom, after: dateTo, user: user['id']});
         } else {
-            orderRepository.andWhere("DATE(o.dateOfSale) >= :before");
-            orderRepository.andWhere("DATE(o.dateOfSale) <= :after");
+            orderRepository.andWhere(`DATE(o.${typeDate}) >= :before`);
+            orderRepository.andWhere(`DATE(o.${typeDate}) <= :after`);
             orderRepository.addOrderBy('dateOrder', 'ASC');
             orderRepository.setParameters({before: dateFrom + " 00:00:00", after: dateTo + " 23:59:59"});
         }

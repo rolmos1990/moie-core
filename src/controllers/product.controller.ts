@@ -261,6 +261,17 @@ export class ProductController extends BaseController<Product> {
         }
     }
 
+    @route('/get/products/withAvailabilities')
+    @GET()
+    protected async productsWithAvailabilities(req: Request, res: Response){
+        try {
+            const availabilities = await this.productService.getProductAvailablesAndAmount();
+            return res.json({status: 200, data: availabilities } );
+        }catch(e){
+            this.handleException(new ApplicationException(), res);
+        }
+    }
+
     protected getDefaultRelations(): Array<string> {
         return ['size','category','productImage', 'productSize'];
     }

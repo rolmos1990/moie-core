@@ -168,5 +168,11 @@ export class ProductService extends BaseService<Product> {
             'SELECT product.id AS id from productsize inner join product on productsize.product_id = product.id where productsize.quantity > 0 group by productsize.product_id'
         );
     }
+
+    async getProductAvailablesAndAmount(){
+        return await this.repositoryManager.manager.query(
+            'SELECT SUM(price) as price, SUM(available) as qty FROM `moie-lucy-v2`.productsbyreference where available > 0'
+        );
+    }
 }
 
