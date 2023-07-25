@@ -585,6 +585,18 @@ export class OrderController extends BaseController<Order> {
         }
     }
 
+    @route('/orderStats/get/byStatus')
+    @GET()
+    protected async getOrderStatsByStatus(req: Request, res: Response){
+        try {
+            const orderStatusStats = await this.orderService.getOrderStatsByStatus();
+            return res.json({status: 200, data: orderStatusStats } );
+        }catch(e){
+            console.log('e: ', e.message)
+            this.handleException(new ApplicationException(), res);
+        }
+    }
+
     /**
      * Obtener resumen de una orden
      * @param req

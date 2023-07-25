@@ -359,6 +359,51 @@ export class OrderService extends BaseService<Order> {
 
     /**
      * @param Order order
+     * Obtener plantilla dependiendo de la orden
+     */
+    async getOrderStatsByStatus() {
+
+        let _today = new Date();
+
+        const pendings = await this.orderRepository.createQueryBuilder('o')
+            .select('SUM(o.id) as quantity')
+            .where("o.status = (:_status)", {_status: OrderStatus.PENDING})
+            .andWhere("DATE(o.createdAt) >= DATE(:_date)", {_date: _today})
+            //.groupBy("o.status")
+            .getRawMany();
+
+        const reconcilied = await this.orderRepository.createQueryBuilder('o')
+            .select('SUM(o.id) as quantity')
+            .where("o.status = (:_status)", {_status: OrderStatus.RECONCILED})
+            .andWhere("DATE(o.createdAt) >= DATE(:_date)", {_date: _today})
+            //.groupBy("o.status")
+            .getRawMany();
+
+        const printed = await this.orderRepository.createQueryBuilder('o')
+            .select('SUM(o.id) as quantity')
+            .where("o.status = (:_status)", {_status: OrderStatus.PRINTED})
+            .andWhere("DATE(o.createdAt) >= DATE(:_date)", {_date: _today})
+            //.groupBy("o.status")
+            .getRawMany();
+
+        const cancelled = await this.orderRepository.createQueryBuilder('o')
+            .select('SUM(o.id) as quantity')
+            .where("o.status = (:_status)", {_status: OrderStatus.CANCELED})
+            .andWhere("DATE(o.createdAt) >= DATE(:_date)", {_date: _today})
+            //.groupBy("o.status")
+            .getRawMany();
+
+        return {
+            pending: pendings[0] && pendings[0].quantity || 0,
+            reconcilied: reconcilied[0] && reconcilied[0].quantity || 0,
+            printed: printed[0] && printed[0].quantity || 0,
+            cancelled: cancelled[0] && cancelled[0].quantity || 0
+        };
+
+    }
+
+    /**
+     * @param Order order
      * Registrar un cliente mayorista desde ordenes
      */
     async addMayorist(order: Order, updateEntity: boolean = false, refresh = false, customer = Customer) : Promise<boolean>{
