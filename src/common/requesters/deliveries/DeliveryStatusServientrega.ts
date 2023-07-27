@@ -31,7 +31,7 @@ export class DeliveryStatusServientrega extends BaseRequester {
                     const estatus = guia['NomMov'] || 'Pendiente';
                     const ubicacion = guia['OriMov'];
 
-                    const stopStatus = ['REPORTADO ENTREGADO', 'ENTREGA VERIFICADA'];
+                    const stopStatus = ['REPORTADO ENTREGADO', 'ENTREGA VERIFICADA', 'REPORTADO  ENTREGADO'];
                     let shouldStop = stopStatus.includes(estatus.toUpperCase());
 
                     const stopIntStatus = [4,5,9,10,11];
