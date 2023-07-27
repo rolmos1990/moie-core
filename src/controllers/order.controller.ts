@@ -589,8 +589,9 @@ export class OrderController extends BaseController<Order> {
     @GET()
     protected async getOrderStatsByStatus(req: Request, res: Response){
         try {
-            const orderStatusStats = await this.orderService.getOrderStatsByStatus();
-            return res.json({status: 200, data: orderStatusStats } );
+            return res.json({status: 200, data: {} } );
+            //const orderStatusStats = await this.orderService.getOrderStatsByStatus();
+            //return res.json({status: 200, data: orderStatusStats } );
         }catch(e){
             console.log('e: ', e.message)
             this.handleException(new ApplicationException(), res);
