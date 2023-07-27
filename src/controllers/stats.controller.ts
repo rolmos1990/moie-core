@@ -44,7 +44,7 @@ export class StatsController extends BaseController<Size> {
             const ff = req.params.endDate;
             const grupo = req.params.group;
             const userId = req.params.user;
-            const typeDate = req.params.typeDate || 'sales'; // sale/creation
+            const typeDate = req.params.typeDate || 'sales'; // sale/creation/states
 
             if(!isValidStatTimes(grupo)){
                 throw new InvalidArgumentException("Agrupacion de fecha no es valida");
@@ -56,7 +56,7 @@ export class StatsController extends BaseController<Size> {
                 user = await this.userService.find(parseInt(userId));
             }
 
-            const stats = await this.orderService.getStatsDay(fi, ff, grupo.toLowerCase(), user, typeDate);
+            const stats = (typeDate === 'states') ? await this.orderService.getStatsDaybyStatus(fi, ff, grupo.toLowerCase(), user): await this.orderService.getStatsDay(fi, ff, grupo.toLowerCase(), user, typeDate);
 
             return res.json(stats);
 

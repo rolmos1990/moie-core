@@ -609,6 +609,119 @@ export class OrderService extends BaseService<Order> {
         return results;
     }
 
+    /** Obtener estadisticas de Ventas por Dia/Mes/Semana */
+    async getStatsDaybyStatus(dateFrom, dateTo, group, user){
+
+        const orderPendingRepository = this.orderRepository.createQueryBuilder('o');
+        const orderConfirmedRepository = this.orderRepository.createQueryBuilder('o');
+        const orderSentRepository = this.orderRepository.createQueryBuilder('o');
+        const orderFinishedRepository = this.orderRepository.createQueryBuilder('o');
+        const orderCanceledRepository = this.orderRepository.createQueryBuilder('o');
+
+        const repositories = [orderPendingRepository,orderConfirmedRepository,orderSentRepository,orderFinishedRepository,orderCanceledRepository];
+        const statuses = [OrderStatus.PENDING,OrderStatus.CONFIRMED,OrderStatus.SENT, OrderStatus.FINISHED, OrderStatus.CANCELED];
+
+
+        const typeDate = 'createdAt';
+
+        switch(group) {
+            case StatTimeTypes.DAILY:
+                repositories.forEach(repo => {
+                    repo.select(`SUM(o.totalWithDiscount) as monto, SUM(o.totalRevenue) as ganancia, SUM(o.quantity) as piezas, concat_ws("-",day(o.${typeDate}),month(o.${typeDate}),year(o.${typeDate})) as fecha, DATE(o.${typeDate}) as dateOrder, o.status as status`);
+                    repo.addGroupBy(`year(o.${typeDate})`)
+                    repo.addGroupBy(`month(o.${typeDate})`)
+                    repo.addGroupBy(`day(o.${typeDate})`);
+                    repo.addGroupBy(`o.status`);
+                })
+                break;
+            case StatTimeTypes.WEEKLY:
+                repositories.forEach(repo => {
+                    repo.select(`SUM(o.totalWithDiscount) as monto, SUM(o.totalRevenue) as ganancia, SUM(o.quantity) as piezas, concat_ws("-",week(o.${typeDate},1),year(o.${typeDate})) as fecha, week(o.${typeDate}) as dateOrder, o.status as status`);
+                    repo.addGroupBy(`year(o.${typeDate})`)
+                    repo.addGroupBy(`week(o.${typeDate},1)`);
+                    repo.addGroupBy(`o.status`);
+                });
+                break;
+            case StatTimeTypes.MONTHLY:
+                repositories.forEach(repo => {
+                    repo.select(`SUM(o.totalWithDiscount) as monto, SUM(o.totalRevenue) as ganancia, SUM(o.quantity) as piezas, concat_ws("-",month(o.${typeDate}),year(o.${typeDate})) as fecha, MONTH(o.${typeDate}) as dateOrder, o.status as status`);
+                    repo.addGroupBy(`year(o.${typeDate})`)
+                    repo.addGroupBy(`month(o.${typeDate})`);
+                    repo.addGroupBy(`o.status`);
+                });
+                break;
+            case StatTimeTypes.YEARLY:
+                repositories.forEach(repo => {
+                    repo.select(`SUM(o.totalWithDiscount) as monto, SUM(o.totalRevenue) as ganancia, SUM(o.quantity) as piezas, year(o.${typeDate}) as fecha, DATE(o.${typeDate}) as dateOrder, YEAR(o.${typeDate}) as dateOrder, o.status as status`);
+                    repo.addGroupBy(`year(o.${typeDate})`);
+                    repo.addGroupBy(`o.status`);
+                });
+                break;
+        }
+
+        if(user != null){
+            repositories.forEach((repo,index) => {
+                repo.leftJoinAndSelect('o.user', 'u')
+                    .where("u.id = :user")
+                    .andWhere(`DATE(o.${typeDate}) >= :before`)
+                    .andWhere(`DATE(o.${typeDate}) <= :after`)
+                    .andWhere(`o.status = :status`)
+                    .addGroupBy('o.user')
+                    .addOrderBy('dateOrder', 'ASC')
+                    .setParameters({before: dateFrom, after: dateTo, user: user['id'], status: statuses[index + '']});
+            });
+        } else {
+            repositories.forEach((repo,index) => {
+                repo.andWhere(`DATE(o.${typeDate}) >= :before`);
+                repo.andWhere(`DATE(o.${typeDate}) <= :after`);
+                repo.andWhere(`o.status = :status`)
+                repo.addOrderBy('dateOrder', 'ASC');
+                repo.setParameters({before: dateFrom + " 00:00:00", after: dateTo + " 23:59:59", status: statuses[index + '']});
+            });
+        }
+
+
+        let allStatus = await Promise.all(repositories.map(async repo => {
+            const rows = await repo.getRawMany();
+
+            rows.sort(function(a, b) {
+                var x = a['dateOrder'];
+                var y = b['dateOrder'];
+                return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+            });
+
+            return rows;
+        }));
+
+        let results = {};
+        let new_results = [];
+        allStatus.forEach((_status, index) => {
+
+            _status.forEach(item => {
+                console.log('item: ', item);
+
+                if(!!!results[item['fecha']]){
+                    results[item['fecha']] = {
+                        fecha: item["fecha"],
+                        [OrderStatus.PENDING.toString()]: '0',
+                        [OrderStatus.CONFIRMED.toString()]: '0',
+                        [OrderStatus.SENT.toString()]: '0',
+                        [OrderStatus.FINISHED.toString()]: '0',
+                        [OrderStatus.CANCELED.toString()]: '0'
+                    };
+                }
+
+                results[item['fecha']][[item['status'] + '']] = item["monto"];
+            });
+
+            new_results = Object.keys(results).map(function (key) {
+                return results[key];
+            });
+        });
+
+        return new_results;
+    }
+
     /** Obtener estadisticas de Ventas por Estados */
 
     async getStatsOrigen(dateFrom, dateTo, group){
