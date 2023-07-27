@@ -609,6 +609,113 @@ export class OrderService extends BaseService<Order> {
         return results;
     }
 
+    /** Obtener estadisticas de Montos de Envios por Dia/Mes/Semana */
+    async getStatsDaybyShipment(dateFrom, dateTo, group, user){
+
+        const orderWithShipment = this.orderRepository.createQueryBuilder('o');
+        const orderWithOutShipment = this.orderRepository.createQueryBuilder('o');
+
+        const repositories = [orderWithShipment,orderWithOutShipment];
+        const cases = ['delivery', 'nodelivery'];
+
+        const typeDate = 'createdAt';
+
+        switch(group) {
+            case StatTimeTypes.DAILY:
+                repositories.forEach(repo => {
+                    repo.select(`SUM(o.id) as monto, COUNT(o.id) as cantidad, concat_ws("-",day(o.${typeDate}),month(o.${typeDate}),year(o.${typeDate})) as fecha, DATE(o.${typeDate}) as dateOrder, `);
+                    repo.addGroupBy(`year(o.${typeDate})`);
+                    repo.addGroupBy(`month(o.${typeDate})`);
+                    repo.addGroupBy(`day(o.${typeDate})`);
+                })
+                break;
+            case StatTimeTypes.WEEKLY:
+                repositories.forEach(repo => {
+                    repo.select(`SUM(o.id) as monto, COUNT(o.id) as cantidad, concat_ws("-",week(o.${typeDate},1),year(o.${typeDate})) as fecha, week(o.${typeDate}) as dateOrder`);
+                    repo.addGroupBy(`year(o.${typeDate})`);
+                    repo.addGroupBy(`week(o.${typeDate},1)`);
+                });
+                break;
+            case StatTimeTypes.MONTHLY:
+                repositories.forEach(repo => {
+                    repo.select(`SUM(o.id) as monto, COUNT(o.id) as cantidad, concat_ws("-",month(o.${typeDate}),year(o.${typeDate})) as fecha, MONTH(o.${typeDate}) as dateOrder`);
+                    repo.addGroupBy(`year(o.${typeDate})`);
+                    repo.addGroupBy(`month(o.${typeDate})`);
+                });
+                break;
+            case StatTimeTypes.YEARLY:
+                repositories.forEach(repo => {
+                    repo.select(`SUM(o.id) as monto, COUNT(o.id) as cantidad, year(o.${typeDate}) as fecha, DATE(o.${typeDate}) as dateOrder, YEAR(o.${typeDate}) as dateOrder`);
+                    repo.addGroupBy(`year(o.${typeDate})`);
+                });
+                break;
+        }
+
+        if(user != null){
+            repositories.forEach((repo,index) => {
+                repo.leftJoinAndSelect('o.user', 'u')
+                    .leftJoinAndSelect('o.orderDelivery', 'od', 'o.or2der_delivery_id = od.id')
+                    .where("u.id = :user")
+                    .andWhere(`DATE(o.${typeDate}) >= :before`)
+                    .andWhere(`DATE(o.${typeDate}) <= :after`)
+                    .andWhere(`od.deliveryCost ${cases[index] == 'nodelivery' ? '=' : '>'} 0`)
+                    .addGroupBy('o.user')
+                    .addOrderBy('dateOrder', 'ASC')
+                    .setParameters({before: dateFrom, after: dateTo, user: user['id']});
+            });
+        } else {
+            repositories.forEach((repo,index) => {
+                repo.leftJoinAndSelect('o.orderDelivery', 'od', 'o.or2der_delivery_id = od.id')
+                .andWhere(`DATE(o.${typeDate}) >= :before`)
+                .andWhere(`DATE(o.${typeDate}) <= :after`)
+                .andWhere(`od.deliveryCost ${cases[index] == 'nodelivery' ? '=' : '>'} 0`)
+                .addOrderBy('dateOrder', 'ASC')
+                .setParameters({before: dateFrom + " 00:00:00", after: dateTo + " 23:59:59"});
+            });
+        }
+
+
+        let allStatus = await Promise.all(repositories.map(async repo => {
+            const rows = await repo.getRawMany();
+
+            rows.sort(function(a, b) {
+                var x = a['dateOrder'];
+                var y = b['dateOrder'];
+                return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+            });
+
+            return rows;
+        }));
+
+        let results = {};
+        let new_results = [];
+        allStatus.forEach((_status, index) => {
+
+            _status.forEach(item => {
+
+                const fieldAmount = index == 0 ? 'delivery_amount' : 'free_amount';
+                const fieldQuantity = index == 0 ? 'delivery_quantity' : 'free_quantity'
+
+                if(!!!results[item['fecha']]){
+                    results[item['fecha']] = {
+                        fecha: item["fecha"],
+                        [fieldAmount]: '0',
+                        [fieldQuantity]: '0'
+                    };
+                }
+
+                results[item['fecha']][fieldAmount] = item["monto"];
+                results[item['fecha']][fieldQuantity] = item["quantity"];
+            });
+
+            new_results = Object.keys(results).map(function (key) {
+                return results[key];
+            });
+        });
+
+        return new_results;
+    }
+
     /** Obtener estadisticas de Ventas por Dia/Mes/Semana */
     async getStatsDaybyStatus(dateFrom, dateTo, group, user){
 
