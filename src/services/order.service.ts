@@ -366,28 +366,28 @@ export class OrderService extends BaseService<Order> {
         let _today = new Date();
 
         const pendings = await this.orderRepository.createQueryBuilder('o')
-            .select('SUM(o.id) as quantity')
+            .select('COUNT(o.id) as quantity')
             .where("o.status = (:_status)", {_status: OrderStatus.PENDING})
             .andWhere("DATE(o.createdAt) >= DATE(:_date)", {_date: _today})
             //.groupBy("o.status")
             .getRawMany();
 
         const reconcilied = await this.orderRepository.createQueryBuilder('o')
-            .select('SUM(o.id) as quantity')
+            .select('COUNT(o.id) as quantity')
             .where("o.status = (:_status)", {_status: OrderStatus.RECONCILED})
             .andWhere("DATE(o.createdAt) >= DATE(:_date)", {_date: _today})
             //.groupBy("o.status")
             .getRawMany();
 
         const printed = await this.orderRepository.createQueryBuilder('o')
-            .select('SUM(o.id) as quantity')
+            .select('COUNT(o.id) as quantity')
             .where("o.status = (:_status)", {_status: OrderStatus.PRINTED})
             .andWhere("DATE(o.createdAt) >= DATE(:_date)", {_date: _today})
             //.groupBy("o.status")
             .getRawMany();
 
         const cancelled = await this.orderRepository.createQueryBuilder('o')
-            .select('SUM(o.id) as quantity')
+            .select('COUNT(o.id) as quantity')
             .where("o.status = (:_status)", {_status: OrderStatus.CANCELED})
             .andWhere("DATE(o.createdAt) >= DATE(:_date)", {_date: _today})
             //.groupBy("o.status")
