@@ -80,7 +80,6 @@ export class DeliveryStatusImpl extends BaseRequester{
 
                 const response = await this.soapCaller.callSoapClient(options);
                 const parse: TrackingDelivery = this.getContext(response);
-                console.log('parse to send: ', parse);
                 return parse;
 
             }

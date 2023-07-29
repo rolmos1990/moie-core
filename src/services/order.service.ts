@@ -534,6 +534,8 @@ export class OrderService extends BaseService<Order> {
             .where("o.orderDelivery", Not(IsNull()))
             .andWhere("d.sync = :sync", {sync: true})
             .andWhere("d.tracking", Not(IsNull()))
+            .limit(60)
+            .addOrderBy('d.syncDate', 'ASC')
             .getMany();
     }
 
