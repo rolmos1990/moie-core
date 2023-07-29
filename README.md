@@ -1,4 +1,4 @@
-# Awesome Project Build with TypeORM (moie)
+# Awesome Project Build with TypeORM (moie2)
 
 Steps to run this project:
 
