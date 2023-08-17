@@ -171,7 +171,7 @@ export class ProductService extends BaseService<Product> {
 
     async getProductAvailablesAndAmount(){
         return await this.repositoryManager.manager.query(
-            'SELECT SUM(price) as price, SUM(cost) as cost, SUM(available) as qty FROM `moie-lucy-v2`.productsbyreference where available > 0'
+            'SELECT SUM(cost * available) as cost, SUM(price * available) as price, SUM(available) as qty FROM `moie-lucy-v2`.productsbyreference where available > 0'
         );
     }
 }
