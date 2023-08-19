@@ -372,6 +372,13 @@ export class OrderService extends BaseService<Order> {
             //.groupBy("o.status")
             .getRawMany();
 
+        const confirmed = await this.orderRepository.createQueryBuilder('o')
+            .select('COUNT(o.id) as quantity')
+            .where("o.status = (:_status)", {_status: OrderStatus.CONFIRMED})
+            .andWhere("DATE(o.createdAt) >= DATE(:_date)", {_date: _today})
+            //.groupBy("o.status")
+            .getRawMany();
+
         const reconcilied = await this.orderRepository.createQueryBuilder('o')
             .select('COUNT(o.id) as quantity')
             .where("o.status = (:_status)", {_status: OrderStatus.RECONCILED})
@@ -395,6 +402,7 @@ export class OrderService extends BaseService<Order> {
 
         return {
             pending: pendings[0] && pendings[0].quantity || 0,
+            confirmed: confirmed[0] && confirmed[0].quantity || 0,
             reconcilied: reconcilied[0] && reconcilied[0].quantity || 0,
             printed: printed[0] && printed[0].quantity || 0,
             cancelled: cancelled[0] && cancelled[0].quantity || 0
@@ -581,12 +589,16 @@ export class OrderService extends BaseService<Order> {
                 .andWhere(`DATE(o.${typeDate}) <= :after`)
                 .addGroupBy('o.user')
                 .addOrderBy('dateOrder', 'ASC')
-                .setParameters({before: dateFrom, after: dateTo, user: user['id']});
+                .setParameters({before: dateFrom, after: dateTo, user: user['id'], statuses: [OrderStatus.RECONCILED, OrderStatus.FINISHED]});
         } else {
             orderRepository.andWhere(`DATE(o.${typeDate}) >= :before`);
             orderRepository.andWhere(`DATE(o.${typeDate}) <= :after`);
             orderRepository.addOrderBy('dateOrder', 'ASC');
-            orderRepository.setParameters({before: dateFrom + " 00:00:00", after: dateTo + " 23:59:59"});
+            orderRepository.setParameters({before: dateFrom + " 00:00:00", after: dateTo + " 23:59:59", statuses: [OrderStatus.RECONCILED, OrderStatus.FINISHED]});
+        }
+
+        if(typeDate === 'createdAt'){
+            orderRepository.andWhere('o.status IN (:statuses)')
         }
 
         const rows = await orderRepository.getRawMany();
