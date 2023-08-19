@@ -193,6 +193,37 @@ export class StatsController extends BaseController<Size> {
         }
     }
 
+    @route("/estadistica_envios/:startDate/:endDate/:group")
+    @GET()
+    public async estadistica_envios(req: Request, res: Response) {
+        try {
+            const fi = req.params.startDate;
+            const ff = req.params.endDate;
+            const grupo = req.params.group;
+
+            const stats = await this.orderService.getStatsEnvios(fi, ff, grupo, true);
+            const statsWithoutAmount = await this.orderService.getStatsEnvios(fi, ff, grupo, false);
+
+            if(statsWithoutAmount && statsWithoutAmount.length > 0){
+                statsWithoutAmount.map(item => {
+
+                   stats.map((itemStats, index) => {
+                       if((itemStats.fecha + '')  ==  (item.fecha + '')){
+                           stats[index].deliveryZeroCosts = item.deliveryCosts;
+                           stats[index].deliveryZeroQty = item.deliveryQty;
+                       }
+                   });
+                });
+            }
+
+            return res.json(stats);
+
+
+        }catch(e){
+            this.handleException(e, res);
+        }
+    }
+
 
     @route("/estadistica/save_dashboard")
     @GET()
@@ -236,6 +267,8 @@ export class StatsController extends BaseController<Size> {
             this.handleException(e, res);
         }
     }
+
+
 
 
 
