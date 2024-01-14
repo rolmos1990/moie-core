@@ -33,7 +33,6 @@
       "mime-types": "^2.1.29",
       "moment": "^2.29.1",
       "mysql2": "^2.3.3",
-      "newrelic": "latest",
       "resize-img": "^2.0.0",
       "soap": "^0.42.0",
       "strong-soap": "^3.3.1",
