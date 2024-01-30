@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 
 const PublicServices = [
     "/user/login",
+    "/device/validateAccess",
     "/user/logout",
     "/default",
     "/bill/generate/test",

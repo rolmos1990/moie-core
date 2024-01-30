@@ -185,7 +185,6 @@ export class BillController extends BaseController<Bill> {
             const base64File = await this.mediaManagementService.createExcel(exportable, billsAdaptor, res, MEDIA_FORMAT_OUTPUT.b64);
             return res.json({status: 200, data: base64File, name: exportable.getFileName() } );
 
-            console.log("asd");
             return res.json({status: 200});
         }catch(e){
             this.handleException(e, res);

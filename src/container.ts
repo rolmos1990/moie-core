@@ -66,6 +66,8 @@ import {CachedRepository} from "./repositories/cached.repository";
 import {CachedService} from "./services/cached.service";
 import {TemplateCatalogRepository} from "./repositories/templateCatalog.repository";
 import {TemplateCatalogService} from "./services/templateCatalog.service";
+import {DeviceRepository} from "./repositories/device.repository";
+import {DeviceService} from "./services/device.service";
 
 export default (app: express.Application): void => {
     const container = createContainer({
@@ -107,6 +109,7 @@ export default (app: express.Application): void => {
         movementRepository: asClass(MovementRepository).scoped(),
         attachmentRepository: asClass(AttachmentRepository).scoped(),
         cachedRepository: asClass(CachedRepository).scoped(),
+        deviceRepository: asClass(DeviceRepository).scoped(),
         // services
         userService: asClass(UserService).scoped(),
         customerService: asClass(CustomerService).scoped(),
@@ -139,7 +142,8 @@ export default (app: express.Application): void => {
         templateCatalogService: asClass(TemplateCatalogService).scoped(),
         movementService: asClass(MovementService).scoped(),
         attachmentService: asClass(AttachmentService).scoped(),
-        cachedService: asClass(CachedService).scoped()
+        cachedService: asClass(CachedService).scoped(),
+        deviceService: asClass(DeviceService).scoped()
     });
 
     app.use(scopePerRequest(container));
