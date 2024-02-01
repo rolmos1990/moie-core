@@ -6,7 +6,7 @@ import {User} from "../models/User";
 import {EntityTarget} from "typeorm";
 import {Request, Response} from "express";
 import {OrderService} from "../services/order.service";
-import {BillListDTO} from "./parsers/bill";
+import {BillListDTO, BillUpdateDTO} from "./parsers/bill";
 import {EBillType} from "../common/enum/eBill";
 import {BillStatus} from "../common/enum/billStatus";
 import {InvalidMunicipalityException} from "../common/exceptions/invalidMunicipality.exception";
@@ -217,7 +217,7 @@ export class BillController extends BaseController<Bill> {
     }
 
     getParsePUT(entity: Bill): Object {
-        return BillListDTO(entity);
+        return BillUpdateDTO(entity);
     }
 
 }

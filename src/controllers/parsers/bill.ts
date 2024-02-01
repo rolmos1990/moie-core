@@ -13,3 +13,14 @@ export const BillListDTO = (bill: Bill) => ({
     dianLog:  bill.dianLog,
     dianCreditMemoLog:  bill.dianCreditMemoLog
 });
+
+export const BillUpdateDTO = (bill: Bill) => ({
+    id: bill.id,
+    createdAt: bill.createdAt,
+    tax: bill.tax,
+    status: bill.status,
+    creditNote: bill.creditMemo,
+    order: OrderListDTO(bill.order),
+    dianLog:  bill.dianLog,
+    dianCreditMemoLog:  bill.dianCreditMemoLog
+});
