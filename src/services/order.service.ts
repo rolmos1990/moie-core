@@ -31,6 +31,7 @@ import {converterPreOrderProductInOrderDetail} from "../common/helper/converters
 import {OrderConditional} from "../common/enum/order.conditional";
 import {Customer} from "../models/Customer";
 import moment = require("moment");
+import {ItemsService} from "./items.service";
 
 export class OrderService extends BaseService<Order> {
     constructor(
@@ -42,7 +43,8 @@ export class OrderService extends BaseService<Order> {
         private readonly deliveryMethodService: DeliveryMethodService,
         private readonly deliveryLocalityService: DeliveryLocalityService,
         private readonly fieldOptionService: FieldOptionService,
-        private readonly orderHistoricService: OrderHistoricService
+        private readonly orderHistoricService: OrderHistoricService,
+        private readonly itemsService: ItemsService
     ) {
         super(orderRepository);
     }
@@ -111,7 +113,8 @@ export class OrderService extends BaseService<Order> {
             order,
             this.orderRepository,
             user,
-            this.orderHistoricService
+            this.orderHistoricService,
+            this.itemsService
             );
         try {
             await _statusManager.next();
@@ -135,7 +138,8 @@ export class OrderService extends BaseService<Order> {
             order,
             this.orderRepository,
             user,
-            this.orderHistoricService
+            this.orderHistoricService,
+            this.itemsService
         );
         await _statusManager.cancel();
     }
@@ -166,7 +170,7 @@ export class OrderService extends BaseService<Order> {
 
         //restart order to initial status
         if(trackStatus) {
-            const _statusManager = new StatusManagerController(updatedOrder, this.orderRepository, user, this.orderHistoricService);
+            const _statusManager = new StatusManagerController(updatedOrder, this.orderRepository, user, this.orderHistoricService, this.itemsService);
             await _statusManager.restart();
         }
 
@@ -194,7 +198,7 @@ export class OrderService extends BaseService<Order> {
     }
 
     async restart(_order: Order, _user: User) : Promise<Order>{
-        const _statusManager = new StatusManagerController(_order, this.orderRepository, _user, this.orderHistoricService);
+        const _statusManager = new StatusManagerController(_order, this.orderRepository, _user, this.orderHistoricService, this.itemsService);
         await _statusManager.restart();
         const order = _statusManager.getOrder();
         return order
@@ -210,7 +214,7 @@ export class OrderService extends BaseService<Order> {
             if(_order.isPending()){
                 _order.modifiedDate = new Date();
             }
-            const _statusManager = new StatusManagerController(_order, this.orderRepository, _user, this.orderHistoricService);
+            const _statusManager = new StatusManagerController(_order, this.orderRepository, _user, this.orderHistoricService, this.itemsService);
             await _statusManager.restart();
             checkedOrder = _statusManager.getOrder();
         }
@@ -276,11 +280,11 @@ export class OrderService extends BaseService<Order> {
             if(!hasTrackingChanged){
               _order = await this.checkWasUpdated(_order, user);
             } else {
-                const _statusManager = new StatusManagerController(_order, this.orderRepository, user, this.orderHistoricService);
+                const _statusManager = new StatusManagerController(_order, this.orderRepository, user, this.orderHistoricService, this.itemsService);
                 await _statusManager.next();
             }
         } else {
-            const _statusManager = new StatusManagerController(_order, this.orderRepository, user, this.orderHistoricService);
+            const _statusManager = new StatusManagerController(_order, this.orderRepository, user, this.orderHistoricService, this.itemsService);
             await _statusManager.start();
         }
 

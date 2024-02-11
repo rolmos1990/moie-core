@@ -31,6 +31,9 @@ import {DeliveryMethodService} from "../services/deliveryMethod.service";
 import {Modules} from "../common/enum/modules";
 import {OrderStatus} from "../common/enum/orderStatus";
 import {ExportersServientregaCd} from "../templates/exporters/exporters-servientrega-cd";
+import {ItemsService} from "../services/items.service";
+import {EventItems} from "../models/EventItems";
+import {ItemType} from "../common/enum/itemsTypes";
 
 @route('/office')
 export class OfficeController extends BaseController<Office> {
@@ -42,7 +45,8 @@ export class OfficeController extends BaseController<Office> {
         protected readonly orderDeliveryService: OrderDeliveryService,
         protected readonly templateService: TemplateService,
         protected readonly orderHistoricService: OrderHistoricService,
-        protected readonly deliveryMethodService: DeliveryMethodService
+        protected readonly deliveryMethodService: DeliveryMethodService,
+        protected readonly itemsService: ItemsService
     ){
         super(officeService, userService);
     };
@@ -346,6 +350,7 @@ export class OfficeController extends BaseController<Office> {
 
             const orders = await this.orderService.findByIds(ids);
             const ordersToUpdate = [];
+            let deliveryAmount = 0;
 
             /** Actualizar todos los registros asociados */
             const orderDeliveries = orders.filter(i => i.orderDelivery).map(item => {
@@ -354,11 +359,15 @@ export class OfficeController extends BaseController<Office> {
                     item.orderDelivery.tracking = tracking[0].trackingNumber;
                     item.orderDelivery.deliveryDate = deliveryDate;
                     ordersToUpdate.push(item);
+
+                    deliveryAmount += parseFloat(tracking[0].deliveryAmount);
                 }
                 return {id: item.orderDelivery.id, tracking: item.orderDelivery.tracking, deliveryDate: new Date(), deliveryStatus: DeliveryStatus.PENDING, sync: true};
             });
 
             const registers = await this.orderDeliveryService.createOrUpdate(orderDeliveries, {chunk: LIMIT_SAVE_BATCH});
+
+            await this.itemsService.decreaseEvent(ItemType.INTERRAPIDISIMO, deliveryAmount);
 
             //update status
             await Promise.all(ordersToUpdate.map(async (item : Order) => {

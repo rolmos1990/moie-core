@@ -17,16 +17,18 @@ export class ImportersInterrapidisimo extends BaseImporters {
             /** Replace for Order Id And Tracking Id Position */
             const positionOrderId = 10;//J
             const positionTrackingId = 1;//A
+            const positionDeliveryAmountId = 19;//S
 
             const rows = this.ws.getRows(this.startBy, this.ws.actualRowCount);
             try {
                 rows.map(item => {
                     const trackingNumber = item.getCell(positionTrackingId).toString();
+                    const deliveryAmount = item.getCell(positionDeliveryAmountId).toString();
                     let id : any = item.getCell(positionOrderId).toString();
                     id = id.split("-");
                     if(id && id[1]) {
                         id = id[1].replace(/ /g, '');
-                        this.collection.push({id, trackingNumber});
+                        this.collection.push({id, trackingNumber,deliveryAmount});
                     }
                 });
             }catch(e){

@@ -240,7 +240,7 @@ export abstract class BaseController<Parse> {
     protected abstract beforeCreate(item: Object): void;
 
     /* After create object in repository */
-    protected abstract afterCreate(item: Object, user?: User): void;
+    protected abstract afterCreate(item: Object, user?: User): Promise<void> | void;
 
     /* Before update object in repository */
     protected abstract beforeUpdate(item: Object, olditem?: Object): any;

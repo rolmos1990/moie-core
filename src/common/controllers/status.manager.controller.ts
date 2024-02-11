@@ -6,22 +6,33 @@ import {User} from "../../models/User";
 import {OrderHistoric} from "../../models/OrderHistoric";
 import {OrderHistoricService} from "../../services/orderHistoric.service";
 import {EventStatus} from "../enum/eventStatus";
+import {ItemsService} from "../../services/items.service";
+import {ItemType} from "../enum/itemsTypes";
 
 export class StatusManagerController {
 
     readonly _statusHistoric : OrderHistoric[];
+    useBag : boolean;
 
     constructor(
         protected readonly order: Order,
         protected readonly service: OrderRepository<Order>,
         protected readonly user?: User,
-        protected readonly historyService?: OrderHistoricService
+        protected readonly historyService?: OrderHistoricService,
+        protected readonly itemsService?: ItemsService
         ) {
         this._statusHistoric = [];
+        this.useBag = false;
     };
 
     async save() {
         await this.service.save(this.order);
+        console.log('useBag: ', this.useBag);
+        if(this.useBag == true){
+            console.log('try to decrease...');
+            await this.itemsService.decreaseEvent(ItemType.BAGS, 1);
+            console.log('was saved useBag...');
+        }
         if(this.hasHistory()){
             await this.historyService.createOrUpdateMany(this._statusHistoric);
         }
@@ -38,6 +49,10 @@ export class StatusManagerController {
         this.setStatus(orderStatus);
 
         await this.save();
+    }
+
+    addBag(){
+        this.useBag = true;
     }
 
     setStatus(_status: OrderStatus){
@@ -74,6 +89,7 @@ export class StatusManagerController {
                 if (_orderType.isMensajero() || _orderType.isOtro() || _orderType.isInterrapidisimo() || _orderType.isServientrega()  || _orderType.isPayu()) {
                     this.setStatus(OrderStatus.SENT);
                     this.setStatus(OrderStatus.FINISHED);
+                    this.addBag();
                 }
             }
             else if (order.isPending()) {
@@ -102,10 +118,12 @@ export class StatusManagerController {
             else if (order.isPrinted()) {
                 if (_orderType.isMensajero() || _orderType.isInterrapidisimo() || _orderType.isServientrega()) {
                     this.setStatus(OrderStatus.SENT);
+                    this.addBag();
                 }  else if(_orderType.isOtro()){
                     this.order.dateOfSale = new Date();
                     this.setStatus(OrderStatus.SENT);
                     this.setStatus(OrderStatus.FINISHED);
+                    this.addBag();
                 }
             }
             else if (order.isPending()) {

@@ -20,6 +20,7 @@ export class ImportersServientrega extends BaseImporters {
             try {
                 rows.map(item => {
                     let trackingNumber = item.getCell(positionTrackingId).toString();
+                    let deliveryAmount = "0";
                     if(trackingNumber) {
                         trackingNumber = trackingNumber.replace("Guía:", '');
                         trackingNumber = trackingNumber.replace(/ /g, '');
@@ -27,7 +28,7 @@ export class ImportersServientrega extends BaseImporters {
                         id = id.split("-");
                         if (id && id[1]) {
                             id = id[1].replace(/ /g, '');
-                            this.collection.push({id, trackingNumber});
+                            this.collection.push({id, trackingNumber, deliveryAmount});
                         }
                     }
                 });

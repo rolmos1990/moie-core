@@ -267,4 +267,8 @@ export default abstract class BaseRepository<T> {
         return this.repositoryManager.createQueryBuilder(name);
     }
 
+    public async clear(){
+        return await this.repositoryManager.clear();
+    }
+
 };

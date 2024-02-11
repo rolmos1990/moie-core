@@ -45,4 +45,8 @@ export abstract class BaseService<Entity> implements IService {
     public async createOrUpdateMany(item: Object[]){
         return await this.baseRepository.save(item, { chunk: 1000 });
     }
+
+    public async clear(){
+        return await this.baseRepository.clear();
+    }
 }

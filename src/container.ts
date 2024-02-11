@@ -68,6 +68,11 @@ import {TemplateCatalogRepository} from "./repositories/templateCatalog.reposito
 import {TemplateCatalogService} from "./services/templateCatalog.service";
 import {DeviceRepository} from "./repositories/device.repository";
 import {DeviceService} from "./services/device.service";
+import {ItemsRepository} from "./repositories/items.repository";
+import {ItemsService} from "./services/items.service";
+import {EventItemsRepository} from "./repositories/eventitems.repository";
+import {VCardRepository} from "./repositories/vcard.repository";
+import {VCardService} from "./services/vcard.service";
 
 export default (app: express.Application): void => {
     const container = createContainer({
@@ -110,6 +115,9 @@ export default (app: express.Application): void => {
         attachmentRepository: asClass(AttachmentRepository).scoped(),
         cachedRepository: asClass(CachedRepository).scoped(),
         deviceRepository: asClass(DeviceRepository).scoped(),
+        itemsRepository: asClass(ItemsRepository).scoped(),
+        eventItemRepository: asClass(EventItemsRepository).scoped(),
+        vcardRepository: asClass(VCardRepository).scoped(),
         // services
         userService: asClass(UserService).scoped(),
         customerService: asClass(CustomerService).scoped(),
@@ -143,7 +151,9 @@ export default (app: express.Application): void => {
         movementService: asClass(MovementService).scoped(),
         attachmentService: asClass(AttachmentService).scoped(),
         cachedService: asClass(CachedService).scoped(),
-        deviceService: asClass(DeviceService).scoped()
+        deviceService: asClass(DeviceService).scoped(),
+        itemsService: asClass(ItemsService).scoped(),
+        vcardService: asClass(VCardService).scoped(),
     });
 
     app.use(scopePerRequest(container));
