@@ -3,7 +3,6 @@ import {Items} from "../models/Items";
 import {ItemsRepository} from "../repositories/items.repository";
 import {EventItemsRepository} from "../repositories/eventitems.repository";
 import {EventItems} from "../models/EventItems";
-import {FieldOptionService} from "./fieldOption.service";
 
 export class ItemsService extends BaseService<Items> {
     constructor(

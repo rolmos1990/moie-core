@@ -27,11 +27,8 @@ export class StatusManagerController {
 
     async save() {
         await this.service.save(this.order);
-        console.log('useBag: ', this.useBag);
         if(this.useBag == true){
-            console.log('try to decrease...');
             await this.itemsService.decreaseEvent(ItemType.BAGS, 1);
-            console.log('was saved useBag...');
         }
         if(this.hasHistory()){
             await this.historyService.createOrUpdateMany(this._statusHistoric);
