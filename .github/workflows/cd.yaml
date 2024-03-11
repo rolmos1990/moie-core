@@ -11,10 +11,7 @@ jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
-    if:
-      contains('
-      refs/heads/master
-      ', github.ref)
+    if: github.ref == 'refs/heads/master'
     strategy:
       matrix:
         node-version: [14.x]
@@ -84,10 +81,7 @@ jobs:
   qa_deploy:
     name: Deploy
     runs-on: ubuntu-latest
-    if:
-      contains('
-      refs/heads/qa
-      ', github.ref)
+    if: github.ref == 'refs/heads/qa'
     strategy:
       matrix:
         node-version: [ 14.x ]
