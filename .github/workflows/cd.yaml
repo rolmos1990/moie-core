@@ -79,7 +79,7 @@ jobs:
           ssh apikey "cd $DEPLOY_PATH && APP_VERSION=0.1-$SHA PORT=$PORT HOST=$HOST DB_HOST=$DB_HOST DB_PORT=$DB_PORT DB_USERNAME=$DB_USERNAME DB_PASSWORD=$DB_PASSWORD DB_DATABASE=$DB_DATABASE SEED_DB=$SEED_DB DIAN_USER=$DIAN_USER DIAN_PASSWORD=$DIAN_PASSWORD PUBLIC_URL=$PUBLIC_URL WEBSITE_URL=$WEBSITE_URL NEW_RELIC_LICENSE_KEY=$NEW_RELIC_LICENSE_KEY NEW_RELIC_APP_NAME=$NEW_RELIC_APP_NAME docker-compose up -d"
 
   qa_deploy:
-    name: Deploy
+    name: Deploy QA
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/qa'
     strategy:
@@ -126,7 +126,7 @@ jobs:
       #- name: Stop the server
       #clean docker images -> docker rmi $(docker images -a -q)
       - uses: benjlevesque/short-sha@v1.2
-      - name: Deploy in Cluster
+      - name: Deploy in Cluster QA
         env:
           PORT: 18211
           HOST: ${{ secrets.HOST }}
@@ -144,6 +144,6 @@ jobs:
           NEW_RELIC_APP_NAME: ${{ secrets.NEW_RELIC_APP_NAME }}
           DEPLOY_PATH: "/var/apps/qa_backend"
         run: |
-          ssh apikey "cd /var/apps/backend && docker-compose stop"
+          ssh apikey "cd /var/apps/qa_backend && docker-compose stop"
           ssh apikey "cd $DEPLOY_PATH && APP_VERSION=0.1-$SHA PORT=$PORT HOST=$HOST DB_HOST=$DB_HOST DB_PORT=$DB_PORT DB_USERNAME=$DB_USERNAME DB_PASSWORD=$DB_PASSWORD DB_DATABASE=$DB_DATABASE SEED_DB=$SEED_DB DIAN_USER=$DIAN_USER DIAN_PASSWORD=$DIAN_PASSWORD PUBLIC_URL=$PUBLIC_URL WEBSITE_URL=$WEBSITE_URL NEW_RELIC_LICENSE_KEY=$NEW_RELIC_LICENSE_KEY NEW_RELIC_APP_NAME=$NEW_RELIC_APP_NAME docker-compose pull"
           ssh apikey "cd $DEPLOY_PATH && APP_VERSION=0.1-$SHA PORT=$PORT HOST=$HOST DB_HOST=$DB_HOST DB_PORT=$DB_PORT DB_USERNAME=$DB_USERNAME DB_PASSWORD=$DB_PASSWORD DB_DATABASE=$DB_DATABASE SEED_DB=$SEED_DB DIAN_USER=$DIAN_USER DIAN_PASSWORD=$DIAN_PASSWORD PUBLIC_URL=$PUBLIC_URL WEBSITE_URL=$WEBSITE_URL NEW_RELIC_LICENSE_KEY=$NEW_RELIC_LICENSE_KEY NEW_RELIC_APP_NAME=$NEW_RELIC_APP_NAME docker-compose up -d"

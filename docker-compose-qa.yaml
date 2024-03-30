@@ -1,0 +1,71 @@
+version: '3.6'
+
+networks:
+  app-tier:
+    name: app-tier-shared
+    driver: bridge
+
+services:
+  api-qa:
+    image: 'rolmos/moie-lucy-api:${APP_VERSION}'
+    command: 'npm run start'
+    logging:
+      driver: "json-file"
+      options:
+        max-file: 5
+        max-size: 10m
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    volumes:
+      - /var/qa_storage/uploads:/storage/uploads:rw
+      - /var/qa_storage/pdf:/storage/pdf:rw
+      - /var/qa_storage/attachments:/storage/attachments:rw
+      - /var/qa_storage/users:/storage/users:rw
+    ports:
+      - "5003:5003"
+    networks:
+      - app-tier-shared
+    environment:
+      PORT: 5000
+      HOST: ${HOST}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_DATABASE: ${DB_DATABASE}
+      SEED_DB: ${SEED_DB}
+      DIAN_USER: ${DIAN_USER}
+      DIAN_PASSWORD: ${DIAN_PASSWORD}
+      PUBLIC_URL: ${PUBLIC_URL}
+      WEBSITE_URL: ${WEBSITE_URL}
+      NEW_RELIC_LICENSE_KEY: ${NEW_RELIC_LICENSE_KEY}
+      NEW_RELIC_APP_NAME: ${NEW_RELIC_APP_NAME}
+      TZ: America/Bogota
+
+  nginx-qa:
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    logging:
+      driver: "json-file"
+      options:
+        max-file: 5
+        max-size: 10m
+    build: ./nginx
+    ports:
+      - '18222:18222'
+    networks:
+      - app-tier-shared
+    depends_on:
+      - api-qa
+
+networks:
+  app-tier-shared:
+    external: true
