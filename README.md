@@ -6,7 +6,7 @@ Steps to run this project:
 2. Setup database settings inside `ormconfig.json` file
    1. Run `npm start` command
 
-## MYSQL  test 7
+## MYSQL  test 8
 
     SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));
     SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));
