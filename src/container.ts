@@ -73,6 +73,8 @@ import {ItemsService} from "./services/items.service";
 import {EventItemsRepository} from "./repositories/eventitems.repository";
 import {VCardRepository} from "./repositories/vcard.repository";
 import {VCardService} from "./services/vcard.service";
+import {CustomerOrderService} from "./services/customerorder.service";
+import {CustomerOrderRepository} from "./repositories/customerorder.repository";
 
 export default (app: express.Application): void => {
     const container = createContainer({
@@ -118,6 +120,7 @@ export default (app: express.Application): void => {
         itemsRepository: asClass(ItemsRepository).scoped(),
         eventItemRepository: asClass(EventItemsRepository).scoped(),
         vcardRepository: asClass(VCardRepository).scoped(),
+        customerOrderRepository: asClass(CustomerOrderRepository).scoped(),
         // services
         userService: asClass(UserService).scoped(),
         customerService: asClass(CustomerService).scoped(),
@@ -154,6 +157,7 @@ export default (app: express.Application): void => {
         deviceService: asClass(DeviceService).scoped(),
         itemsService: asClass(ItemsService).scoped(),
         vcardService: asClass(VCardService).scoped(),
+        customerOrderService: asClass(CustomerOrderService).scoped(),
     });
 
     app.use(scopePerRequest(container));

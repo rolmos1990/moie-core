@@ -6,7 +6,7 @@ export abstract class BaseService<Entity> implements IService {
         private readonly baseRepository: any
     ){}
 
-    public count(pageQuery: PageQuery): Promise<Entity[]> {
+    public count(pageQuery: PageQuery): Promise<number> {
         return this.baseRepository.count(pageQuery);
     }
 

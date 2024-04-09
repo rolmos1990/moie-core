@@ -8,7 +8,6 @@ import {
     CustomerListDTO,
     CustomerShowDTO,
     CustomerUpdateDTO, OrderStats, requestOrderStatDTO, requestStatDTO,
-    RequestStats,
     Stats
 } from "./parsers/customer";
 import { PageQuery } from "../common/controllers/page.query";
@@ -16,11 +15,32 @@ import {Request, Response} from "express";
 import {ApplicationException, InvalidArgumentException} from "../common/exceptions";
 import {getAllStatus} from "../common/enum/orderStatus";
 import moment = require("moment");
+import {MEDIA_FORMAT_OUTPUT, MediaManagementService} from "../services/mediaManagement.service";
+import {ExportersCustomers} from "../templates/exporters/exporters-customers";
+import {ConditionalQuery} from "../common/controllers/conditional.query";
+import {OperationQuery} from "../common/controllers/operation.query";
+import {OrderConditional} from "../common/enum/order.conditional";
+import {isEmpty} from "../common/helper/helpers";
+import {PageDTO} from "./parsers/page";
+import {CustomerOrderService} from "../services/customerorder.service";
 
 @route('/customer')
 export class CustomerController extends BaseController<Customer> {
+
+    /**
+     * @swagger
+     * definitions:
+     *   Error:
+     *     type: object
+     *     properties:
+     *       message:
+     *         type: string
+     */
+
     constructor(
-        private readonly customerService: CustomerService
+        private readonly customerService: CustomerService,
+        private readonly mediaManagementService: MediaManagementService,
+        private readonly customerOrderService: CustomerOrderService
     ){
         super(customerService);
     };
@@ -157,4 +177,58 @@ export class CustomerController extends BaseController<Customer> {
     getGroupRelations(): Array<string> {
         return [];
     }
+
+
+    /** Download Template for Interrapidisimo Delivery Service */
+    @route('/gen/customerReport')
+    @GET()
+    protected async customerReport(req: Request, res: Response){
+        try {
+            const query = req.query;
+            const conditional = query.conditional ? query.conditional + "" : null;
+            const offset = query.offset ? query.offset + "" : "0";
+            const pageNumber = parseInt(offset);
+            const limit = 400000;
+            const operation = query.operation ? query.operation + "" : null;
+            const group = query.group ? query.group + "" : null;
+
+            const queryCondition = ConditionalQuery.ConvertIntoConditionalParams(conditional);
+            const operationQuery = new OperationQuery(operation, group);
+            let page = new PageQuery(limit,pageNumber,queryCondition, operationQuery);
+
+            if(!query.operation){
+                page.addOrder('id', OrderConditional.DESC);
+            }
+            const countRegisters = await this.customerService.count(page);
+
+            /** Relations by Default */
+            if(this.getDefaultRelations(false)){
+                page.setRelations(this.getDefaultRelations(false));
+            }
+
+            /** Relations with groups */
+            if(this.getGroupRelations() && !isEmpty(group)){
+                page.setRelations(this.getGroupRelations());
+            }
+
+            let items: Array<Object> = await this.customerOrderService.all(page);
+
+            const response = PageDTO(items || [], countRegisters, pageNumber + 1, limit);
+
+            let exportable = new ExportersCustomers();
+
+            const base64File = await this.mediaManagementService.createExcel(exportable, response.data, res, MEDIA_FORMAT_OUTPUT.b64);
+            return res.json({status: 200, data: base64File, name: exportable.getFileName() } );
+        }catch(e){
+            console.log("error -- ", e.message);
+            if (e.name === InvalidArgumentException.name || e.name === "EntityNotFound") {
+                this.handleException(new InvalidArgumentException("Clientes no han sido encontrado"), res);
+            }
+            else{
+                this.handleException(new ApplicationException(), res);
+
+            }
+        }
+    }
+
 }
