@@ -71,28 +71,34 @@ export class BillController extends BaseController<Bill> {
     /** Recarga facturas pendientes */
     @route('/reload/dian')
     @GET()
-    public async reloadBills(req: Request, res: Response){
-        const bills = await this.billService.findByStatus(BillStatus.PENDING, 1);
-        await Promise.all(bills.map(async bill => {
-            try {
-                await this.billService.sendElectronicBill(bill, EBillType.INVOICE, false);
-                bill.status = BillStatus.SEND;
-                await this.billService.createOrUpdate(bill);
-            }catch(e){
+    public async reloadBills(req: Request, res: Response) {
+        try {
+            const bills = await this.billService.findByStatus(BillStatus.PENDING, 12);
 
-                if(e instanceof InvalidMunicipalityException){
-                    bill.status = BillStatus.NO_MUNICIPALITY
-                }
-                else if(e instanceof InvalidDocumentException){
-                    bill.status = BillStatus.NO_IDENTITY
-                } else {
-                    bill.status = BillStatus.ERROR
+            for (const bill of bills) {
+                try {
+                    // Enviar factura electrónicamente de forma sincrónica
+                    await this.billService.sendElectronicBill(bill, EBillType.INVOICE, false);
+                    bill.status = BillStatus.SEND;
+                } catch (e) {
+                    // Manejar las excepciones y asignar los estados correspondientes
+                    if (e instanceof InvalidMunicipalityException) {
+                        bill.status = BillStatus.NO_MUNICIPALITY;
+                    } else if (e instanceof InvalidDocumentException) {
+                        bill.status = BillStatus.NO_IDENTITY;
+                    } else {
+                        bill.status = BillStatus.ERROR;
+                    }
                 }
 
+                // Actualizar factura en la base de datos
                 await this.billService.createOrUpdate(bill);
             }
-        }));
-        return res.json({status: 200});
+
+            return res.json({ status: 200 });
+        } catch (error) {
+            return res.status(500).json({ status: 500, message: "Error processing bills", error });
+        }
     }
 
 
