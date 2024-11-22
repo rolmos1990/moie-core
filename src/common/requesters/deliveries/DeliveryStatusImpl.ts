@@ -18,19 +18,23 @@ export class DeliveryStatusImpl extends BaseRequester{
     private caller : BaseRequester;
     private order: Order;
     private soapCaller: ClientsManagementService;
+    private rest: boolean;
 
     constructor(order: Order){
         super();
         this.order = order;
         switch(order.deliveryMethod.code){
             //case "INTERRAPIDISIMO":
-                //this.caller = new DeliveryStatusInterrapidisimo(this.order);
-                //break;
+            //    this.rest = true;
+            //    this.caller = new DeliveryStatusInterrapidisimo(this.order);
+            //    break;
             case "SERVIENTREGA":
+                this.rest = false;
                 this.soapCaller = new ClientsManagementService();
                 this.caller = new DeliveryStatusServientrega(this.order);
                 break;
             case "PAYU":
+                this.rest = true;
                 this.caller = new DeliveryStatusInterrapidisimo(this.order);
                 break;
             default:
@@ -46,10 +50,6 @@ export class DeliveryStatusImpl extends BaseRequester{
         return this.caller.getUrl();
     }
 
-    isRest(): any {
-        return this.caller.isRest();
-    }
-
     getHeaders() : any {
         return this.caller.getHeaders();
     }
@@ -61,19 +61,20 @@ export class DeliveryStatusImpl extends BaseRequester{
     getBody(order: Order) : any {
         return this.caller.getBody(order);
     }
-    getName() : any {
-        return this.caller.getName();
-    }
 
     async call(): Promise<TrackingDelivery> {
         try {
-            console.log("-- Procesando: " + this.getName() + ', esRest: ' + this.isRest());
-            if(this.isRest()) {
+            const response = await axios.get(this.getUrl());
+            const body = response.data;
+            const parse : TrackingDelivery = this.getContext(body);
+            return parse;
+            if(this.rest) {
                 const response = await axios.get(this.getUrl());
                 const body = response.data;
                 const parse: TrackingDelivery = this.getContext(body);
                 return parse;
             } else {
+
                 const options = {
                     url: this.getUrl(),
                     headerOptions: this.getHeaders(),
@@ -93,3 +94,4 @@ export class DeliveryStatusImpl extends BaseRequester{
     }
 
 }
+
