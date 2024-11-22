@@ -73,7 +73,7 @@ export class BillController extends BaseController<Bill> {
     @GET()
     public async reloadBills(req: Request, res: Response) {
         try {
-            const bills = await this.billService.findByStatus(BillStatus.PENDING, 12);
+            const bills = await this.billService.findByStatus(BillStatus.PENDING, 10);
 
             for (const bill of bills) {
                 try {
