@@ -13,4 +13,4 @@ ENV NEW_RELIC_NO_CONFIG_FILE=true
 ENV NEW_RELIC_DISTRIBUTED_TRACING_ENABLED=true
 ENV NEW_RELIC_LOG=stdout
 
-CMD npm start
+CMD ["node", "--max-old-space-size=512", "server.js"]
