@@ -18,16 +18,15 @@ export class DeliveryStatusImpl extends BaseRequester{
     private caller : BaseRequester;
     private order: Order;
     private soapCaller: ClientsManagementService;
-    private rest: boolean;
 
     constructor(order: Order){
         super();
         this.order = order;
         switch(order.deliveryMethod.code){
-            case "INTERRAPIDISIMO":
-                this.rest = true;
-                this.caller = new DeliveryStatusInterrapidisimo(this.order);
-                break;
+            //case "INTERRAPIDISIMO":
+            //    this.rest = true;
+            //    this.caller = new DeliveryStatusInterrapidisimo(this.order);
+            //    break;
             case "SERVIENTREGA":
                 this.rest = false;
                 this.soapCaller = new ClientsManagementService();
