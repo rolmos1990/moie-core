@@ -545,6 +545,7 @@ export class OrderService extends BaseService<Order> {
             .leftJoinAndSelect('o.deliveryMethod', 'i')
             .where("o.orderDelivery", Not(IsNull()))
             .andWhere("d.sync = :sync", {sync: true})
+            .andWhere("i.code = :code", {code: "SERVIENTREGA"})
             .andWhere("d.tracking", Not(IsNull()))
             .limit(35)
             .addOrderBy('d.syncDate', 'ASC')
