@@ -60,7 +60,7 @@ export class ClientsManagementService extends UtilService {
                         } else {
                             reject("No se ha podido generar la solicitud");
                         }
-                    });
+                    }, {timeout: 20000});
 
                 });
             });
