@@ -1040,27 +1040,13 @@ export class OrderService extends BaseService<Order> {
         }
 
         orderRepository.where(
-            "(d.chargeOnDelivery = :typeChargeOnDeliveryPrePago AND o.status = :finishedStatus) AND b.batchDate BETWEEN :before AND :after",
+            "b.batchDate BETWEEN :before AND :after AND b.status = :status",
             {
-                typeChargeOnDeliveryPrePago: 0,
-                finishedStatus: OrderStatus.FINISHED,
                 before: `${dateFrom} 00:00:00`,
                 after: `${dateTo} 23:59:59`,
+                status: 2
             }
-        )
-            .orWhere(
-                "(d.chargeOnDelivery = :typeChargeOnDeliveryContraEntrega AND o.status IN (:...finishedStatuses)) AND b.batchDate BETWEEN :before AND :after",
-                {
-                    typeChargeOnDeliveryContraEntrega: 1,
-                    finishedStatuses: [
-                        OrderStatus.SENT,
-                        OrderStatus.RECONCILED,
-                        OrderStatus.FINISHED,
-                    ],
-                    before: `${dateFrom} 00:00:00`,
-                    after: `${dateTo} 23:59:59`,
-                }
-            );
+        );
 
         const rows = await orderRepository.getRawMany();
 
