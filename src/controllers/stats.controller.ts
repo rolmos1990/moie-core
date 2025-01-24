@@ -268,6 +268,23 @@ export class StatsController extends BaseController<Size> {
         }
     }
 
+    @route("/estadistica_revenue/:startDate/:endDate/:group")
+    @GET()
+    public async estadistica_ganancias(req: Request, res: Response) {
+        try {
+            const fi = req.params.startDate;
+            const ff = req.params.endDate;
+            const grupo = req.params.group;
+
+            const stats = await this.orderService.getStatsGanancias(fi, ff, grupo);
+            return res.json(stats);
+
+        }catch(e){
+            console.log('error e: ', e.message);
+            this.handleException(e, res);
+        }
+    }
+
 
 
 

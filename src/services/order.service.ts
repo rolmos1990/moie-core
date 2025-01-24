@@ -996,6 +996,90 @@ export class OrderService extends BaseService<Order> {
 
     }
 
+    async getStatsGanancias(dateFrom, dateTo, group){
+
+        const orderRepository = this.orderRepository.createQueryBuilder('o')
+            .leftJoinAndSelect('o.orderDelivery', 'd')
+            .leftJoinAndSelect('o.office', 'b')
+
+        orderRepository.addSelect("SUM(d.deliveryCost)", "totalDeliveryAmount");
+        orderRepository.addSelect("SUM(o.totalRevenue)", "totalRevenue");
+        orderRepository.addSelect("SUM(o.totalWithDiscount)", "totalWithDiscount");
+        orderRepository.addSelect("SUM(o.totalAmount)", "totalAmount");
+
+        switch(group) {
+            case StatTimeTypes.DAILY:
+                orderRepository.addSelect("CONCAT_WS('-',day(b.batchDate),month(b.batchDate),year(b.batchDate))", 'fecha');
+                orderRepository.addGroupBy("YEAR(b.batchDate)")
+                orderRepository.addGroupBy("MONTH(b.batchDate)")
+                orderRepository.addGroupBy("DAY(b.batchDate)");
+                orderRepository.addOrderBy("year(b.batchDate)");
+                orderRepository.addOrderBy("month(b.batchDate)");
+                orderRepository.addOrderBy("day(b.batchDate)");
+                break;
+            case StatTimeTypes.WEEKLY:
+                orderRepository.addSelect("WEEK(b.batchDate,1) as semana, year(b.batchDate) as ano, CONCAT_WS('-',week(b.batchDate,1),year(b.batchDate))", 'fecha');
+                orderRepository.addGroupBy("YEAR(b.batchDate)")
+                orderRepository.addGroupBy("WEEK(b.batchDate,1)");
+                orderRepository.addOrderBy("ano");
+                orderRepository.addOrderBy("semana");
+                break;
+            case StatTimeTypes.MONTHLY:
+                orderRepository.addSelect("CONCAT_WS('-',month(b.batchDate),year(b.batchDate))", 'fecha');
+                orderRepository.addGroupBy("YEAR(b.batchDate)")
+                orderRepository.addGroupBy("MONTH(b.batchDate)");
+                orderRepository.addOrderBy("YEAR(b.batchDate)");
+                orderRepository.addOrderBy("MONTH(b.batchDate)");
+                break;
+            case StatTimeTypes.YEARLY:
+                orderRepository.addSelect("YEAR(b.batchDate)", 'fecha');
+                orderRepository.groupBy("YEAR(b.batchDate)")
+                orderRepository.orderBy("YEAR(b.batchDate)");
+                break;
+        }
+
+        orderRepository.where(
+            "(d.chargeOnDelivery = :typeChargeOnDeliveryPrePago AND o.status = :finishedStatus)",
+            {
+                typeChargeOnDeliveryPrePago: 0,
+                finishedStatus: OrderStatus.FINISHED,
+            }
+        )
+            .orWhere(
+                "(d.chargeOnDelivery = :typeChargeOnDeliveryContraEntrega AND o.status IN (:...finishedStatuses))",
+                {
+                    typeChargeOnDeliveryContraEntrega: 1,
+                    finishedStatuses: [
+                        OrderStatus.SENT,
+                        OrderStatus.RECONCILED,
+                        OrderStatus.FINISHED,
+                    ],
+                }
+            )
+
+        orderRepository.andWhere("DATE(b.batchDate) >= :before");
+        orderRepository.andWhere("DATE(b.batchDate) <= :after");
+
+        orderRepository.setParameters({before: dateFrom + " 00:00:00", after: dateTo + " 23:59:59"});
+
+        const rows = await orderRepository.getRawMany();
+
+        let results = [];
+
+        rows.map(item => {
+            results.push({
+                fecha: item['fecha'],
+                totalRevenue: item['totalRevenue'],
+                totalDeliveryAmount: item['totalDeliveryAmount'],
+                totalAmount: item['totalAmount'],
+                totalWithDiscount: item['totalWithDiscount']
+            });
+        });
+
+        return results;
+
+    }
+
     async getStatsEnvios(dateFrom, dateTo, group, withAmount){
 
         const orderRepository = this.orderRepository.createQueryBuilder('o')
