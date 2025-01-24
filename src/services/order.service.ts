@@ -1006,6 +1006,7 @@ export class OrderService extends BaseService<Order> {
         orderRepository.addSelect("SUM(o.totalRevenue)", "totalRevenue");
         orderRepository.addSelect("SUM(o.totalWithDiscount)", "totalWithDiscount");
         orderRepository.addSelect("SUM(o.totalAmount)", "totalAmount");
+        orderRepository.addSelect("SUM(o.quantity)", "totalQuantity");
 
         switch(group) {
             case StatTimeTypes.DAILY:
@@ -1072,7 +1073,8 @@ export class OrderService extends BaseService<Order> {
                 totalRevenue: item['totalRevenue'],
                 totalDeliveryAmount: item['totalDeliveryAmount'],
                 totalAmount: item['totalAmount'],
-                totalWithDiscount: item['totalWithDiscount']
+                totalWithDiscount: item['totalWithDiscount'],
+                totalQuantity: item['totalQuantity']
             });
         });
 
