@@ -6,7 +6,7 @@ import {
     UpdateDateColumn
 } from "typeorm";
 import BaseModel from "../common/repositories/base.model";
-import {IsDate, IsEmail, Length, IsBoolean, IsNumber} from "class-validator";
+import {IsDate, IsEmail, Length, IsBoolean, IsNumber, IsDecimal} from "class-validator";
 import { Type } from 'class-transformer';
 import {Municipality} from "./Municipality";
 import {State} from "./State";
@@ -85,6 +85,10 @@ export class ViewCustomerOrder extends BaseModel{
     @Column({name:'order_count', type: 'integer'})
     @IsNumber()
     orderCount: number;
+
+    @Column({name:'total_amount', type: 'decimal'})
+    @IsDecimal({ decimal_digits: '2'})
+    totalAmount: number;
 
     equals(obj: any) {
         if(obj instanceof ViewCustomerOrder === false){

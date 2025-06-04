@@ -25,7 +25,8 @@ const PublicServices = [
     '/product/public/product',
     '/changeProductImage/generate/catalogImage',
     '/template/38',
-    '/changeProductImage/generateAllSync/generate'
+    '/changeProductImage/generateAllSync/generate',
+    '/customer/get/customersfull'
 ];
 
 export const Authorization = (req: Request, res: Response, next: NextFunction) => {

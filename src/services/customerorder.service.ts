@@ -8,4 +8,8 @@ export class CustomerOrderService extends BaseService<ViewCustomerOrder> {
     ){
         super(customerOrderRepository);
     }
+
+    async findAll(){
+        return await this.findByObjectWithLimit({}, ['state', 'municipality'], 500);
+    }
 }

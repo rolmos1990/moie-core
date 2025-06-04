@@ -23,6 +23,8 @@ import {OrderConditional} from "../common/enum/order.conditional";
 import {isEmpty} from "../common/helper/helpers";
 import {PageDTO} from "./parsers/page";
 import {CustomerOrderService} from "../services/customerorder.service";
+import {ViewCustomerOrder} from "../models/ViewCustomerOrder";
+import {ExportersCustomersFull} from "../templates/exporters/exporters-customers-full";
 
 @route('/customer')
 export class CustomerController extends BaseController<Customer> {
@@ -223,6 +225,30 @@ export class CustomerController extends BaseController<Customer> {
             console.log("error -- ", e.message);
             if (e.name === InvalidArgumentException.name || e.name === "EntityNotFound") {
                 this.handleException(new InvalidArgumentException("Clientes no han sido encontrado"), res);
+            }
+            else{
+                this.handleException(new ApplicationException(), res);
+
+            }
+        }
+    }
+
+    @route('/get/customersfull')
+    @GET()
+    protected async getCustomersFull(req: Request, res: Response){
+        try {
+            const id = req.params.id;
+            const customerOrders: ViewCustomerOrder[] = await this.customerOrderService.findAll();
+
+            console.log(customerOrders);
+
+            let exportable = new ExportersCustomersFull();
+
+            return await this.mediaManagementService.createExcel(exportable, customerOrders, res, MEDIA_FORMAT_OUTPUT.binary);
+        }catch(e){
+            console.log("error -- ", e.message);
+            if (e.name === InvalidArgumentException.name || e.name === "EntityNotFound") {
+                this.handleException(new InvalidArgumentException("Despacho no ha sido encontrado"), res);
             }
             else{
                 this.handleException(new ApplicationException(), res);
