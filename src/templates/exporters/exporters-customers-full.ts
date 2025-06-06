@@ -16,32 +16,39 @@ export class ExportersCustomersFull extends SingleBaseExporters {
     getBody(data: ViewCustomerOrder[]) {
         // @ts-ignore
         const body = data.map(item => ({
-            nombre: item.name,
-            canales: "Lucy Modas Col (WhatsApp Business Platform (API)",
-            cicloDeVida: "CLIENTES", // Valor fijo
-            correoElectronico: item.email || "",
-            telefono: item.cellphone,
-            etiquetas: "cliente", // Ajustable si tienes info de etiquetas
-            pais: "Colombia", // Valor fijo
-            idioma: "", // Si lo tienes disponible, agrégalo
-            estadoConversacion: "Cerradas", // Suposición basada en status booleano
-            cesionario: "", // ¿Agente asignado?
-            ultimoMensaje: item.createdAt ? moment(item.createdAt).format('LLL') : "",
-            fechaAdicion: item.createdAt ? moment(item.createdAt).format('LLL') : "",
-            tallas: "", // No disponible en el modelo
-            numeroCedula: item.document,
+            firstName: this.getFirstName(item.name),
+            lastName : this.getLastName(item.name),
+            phoneNumber:item.cellphone,
+            email:item.email,
+            tags: 'cliente',
+            lifecycle: 'CLIENTES',
+            Assignee: 'abogadoramiropalmar@gmail.com',
+            tallas: '',
+            numero_de_cedula: item.document,
             ciudad: (item.municipality && item.municipality.name) || "",
             departamento: (item.state && item.state.name) || "",
             puntoReferencia: item.address || "",
             fechaCompra: item.createdAt ? moment(item.createdAt).format('DD/MM/YYYY') : "",
             valorCompra: item.totalAmount || 0,
-            numeroPedido: item.orderCount || 0, // Si tienes acceso a pedidos, aquí iría el número
+            numeroPedido: item.orderCount || 0,
             tipoCliente: this.getTipoCliente(item.isMayorist),
             direccion: item.address || "",
-            calidadCliente: this.getCalidadCliente(item.orderCount)  // ¿Algún scoring de calidad?
+            calidadCliente: this.getCalidadCliente(item.orderCount)
+
         }));
 
         return body;
+    }
+
+    private getLastName(fullName: string): string {
+        const parts = fullName.trim().split(/\s+/);
+        parts.shift();
+        return parts.join(" ");
+    }
+
+    private getFirstName(fullName: string): string {
+        const [first = ""] = fullName.trim().split(/\s+/);
+        return first;
     }
 
     private getCalidadCliente(orderCount: number): string {
@@ -57,25 +64,20 @@ export class ExportersCustomersFull extends SingleBaseExporters {
 
     getHeader() {
         const headers = [
-            { header: 'Nombre', key: 'nombre' },
-            { header: 'Canal(es)', key: 'canales' },
-            { header: 'Ciclo de vida', key: 'cicloDeVida' },
-            { header: 'Correo electrónico', key: 'correoElectronico' },
-            { header: 'Teléfono', key: 'telefono' },
-            { header: 'Etiquetas', key: 'etiquetas' },
-            { header: 'País', key: 'pais' },
-            { header: 'Idioma', key: 'idioma' },
-            { header: 'Estado de la conversación', key: 'estadoConversacion' },
-            { header: 'Cesionario', key: 'cesionario' },
-            { header: 'Último mensaje', key: 'ultimoMensaje' },
-            { header: 'Fecha de adición', key: 'fechaAdicion' },
+            { header: 'First Name', key: 'firstName' },
+            { header: 'Last Name', key: 'lastName' },
+            { header: 'Phone Number', key: 'phoneNumber' },
+            { header: 'Email', key: 'email' },
+            { header: 'Tags', key: 'tags' },
+            { header: 'Lifecycle', key: 'lifecycle' },
+            { header: 'Assignee', key: 'Assignee' },
             { header: 'Tallas', key: 'tallas' },
-            { header: 'Numero de Cédula', key: 'numeroCedula' },
+            { header: 'Numero de Cedula', key: 'numero_de_cedula' },
             { header: 'Ciudad', key: 'ciudad' },
             { header: 'Departamento', key: 'departamento' },
             { header: 'Punto de Referencia', key: 'puntoReferencia' },
-            { header: 'Fecha de compra', key: 'fechaCompra' },
-            { header: 'Valor de compra', key: 'valorCompra' },
+            { header: 'Fecha de Compra', key: 'fechaCompra' },
+            { header: 'Valor de Compra', key: 'valorCompra' },
             { header: 'Numero de Pedido', key: 'numeroPedido' },
             { header: 'Tipo de Cliente', key: 'tipoCliente' },
             { header: 'Direccion', key: 'direccion' },
