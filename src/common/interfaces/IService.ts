@@ -5,5 +5,6 @@ export interface IService{
     all: Function,
     find: Function,
     delete: Function,
-    createOrUpdate: Function
+    createOrUpdate: Function,
+    findByWithPage: Function
 };

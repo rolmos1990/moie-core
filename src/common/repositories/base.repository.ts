@@ -210,6 +210,17 @@ export default abstract class BaseRepository<T> {
         });
     }
 
+    async findByObjectWithSkipAndLimit(field: Object, relations = [], skip = 0, limit = 0){
+        console.log('skip: ', skip);
+        console.log('limit: ', limit);
+        return await this.repositoryManager.find({
+            where: field,
+            relations,
+            skip: skip,
+            take:limit
+        });
+    }
+
     async findByObject(field: Object, relations = []){
         return await this.repositoryManager.find({
             where: field,

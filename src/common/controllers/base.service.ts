@@ -34,6 +34,10 @@ export abstract class BaseService<Entity> implements IService {
         return this.baseRepository.findByObjectWithLimit(object, relations, limit);
     }
 
+    public findByWithPage(object: Object, relations = [], skip = 0, limit = 0): Promise<Entity[]> {
+        return this.baseRepository.findByObjectWithSkipAndLimit(object, relations, skip, limit);
+    }
+
     public async delete(id: number): Promise<Entity> {
         return await this.baseRepository.delete(id);
     }

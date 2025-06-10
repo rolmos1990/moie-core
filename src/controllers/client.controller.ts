@@ -237,10 +237,13 @@ export class CustomerController extends BaseController<Customer> {
     @GET()
     protected async getCustomersFull(req: Request, res: Response){
         try {
-            const id = req.params.id;
-            const customerOrders: ViewCustomerOrder[] = await this.customerOrderService.findAll();
+            const query = req.query;
 
-            console.log(customerOrders);
+            const limit = 50000;
+            const skip = ((parseInt(query.skip as string) || 1) - 1) * limit;
+
+
+            const customerOrders: ViewCustomerOrder[] = await this.customerOrderService.findAllWithPage((skip - 1), limit);
 
             let exportable = new ExportersCustomersFull();
 
