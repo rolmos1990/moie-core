@@ -330,9 +330,9 @@ export class MediaManagementService extends UtilService {
                         .slice(1)
                         .map(value => {
                             const cell = value != null ? value.toString() : '';
-                            return cell.includes(';') ? `"${cell}"` : cell;
+                            return cell.includes(',') ? `"${cell}"` : cell;
                         });
-                    csvContent += rowValues.join(';') + '\n';
+                    csvContent += rowValues.join(',') + '\n';
                 });
 
                 res.setHeader('Content-Type', 'text/csv');
