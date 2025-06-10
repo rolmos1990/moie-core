@@ -18,7 +18,7 @@ export class ExportersCustomersFull extends SingleBaseExporters {
         const body = data.map(item => ({
             firstName: this.getFirstName(item.name),
             lastName : this.getLastName(item.name),
-            phoneNumber:item.cellphone,
+            phoneNumber: item.cellphone.startsWith('+57') ? item.cellphone : `+57${item.cellphone}`,
             email:item.email,
             tags: 'cliente',
             lifecycle: 'CLIENTES',
@@ -28,7 +28,7 @@ export class ExportersCustomersFull extends SingleBaseExporters {
             ciudad: (item.municipality && item.municipality.name) || "",
             departamento: (item.state && item.state.name) || "",
             puntoReferencia: item.address || "",
-            fechaCompra: item.createdAt ? moment(item.createdAt).format('DD/MM/YYYY') : "",
+            fechaCompra: item.createdAt ? moment(item.createdAt).format('YYYY/MM/DD') : "",
             valorCompra: item.totalAmount || 0,
             numeroPedido: item.orderCount || 0,
             tipoCliente: this.getTipoCliente(item.isMayorist),
@@ -71,17 +71,17 @@ export class ExportersCustomersFull extends SingleBaseExporters {
             { header: 'Tags', key: 'tags' },
             { header: 'Lifecycle', key: 'lifecycle' },
             { header: 'Assignee', key: 'Assignee' },
-            { header: 'Tallas', key: 'tallas' },
-            { header: 'Numero de Cedula', key: 'numero_de_cedula' },
-            { header: 'Ciudad', key: 'ciudad' },
-            { header: 'Departamento', key: 'departamento' },
-            { header: 'Punto de Referencia', key: 'puntoReferencia' },
-            { header: 'Fecha de Compra', key: 'fechaCompra' },
-            { header: 'Valor de Compra', key: 'valorCompra' },
-            { header: 'Numero de Pedido', key: 'numeroPedido' },
-            { header: 'Tipo de Cliente', key: 'tipoCliente' },
-            { header: 'Direccion', key: 'direccion' },
-            { header: 'Calidad del Cliente', key: 'calidadCliente' }
+            { header: 'tallas', key: 'tallas' },
+            { header: 'numero_de_cedula', key: 'numero_de_cedula' },
+            { header: 'ciudad', key: 'ciudad' },
+            { header: 'departamento', key: 'departamento' },
+            { header: 'punto_de_referencia', key: 'puntoReferencia' },
+            { header: 'fecha_de_compra', key: 'fechaCompra' },
+            { header: 'valor_de_compra', key: 'valorCompra' },
+            { header: 'numero_de_pedido', key: 'numeroPedido' },
+            { header: 'tipo_de_cliente', key: 'tipoCliente' },
+            { header: 'direccion', key: 'direccion' },
+            { header: 'calidad_del_cliente', key: 'calidadCliente' }
         ];
         return headers;
     }

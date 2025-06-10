@@ -30,7 +30,8 @@ export const CONFIG_MEDIA = {
 export const MEDIA_FORMAT_OUTPUT = {
     b64: 'b64',
     binary: 'binary',
-    b64storage: 'b64storage'
+    b64storage: 'b64storage',
+    csv: 'binary_csv',
 };
 
 type ImageResource = {
@@ -321,7 +322,26 @@ export class MediaManagementService extends UtilService {
                 this.createWorkSheet(exportable, workbook, data);
             }
 
-            if(format === MEDIA_FORMAT_OUTPUT.binary) {
+            if (format === MEDIA_FORMAT_OUTPUT.csv) {
+                const worksheet = workbook.getWorksheet(1);
+                let csvContent = '';
+                worksheet.eachRow((row) => {
+                    const rowValues = row.values
+                        .slice(1)
+                        .map(value => {
+                            const cell = value != null ? value.toString() : '';
+                            return cell.includes(';') ? `"${cell}"` : cell;
+                        });
+                    csvContent += rowValues.join(';') + '\n';
+                });
+
+                res.setHeader('Content-Type', 'text/csv');
+                res.setHeader('Content-Disposition', 'attachment; filename=' + exportable.getFileName());
+                res.setHeader('Cache-Control', 'max-age=0');
+
+                return res.status(200).send(csvContent);
+            }
+            else if(format === MEDIA_FORMAT_OUTPUT.binary) {
                 res.setHeader('Content-Type', 'Content-Type: application/vnd.ms-excel');
                 res.setHeader("Content-Disposition", "attachment; filename=" + exportable.getFileName());
                 res.setHeader('Cache-Control', 'max-age=0');

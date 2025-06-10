@@ -244,7 +244,7 @@ export class CustomerController extends BaseController<Customer> {
 
             let exportable = new ExportersCustomersFull();
 
-            return await this.mediaManagementService.createExcel(exportable, customerOrders, res, MEDIA_FORMAT_OUTPUT.binary);
+            return await this.mediaManagementService.createExcel(exportable, customerOrders, res, MEDIA_FORMAT_OUTPUT.csv);
         }catch(e){
             console.log("error -- ", e.message);
             if (e.name === InvalidArgumentException.name || e.name === "EntityNotFound") {
