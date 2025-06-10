@@ -10,6 +10,6 @@ export class CustomerOrderService extends BaseService<ViewCustomerOrder> {
     }
 
     async findAll(){
-        return await this.findByObjectWithLimit({}, ['state', 'municipality'], 500);
+        return await this.findByObject({}, ['state', 'municipality']);
     }
 }
