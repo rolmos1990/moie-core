@@ -243,7 +243,7 @@ export class CustomerController extends BaseController<Customer> {
             const skip = ((parseInt(query.skip as string) || 1) - 1) * limit;
 
 
-            const customerOrders: ViewCustomerOrder[] = await this.customerOrderService.findAllWithPage((skip - 1), limit);
+            const customerOrders: ViewCustomerOrder[] = await this.customerOrderService.findAllWithPage(skip, limit);
 
             let exportable = new ExportersCustomersFull();
 
