@@ -32,6 +32,6 @@ aFWZG0mk+PoitJya8ed8gEayazKH1pgy3IxUHWWCZKAJBDZV3Ldc
 
 
 
--- create network (required) for this 3
+-- create network (required) for this 4
 
 docker network create app-tier --driver=bridge
