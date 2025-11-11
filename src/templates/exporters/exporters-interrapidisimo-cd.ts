@@ -49,8 +49,7 @@ export class ExportersInterrapidisimoCd extends SingleBaseExporters {
            id: item.customer && item.customer.document,
            name: '',
            lastname: '',
-           phone: item.customer && item.customer.cellphone,
-           phone2: item.customer.phone,
+           phone: (item.customer && item.customer.cellphone) ?? item.customer.phone,
            address: item.customer.address || "",
            cityCode: item.orderDelivery && item.orderDelivery.deliveryLocality && item.orderDelivery.deliveryLocality.deliveryAreaCode,
            city: item.customer && item.customer.municipality && item.customer.municipality.name.toUpperCase(),
@@ -62,7 +61,7 @@ export class ExportersInterrapidisimoCd extends SingleBaseExporters {
 
         return body;
     }
-
+ 
     getHeader() {
         const headers = [
             { header: 'NUMERO GUIA', key: 'guia' },
@@ -71,8 +70,9 @@ export class ExportersInterrapidisimoCd extends SingleBaseExporters {
             { header: 'APELLIDO1 DESTINATARIO', key: 'lastname'},
             { header: 'APELLIDO2 DESTINATARIO', key: 'lastname2'},
             { header: 'TELEFONO DESTINATARIO', key: 'phone'},
-            { header: 'TELEFONO DESTINATARIO 2', key: 'phone2'},
             { header: 'DIRECCION DESTINATARIO', key: 'address'},
+            { header: 'COMPLEMENTO', key: 'complemento'},
+            { header: 'BARRIO', key: 'barrio'},
             { header: 'CODIGO CIUDAD DESTINO', key: 'cityCode'},
             { header: 'CIUDAD DESTINO', key: 'city'},
             { header: 'DICE CONTENER', key: 'description'},
