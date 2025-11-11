@@ -49,7 +49,7 @@ export class ExportersInterrapidisimoCd extends SingleBaseExporters {
            id: item.customer && item.customer.document,
            name: '',
            lastname: '',
-           phone: (item.customer && item.customer.cellphone) ?? item.customer.phone,
+           phone: (item.customer && item.customer.cellphone) ? (item.customer && item.customer.cellphone) : item.customer.phone,
            address: item.customer.address || "",
            cityCode: item.orderDelivery && item.orderDelivery.deliveryLocality && item.orderDelivery.deliveryLocality.deliveryAreaCode,
            city: item.customer && item.customer.municipality && item.customer.municipality.name.toUpperCase(),
