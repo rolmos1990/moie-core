@@ -1,4 +1,4 @@
-key server c:
+key server co:
 
 SSH_KEY:
 
