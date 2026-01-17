@@ -1,5 +1,14 @@
 FROM surnet/alpine-node-wkhtmltopdf:14.16.0-0.12.6-full
 
+# 🔐 Instalar CA certificates (si no están)
+RUN apk add --no-cache ca-certificates
+
+# 🔐 Copiar el certificado Sectigo
+COPY certs/sectigopublirsa46.crt /usr/local/share/ca-certificates/
+
+# 🔐 Actualizar trust store
+RUN update-ca-certificates
+
 #deployment
 WORKDIR /src
 COPY ./package*.json /src/
