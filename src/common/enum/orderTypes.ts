@@ -6,6 +6,7 @@ export enum OrderTypes {
     OTRO = 3,
     SERVIENTREGA = 4,
     PAYU = 5,
+    DANE = 6
 };
 
 const isPayu = (o: Order) => {
@@ -29,12 +30,17 @@ const isServientrega = (o: Order) => {
     return o.deliveryMethod.id === OrderTypes.SERVIENTREGA;
 }
 
+const isDane = (o: Order) => {
+    return o.deliveryMethod.id === OrderTypes.DANE;
+}
+
 export const builderOrderTypes = (o: Order) => {
     return {
         isPayu : () => isPayu(o),
         isInterrapidisimo : () => isInterrapidisimo(o),
         isServientrega : () => isServientrega(o),
         isMensajero : () => isMensajero(o),
+        isDane : () => isDane(o),
         isOtro : () => isOtro(o)
     };
 }
