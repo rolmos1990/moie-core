@@ -45,7 +45,6 @@ export class ExportersServientregaCd extends SingleBaseExporters {
            number: 'Prendas de vestir -' + item.id,
            price: Math.round(item.totalAmount),
            weight: 3, //this.getConverter(item.totalWeight),
-
            alto: 30,
            ancho: 20,
            largo: 20,

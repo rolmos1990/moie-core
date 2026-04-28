@@ -14,7 +14,7 @@ import {OrderConditional} from "../common/enum/order.conditional";
 import {OrderService} from "../services/order.service";
 import {Order} from "../models/Order";
 import {MEDIA_FORMAT_OUTPUT, MediaManagementService} from "../services/mediaManagement.service";
-import {ExportersInterrapidisimoCd} from "../templates/exporters";
+import {ExportersDaneCd, ExportersInterrapidisimoCd} from "../templates/exporters";
 import {ImporterImpl} from "../templates/importers/importerImpl";
 import {LIMIT_SAVE_BATCH} from "../common/persistence/mysql.persistence";
 import {OrderDeliveryService} from "../services/orderDelivery.service";
@@ -255,11 +255,15 @@ export class OfficeController extends BaseController<Office> {
             const id = req.params.id;
             const office: Office = await this.officeService.find(parseInt(id), ['deliveryMethod']);
             const orders: Order[] = await this.orderService.findByObject({office: office}, ['customer', 'customer.municipality', 'orderDelivery', 'orderDelivery.deliveryLocality', 'deliveryMethod']); //TODO -- Agregar orderDelivery.deliveryLocality'
-
-            let exportable = new ExportersInterrapidisimoCd();
-
-            if(office.deliveryMethod.code === 'SERVIENTREGA'){
+            let exportable = null;
+            if(office.deliveryMethod.code === 'INTERRAPIDISIMO'){
+                exportable = new ExportersInterrapidisimoCd();
+            } else if(office.deliveryMethod.code === 'SERVIENTREGA'){
                 exportable = new ExportersServientregaCd();
+            } else if(office.deliveryMethod.code === 'DANE'){
+                exportable = new ExportersDaneCd();
+            } else {
+                throw new InvalidArgumentException("El método de entrega no tiene plantilla asignada");
             }
 
             const base64File = await this.mediaManagementService.createExcel(exportable, orders, res, MEDIA_FORMAT_OUTPUT.b64);
