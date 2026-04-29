@@ -46,14 +46,17 @@ export class ExportersDaneCd extends SingleBaseExporters {
             return {...objects, name, lastname};
         }
 
+        const cleanPhone = (value) => value?.replace(/\s|-/g, '')   // opcional: limpia espacios y guiones
+                                            .replace(/^\+57/, '');   // quita +57 solo si está al inicio
+
         const body = data.map(item => preFormat(item, {
            id: item.customer && item.customer.document,
            email: item.customer && item.customer.email,
-           identificacionComprador: 'CC',
+           identificacionComprador: '',
            document : item.customer && item.customer.document,
            nombres: item.customer && item.customer.name,
            apellidos: item.customer && item.customer.name,
-           phone: (item.customer && item.customer.cellphone) ? (item.customer && item.customer.cellphone) : item.customer.phone,
+           phone: (item.customer && item.customer.cellphone) ? cleanPhone(item.customer?.cellphone) : cleanPhone(item.customer?.phone),
            address: item.customer.address || "",
            cityCode: item.orderDelivery && item.orderDelivery.deliveryLocality && item.orderDelivery.deliveryLocality.deliveryAreaCode,
            departamento: '',
@@ -61,12 +64,12 @@ export class ExportersDaneCd extends SingleBaseExporters {
            attribute1: '',
            attribute2: '',
            attribute3: '',
-           quantity: item.quantity,
-           price: formatPrice(item.totalAmount),
+           quantity: 1,
+           price: Math.trunc(item.totalAmount),
            deliveryIncluded: 'SI',
-           height: 30,
-           width: 20,
-           length: 20,
+           height: '7',
+           width: '26,50',
+           length: '41',
            weight: this.getConverter(item.totalWeight),
            paymentMode: item.orderDelivery.deliveryType == DeliveryEnum.CHARGE_ON_DELIVERY ? 'PCE' : 'PE'
         }));
