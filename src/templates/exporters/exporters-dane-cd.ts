@@ -1,8 +1,6 @@
-import {BaseExporters} from "./base.exporters";
 import {Order} from "../../models/Order";
 import {EXPORTER_DANE_CD} from "./constants";
 import {SingleBaseExporters} from "./single.base.exporters";
-import {formatPrice} from "../../common/helper/helpers";
 import {toUpper} from "./utilities";
 import { DeliveryEnum } from "../../models/DeliveryMethod";
 
@@ -46,8 +44,12 @@ export class ExportersDaneCd extends SingleBaseExporters {
             return {...objects, name, lastname};
         }
 
-        //const cleanPhone = (value) => value?.replace(/\s|-/g, '')   // opcional: limpia espacios y guiones
-                                            //.replace(/^\+57/, '');   // quita +57 solo si está al inicio
+        const cleanPhone = (value) => {
+            if(value){
+                return value.replace(/\s|-/g, '').replace(/^\+57/, '');
+            }
+            return '';
+        }
 
         const body = data.map(item => preFormat(item, {
            id: item.customer && item.customer.document,
@@ -56,7 +58,7 @@ export class ExportersDaneCd extends SingleBaseExporters {
            document : item.customer && item.customer.document,
            nombres: item.customer && item.customer.name,
            apellidos: item.customer && item.customer.name,
-           //phone: (item.customer && item.customer.cellphone) ? cleanPhone(item.customer?.cellphone) : cleanPhone(item.customer?.phone),
+           phone: (item.customer && item.customer.cellphone) ? cleanPhone(item.customer.cellphone) : cleanPhone(item.customer.phone),
            address: item.customer.address || "",
            cityCode: item.orderDelivery && item.orderDelivery.deliveryLocality && item.orderDelivery.deliveryLocality.deliveryAreaCode,
            departamento: '',
@@ -85,7 +87,7 @@ getHeader() {
         { header: 'numero_identificacion_comprador_opcional', key: 'document' },
         { header: 'nombres_comprador', key: 'name' },
         { header: 'apellidos_comprador', key: 'lastname' },
-        //{ header: 'telefono_comprador', key: 'phone' },
+        { header: 'telefono_comprador', key: 'phone' },
         { header: 'direccion_entrega', key: 'address' },
         { header: 'ciudad_entrega', key: 'cityCode' },
         { header: 'departamento_entrega', key: 'departamento' },
