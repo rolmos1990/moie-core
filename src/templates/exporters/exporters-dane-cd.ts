@@ -46,8 +46,8 @@ export class ExportersDaneCd extends SingleBaseExporters {
             return {...objects, name, lastname};
         }
 
-        const cleanPhone = (value) => value?.replace(/\s|-/g, '')   // opcional: limpia espacios y guiones
-                                            .replace(/^\+57/, '');   // quita +57 solo si está al inicio
+        //const cleanPhone = (value) => value?.replace(/\s|-/g, '')   // opcional: limpia espacios y guiones
+                                            //.replace(/^\+57/, '');   // quita +57 solo si está al inicio
 
         const body = data.map(item => preFormat(item, {
            id: item.customer && item.customer.document,
