@@ -70,7 +70,7 @@ export class ExportersDaneCd extends SingleBaseExporters {
            price: Math.trunc(item.totalAmount),
            deliveryIncluded: 'SI',
            height: '7',
-           width: '26,50',
+           width: '27',
            length: '41',
            weight: this.getConverter(item.totalWeight),
            paymentMode: item.orderDelivery.deliveryType == DeliveryEnum.CHARGE_ON_DELIVERY ? 'PCE' : 'PE'
