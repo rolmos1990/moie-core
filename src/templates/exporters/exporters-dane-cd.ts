@@ -55,7 +55,7 @@ export class ExportersDaneCd extends SingleBaseExporters {
            id: item.id,
            email: item.customer && item.customer.email,
            identificacionComprador: 'CC',
-           document : item.customer && item.customer.document,
+           document : '',
            nombres: item.customer && item.customer.name,
            apellidos: item.customer && item.customer.name,
            phone: (item.customer && item.customer.cellphone) ? cleanPhone(item.customer.cellphone) : cleanPhone(item.customer.phone),
