@@ -52,7 +52,7 @@ export class ExportersDaneCd extends SingleBaseExporters {
         }
 
         const body = data.map(item => preFormat(item, {
-           id: item.customer && item.customer.document,
+           id: item.id,
            email: item.customer && item.customer.email,
            identificacionComprador: 'CC',
            document : item.customer && item.customer.document,
