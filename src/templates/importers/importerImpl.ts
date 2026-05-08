@@ -1,10 +1,11 @@
 import {Worksheet} from "exceljs";
-import {IMPORTER_INTERRAPIDISIMO, IMPORTER_PAYU, IMPORTER_SERVIENTREGA} from "./constants";
+import {IMPORTER_DANE, IMPORTER_INTERRAPIDISIMO, IMPORTER_PAYU, IMPORTER_SERVIENTREGA} from "./constants";
 import {InvalidFileException} from "../../common/exceptions";
 import {BaseImporters} from "./base.impoters";
 import {ImportersInterrapidisimo} from "./impoters-interrapidisimo";
 import {OrderTracking} from "../../common/interfaces/OrderTracking";
 import {ImportersServientrega} from "./impoters-servientrega";
+import { ImportersDane } from "./importers-dane";
 
 export class ImporterImpl extends BaseImporters{
     private importer : BaseImporters;
@@ -21,6 +22,10 @@ export class ImporterImpl extends BaseImporters{
                 break;
             case IMPORTER_PAYU:
                 this.importer = new ImportersInterrapidisimo();
+                this.importer.addRows(ws);
+                break;
+            case IMPORTER_DANE:
+                this.importer = new ImportersDane();
                 this.importer.addRows(ws);
                 break;
             default:
