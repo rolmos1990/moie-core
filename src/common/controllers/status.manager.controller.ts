@@ -83,7 +83,7 @@ export class StatusManagerController {
                 this.setStatus(OrderStatus.PRINTED);
             }
             else if (order.isPrinted()) {
-                if (_orderType.isMensajero() || _orderType.isOtro() || _orderType.isInterrapidisimo() || _orderType.isServientrega()  || _orderType.isPayu()) {
+                if (_orderType.isMensajero() || _orderType.isOtro() || _orderType.isInterrapidisimo() || _orderType.isServientrega()  || _orderType.isPayu() || _orderType.isDane()) {
                     this.setStatus(OrderStatus.SENT);
                     this.setStatus(OrderStatus.FINISHED);
                     this.addBag();
@@ -99,7 +99,7 @@ export class StatusManagerController {
         /*** Contra Pago */
         if (!order.isPreviousPayment()) {
             if (order.isSent()) {
-                if (_orderType.isServientrega() || _orderType.isInterrapidisimo() || _orderType.isMensajero()) {
+                if (_orderType.isServientrega() || _orderType.isInterrapidisimo() || _orderType.isMensajero() || _orderType.isDane()) {
                     this.order.dateOfSale = new Date();
                     this.setStatus(OrderStatus.RECONCILED);
                     this.setStatus(OrderStatus.FINISHED);
@@ -113,7 +113,7 @@ export class StatusManagerController {
                 this.setStatus(OrderStatus.PRINTED);
             }
             else if (order.isPrinted()) {
-                if (_orderType.isMensajero() || _orderType.isInterrapidisimo() || _orderType.isServientrega()) {
+                if (_orderType.isMensajero() || _orderType.isInterrapidisimo() || _orderType.isServientrega() || _orderType.isDane()) {
                     this.setStatus(OrderStatus.SENT);
                     this.addBag();
                 }  else if(_orderType.isOtro()){
